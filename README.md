@@ -1,7 +1,7 @@
-# hmpps-template-typescript
+# hmpps-prisoner-finance-ui
 
-[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/hmpps-template-typescript/badge?style=flat)](https://github-community.service.justice.gov.uk/repository-standards/hmpps-template-typescript)
-[![Docker Repository on ghcr](https://img.shields.io/badge/ghcr.io-repository-2496ED.svg?logo=docker)](https://ghcr.io/ministryofjustice/hmpps-template-typescript)
+[![Ministry of Justice Repository Compliance Badge](https://github-community.service.justice.gov.uk/repository-standards/api/hmpps-prisoner-finance-ui/badge?style=flat)](https://github-community.service.justice.gov.uk/repository-standards/hmpps-prisoner-finance-ui)
+[![Docker Repository on ghcr](https://img.shields.io/badge/ghcr.io-repository-2496ED.svg?logo=docker)](https://ghcr.io/ministryofjustice/hmpps-prisoner-finance-ui)
 
 Template github repo used for new Typescript based projects.
 
@@ -14,7 +14,7 @@ Documentation to create new services is located [here](https://tech-docs.hmpps.s
 This project is community managed by the mojdt `#typescript` slack channel.
 Please raise any questions or queries there. Contributions welcome!
 
-Our security policy is located [here](https://github.com/ministryofjustice/hmpps-template-typescript/security/policy).
+Our security policy is located [here](https://github.com/ministryofjustice/hmpps-prisoner-finance-ui/security/policy).
 
 More information about the template project including features can be
 found [here](https://dsdmoj.atlassian.net/wiki/spaces/NDSS/pages/3488677932/Typescript+template+project).
@@ -183,7 +183,7 @@ While there are multiple ways to keep your project up-to-date this [method](http
 
 In your service, add the template as a remote:
 
-`git remote add template https://github.com/ministryofjustice/hmpps-template-typescript`
+`git remote add template https://github.com/ministryofjustice/hmpps-prisoner-finance-ui`
 
 Create a branch and switch to it, eg:
 

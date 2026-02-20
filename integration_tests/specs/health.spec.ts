@@ -30,7 +30,7 @@ test.describe('Health', () => {
     test('Info is accessible', async ({ page }) => {
       const response = await page.request.get('/info')
       const payload = await response.json()
-      expect(payload.build.name).toBe('hmpps-template-typescript')
+      expect(payload.build.name).toBe('hmpps-prisoner-finance-ui')
     })
   })
 
