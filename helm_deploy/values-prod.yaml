@@ -3,10 +3,10 @@
 
 generic-service:
   ingress:
-    host: prisoner-finance-ui.hmpps.service.justice.gov.uk
+    host: prisoner-finance.hmpps.service.justice.gov.uk
 
   env:
-    INGRESS_URL: "https://prisoner-finance-ui.hmpps.service.justice.gov.uk"
+    INGRESS_URL: "https://prisoner-finance.hmpps.service.justice.gov.uk"
     HMPPS_AUTH_URL: "https://sign-in.hmpps.service.justice.gov.uk/auth"
     TOKEN_VERIFICATION_API_URL: "https://token-verification-api.prison.service.justice.gov.uk"
     EXAMPLE_API_URL: 'https://template-kotlin.hmpps.service.justice.gov.uk'
