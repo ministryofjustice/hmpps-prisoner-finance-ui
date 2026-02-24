@@ -16,4 +16,4 @@ generic-service:
     AUDIT_ENABLED: "false"
 
 generic-prometheus-alerts:
-  alertSeverity: hmpps-prisoner-finance-alerts-nonprod
+  alertSeverity: hmpps-prisoner-finance-ui-dev
