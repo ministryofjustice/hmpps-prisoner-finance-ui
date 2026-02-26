@@ -14,17 +14,4 @@ export default {
         jsonBody: { status: httpStatus === 200 ? 'UP' : 'DOWN' },
       },
     }),
-
-  stubExampleTime: (httpStatus = 200): SuperAgentRequest =>
-    stubFor({
-      request: {
-        method: 'GET',
-        urlPattern: '/example-api/example/time',
-      },
-      response: {
-        status: httpStatus,
-        headers: { 'Content-Type': 'application/text;charset=UTF-8' },
-        body: '2025-01-01T12:00:00Z',
-      },
-    }),
 }
