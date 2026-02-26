@@ -24,7 +24,6 @@ services:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health/ping"]
     environment:
       - HMPPS_AUTH_URL=http://hmpps-auth:8080/auth
-      - EXAMPLE_API_URL=http://localhost:8080
 
   app:
     build:
