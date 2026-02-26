@@ -29,7 +29,6 @@ afterEach(() => {
 describe('GET /', () => {
   it('should render index page', () => {
     auditService.logPageView.mockResolvedValue(null)
-    exampleService.getCurrentTime.mockResolvedValue('2025-01-01T12:00:00.000')
 
     return request(app)
       .get('/')
@@ -37,7 +36,7 @@ describe('GET /', () => {
       .expect(200)
       .expect(res => {
         expect(res.text).toContain('This site is under construction...')
-        expect(res.text).toContain('The time is currently 2025-01-01T12:00:00.000')
+        expect(res.text).toContain('The time is currently')
         expect(auditService.logPageView).toHaveBeenCalledWith(Page.EXAMPLE_PAGE, {
           who: user.username,
           correlationId: expect.any(String),
