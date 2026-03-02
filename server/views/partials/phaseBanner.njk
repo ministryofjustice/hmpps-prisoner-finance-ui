@@ -1,0 +1,11 @@
+<div class="govuk-width-container" data-qa="phase-banner">
+  {% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+  {{ govukPhaseBanner({
+    attributes: {
+      role: "complementary"
+    },
+    tag: { text: "Beta" },
+    classes: 'govuk-!-display-none-print',
+    html: 'This is a new service – your <a class="govuk-link feedback" href="mailto:digital-prisoner-finance@justice.gov.uk?subject=Prisoner Finance Sync Feedback">feedback</a> will help us to improve it.'
+  }) }}
+</div>
