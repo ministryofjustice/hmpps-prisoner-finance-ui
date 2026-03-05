@@ -9,7 +9,7 @@ export default class PrisonerFinanceApiClient extends RestClient {
     super('Prisoner Finance API', config.apis.prisonerFinanceApi, logger, authenticationClient)
   }
 
-  async getPrisonerTransactionsByPrisonNumber(prisonNumber: string): Promise<PrisonerTransactionResponse> {
+  async getPrisonerTransactionsByPrisonNumber(prisonNumber: string): Promise<Array<PrisonerTransactionResponse>> {
     return this.get(
       {
         path: `/prisoners/${prisonNumber}/money/transactions`,
