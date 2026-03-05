@@ -80,6 +80,15 @@ export default {
       },
       agent: new AgentConfig(Number(get('COMPONENT_API_TIMEOUT_RESPONSE', 2500))),
     },
+    prisonerFinanceApi: {
+      url: get('PRISONER_FINANCE_API_URL', 'http://localhost:8080', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('PRISONER_FINANCE_API_TIMEOUT_RESPONSE', 5000)),
+        deadline: Number(get('PRISONER_FINANCE_API_TIMEOUT_DEADLINE', 5000)),
+      },
+      agent: new AgentConfig(Number(get('PRISONER_FINANCE_API_TIMEOUT_RESPONSE', 5000))),
+    },
   },
   serviceUrls: {
     digitalPrison: get('DPS_HOME_PAGE_URL', 'https://dps-dev.prison.service.justice.gov.uk', requiredInProduction),
