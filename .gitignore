@@ -1,3 +1,6 @@
+# generated api-clients
+server/api-clients/*
+
 # Logs
 logs
 *.log

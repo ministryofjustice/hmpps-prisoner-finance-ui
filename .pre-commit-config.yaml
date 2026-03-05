@@ -25,6 +25,7 @@ repos:
         name: verify types
         language: system
         entry: npm run typecheck
+        exclude: ^server/api-clients/.*
         files: (\.(ts)$|^package-lock\.json$)
         require_serial: true
         pass_filenames: false

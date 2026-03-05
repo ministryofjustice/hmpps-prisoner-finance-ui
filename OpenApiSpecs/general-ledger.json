@@ -1,0 +1,208 @@
+{
+    "openapi": "3.1.0",
+    "info": {
+        "title": "HMPPS Prisoner Finance API",
+        "description": "API for Prisoner Finance.\n\n## Authentication\nThis API uses **OAuth2 with JWTs**. Pass your JWT in the `Authorization` header using the `Bearer` scheme.\n**Important:** This service is designed for client tokens only; user tokens should not be used.\n\n## Authorization\nAccess to API endpoints is controlled by roles. The required roles are documented with each endpoint.\nIntegrations should request one of the following roles based on their needs:\n\n* `ROLE_PRISONER_FINANCE__PROFILE__RO`: Grants **read only access**.",
+        "contact": {
+            "name": "HMPPS Digital Studio",
+            "email": "feedback@digital.justice.gov.uk"
+        },
+        "version": "2026-03-04"
+    },
+    "servers": [
+        {
+            "url": "https://prisoner-finance-api-dev.hmpps.service.justice.gov.uk",
+            "description": "Development"
+        },
+        {
+            "url": "https://prisoner-finance-api-preprod.hmpps.service.justice.gov.uk",
+            "description": "Pre-Production"
+        },
+        {
+            "url": "https://prisoner-finance-api.hmpps.service.justice.gov.uk",
+            "description": "Production"
+        },
+        {
+            "url": "http://localhost:8080",
+            "description": "Local"
+        }
+    ],
+    "security": [
+        {
+            "bearer-jwt": []
+        }
+    ],
+    "tags": [
+        {
+            "name": "Prisoner Finance",
+            "description": "Prisoner Finance API endpoints."
+        }
+    ],
+    "paths": {
+        "/accounts/{accountId}/transactions": {
+            "get": {
+                "tags": [
+                    "Prisoner Finance"
+                ],
+                "summary": "Get list of transaction for an account",
+                "description": "Returns a list of transactions for a given account",
+                "operationId": "getListOfTransactionsByAccountId",
+                "parameters": [
+                    {
+                        "name": "accountId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string",
+                            "format": "uuid"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Retrieved the account balance",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "type": "array",
+                                    "items": {
+                                        "$ref": "#/components/schemas/PrisonerFinanceTransactionResponse"
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request - Invalid UUID for accountId",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized - requires a valid OAuth2 token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden - requires an appropriate role",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Resource not found",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error - An unexpected error occurred.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearer-jwt": [
+                            "ROLE_PRISONER_FINANCE__PROFILE__RO"
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "PrisonerFinanceTransactionResponse": {
+                "type": "object",
+                "properties": {
+                    "date": {
+                        "type": "string",
+                        "format": "date-time"
+                    },
+                    "description": {
+                        "type": "string"
+                    },
+                    "credit": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "debit": {
+                        "type": "integer",
+                        "format": "int64"
+                    },
+                    "location": {
+                        "type": "string"
+                    },
+                    "accountType": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "accountType",
+                    "credit",
+                    "date",
+                    "debit",
+                    "description",
+                    "location"
+                ]
+            },
+            "ErrorResponse": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "type": "integer",
+                        "format": "int32"
+                    },
+                    "errorCode": {
+                        "type": "string"
+                    },
+                    "userMessage": {
+                        "type": "string"
+                    },
+                    "developerMessage": {
+                        "type": "string"
+                    },
+                    "moreInfo": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+                    "status"
+                ]
+            }
+        },
+        "securitySchemes": {
+            "bearer-jwt": {
+                "type": "http",
+                "description": "A HMPPS Auth access token with the `ROLE_PRISONER_FINANCE__PROFILE__RO` role.",
+                "name": "Authorization",
+                "in": "header",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+            }
+        }
+    }
+}

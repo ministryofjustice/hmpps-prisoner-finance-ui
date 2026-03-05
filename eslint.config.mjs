@@ -1,3 +1,8 @@
 import hmppsConfig from '@ministryofjustice/eslint-config-hmpps'
 
-export default hmppsConfig()
+export default [
+  {
+    ignores: ['server/api-clients/**'],
+  },
+  ...hmppsConfig(),
+]
