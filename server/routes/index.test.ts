@@ -31,6 +31,10 @@ describe('GET /', () => {
       .expect(res => {
         expect(res.text).toContain('Prisoner Finance')
         expect(res.text).toContain('data-qa="view-prisoner-finance-card"')
+        expect(auditService.logPageView).toHaveBeenCalledWith(
+          'INDEX_PAGE',
+          expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
+        )
       })
   })
 
