@@ -2,7 +2,6 @@ import { expect, test } from '@playwright/test'
 import hmppsAuth from '../mockApis/hmppsAuth'
 
 import { login, resetStubs } from '../testUtils'
-import AbstractPage from '../pages/abstractPage'
 import IndexPage from '../pages/indexPage'
 
 test.describe('SignIn', () => {
