@@ -8,7 +8,8 @@ import config from '../config'
 export default function setUpHealthChecks(applicationInfo: ApplicationInfo): Router {
   const router = express.Router()
 
-  const apiConfig = Object.entries(config.apis)
+  const { componentApi, ...healthCheckOptions } = config.apis
+  const apiConfig = Object.entries(healthCheckOptions)
 
   const middleware = monitoringMiddleware({
     applicationInfo,

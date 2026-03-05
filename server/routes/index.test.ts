@@ -1,7 +1,7 @@
 import type { Express } from 'express'
 import request from 'supertest'
 import { appWithAllRoutes, user } from './testutils/appSetup'
-import AuditService, { Page } from '../services/auditService'
+import AuditService from '../services/auditService'
 
 jest.mock('../services/auditService')
 
@@ -23,20 +23,18 @@ afterEach(() => {
 })
 
 describe('GET /', () => {
-  it('should render index page', () => {
-    auditService.logPageView.mockResolvedValue(null)
-
+  it('Should log page view for index page and render the home page', async () => {
     return request(app)
       .get('/')
       .expect('Content-Type', /html/)
       .expect(200)
       .expect(res => {
-        expect(res.text).toContain('This site is under construction...')
-        expect(res.text).toContain('Hello World!')
-        expect(auditService.logPageView).toHaveBeenCalledWith(Page.EXAMPLE_PAGE, {
-          who: user.username,
-          correlationId: expect.any(String),
-        })
+        expect(res.text).toContain('Prisoner Finance')
+        expect(res.text).toContain('data-qa="view-prisoner-finance-card"')
+        expect(auditService.logPageView).toHaveBeenCalledWith(
+          'INDEX_PAGE',
+          expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
+        )
       })
   })
 

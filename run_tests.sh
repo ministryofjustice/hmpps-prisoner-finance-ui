@@ -38,6 +38,9 @@ cleanup() {
 
 trap cleanup EXIT INT TERM
 
+# NPM build
+npm run build
+
 # -----------------------------
 # 1️⃣ Run unit tests
 # -----------------------------

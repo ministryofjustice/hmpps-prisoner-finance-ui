@@ -1,12 +1,22 @@
 {% extends "../partials/layout.njk" %}
+{% from "../components/card.njk" import card %}
 
 {% set pageTitle = applicationName + " - Home" %}
 {% set mainClasses = "govuk-body" %}
 
 {% block content %}
 
-  <h1>This site is under construction...</h1>
-  <p>Please check back later when there is content to view.</p>
-  <p data-qa="greeting">Hello {{ greeting }}</p>
+<h1 id="prisonerFinanceHeading">Prisoner Finance</h1>
 
+<div class="card-group govuk-grid-row" id="prisonerFinanceCard">
+  <div class="govuk-grid-column-one-third card-group__item">
+    {{ card({
+      "href": "/404",
+      "clickable": "true",
+      "heading": "View prisoner finances",
+      "description": "View transactions and balances for a prisoner's accounts.",
+      "data-qa": "view-prisoner-finance-card"
+    }) }}
+  </div>
+</div>
 {% endblock %}
