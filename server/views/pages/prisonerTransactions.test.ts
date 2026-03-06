@@ -1,13 +1,9 @@
 import { expect } from '@playwright/test'
+import * as cheerio from 'cheerio'
+import nunjucks from 'nunjucks'
 import { PrisonerTransactionResponse } from '../../interfaces/PrisonerTransactionResponse'
-import playwrightConfig from '../../../playwright.config'
-
-const nunjucks = require('nunjucks')
-const cheerio = require('cheerio')
 
 describe('prisoner transactions page', () => {
-  let $
-
   const payload: Array<PrisonerTransactionResponse> = [
     {
       date: new Date('10/10/10'),
@@ -43,6 +39,8 @@ describe('prisoner transactions page', () => {
     },
   ]
 
+  let $: cheerio.CheerioAPI
+
   beforeAll(() => {
     const njkEnv = nunjucks.configure(
       ['server/views', 'node_modules/govuk-frontend/dist', 'node_modules/@ministryofjustice/frontend/'],
@@ -52,7 +50,7 @@ describe('prisoner transactions page', () => {
         lstripBlocks: true,
       },
     )
-    njkEnv.addFilter('assetMap', asset => asset)
+    njkEnv.addFilter('assetMap', (asset: unknown) => asset)
 
     const html = njkEnv.render('pages/prisonerTransactions.njk', {
       applicationName: 'Hmpps Prisoner Finance Ui',
@@ -79,7 +77,8 @@ describe('prisoner transactions page', () => {
 
     const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
 
+    console.log($('body').text())
     expect(transactionsTable.find('thead tr th').length).toBe(6)
-    expect(transactionsTable.find('tbody tr td').length).toBe(payload.length)
+    expect(transactionsTable.find('tbody tr').length).toBe(payload.length)
   })
 })
