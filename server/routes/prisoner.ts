@@ -1,11 +1,13 @@
 import { Router } from 'express'
 import { Services } from '../services'
-import { Page } from '../services/auditService'
+import PrisonerController from '../controllers/PrisonerController'
 
-export default function routes({ auditService }: Services): Router {
+export default function routes(services: Services): Router {
   const prisonerRouter = Router()
 
-  prisonerRouter.get('/:prisonNumber/money', )
+  const prisonerController = new PrisonerController(services)
+
+  prisonerRouter.get('/:prisonNumber/money', prisonerController.transactions)
 
   return prisonerRouter
 }

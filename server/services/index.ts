@@ -1,5 +1,6 @@
 import PrisonerFinanceApiClient from '../clients/prisonerFinanceApi'
 import { AuthenticationClient, dataAccess } from '../data'
+import PrisonerFinanceService from './prisonerFinanceService'
 import AuditService from './auditService'
 
 export const services = () => {
@@ -8,6 +9,7 @@ export const services = () => {
   return {
     applicationInfo,
     auditService: new AuditService(hmppsAuditClient),
+    prisonerFinanceService: new PrisonerFinanceService(prisonerFinanceApiClient),
   }
 }
 

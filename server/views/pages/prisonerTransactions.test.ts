@@ -54,7 +54,7 @@ describe('prisoner transactions page', () => {
 
     const html = njkEnv.render('pages/prisonerTransactions.njk', {
       applicationName: 'Hmpps Prisoner Finance Ui',
-      payloadSummaryData: payload,
+      transactions: payload,
     })
 
     $ = cheerio.load(html)

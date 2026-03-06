@@ -1,14 +1,10 @@
-// export default class AuditHistoryService {
-//   constructor(private readonly prisonerFinanceSyncApiClient: PrisonerFinanceSyncApiClient) {}
+import PrisonerFinanceApiClient from '../clients/prisonerFinanceApi'
+import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 
+export default class PrisonerFinanceService {
+  constructor(private readonly prisonerFinanceApiClient: PrisonerFinanceApiClient) {}
 
-//   async getMatchingPayloads(searchParams: AuditHistorySearchParams): Promise<CursorPage<NomisSyncPayloadSummary>> {
-//     const { startDate, endDate } = searchParams
-
-//     return this.prisonerFinanceSyncApiClient.getPayloadSummary({
-//       ...searchParams,
-//       startDate: startDate ? parseDatePickerStringToIsoString(startDate) : null,
-//       endDate: endDate ? parseDatePickerStringToIsoString(endDate) : null,
-//     })
-//   }
-// }
+  getPrisonerTransactionsByPrisonNumber(prisonNumber: string): Promise<Array<PrisonerTransactionResponse>> {
+    return this.prisonerFinanceApiClient.getPrisonerTransactionsByPrisonNumber(prisonNumber)
+  }
+}
