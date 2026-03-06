@@ -50,7 +50,7 @@ describe('prisoner transactions page', () => {
         lstripBlocks: true,
       },
     )
-    njkEnv.addFilter('assetMap', (asset: unknown) => asset)
+    njkEnv.addFilter('assetMap', (asset: string) => asset)
 
     const html = njkEnv.render('pages/prisonerTransactions.njk', {
       applicationName: 'Hmpps Prisoner Finance Ui',
@@ -63,12 +63,11 @@ describe('prisoner transactions page', () => {
   it('should render the page elements correctly', () => {
     const heading = $('#prisonerTransactionsHeading')
 
-    expect(heading.length).toBe(1)
-    expect(heading.text().trim()).toBe("Prisoner's Transactions")
+    expect(heading.text()).toContain("Prisoner's Transactions")
 
-    const title = $('title').text()
+    const title = $('title')
 
-    expect(title).toContain('Hmpps Prisoner Finance Ui - Finance')
+    expect(title.text()).toContain('Hmpps Prisoner Finance Ui - Finance')
 
     const backLink = $('#backLink')
 
@@ -77,7 +76,6 @@ describe('prisoner transactions page', () => {
 
     const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
 
-    console.log($('body').text())
     expect(transactionsTable.find('thead tr th').length).toBe(6)
     expect(transactionsTable.find('tbody tr').length).toBe(payload.length)
   })

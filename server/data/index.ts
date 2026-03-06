@@ -15,6 +15,7 @@ import { createRedisClient } from './redisClient'
 import config from '../config'
 import HmppsAuditClient from './hmppsAuditClient'
 import logger from '../../logger'
+import PrisonerFinanceApiClient from '../clients/prisonerFinanceApi'
 
 export const dataAccess = () => {
   const hmppsAuthClient = new AuthenticationClient(
@@ -27,6 +28,7 @@ export const dataAccess = () => {
     applicationInfo,
     hmppsAuthClient,
     hmppsAuditClient: new HmppsAuditClient(config.sqs.audit),
+    prisonerFinanceApiClient: new PrisonerFinanceApiClient(hmppsAuthClient),
   }
 }
 
