@@ -6,6 +6,37 @@
 
 {% block content %}
 
+<a href="index.html" id="backLink">&lt; Back</a>
+
 <h1 id="prisonerTransactionsHeading">Prisoner's Transactions</h1>
+
+<div class="moj-filter-layout__content">
+<div class="moj-action-bar">
+<div class="moj-action-bar__filter moj-action-bar__filter--no-actions"></div>
+</div>
+<table class="govuk-table" data-testid="prisoner-transactions-table">
+    <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+            <th class="govuk-table__header">Date of transaction</th>
+            <th class="govuk-table__header">Description/ Line Item</th>
+            <th class="govuk-table__header">Credit</th>
+            <th class="govuk-table__header">Debig</th>
+            <th class="govuk-table__header">Location</th>
+            <th class="govuk-table__header">Account Type</th>
+        </tr>
+    </thead>
+<tbody class="govuk-table__body">
+    {% for row in payloadSummaryData %}
+        <tr class="govuk-table__row">
+            <td class="govuk-table__cell">{{ row.date }}</td>
+            <td class="govuk-table__cell">{{ row.description }}</td>
+            <td class="govuk-table__cell">{{ row.credit }}</td>
+            <td class="govuk-table__cell">{{ row.debit }}</td>
+            <td class="govuk-table__cell">{{ row.location }}</td>
+            <td class="govuk-table__cell">{{row.accountType}}</td>
+        </tr>
+    {% endfor %}
+</tbody>
+</table>
 
 {% endblock %}
