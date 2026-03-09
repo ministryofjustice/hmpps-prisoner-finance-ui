@@ -58,7 +58,7 @@ test.describe('Prisoner Money', () => {
     expect(index.tableTransactions.locator('tbody tr')).toHaveCount(payload.length)
   })
 
-  test.skip('Should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
+  test('Should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
     await login(page)
 
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, payload)
