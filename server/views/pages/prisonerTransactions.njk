@@ -6,7 +6,7 @@
 
 {% block content %}
 
-<a href="/" id="backLink" class="govuk-back-link">Back</a>
+<a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
 
 <h1 id="prisonerTransactionsHeading">Prisoner's Transactions</h1>
 
@@ -24,12 +24,12 @@
 <tbody class="govuk-table__body">
     {% for row in transactions %}
         <tr class="govuk-table__row">
-            <td class="govuk-table__cell">{{ row.date }}</td>
-            <td class="govuk-table__cell">{{ row.description }}</td>
-            <td class="govuk-table__cell">{{ row.credit }}</td>
-            <td class="govuk-table__cell">{{ row.debit }}</td>
-            <td class="govuk-table__cell">{{ row.location }}</td>
-            <td class="govuk-table__cell">{{row.accountType}}</td>
+            <td class="govuk-table__cell" data-testid="row-date">{{ row.date }}</td>
+            <td class="govuk-table__cell" data-testid="row-description">{{ row.description }}</td>
+            <td class="govuk-table__cell" data-testid="row-credit">{{ row.credit }}</td>
+            <td class="govuk-table__cell" data-testid="row-debit">{{ row.debit }}</td>
+            <td class="govuk-table__cell" data-testid="row-location">{{ row.location }}</td>
+            <td class="govuk-table__cell" data-testid="row-account-type">{{row.accountType}}</td>
         </tr>
     {% endfor %}
 </tbody>
