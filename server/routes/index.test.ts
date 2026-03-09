@@ -1,7 +1,7 @@
 import type { Express } from 'express'
 import request from 'supertest'
 import { appWithAllRoutes, user } from './testutils/appSetup'
-import AuditService from '../services/auditService'
+import AuditService, { Page } from '../services/auditService'
 
 jest.mock('../services/auditService')
 
@@ -31,7 +31,7 @@ describe('GET /', () => {
       .expect(res => {
         expect(res.text).toContain('Prisoner Finance')
         expect(auditService.logPageView).toHaveBeenCalledWith(
-          'INDEX_PAGE',
+          Page.INDEX,
           expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
         )
       })

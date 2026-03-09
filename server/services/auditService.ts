@@ -1,8 +1,8 @@
 import HmppsAuditClient, { AuditEvent } from '../data/hmppsAuditClient'
 
 export enum Page {
-  INDEX_PAGE = 'INDEX_PAGE',
-  PRISONER_PRISONNUMBER_MONEY = 'PRISONER_PRISONNUMBER_MONEY',
+  INDEX = 'INDEX_PAGE',
+  PRISONER_MONEY = 'PRISONER_MONEY_PAGE',
 }
 
 export interface PageViewEventDetails {

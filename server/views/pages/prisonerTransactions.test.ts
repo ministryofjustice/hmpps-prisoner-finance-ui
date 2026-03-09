@@ -71,8 +71,8 @@ describe('prisoner transactions page', () => {
 
     const backLink = $('#backLink')
 
-    expect(backLink.text()).toContain('< Back')
-    expect(backLink.attr('href')).toBe('index.html')
+    expect(backLink.text()).toContain('Back')
+    expect(backLink.attr('href')).toBe('/')
 
     const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
 

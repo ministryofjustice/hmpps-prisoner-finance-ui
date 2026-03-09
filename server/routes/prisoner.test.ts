@@ -1,7 +1,7 @@
 import type { Express } from 'express'
 import request from 'supertest'
 import { appWithAllRoutes, user } from './testutils/appSetup'
-import AuditService from '../services/auditService'
+import AuditService, { Page } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
 
 jest.mock('../services/prisonerFinanceService')
@@ -36,7 +36,7 @@ describe('/prisoner', () => {
       .expect('Content-Type', /html/)
 
     expect(auditService.logPageView).toHaveBeenCalledWith(
-      'PRISONER_PRISONNUMBER_MONEY',
+      Page.PRISONER_MONEY,
       expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
     )
     expect(response.text).toContain("Prisoner's Transactions")

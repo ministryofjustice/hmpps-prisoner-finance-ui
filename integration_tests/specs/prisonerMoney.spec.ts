@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { AxeBuilder } from '@axe-core/playwright'
 import { login } from '../testUtils'
-import PrisonerTransactionsPage from '../pages/prisonerTransactionsPage'
+import PrisonerTransactionsPage from '../pages/prisonerMoneyPage'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 

@@ -9,7 +9,7 @@ export default function routes(services: Services): Router {
   const router = Router()
 
   router.get('/', async (req, res) => {
-    await services.auditService.logPageView(Page.INDEX_PAGE, { who: res.locals.user.username, correlationId: req.id })
+    await services.auditService.logPageView(Page.INDEX, { who: res.locals.user.username, correlationId: req.id })
     res.render('pages/index')
   })
 
