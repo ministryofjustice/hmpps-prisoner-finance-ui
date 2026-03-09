@@ -1,5 +1,4 @@
-import PrisonerFinanceApiClient from '../clients/prisonerFinanceApi'
-import { AuthenticationClient, dataAccess } from '../data'
+import { dataAccess } from '../data'
 import PrisonerFinanceService from './prisonerFinanceService'
 import AuditService from './auditService'
 
