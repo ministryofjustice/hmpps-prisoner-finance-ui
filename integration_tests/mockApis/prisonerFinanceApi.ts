@@ -30,4 +30,23 @@ export default {
         jsonBody: payload,
       },
     }),
+
+  stubGetPrisonerTransactionsByPrisonNumberNotFound: (prisonNumber: string) =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
+      },
+      response: {
+        status: 404,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 404,
+          errorCode: null,
+          userMessage: 'Account not found',
+          developerMessage: null,
+          moreInfo: null,
+        },
+      },
+    }),
 }

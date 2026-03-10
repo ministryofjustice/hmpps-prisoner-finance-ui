@@ -85,6 +85,20 @@ test.describe('Prisoner Money', () => {
     expect(new URL(page.url()).pathname).toBe('/')
   })
 
+  test('Should handle 404 and redirect', async ({ page }) => {
+    await login(page)
+
+    const notFoundPrisonNumber = 'XXXXX'
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(notFoundPrisonNumber)
+
+    const response = await page.goto(`/prisoner/${notFoundPrisonNumber}/money`)
+
+    expect(response?.status()).toBe(404)
+    expect(page.locator('[data-testid="error-page-message"]')).toContainText('Account not found')
+    expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
+  })
+
   test('Should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
     await login(page)
 
