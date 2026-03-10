@@ -49,4 +49,22 @@ export default {
         },
       },
     }),
+  stubGetPrisonerTransactionsInternalServerError: (prisonNumber: string) =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
+      },
+      response: {
+        status: 500,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 500,
+          errorCode: null,
+          userMessage: 'Internal Server Error',
+          developerMessage: null,
+          moreInfo: null,
+        },
+      },
+    }),
 }

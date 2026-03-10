@@ -85,7 +85,7 @@ test.describe('Prisoner Money', () => {
     expect(new URL(page.url()).pathname).toBe('/')
   })
 
-  test('Should handle 404 and redirect', async ({ page }) => {
+  test('Should handle 404 and render error', async ({ page }) => {
     await login(page)
 
     const notFoundPrisonNumber = 'XXXXX'
@@ -97,6 +97,18 @@ test.describe('Prisoner Money', () => {
     expect(response?.status()).toBe(404)
     expect(page.locator('[data-testid="error-page-message"]')).toContainText('Account not found')
     expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
+  })
+
+  test('Should handle 500 and render error', async ({ page }) => {
+    await login(page)
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
+
+    const response = await page.goto(`/prisoner/${prisonNumber}/money`)
+
+    expect(response?.status()).toBe(500)
+    expect(page.locator('[data-testid="error-page-message"]')).toContainText('Internal Server Error')
+    expect(page.locator('[data-testid="error-page-status"]')).toContainText('500')
   })
 
   test('Should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
