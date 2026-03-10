@@ -23,7 +23,7 @@ test.describe('Index Page', () => {
     await IndexPage.verifyOnPage(page)
 
     const accessibilityScanResults = await new AxeBuilder({ page })
-      .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+      .withTags(['wcag2a', 'wcag2aa', 'wcag22a', 'wcag22aa'])
       .analyze()
 
     expect(accessibilityScanResults.violations).toEqual([])

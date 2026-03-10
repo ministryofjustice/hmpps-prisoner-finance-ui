@@ -5,8 +5,8 @@
 
 {% block content %}
 
-  <h1>{{ message }}</h1>
-  <h2>{{ status }}</h2>
-  <pre>{{ stack }}</pre>
+  <h1 data-testid="error-page-message">{{ message }}</h1>
+  <h2 data-testid="error-page-status">{{ status }}</h2>
+  <pre data-testid="error-page-stack">{{ stack }}</pre>
 
 {% endblock %}

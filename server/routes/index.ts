@@ -3,13 +3,17 @@ import { Router } from 'express'
 import type { Services } from '../services'
 import { Page } from '../services/auditService'
 
-export default function routes({ auditService }: Services): Router {
+import prisonerRouter from './prisoner'
+
+export default function routes(services: Services): Router {
   const router = Router()
 
-  router.get('/', async (req, res, next) => {
-    await auditService.logPageView(Page.INDEX_PAGE, { who: res.locals.user.username, correlationId: req.id })
+  router.get('/', async (req, res) => {
+    await services.auditService.logPageView(Page.INDEX, { who: res.locals.user.username, correlationId: req.id })
     res.render('pages/index')
   })
+
+  router.use('/prisoner', prisonerRouter(services))
 
   return router
 }

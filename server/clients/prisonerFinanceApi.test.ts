@@ -23,7 +23,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
       const prisonNumber = 'ABC123AC'
       const expectedResponse: Array<PrisonerTransactionResponse> = [
         {
-          datestring: new Date('10/10/10'),
+          date: new Date('10/10/10'),
           description: 'test',
           credit: 0,
           debit: 0,

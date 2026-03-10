@@ -1,5 +1,5 @@
 export interface PrisonerTransactionResponse {
-  datestring: Date
+  date: Date
   description: string
   credit: number
   debit: number
