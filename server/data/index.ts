@@ -3,13 +3,14 @@
  * Do appinsights first as it does some magic instrumentation work, i.e. it affects other 'require's
  * In particular, applicationinsights automatically collects bunyan logs
  */
+import { TelemetryClient } from 'applicationinsights'
 import { AuthenticationClient, InMemoryTokenStore, RedisTokenStore } from '@ministryofjustice/hmpps-auth-clients'
 import { initialiseAppInsights, buildAppInsightsClient } from '../utils/azureAppInsights'
 import applicationInfoSupplier from '../applicationInfo'
 
 const applicationInfo = applicationInfoSupplier()
 initialiseAppInsights()
-buildAppInsightsClient(applicationInfo)
+const telemetryClient = buildAppInsightsClient(applicationInfo)
 
 import { createRedisClient } from './redisClient'
 import config from '../config'
@@ -27,6 +28,7 @@ export const dataAccess = () => {
   return {
     applicationInfo,
     hmppsAuthClient,
+    telemetryClient,
     hmppsAuditClient: new HmppsAuditClient(config.sqs.audit),
     prisonerFinanceApiClient: new PrisonerFinanceApiClient(hmppsAuthClient),
   }
@@ -34,4 +36,4 @@ export const dataAccess = () => {
 
 export type DataAccess = ReturnType<typeof dataAccess>
 
-export { AuthenticationClient, HmppsAuditClient }
+export { AuthenticationClient, HmppsAuditClient, type TelemetryClient }
