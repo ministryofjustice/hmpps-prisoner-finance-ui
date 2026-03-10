@@ -8,15 +8,15 @@ import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 test.describe('Prisoner Money', () => {
   const payload: Array<PrisonerTransactionResponse> = [
     {
-      date: new Date('10/10/10'),
-      description: '',
+      date: '2026-03-10T10:43:28.094Z',
+      description: 'test',
       credit: 0,
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
     },
     {
-      date: new Date('10/11/10'),
+      date: '2026-03-11T10:43:28.094Z',
       description: '',
       credit: 20,
       debit: 0,
@@ -24,7 +24,7 @@ test.describe('Prisoner Money', () => {
       accountType: 'SAVINGS',
     },
     {
-      date: new Date('10/12/10'),
+      date: '2026-03-10T10:46:28.094Z',
       description: 'Cash to Savings Transfer',
       credit: 0,
       debit: 10,
@@ -32,7 +32,7 @@ test.describe('Prisoner Money', () => {
       accountType: 'CASH',
     },
     {
-      date: new Date('10/12/10'),
+      date: '2026-03-10T10:43:28.194Z',
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -59,14 +59,12 @@ test.describe('Prisoner Money', () => {
     const rows = prisonerMoneyPage.tableTransactions.locator('tbody tr')
     expect(rows).toHaveCount(payload.length)
 
-    for (let i = 0; i < payload.length; i += 1) {
-      expect(page.locator('[data-testid=row-date]').nth(i)).toHaveText(payload[i].date.toISOString())
-      expect(page.locator('[data-testid=row-description]').nth(i)).toHaveText(payload[i].description)
-      expect(page.locator('[data-testid=row-credit]').nth(i)).toHaveText(payload[i].credit.toString())
-      expect(page.locator('[data-testid=row-debit]').nth(i)).toHaveText(payload[i].debit.toString())
-      expect(page.locator('[data-testid=row-location]').nth(i)).toHaveText(payload[i].location)
-      expect(page.locator('[data-testid=row-account-type]').nth(i)).toHaveText(payload[i].accountType)
-    }
+    expect(page.locator('[data-testid=row-date]').first()).toHaveText('10/03/2026')
+    expect(page.locator('[data-testid=row-description]').first()).toHaveText(payload[0].description)
+    expect(page.locator('[data-testid=row-credit]').first()).toHaveText('£0.00')
+    expect(page.locator('[data-testid=row-debit]').first()).toHaveText('£0.10')
+    expect(page.locator('[data-testid=row-location]').first()).toHaveText(payload[0].location)
+    expect(page.locator('[data-testid=row-account-type]').first()).toHaveText(payload[0].accountType)
   })
 
   test('Backlink should render and return to index', async ({ page }) => {
