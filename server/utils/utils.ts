@@ -1,4 +1,4 @@
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -30,7 +30,7 @@ export const penceToPound = (pence: number): string => {
 }
 
 export const formatDateForView = (utcString: string): string => {
-  return format(new Date(utcString), 'dd/MM/yyyy')
+  return format(parseISO(utcString), 'dd/MM/yyyy')
 }
 
 export const convertToTitleCase = (sentence: string): string =>

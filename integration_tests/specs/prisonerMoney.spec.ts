@@ -8,7 +8,7 @@ import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 test.describe('Prisoner Money', () => {
   const payload: Array<PrisonerTransactionResponse> = [
     {
-      date: new Date('10/10/10'),
+      date: '2026-03-10T10:43:28.094Z',
       description: 'test',
       credit: 0,
       debit: 10,
@@ -16,7 +16,7 @@ test.describe('Prisoner Money', () => {
       accountType: 'CASH',
     },
     {
-      date: new Date('10/11/10'),
+      date: '2026-03-11T10:43:28.094Z',
       description: '',
       credit: 20,
       debit: 0,
@@ -24,7 +24,7 @@ test.describe('Prisoner Money', () => {
       accountType: 'SAVINGS',
     },
     {
-      date: new Date('10/12/10'),
+      date: '2026-03-10T10:46:28.094Z',
       description: 'Cash to Savings Transfer',
       credit: 0,
       debit: 10,
@@ -32,7 +32,7 @@ test.describe('Prisoner Money', () => {
       accountType: 'CASH',
     },
     {
-      date: new Date('10/12/10'),
+      date: '2026-03-10T10:43:28.194Z',
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -59,7 +59,7 @@ test.describe('Prisoner Money', () => {
     const rows = prisonerMoneyPage.tableTransactions.locator('tbody tr')
     expect(rows).toHaveCount(payload.length)
 
-    expect(page.locator('[data-testid=row-date]').first()).toHaveText('10/10/2010')
+    expect(page.locator('[data-testid=row-date]').first()).toHaveText('10/03/2026')
     expect(page.locator('[data-testid=row-description]').first()).toHaveText(payload[0].description)
     expect(page.locator('[data-testid=row-credit]').first()).toHaveText('£0.00')
     expect(page.locator('[data-testid=row-debit]').first()).toHaveText('£0.10')

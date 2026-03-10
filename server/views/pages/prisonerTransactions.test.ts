@@ -7,7 +7,7 @@ import { formatDateForView, penceToPound } from '../../utils/utils'
 describe('prisoner transactions page', () => {
   const payload: Array<PrisonerTransactionResponse> = [
     {
-      date: new Date('10/10/10'),
+      date: '2026-03-10T10:43:28.094Z',
       description: '',
       credit: 0,
       debit: 10,
@@ -15,7 +15,7 @@ describe('prisoner transactions page', () => {
       accountType: 'CASH',
     },
     {
-      date: new Date('10/11/10'),
+      date: '2026-03-10T10:43:28.094Z',
       description: '',
       credit: 20,
       debit: 0,
@@ -23,7 +23,7 @@ describe('prisoner transactions page', () => {
       accountType: 'SAVINGS',
     },
     {
-      date: new Date('10/12/10'),
+      date: '2026-03-10T10:43:28.094Z',
       description: 'Cash to Savings Transfer',
       credit: 0,
       debit: 10,
@@ -31,7 +31,7 @@ describe('prisoner transactions page', () => {
       accountType: 'CASH',
     },
     {
-      date: new Date('10/12/10'),
+      date: '2026-03-10T10:43:28.094Z',
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
