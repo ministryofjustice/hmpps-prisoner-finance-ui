@@ -24,10 +24,10 @@
 <tbody class="govuk-table__body">
     {% for row in transactions %}
         <tr class="govuk-table__row">
-            <td class="govuk-table__cell" data-testid="row-date">{{ row.date }}</td>
+            <td class="govuk-table__cell" data-testid="row-date">{{ row.date | formatDateForView }}</td>
             <td class="govuk-table__cell" data-testid="row-description">{{ row.description }}</td>
-            <td class="govuk-table__cell" data-testid="row-credit">{{ row.credit }}</td>
-            <td class="govuk-table__cell" data-testid="row-debit">{{ row.debit }}</td>
+            <td class="govuk-table__cell" data-testid="row-credit">{{ row.credit | penceToPound }}</td>
+            <td class="govuk-table__cell" data-testid="row-debit">{{ row.debit | penceToPound }}</td>
             <td class="govuk-table__cell" data-testid="row-location">{{ row.location }}</td>
             <td class="govuk-table__cell" data-testid="row-account-type">{{row.accountType}}</td>
         </tr>
