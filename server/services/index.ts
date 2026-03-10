@@ -5,9 +5,17 @@ import AuditService from './auditService'
 
 import config from '../config'
 import logger from '../../logger'
+import PrisonerSearchService from './prisonerSearchService'
 
 export const services = () => {
-  const { applicationInfo, hmppsAuditClient, hmppsAuthClient, prisonerFinanceApiClient, telemetryClient } = dataAccess()
+  const {
+    applicationInfo,
+    hmppsAuditClient,
+    hmppsAuthClient,
+    prisonerFinanceApiClient,
+    prisonerSearchApiClient,
+    telemetryClient,
+  } = dataAccess()
 
   const prisonPermissionsService = PrisonPermissionsService.create({
     prisonerSearchConfig: config.apis.prisonerSearch,
@@ -20,6 +28,7 @@ export const services = () => {
     applicationInfo,
     auditService: new AuditService(hmppsAuditClient),
     prisonerFinanceService: new PrisonerFinanceService(prisonerFinanceApiClient),
+    prisonerSearchService: new PrisonerSearchService(prisonerSearchApiClient),
     prisonPermissionsService,
   }
 }

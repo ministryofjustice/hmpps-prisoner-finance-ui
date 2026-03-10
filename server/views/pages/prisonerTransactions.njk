@@ -8,7 +8,9 @@
 
 <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
 
-<h1 id="prisonerTransactionsHeading">Prisoner's Transactions</h1>
+  <h1 id="prisonerTransactionsHeading">
+    {{ prisoner.firstName | capitalize }} {{ prisoner.lastName | capitalize }}'s Transactions
+  </h1>
 
 <table class="govuk-table" data-testid="prisoner-transactions-table">
     <thead class="govuk-table__head">
