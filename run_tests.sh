@@ -52,7 +52,7 @@ echo "✅ Unit tests passed"
 # 2️⃣ Start WireMock
 # -----------------------------
 echo "🚀 Starting WireMock..."
-docker compose -f "$DOCKER_COMPOSE_FILE" up -d --remove-orphans wiremock
+docker compose -f "$DOCKER_COMPOSE_FILE" up -d --build --remove-orphans wiremock
 
 # -----------------------------
 # 3️⃣ Start server locally
