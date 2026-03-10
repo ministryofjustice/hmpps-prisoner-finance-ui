@@ -104,6 +104,13 @@ test.describe('Prisoner Money', () => {
     expect(page.locator('[data-testid="error-page-status"]')).toContainText('500')
   })
 
+  test('Should redirect to sign-out when prisoner is outside user caseload', async ({ page }) => {
+    const mismatchedPrisonNumber = 'G1234HH'
+    await prisonerSearchApi.stubGetPrisonerOutsideCaseload(mismatchedPrisonNumber)
+    await page.goto(`/prisoner/${mismatchedPrisonNumber}/money`)
+    await expect(page).toHaveURL(/.*\/sign-out/)
+  })
+
   test('Should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
     await page.goto(`/prisoner/${prisonNumber}/money`)
     await PrisonerMoneyPage.verifyOnPage(page)

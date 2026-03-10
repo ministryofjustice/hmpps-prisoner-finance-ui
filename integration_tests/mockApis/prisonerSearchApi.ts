@@ -34,4 +34,24 @@ export default {
       },
     })
   },
+
+  stubGetPrisonerOutsideCaseload: (prisonNumber: string): SuperAgentRequest => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath: `/prisoner-search-api/prisoner/${prisonNumber}`,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          prisonerNumber: prisonNumber,
+          firstName: 'BOB',
+          lastName: 'TAYLOR',
+          prisonId: 'LEI',
+          status: 'ACTIVE IN',
+        },
+      },
+    })
+  },
 }
