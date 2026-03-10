@@ -97,7 +97,6 @@ export default {
         deadline: Number(get('PRISONER_SEARCH_API_TIMEOUT_DEADLINE', 5000)),
       },
       agent: new AgentConfig(Number(get('PRISONER_SEARCH_API_TIMEOUT_RESPONSE', 5000))),
-      defaultPageSize: Number(get('PRISONER_SEARCH_API_DEFAULT_PAGE_SIZE', 9999, requiredInProduction)),
     },
     prisonApi: {
       url: get('PRISON_API_URL', 'http://localhost:8082', requiredInProduction),
