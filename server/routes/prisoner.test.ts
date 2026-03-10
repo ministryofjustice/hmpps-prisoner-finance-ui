@@ -1,21 +1,28 @@
 import type { Express } from 'express'
 import request from 'supertest'
+import { PrisonerMoneyPermission, PermissionsService } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import { appWithAllRoutes, user } from './testutils/appSetup'
 import AuditService, { Page } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
+import mockPermissions from './testutils/mockPermissions'
 
 jest.mock('../services/prisonerFinanceService')
+jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerFinanceService = new PrisonerFinanceService(null) as jest.Mocked<PrisonerFinanceService>
+const prisonPermissionsService = {} as unknown as PermissionsService
 
 let app: Express
 
 beforeEach(() => {
+  mockPermissions(undefined, { [PrisonerMoneyPermission.read]: true })
+
   app = appWithAllRoutes({
     services: {
       auditService,
       prisonerFinanceService,
+      prisonPermissionsService,
     },
     userSupplier: () => user,
   })
@@ -54,5 +61,21 @@ describe('/prisoner', () => {
     prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockRejectedValue(error)
     const res = await request(app).get(`/prisoner/${prisonNumber}/money`).expect(500)
     expect(res.text).toContain(error.data.userMessage)
+  })
+
+  test('should redirect to sign-out when user does not have permission', async () => {
+    mockPermissions(undefined, { [PrisonerMoneyPermission.read]: false })
+
+    app = appWithAllRoutes({
+      services: { auditService, prisonerFinanceService, prisonPermissionsService },
+      userSupplier: () => user,
+    })
+
+    const response = await request(app).get('/prisoner/A1234BC/money')
+
+    expect(response.status).toBe(302)
+    expect(response.headers.location).toBe('/sign-out')
+
+    expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).not.toHaveBeenCalled()
   })
 })

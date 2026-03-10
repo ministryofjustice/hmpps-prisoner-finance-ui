@@ -2,7 +2,7 @@ import express from 'express'
 
 import createError from 'http-errors'
 
-import { getFrontendComponents } from '@ministryofjustice/hmpps-connect-dps-components'
+import { retrieveCaseLoadData, getFrontendComponents } from '@ministryofjustice/hmpps-connect-dps-components'
 import nunjucksSetup from './utils/nunjucksSetup'
 import errorHandler from './errorHandler'
 import { appInsightsMiddleware } from './utils/azureAppInsights'
@@ -47,6 +47,13 @@ export default function createApp(services: Services): express.Application {
       componentApiConfig: config.apis.componentApi,
       dpsUrl: config.serviceUrls.digitalPrison,
       requestOptions: { includeSharedData: true },
+    }),
+  )
+
+  app.use(
+    retrieveCaseLoadData({
+      logger,
+      prisonApiConfig: config.apis.prisonApi,
     }),
   )
 

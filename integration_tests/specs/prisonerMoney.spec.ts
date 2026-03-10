@@ -4,6 +4,7 @@ import { login } from '../testUtils'
 import PrisonerMoneyPage from '../pages/prisonerMoneyPage'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
+import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 
 test.describe('Prisoner Money', () => {
   const payload: Array<PrisonerTransactionResponse> = [
@@ -42,12 +43,13 @@ test.describe('Prisoner Money', () => {
   ]
 
   const prisonNumber = 'ABC123XZ'
+  test.beforeEach(async ({ page }) => {
+    await login(page)
+    await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, payload)
+  })
 
   test('Should display Header and Transactions table', async ({ page }) => {
-    await login(page)
-
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, payload)
-
     await page.goto(`/prisoner/${prisonNumber}/money`)
 
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
@@ -68,10 +70,6 @@ test.describe('Prisoner Money', () => {
   })
 
   test('Backlink should render and return to index', async ({ page }) => {
-    await login(page)
-
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, payload)
-
     await page.goto(`/prisoner/${prisonNumber}/money`)
 
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
@@ -84,10 +82,9 @@ test.describe('Prisoner Money', () => {
   })
 
   test('Should handle 404 and render error', async ({ page }) => {
-    await login(page)
-
     const notFoundPrisonNumber = 'XXXXX'
 
+    await prisonerSearchApi.stubGetPrisoner(notFoundPrisonNumber)
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(notFoundPrisonNumber)
 
     const response = await page.goto(`/prisoner/${notFoundPrisonNumber}/money`)
@@ -98,8 +95,6 @@ test.describe('Prisoner Money', () => {
   })
 
   test('Should handle 500 and render error', async ({ page }) => {
-    await login(page)
-
     await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
 
     const response = await page.goto(`/prisoner/${prisonNumber}/money`)
@@ -109,13 +104,15 @@ test.describe('Prisoner Money', () => {
     expect(page.locator('[data-testid="error-page-status"]')).toContainText('500')
   })
 
+  test('Should redirect to sign-out when prisoner is outside user caseload', async ({ page }) => {
+    const mismatchedPrisonNumber = 'G1234HH'
+    await prisonerSearchApi.stubGetPrisonerOutsideCaseload(mismatchedPrisonNumber)
+    await page.goto(`/prisoner/${mismatchedPrisonNumber}/money`)
+    await expect(page).toHaveURL(/.*\/sign-out/)
+  })
+
   test('Should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
-    await login(page)
-
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, payload)
-
     await page.goto(`/prisoner/${prisonNumber}/money`)
-
     await PrisonerMoneyPage.verifyOnPage(page)
 
     const accessibilityScanResults = await new AxeBuilder({ page })
