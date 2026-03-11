@@ -1,6 +1,7 @@
-/* eslint-disable import/namespace */
-/* eslint-disable import/no-unresolved */
+// @ts-ignore
 import { PrisonerFinanceTransactionResponse } from '../api-clients/prisoner-finance-api/model/prisonerFinanceTransactionResponse'
+// @ts-ignore
+import { PrisonerFinanceApi } from '../api-clients/prisoner-finance-api/api'
 
 class PrisonerFinanceWrapper {
   api = new PrisonerFinanceApi()
