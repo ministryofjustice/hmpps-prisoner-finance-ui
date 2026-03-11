@@ -65,9 +65,9 @@ describe('prisoner transactions page', () => {
   })
 
   it('should render the page elements correctly', () => {
-    const heading = $('#prisonerTransactionsHeading')
+    const header = $('#prisonerInformationHeader')
 
-    expect(heading.text()).toContain("Bob Taylor's Transactions")
+    expect(header.text()).toContain("Bob Taylor's Transactions")
 
     const title = $('title')
 
