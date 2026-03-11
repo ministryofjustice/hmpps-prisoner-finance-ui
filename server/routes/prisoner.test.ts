@@ -4,13 +4,16 @@ import { PrisonerMoneyPermission, PermissionsService } from '@ministryofjustice/
 import { appWithAllRoutes, user } from './testutils/appSetup'
 import AuditService, { Page } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
+import PrisonerSearchService from '../services/prisonerSearchService'
 import mockPermissions from './testutils/mockPermissions'
 
 jest.mock('../services/prisonerFinanceService')
+jest.mock('../services/prisonerSearchService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerFinanceService = new PrisonerFinanceService(null) as jest.Mocked<PrisonerFinanceService>
+const prisonerSearchService = new PrisonerSearchService(null) as jest.Mocked<PrisonerSearchService>
 const prisonPermissionsService = {} as unknown as PermissionsService
 
 let app: Express
@@ -18,11 +21,17 @@ let app: Express
 beforeEach(() => {
   mockPermissions(undefined, { [PrisonerMoneyPermission.read]: true })
 
+  prisonerSearchService.getPrisoner.mockResolvedValue({
+    firstName: 'BOB',
+    lastName: 'TAYLOR',
+  })
+
   app = appWithAllRoutes({
     services: {
       auditService,
       prisonerFinanceService,
       prisonPermissionsService,
+      prisonerSearchService,
     },
     userSupplier: () => user,
   })
@@ -46,7 +55,7 @@ describe('/prisoner', () => {
       Page.PRISONER_MONEY,
       expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
     )
-    expect(response.text).toContain("Prisoner's Transactions")
+    expect(response.text).toContain("Bob Taylor's Transactions")
   })
 
   it('should handle API errors (e.g. 404 Not Found)', async () => {
@@ -67,7 +76,7 @@ describe('/prisoner', () => {
     mockPermissions(undefined, { [PrisonerMoneyPermission.read]: false })
 
     app = appWithAllRoutes({
-      services: { auditService, prisonerFinanceService, prisonPermissionsService },
+      services: { auditService, prisonerFinanceService, prisonPermissionsService, prisonerSearchService },
       userSupplier: () => user,
     })
 

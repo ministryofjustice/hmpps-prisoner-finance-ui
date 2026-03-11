@@ -54,7 +54,7 @@ test.describe('Prisoner Money', () => {
 
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
     expect(prisonerMoneyPage.heading).toBeVisible()
-    expect(prisonerMoneyPage.heading).toContainText("Prisoner's Transactions")
+    expect(prisonerMoneyPage.heading).toContainText("John Smith's Transactions")
     expect(prisonerMoneyPage.tableTransactions).toBeVisible()
     expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
 

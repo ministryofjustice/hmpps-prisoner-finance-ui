@@ -2,6 +2,7 @@ import { Router } from 'express'
 import { PrisonerMoneyPermission, prisonerPermissionsGuard } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import { Services } from '../services'
 import PrisonerController from '../controllers/PrisonerController'
+import getPrisonerData from '../middleware/getPrisonerData'
 
 export default function routes(services: Services): Router {
   const prisonerRouter = Router()
@@ -16,6 +17,7 @@ export default function routes(services: Services): Router {
       getPrisonerNumberFunction: req => req.params.prisonNumber as string,
     }),
 
+    getPrisonerData(services),
     prisonerController.transactions,
   )
 

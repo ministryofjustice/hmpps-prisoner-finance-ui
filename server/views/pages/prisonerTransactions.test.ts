@@ -58,6 +58,7 @@ describe('prisoner transactions page', () => {
     const html = njkEnv.render('pages/prisonerTransactions.njk', {
       applicationName: 'Hmpps Prisoner Finance Ui',
       transactions: payload,
+      prisoner: { firstName: 'BOB', lastName: 'Taylor' },
     })
 
     $ = cheerio.load(html)
@@ -66,7 +67,7 @@ describe('prisoner transactions page', () => {
   it('should render the page elements correctly', () => {
     const heading = $('#prisonerTransactionsHeading')
 
-    expect(heading.text()).toContain("Prisoner's Transactions")
+    expect(heading.text()).toContain("Bob Taylor's Transactions")
 
     const title = $('title')
 
