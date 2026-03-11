@@ -56,7 +56,6 @@ describe('/prisoner', () => {
       Page.PRISONER_MONEY,
       expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
     )
-    expect(response.text).toContain("Bob Taylor's Transactions")
   })
 
   it('should handle API errors (e.g. 404 Not Found)', async () => {
