@@ -1,0 +1,19 @@
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">    
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full hmpps-profile-banner-top">
+        <div class="hmpps-profile-banner-photo">
+          <img class="hmpps-profile-photo" data-testid="prisonerProfileImage" src="/assets/images/prisoner-profile-image.png" alt="Photo of {{ prisonerName.firstLast }} is not available" data-qa="prisoner-photo"/>
+        </div>
+        <h2 class="govuk-heading-l hmpps-profile-prisoner-name">{{ prisonerName.lastCommaFirst }}</h2>
+        <div class="info">
+          <p class="govuk-body govuk-!-font-size-24 hmpps-profile-prisoner-number" data-testid="prisonerNumber">
+           {{params.prisoner.prisonerNumber}}<span class="govuk-visually-hidden"> prison number</span>
+          </p>
+          <div class="info__links">           
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
