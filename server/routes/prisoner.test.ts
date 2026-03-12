@@ -6,6 +6,7 @@ import AuditService, { Page } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
 import PrisonerSearchService from '../services/prisonerSearchService'
 import mockPermissions from './testutils/mockPermissions'
+import prisonerFinanceApi from '../../integration_tests/mockApis/prisonerFinanceApi'
 
 jest.mock('../services/prisonerFinanceService')
 jest.mock('../services/prisonerSearchService')
@@ -45,6 +46,7 @@ describe('/prisoner', () => {
   const prisonNumber = 'A9971EC'
   it('should return a 200, render the correct page and call the audit service', async () => {
     prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue([])
+    prisonerFinanceService.getAccountBalance.mockResolvedValue({ accountId: '', balanceDateTime: '', amount: 1000 })
 
     const response = await request(app)
       .get(`/prisoner/${prisonNumber}/money`)

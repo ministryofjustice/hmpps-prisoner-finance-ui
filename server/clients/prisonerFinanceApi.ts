@@ -3,6 +3,7 @@ import { asSystem, RestClient } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
 import logger from '../../logger'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
+import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
 
 export default class PrisonerFinanceApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -16,5 +17,11 @@ export default class PrisonerFinanceApiClient extends RestClient {
       },
       asSystem(),
     )
+  }
+
+  async getAccountBalance(prisonNumber: string): Promise<AccountBalanceResponse> {
+    return this.get({
+      path: `/prisoners/${prisonNumber}/money/balance`,
+    })
   }
 }

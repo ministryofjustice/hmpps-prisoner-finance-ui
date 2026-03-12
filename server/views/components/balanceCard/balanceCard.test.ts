@@ -28,8 +28,7 @@ describe('View Components - BalanceCard', () => {
       amount: 1000,
     })
 
-    expect($('.balanceCard__heading').text().trim()).toBe('Test')
-    expect($('.balanceCard__amount').text().trim()).toBe('£10.00')
-    
+    expect($('.hmpps-balance-card__heading').text().trim()).toBe('Test')
+    expect($('.hmpps-balance-card__amount').text().trim()).toBe('£10.00')
   })
 })

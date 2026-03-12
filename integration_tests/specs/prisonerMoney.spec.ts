@@ -3,11 +3,12 @@ import { AxeBuilder } from '@axe-core/playwright'
 import { login } from '../testUtils'
 import PrisonerMoneyPage from '../pages/prisonerMoneyPage'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
+import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 
 test.describe('Prisoner Money', () => {
-  const payload: Array<PrisonerTransactionResponse> = [
+  const transactionPayload: Array<PrisonerTransactionResponse> = [
     {
       date: '2026-03-10T10:43:28.094Z',
       description: 'test',
@@ -42,11 +43,18 @@ test.describe('Prisoner Money', () => {
     },
   ]
 
+  const balancePayload: AccountBalanceResponse = {
+    accountId: '123456',
+    balanceDateTime: '12:34:56',
+    amount: 1234,
+  }
+
   const prisonNumber = 'ABC123XZ'
   test.beforeEach(async ({ page }) => {
     await login(page)
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, payload)
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
+    await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
   })
 
   test('Should display Header and Transactions table', async ({ page }) => {
@@ -59,14 +67,26 @@ test.describe('Prisoner Money', () => {
     expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
 
     const rows = prisonerMoneyPage.tableTransactions.locator('tbody tr')
-    expect(rows).toHaveCount(payload.length)
+    expect(rows).toHaveCount(transactionPayload.length)
 
     expect(page.locator('[data-testid=row-date]').first()).toHaveText('10/03/2026')
-    expect(page.locator('[data-testid=row-description]').first()).toHaveText(payload[0].description)
+    expect(page.locator('[data-testid=row-description]').first()).toHaveText(transactionPayload[0].description)
     expect(page.locator('[data-testid=row-credit]').first()).toHaveText('£0.00')
     expect(page.locator('[data-testid=row-debit]').first()).toHaveText('£0.10')
-    expect(page.locator('[data-testid=row-location]').first()).toHaveText(payload[0].location)
-    expect(page.locator('[data-testid=row-account-type]').first()).toHaveText(payload[0].accountType)
+    expect(page.locator('[data-testid=row-location]').first()).toHaveText(transactionPayload[0].location)
+    expect(page.locator('[data-testid=row-account-type]').first()).toHaveText(transactionPayload[0].accountType)
+  })
+
+  test('Should display the balance card with the total amount', async ({ page }) => {
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
+
+    expect(prisonerMoneyPage.balanceCard).toBeVisible()
+    const { balanceCard } = prisonerMoneyPage
+
+    expect(balanceCard.locator('h3')).toContainText('Total')
+    expect(balanceCard.locator('h2')).toContainText('Total')
+    expect(balanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
   })
 
   test('Backlink should render and return to index', async ({ page }) => {

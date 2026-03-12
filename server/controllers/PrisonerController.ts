@@ -16,9 +16,13 @@ class PrisonerController {
       const transactions = await this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(
         req.params.prisonNumber as string,
       )
+      const accountBalance = await this.services.prisonerFinanceService.getAccountBalance(
+        req.params.prisonNumber as string,
+      )
       res.render('pages/prisonerTransactions', {
         applicationName: 'Transactions',
         transactions,
+        balance: accountBalance.amount,
       })
     } catch (error) {
       next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error'))
