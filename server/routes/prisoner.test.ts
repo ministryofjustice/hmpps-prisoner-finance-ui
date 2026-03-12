@@ -24,6 +24,18 @@ beforeEach(() => {
   prisonerSearchService.getPrisoner.mockResolvedValue({
     firstName: 'BOB',
     lastName: 'TAYLOR',
+    prisonerNumber: 'A9971EC',
+    prisonId: 'MDI',
+    status: 'ACTIVE IN',
+    cellLocation: 'RECP',
+    category: 'C',
+    csra: 'Standard',
+    currentIncentive: {
+      level: {
+        code: 'STD',
+        description: 'Enhanced',
+      },
+    },
   })
 
   app = appWithAllRoutes({

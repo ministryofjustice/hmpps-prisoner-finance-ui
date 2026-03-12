@@ -6,6 +6,8 @@ const PRISONER = {
   lastName: 'Smith',
   prisonerNumber: 'AB123456',
   cellLocation: 'RECP',
+  csra: 'Standard',
+  category: 'C',
   currentIncentive: {
     level: {
       code: 'STD',
@@ -38,7 +40,7 @@ describe('View Components - Prisoner Information Header', () => {
       prisoner: PRISONER,
     })
 
-    expect($('[data-testid="prisonerName"]').text()).toBe(`${PRISONER.firstName} ${PRISONER.lastName}`)
+    expect($('[data-testid="prisonerName"]').text()).toBe(`${PRISONER.lastName}, ${PRISONER.firstName}`)
   })
 
   it('should render the heading profile image', () => {
@@ -64,12 +66,37 @@ describe('View Components - Prisoner Information Header', () => {
 
     const cellLocation = $('[data-testid="cell-location"]')
     const category = $('[data-testid="category"]')
-    const crsa = $('[data-testid="crsa"]')
+    const csra = $('[data-testid="csra"]')
     const incentiveLevel = $('[data-testid="incentive-level"]')
 
     expect(cellLocation.text()).toContain('RECP')
-    expect(category.text()).toContain('Not Entered')
-    expect(crsa.text()).toContain('Not Entered')
+    expect(category.text()).toContain('C')
+    expect(csra.text()).toContain('Standard')
     expect(incentiveLevel.text()).toContain('Standard')
+  })
+
+  it('should render default value if header categories are undefined', () => {
+    const prisonerMissingCsrAndCategory = {
+      firstName: 'John',
+      lastName: 'Smith',
+      prisonerNumber: 'AB123456',
+      cellLocation: 'RECP',
+      currentIncentive: {
+        level: {
+          code: 'STD',
+          description: 'Standard',
+        },
+      },
+    }
+
+    const $ = renderPrisonerInformationHeader({
+      prisoner: prisonerMissingCsrAndCategory,
+    })
+
+    const category = $('[data-testid="category"]')
+    const csra = $('[data-testid="csra"]')
+
+    expect(category.text()).toContain('Not entered')
+    expect(csra.text()).toContain('Not entered')
   })
 })
