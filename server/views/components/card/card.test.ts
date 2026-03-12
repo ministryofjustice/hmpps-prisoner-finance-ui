@@ -13,7 +13,7 @@ describe('View Components - Card', () => {
 
   function renderCard(params: Record<string, unknown>) {
     const macroString = `
-      {% from "components/card.njk" import card %}
+      {% from "components/card/card.njk" import card %}
       {{ card(params) }}
     `
     const output = njkEnv.renderString(macroString, { params })
