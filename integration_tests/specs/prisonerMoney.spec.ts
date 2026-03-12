@@ -67,14 +67,17 @@ test.describe('Prisoner Money', () => {
     expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
 
     const rows = prisonerMoneyPage.tableTransactions.locator('tbody tr')
+
     expect(rows).toHaveCount(transactionPayload.length)
 
-    expect(page.locator('[data-testid=row-date]').first()).toHaveText('10/03/2026')
-    expect(page.locator('[data-testid=row-description]').first()).toHaveText(transactionPayload[0].description)
-    expect(page.locator('[data-testid=row-credit]').first()).toHaveText('£0.00')
-    expect(page.locator('[data-testid=row-debit]').first()).toHaveText('£0.10')
-    expect(page.locator('[data-testid=row-location]').first()).toHaveText(transactionPayload[0].location)
-    expect(page.locator('[data-testid=row-account-type]').first()).toHaveText(transactionPayload[0].accountType)
+    expect(rows.first().locator('th')).toHaveText('10/03/2026')
+
+    const cells = rows.first().locator('td')
+    expect(cells.nth(0)).toHaveText(transactionPayload[0].description)
+    expect(cells.nth(1)).toHaveText('£0.00')
+    expect(cells.nth(2)).toHaveText('£0.10')
+    expect(cells.nth(3)).toHaveText(transactionPayload[0].location)
+    expect(cells.nth(4)).toHaveText(transactionPayload[0].accountType)
   })
 
   test('Should display the balance card with the total amount', async ({ page }) => {
