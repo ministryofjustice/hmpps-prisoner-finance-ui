@@ -20,8 +20,11 @@ export default class PrisonerFinanceApiClient extends RestClient {
   }
 
   async getAccountBalance(prisonNumber: string): Promise<AccountBalanceResponse> {
-    return this.get({
-      path: `/prisoners/${prisonNumber}/money/balance`,
-    })
+    return this.get(
+      {
+        path: `/prisoners/${prisonNumber}/money/balance`,
+      },
+      asSystem(),
+    )
   }
 }

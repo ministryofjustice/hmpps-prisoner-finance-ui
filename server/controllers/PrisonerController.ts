@@ -13,12 +13,11 @@ class PrisonerController {
     })
 
     try {
-      const transactions = await this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(
-        req.params.prisonNumber as string,
-      )
-      const accountBalance = await this.services.prisonerFinanceService.getAccountBalance(
-        req.params.prisonNumber as string,
-      )
+      const [transactions, accountBalance] = await Promise.all([
+        this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(req.params.prisonNumber as string),
+        this.services.prisonerFinanceService.getAccountBalance(req.params.prisonNumber as string),
+      ])
+
       res.render('pages/prisonerTransactions', {
         applicationName: 'Transactions',
         transactions,
