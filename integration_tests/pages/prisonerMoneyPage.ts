@@ -15,7 +15,7 @@ export default class PrisonerMoneyPage extends AbstractPage {
     this.heading = page.locator('#prisonerTransactionsHeading')
     this.tableTransactions = page.locator('table[data-testid="prisoner-transactions-table"]')
     this.backButton = page.locator('[data-testid="backLink"]')
-    this.balanceCard = page.locator('[data-qa="view-prisoner-balance-card"]')
+    this.balanceCard = page.locator('[data-testid="view-prisoner-balance-card"]')
   }
 
   static async verifyOnPage(page: Page): Promise<PrisonerMoneyPage> {
