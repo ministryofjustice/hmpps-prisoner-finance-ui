@@ -1,7 +1,18 @@
 import nunjucks from 'nunjucks'
 import * as cheerio from 'cheerio'
 
-const PRISONER = { firstName: 'John', lastName: 'Smith', prisonerNumber: 'AB123456' }
+const PRISONER = {
+  firstName: 'John',
+  lastName: 'Smith',
+  prisonerNumber: 'AB123456',
+  cellLocation: 'RECP',
+  currentIncentive: {
+    level: {
+      code: 'STD',
+      description: 'Standard',
+    },
+  },
+}
 
 describe('View Components - Prisoner Information Header', () => {
   const njkEnv = nunjucks.configure(
@@ -44,5 +55,21 @@ describe('View Components - Prisoner Information Header', () => {
     })
 
     expect($('[data-testid="prisonerNumber"]').text()).toContain(`${PRISONER.prisonerNumber}`)
+  })
+
+  it('should render prisoner info links', () => {
+    const $ = renderPrisonerInformationHeader({
+      prisoner: PRISONER,
+    })
+
+    const cellLocation = $('[data-testid="cell-location"]')
+    const category = $('[data-testid="category"]')
+    const crsa = $('[data-testid="crsa"]')
+    const incentiveLevel = $('[data-testid="incentive-level"]')
+
+    expect(cellLocation.text()).toContain('RECP')
+    expect(category.text()).toContain('Not Entered')
+    expect(crsa.text()).toContain('Not Entered')
+    expect(incentiveLevel.text()).toContain('Standard')
   })
 })

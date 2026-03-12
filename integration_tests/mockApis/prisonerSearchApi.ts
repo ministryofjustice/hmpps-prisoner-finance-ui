@@ -30,6 +30,7 @@ export default {
           lastName: 'SMITH',
           prisonId: 'MDI',
           status: 'ACTIVE IN',
+          cellLocation: 'RECP',
         },
       },
     })
@@ -50,6 +51,7 @@ export default {
           lastName: 'TAYLOR',
           prisonId: 'LEI',
           status: 'ACTIVE IN',
+          cellLocation: 'RECP',
         },
       },
     })

@@ -1,8 +1,8 @@
   {% macro prisonerInformationHeader(params) %}
-  <div data-test="hmpps-profile-banner-partial" class="hmpps-profile-banner">
+  <div data-testid="hmpps-profile-banner" class="hmpps-profile-banner">
     <div id="prisonerInformationHeader">
    <h1 data-testid="prisonerName">{{ params.prisoner.firstName | capitalize }} {{ params.prisoner.lastName | capitalize }}</h1>
   </div>
-     {% include "./profileBannerTop.njk"  %}    
+     {% include "./profileBannerTop.njk"  %}
   </div>
 {% endmacro %}
