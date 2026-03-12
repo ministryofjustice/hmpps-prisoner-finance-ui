@@ -1,6 +1,7 @@
 {% extends "../../../partials/layout.njk" %}
 {% from "../../../components/card/card.njk" import card %}
 {% from "../../../components/balanceCard/balanceCard.njk" import balanceCard %}
+{% from "../../../components/transactionTable/transactionTable.njk" import transactionTable %}
 
 {% set pageTitle = applicationName + " - Finance" %}
 {% set mainClasses = "govuk-body" %}
@@ -23,29 +24,6 @@
   </div>
 </div>
 
-<table class="govuk-table" data-testid="prisoner-transactions-table">
-    <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-            <th class="govuk-table__header">Date of transaction</th>
-            <th class="govuk-table__header">Description/ Line Item</th>
-            <th class="govuk-table__header">Credit</th>
-            <th class="govuk-table__header">Debit</th>
-            <th class="govuk-table__header">Location</th>
-            <th class="govuk-table__header">Account Type</th>
-        </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-        {% for row in transactions %}
-            <tr class="govuk-table__row">
-                <td class="govuk-table__cell" data-testid="row-date">{{ row.date | formatDateForView }}</td>
-                <td class="govuk-table__cell" data-testid="row-description">{{ row.description }}</td>
-                <td class="govuk-table__cell" data-testid="row-credit">{{ row.credit | penceToPound }}</td>
-                <td class="govuk-table__cell" data-testid="row-debit">{{ row.debit | penceToPound }}</td>
-                <td class="govuk-table__cell" data-testid="row-location">{{ row.location }}</td>
-                <td class="govuk-table__cell" data-testid="row-account-type">{{row.accountType}}</td>
-            </tr>
-        {% endfor %}
-    </tbody>
-</table>
+{{ transactionTable({"transactions": transactions}) }}
 
 {% endblock %}
