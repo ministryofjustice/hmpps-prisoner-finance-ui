@@ -77,7 +77,8 @@ describe('View Components - TransactionTable', () => {
 
     const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
 
-    expect(transactionsTable.find('thead tr th').length).toBe(6)
-    expect(transactionsTable.find('tbody tr').length).toBe(payload.length)
+    expect(transactionsTable.length).toBe(1)
+    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(6)
+    expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(payload.length)
   })
 })
