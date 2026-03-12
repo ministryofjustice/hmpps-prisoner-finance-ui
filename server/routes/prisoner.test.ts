@@ -6,7 +6,6 @@ import AuditService, { Page } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
 import PrisonerSearchService from '../services/prisonerSearchService'
 import mockPermissions from './testutils/mockPermissions'
-import prisonerFinanceApi from '../../integration_tests/mockApis/prisonerFinanceApi'
 
 jest.mock('../services/prisonerFinanceService')
 jest.mock('../services/prisonerSearchService')
