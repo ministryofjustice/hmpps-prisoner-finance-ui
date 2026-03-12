@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { AxeBuilder } from '@axe-core/playwright'
-import { login } from '../testUtils'
+import { login, resetStubs } from '../testUtils'
 import PrisonerMoneyPage from '../pages/prisonerMoneyPage'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
@@ -8,6 +8,10 @@ import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 
 test.describe('Prisoner Money', () => {
+  test.afterEach(async () => {
+    await resetStubs()
+  })
+
   const transactionPayload: Array<PrisonerTransactionResponse> = [
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -147,7 +151,11 @@ test.describe('Prisoner Money', () => {
     const { prisonerInformationHeader } = await PrisonerMoneyPage.verifyOnPage(page)
 
     expect(prisonerInformationHeader).toBeVisible()
-    expect(page.locator('[data-testid="prisonerName"]')).toContainText('John Smith')
+    expect(page.locator('[data-testid="prisonerName"]')).toContainText('Smith, John')
     expect(page.locator('[data-testid="prisonerNumber"]')).toContainText(prisonNumber)
+    expect(page.locator('[data-testid="cell-location"]')).toContainText('RECP')
+    expect(page.locator('[data-testid="category"]')).toContainText('C')
+    expect(page.locator('[data-testid="csra"]')).toContainText('Standard')
+    expect(page.locator('[data-testid="incentive-level"]')).toContainText('Enhanced')
   })
 })

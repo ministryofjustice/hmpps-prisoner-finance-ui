@@ -5,7 +5,7 @@
         <div class="hmpps-profile-banner-photo">
           <img class="hmpps-profile-photo" data-testid="prisonerProfileImage" src="/assets/images/prisoner-profile-image.png" alt="Photo of {{ prisonerName.firstLast }} is not available" data-qa="prisoner-photo"/>
         </div>
-        <h2 class="govuk-heading-l hmpps-profile-prisoner-name">{{ prisonerName.lastCommaFirst }}</h2>
+        <h2 class="govuk-heading-l hmpps-profile-prisoner-name" data-testid="prisonerName">{{ params.prisoner.lastName | capitalize }}, {{ params.prisoner.firstName | capitalize }}</h2>
         <div class="info">
           <p class="govuk-body govuk-!-font-size-24 hmpps-profile-prisoner-number" data-testid="prisonerNumber">
            {{params.prisoner.prisonerNumber}}<span class="govuk-visually-hidden"> prison number</span>
@@ -20,13 +20,14 @@
               <div class="">
                 <h3 class="govuk-heading-s">Category</h3>
                   <a data-testid="category" href="#" class="govuk-link govuk-link--inverse">
-                    Not Entered<span class="govuk-visually-hidden"> category</span>
+                    {{ params.prisoner.category | default("Not entered")}}
+                    <span class="govuk-visually-hidden"> category</span>
                   </a>
               </div>
               <div class="">
                 <h3 class="govuk-heading-s">CSRA</h3>
-                  <a data-testid="crsa" href="#" class="govuk-link govuk-link--inverse">
-                    Not Entered<span class="govuk-visually-hidden"> CSRA</span>
+                  <a data-testid="csra" href="#" class="govuk-link govuk-link--inverse">
+                   {{ params.prisoner.csra | default("Not entered")}} <span class="govuk-visually-hidden"> CSRA</span>
                   </a>
               </div>
               <div class="remove-column-gutter-right">
@@ -39,6 +40,29 @@
           </div>
         </div>
       </div>
+
+    <div class="govuk-grid-row">
+  <div class="govuk-grid-column-full hmpps-profile-banner-alerts">
+    <div class="govuk-grid-row">
+
+
+
+    <ul class="alerts-list" data-qa="alert-flags">
+
+
+
+
+
+
+    </ul>
+
+
+
+
+
     </div>
   </div>
+</div>
+  </div>
+</div>
 </div>

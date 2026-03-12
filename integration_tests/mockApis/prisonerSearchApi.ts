@@ -31,6 +31,14 @@ export default {
           prisonId: 'MDI',
           status: 'ACTIVE IN',
           cellLocation: 'RECP',
+          category: 'C',
+          csra: 'Standard',
+          currentIncentive: {
+            level: {
+              code: 'STD',
+              description: 'Enhanced',
+            },
+          },
         },
       },
     })

@@ -10,11 +10,15 @@
 
 <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
 
-    {{ prisonerInformationHeader({
+{{ prisonerInformationHeader({
       prisoner:prisoner
     }) }}
-  
+
+
 <div class="card-group govuk-grid-row" id="prisonerFinanceCard">
+
+
+
   <div class="govuk-grid-column-one-third card-group__item">
     {{ balanceCard({
       "heading": "Total",
