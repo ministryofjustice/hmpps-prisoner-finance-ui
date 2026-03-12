@@ -1,9 +1,9 @@
 .hmpps-balance-card {
   border: 1px solid govuk-colour('dark-grey');
   box-shadow: 0 5px govuk-colour('mid-grey');
+  width: 100%;
   @include govuk-responsive-margin(4, 'bottom');
 
-  width: 100%;
 
   &__header {
     background-color: govuk-colour('light-grey');
@@ -11,17 +11,12 @@
     @include govuk-responsive-padding(3, 'right');
     @include govuk-responsive-margin(3, 'bottom');
 
-    h4,
     h2 {
       line-height: 50px;
       font-size: 24px;
       font-weight: bold;
       margin: 0;
     }
-  }
-
-  &__no-header {
-    padding-top: 15px;
   }
 
   &__body {
@@ -39,10 +34,7 @@
     line-height: 40px;
     font-size: 26px;
     font-weight: bolder;
-    margin: 10;
+    margin: 10px;
   }
 
-  dl {
-    margin-bottom: 15px;
-  }
 }
