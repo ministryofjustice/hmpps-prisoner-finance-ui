@@ -22,21 +22,24 @@
   {% set tableRows = (tableRows.push(rowData), tableRows) %}
 {% endfor %}
 
+
+
+<div class="govuk-grid-column-two-thirds">
 {% call summaryContainer({ heading : "Prisoner's transactions"}) %}
-    {{ govukTable({
-  attributes: {
-    "data-testid": "prisoner-transactions-table"
-  },
-  firstCellIsHeader: true,
-  head: [
-    { text: "Date" },
-    { text: "Transaction description" },
-    { text: "Account Type" },
-    { text: "Credit" },
-    { text: "Debit" }
-  ],
-  rows: tableRows
-}) }}
+      {{ govukTable({
+    attributes: {
+      "data-testid": "prisoner-transactions-table"
+    },
+    head: [
+      { text: "Date" },
+      { text: "Transaction description" },
+      { text: "Account Type" },
+      { text: "Credit" },
+      { text: "Debit" }
+    ],
+    rows: tableRows
+  }) }}
+</div>
 {% endcall %}
 
 {% endblock %}

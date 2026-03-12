@@ -37,7 +37,7 @@ class PrisonerController {
     try {
       const [transactions] = await Promise.all([
         this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(req.params.prisonNumber as string),
-        //this.services.prisonerFinanceService.getAccountBalance(req.params.prisonNumber as string),
+        // this.services.prisonerFinanceService.getAccountBalance(req.params.prisonNumber as string),
       ])
 
       res.render('pages/prisoner/profile/prisonerProfile', {

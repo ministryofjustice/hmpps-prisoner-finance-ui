@@ -83,7 +83,7 @@ describe('prisoner profile page', () => {
     const summaryContainer = $('.hmpps-summary-container')
 
     expect($('.hmpps-summary-container__heading').text().trim()).toBe("Prisoner's transactions")
-    expect(summaryContainer.find('.govuk-table')).toBeDefined();
+    expect(summaryContainer.find('.govuk-table')).toBeDefined()
   })
 
   it('Should render the transactions table with 5 rows', () => {

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { AxeBuilder } from '@axe-core/playwright'
-import { login } from '../testUtils'
+import { login, resetStubs } from '../testUtils'
 import PrisonerMoneyPage from '../pages/prisonerMoneyPage'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
@@ -51,6 +51,7 @@ test.describe('Prisoner Money', () => {
 
   const prisonNumber = 'ABC123XZ'
   test.beforeEach(async ({ page }) => {
+    await resetStubs()
     await login(page)
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
@@ -70,14 +71,13 @@ test.describe('Prisoner Money', () => {
 
     expect(rows).toHaveCount(transactionPayload.length)
 
-    expect(rows.first().locator('th')).toHaveText('10/03/2026')
-
     const cells = rows.first().locator('td')
-    expect(cells.nth(0)).toHaveText(transactionPayload[0].description)
-    expect(cells.nth(1)).toHaveText('£0.00')
-    expect(cells.nth(2)).toHaveText('£0.10')
-    expect(cells.nth(3)).toHaveText(transactionPayload[0].location)
-    expect(cells.nth(4)).toHaveText(transactionPayload[0].accountType)
+    expect(cells.nth(0)).toHaveText('10/03/2026')
+    expect(cells.nth(1)).toHaveText(transactionPayload[0].description)
+    expect(cells.nth(2)).toHaveText('£0.00')
+    expect(cells.nth(3)).toHaveText('£0.10')
+    expect(cells.nth(4)).toHaveText(transactionPayload[0].location)
+    expect(cells.nth(5)).toHaveText(transactionPayload[0].accountType)
   })
 
   test('Should display the balance card with the total amount', async ({ page }) => {
