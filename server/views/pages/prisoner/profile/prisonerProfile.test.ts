@@ -54,14 +54,6 @@ describe('prisoner profile page', () => {
       location: '',
       accountType: 'SAVINGS',
     },
-    {
-      date: '2026-03-10T12:43:28.094Z',
-      description: 'Cash to Savings Transfer',
-      credit: 10,
-      debit: 0,
-      location: '',
-      accountType: 'SAVINGS',
-    },
   ]
 
   let $: cheerio.CheerioAPI
@@ -87,9 +79,17 @@ describe('prisoner profile page', () => {
     $ = cheerio.load(html)
   })
 
-  it.skip('should render the transaction table', () => {
-    const transactions = $('[data-testid="transactions-table"]')
+  it('should render the transaction table in the summary container', () => {
+    const summaryContainer = $('.hmpps-summary-container')
 
-    expect(transactions).toBeDefined()
+    expect($('.hmpps-summary-container__heading').text().trim()).toBe("Prisoner's transactions")
+    expect(summaryContainer.find('.govuk-table')).toBeDefined();
+  })
+
+  it('Should render the transactions table with 5 rows', () => {
+    const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
+
+    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(5)
+    expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(5)
   })
 })

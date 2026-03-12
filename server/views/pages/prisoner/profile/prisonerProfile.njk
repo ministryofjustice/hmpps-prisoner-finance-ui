@@ -1,8 +1,42 @@
+{% from "components/summaryContainer/summaryContainer.njk" import summaryContainer %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
 {% extends "../../../partials/layout.njk" %}
 
 {% set pageTitle = applicationName + " - Profile" %}
 {% set mainClasses = "govuk-body" %}
 
 {% block content %}
+
+{% set tableRows = [] %}
+
+{% for i in range(5) %}
+  {% set row = transactions[i] %}
+  {% set rowData = [
+    { text: row.date | formatDateForView },
+    { text: row.description },
+    { text: row.accountType },
+    { text: row.credit | penceToPound},
+    { text: row.debit | penceToPound}
+  ] %}
+  {% set tableRows = (tableRows.push(rowData), tableRows) %}
+{% endfor %}
+
+{% call summaryContainer({ heading : "Prisoner's transactions"}) %}
+    {{ govukTable({
+  attributes: {
+    "data-testid": "prisoner-transactions-table"
+  },
+  firstCellIsHeader: true,
+  head: [
+    { text: "Date" },
+    { text: "Transaction description" },
+    { text: "Account Type" },
+    { text: "Credit" },
+    { text: "Debit" }
+  ],
+  rows: tableRows
+}) }}
+{% endcall %}
 
 {% endblock %}
