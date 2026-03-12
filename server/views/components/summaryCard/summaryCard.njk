@@ -1,0 +1,8 @@
+{% macro summaryCard(params, caller) %}
+  <div class="hmpps-summary-card" data-testid="{{ params['data-testid'] }}">
+    <div class="hmpps-summary-card__header">
+      <h2 class="hmpps-summary-card__heading">{{ params.heading }}</h2>
+    </div>
+    {{ caller() }}
+  </div>
+{% endmacro %}
