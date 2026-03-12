@@ -62,7 +62,7 @@ test.describe('Prisoner Money', () => {
 
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
     expect(prisonerMoneyPage.heading).toBeVisible()
-    expect(prisonerMoneyPage.heading).toContainText("John Smith's Transactions")
+    expect(prisonerMoneyPage.heading).toContainText('Prisoner Transactions')
     expect(prisonerMoneyPage.tableTransactions).toBeVisible()
     expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
 
@@ -140,5 +140,14 @@ test.describe('Prisoner Money', () => {
       .analyze()
 
     expect(accessibilityScanResults.violations).toEqual([])
+  })
+
+  test('Should display prisoner information header', async ({ page }) => {
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    const { prisonerInformationHeader } = await PrisonerMoneyPage.verifyOnPage(page)
+
+    expect(prisonerInformationHeader).toBeVisible()
+    expect(page.locator('[data-testid="prisonerName"]')).toContainText('John Smith')
+    expect(page.locator('[data-testid="prisonerNumber"]')).toContainText(prisonNumber)
   })
 })
