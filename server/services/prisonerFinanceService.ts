@@ -1,6 +1,7 @@
 import PrisonerFinanceApiClient from '../clients/prisonerFinanceApi'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
+import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
 
 export default class PrisonerFinanceService {
   constructor(private readonly prisonerFinanceApiClient: PrisonerFinanceApiClient) {}
@@ -11,5 +12,19 @@ export default class PrisonerFinanceService {
 
   getAccountBalance(prisonNumber: string): Promise<AccountBalanceResponse> {
     return this.prisonerFinanceApiClient.getAccountBalance(prisonNumber)
+  }
+
+  async getSubAccountBalances(prisonNumber: string): Promise<Record<string, SubAccountBalanceResponse>> {
+    const [spends, cash, savings] = await Promise.all([
+      this.prisonerFinanceApiClient.getSubAccountBalance(prisonNumber, 'SPENDS'),
+      this.prisonerFinanceApiClient.getSubAccountBalance(prisonNumber, 'CASH'),
+      this.prisonerFinanceApiClient.getSubAccountBalance(prisonNumber, 'SAVINGS'),
+    ])
+
+    return {
+      SPENDS: spends,
+      CASH: cash,
+      SAVINGS: savings,
+    }
   }
 }

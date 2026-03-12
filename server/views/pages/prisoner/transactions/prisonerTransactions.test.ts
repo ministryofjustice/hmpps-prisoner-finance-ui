@@ -1,8 +1,8 @@
 import { expect } from '@playwright/test'
 import * as cheerio from 'cheerio'
 import nunjucks from 'nunjucks'
-import { PrisonerTransactionResponse } from '../../interfaces/PrisonerTransactionResponse'
-import { formatDateForView, penceToPound, createProfileTabsForPrisoner } from '../../utils/utils'
+import { PrisonerTransactionResponse } from '../../../../interfaces/PrisonerTransactionResponse'
+import { formatDateForView, penceToPound, createProfileTabsForPrisoner } from '../../../../utils/utils'
 
 describe('prisoner transactions page', () => {
   const payload: Array<PrisonerTransactionResponse> = [
@@ -41,6 +41,7 @@ describe('prisoner transactions page', () => {
   ]
 
   let $: cheerio.CheerioAPI
+  const prisonNumber = 'A12345'
 
   beforeAll(() => {
     const njkEnv = nunjucks.configure(
@@ -56,10 +57,12 @@ describe('prisoner transactions page', () => {
     njkEnv.addFilter('penceToPound', penceToPound)
     njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
 
-    const html = njkEnv.render('pages/prisonerTransactions.njk', {
+    const html = njkEnv.render('pages/prisoner/transactions/prisonerTransactions.njk', {
+      prisonNumber,
       applicationName: 'Hmpps Prisoner Finance Ui',
       transactions: payload,
       prisoner: { firstName: 'BOB', lastName: 'Taylor' },
+      balance: 1000,
     })
 
     $ = cheerio.load(html)
@@ -77,11 +80,14 @@ describe('prisoner transactions page', () => {
     const backLink = $('#backLink')
 
     expect(backLink.text()).toContain('Back')
-    expect(backLink.attr('href')).toBe('/')
+    expect(backLink.attr('href')).toBe(`/prisoner/${prisonNumber}`)
 
     const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
 
     expect(transactionsTable.find('thead tr th').length).toBe(6)
     expect(transactionsTable.find('tbody tr').length).toBe(payload.length)
+
+    expect($('.hmpps-summary-container__heading').text().trim()).toBe('Total')
+    expect($('.hmpps-balance-card__amount').text().trim()).toBe('£10.00')
   })
 })

@@ -1,6 +1,8 @@
 import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import PrisonerFinanceApiClient from './prisonerFinanceApi'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
+import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
+import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
 
 describe('PrisonerFinanceSyncApiClient', () => {
   let client: PrisonerFinanceApiClient
@@ -18,7 +20,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
     jest.resetAllMocks()
   })
 
-  describe('getPayloadByRequestId', () => {
+  describe('getTransactionByPrisonNumber', () => {
     it('should call the API with the correct prisonNumber', async () => {
       const prisonNumber = 'ABC123AC'
       const expectedResponse: Array<PrisonerTransactionResponse> = [
@@ -40,6 +42,59 @@ describe('PrisonerFinanceSyncApiClient', () => {
       expect(getSpy).toHaveBeenCalledWith(
         {
           path: `/prisoners/${prisonNumber}/money/transactions`,
+        },
+        {
+          tokenType: 'SYSTEM_TOKEN',
+          user: { username: undefined },
+        },
+      )
+    })
+  })
+
+  describe('getAccountBalanceByPrisonNumber', () => {
+    test('Should call the api with the correct prisonNumber', async () => {
+      const prisonNumber = 'ABC123AC'
+      const expectedResponse: AccountBalanceResponse = {
+        accountId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        balanceDateTime: '2026-03-13T11:03:03.083Z',
+        amount: 0,
+      }
+
+      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
+
+      const response = await client.getAccountBalance(prisonNumber)
+
+      expect(response).toEqual(expectedResponse)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/prisoners/${prisonNumber}/money/balance`,
+        },
+        {
+          tokenType: 'SYSTEM_TOKEN',
+          user: { username: undefined },
+        },
+      )
+    })
+  })
+
+  describe('getSubAccountBalanceByPrisonNumberAndSubAccountRef', () => {
+    test('Should call the api with the correct prisonNumber', async () => {
+      const prisonNumber = 'ABC123AC'
+      const subAccountRef = 'CASH'
+      const expectedResponse: SubAccountBalanceResponse = {
+        subAccountId: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        balanceDateTime: '2026-03-13T11:03:03.083Z',
+        amount: 0,
+      }
+
+      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
+
+      const response = await client.getSubAccountBalance(prisonNumber, subAccountRef)
+
+      expect(response).toEqual(expectedResponse)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/prisoners/${prisonNumber}/money/balance/${subAccountRef}`,
         },
         {
           tokenType: 'SYSTEM_TOKEN',

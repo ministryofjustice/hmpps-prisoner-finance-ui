@@ -18,10 +18,37 @@ class PrisonerController {
         this.services.prisonerFinanceService.getAccountBalance(req.params.prisonNumber as string),
       ])
 
-      res.render('pages/prisonerTransactions', {
+      res.render('pages/prisoner/transactions/prisonerTransactions', {
+        prisonNumber: req.params.prisonNumber as string,
         applicationName: 'Transactions',
         transactions,
         balance: accountBalance.amount,
+      })
+    } catch (error) {
+      next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error'))
+    }
+  }
+
+  public profile = async (req: Request, res: Response, next: NextFunction) => {
+    await this.services.auditService.logPageView(Page.PRISONER_PROFILE, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
+
+    try {
+      const [transactions, subAccountBalances] = await Promise.all([
+        this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(req.params.prisonNumber as string),
+        this.services.prisonerFinanceService.getSubAccountBalances(req.params.prisonNumber as string),
+      ])
+
+      res.render('pages/prisoner/profile/prisonerProfile', {
+        prisonNumber: req.params.prisonNumber as string,
+        transactions: transactions.slice(0, 5),
+        subAccountBalances: {
+          spends: subAccountBalances.SPENDS,
+          privateCash: subAccountBalances.CASH,
+          savings: subAccountBalances.SAVINGS,
+        },
       })
     } catch (error) {
       next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error'))

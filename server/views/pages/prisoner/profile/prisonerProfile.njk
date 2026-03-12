@@ -1,0 +1,80 @@
+{% extends "../../../partials/layout.njk" %}
+
+{% from "components/summaryContainer/summaryContainer.njk" import summaryContainer %}
+{% from "../../../components/balanceCard/balanceCard.njk" import balanceCard %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+
+
+{% set pageTitle = applicationName + " - Profile" %}
+{% set mainClasses = "govuk-body" %}
+
+{% block content %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-two-thirds">
+    <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+
+
+    <h2 id="prisonerProfileHeading" >Finances</h2>
+    <div class="hmpps-balance-cards" data-testid="prisoner-balance-cards">
+      {{ balanceCard({
+          "heading": "Spends",
+          "amount": subAccountBalances.spends.amount,
+          "data-testid": "spends-card"
+        }) }}
+
+        {{ balanceCard({
+          "heading": "Private Cash",
+          "amount": subAccountBalances.privateCash.amount,
+          "data-testid": "private-cash-card"
+        }) }}
+
+        {{ balanceCard({
+          "heading": "Savings",
+          "amount": subAccountBalances.savings.amount,
+          "data-testid": "savings-card"
+        }) }}
+
+    </div>
+
+    <div>
+      {% set tableRows = [] %}
+      {% for row in transactions %}
+          {% set rowData = [
+            { text: row.date | formatDateForView },
+            { text: row.description },
+            { text: row.accountType },
+            { text: (row.credit | penceToPound)},
+            { text: (row.debit | penceToPound)}
+          ] %}
+          {% set tableRows = (tableRows.push(rowData), tableRows) %}
+      {% endfor %}
+      {% call summaryContainer({
+                  heading : "Prisoner's transactions",
+                  "data-testid" : "prisoner-transactions-table-container"
+                  }) %}
+          <div class="hmpps-summary-container__table_container">
+              {{ govukTable({
+                  attributes: {
+                    "data-testid": "prisoner-transactions-table"
+                  },
+                  head: [
+                    { text: "Date" },
+                    { text: "Transaction description" },
+                    { text: "Account Type" },
+                    { text: "Credit" },
+                    { text: "Debit" }
+                  ],
+                  rows: tableRows
+                }) }}
+          </div>
+
+      <div class="govuk-!-static-padding-left-3 govuk-!-static-padding-bottom-3">
+        <a href="/prisoner/{{prisonNumber}}/money" data-testid="transactions-page-link" >View expanded transactions</a>
+      </div>
+      {% endcall %}
+    </div>
+
+  </div>
+</div>
+{% endblock %}

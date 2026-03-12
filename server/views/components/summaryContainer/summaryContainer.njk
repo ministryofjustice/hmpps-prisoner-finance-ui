@@ -1,0 +1,10 @@
+{% macro summaryContainer(params, caller) %}
+  <div class="hmpps-summary-container" data-testid="{{ params['data-testid'] }}">
+    <div class="hmpps-summary-container__header">
+      <h2 class="hmpps-summary-container__heading" data-testid="container_heading">{{ params.heading }}</h2>
+    </div>
+    <div class="hmpps-summary-container__content">
+    {{ caller() }}
+      </div>
+  </div>
+{% endmacro %}
