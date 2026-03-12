@@ -18,7 +18,7 @@ class PrisonerController {
         this.services.prisonerFinanceService.getAccountBalance(req.params.prisonNumber as string),
       ])
 
-      res.render('pages/prisonerTransactions', {
+      res.render('pages/prisoner/transactions/prisonerTransactions', {
         applicationName: 'Transactions',
         transactions,
         balance: accountBalance.amount,
