@@ -22,16 +22,19 @@ cleanup() {
   echo ""
   echo "🧹 Cleaning up..."
 
-  # Kill local server
-  if [[ -n "${SERVER_PID:-}" ]] && kill -0 "$SERVER_PID" 2>/dev/null; then
-    echo "Stopping server (PID $SERVER_PID)..."
-    kill "$SERVER_PID" || true
-    wait "$SERVER_PID" 2>/dev/null || true
+ local PORT_PID=$(lsof -t -i:$SERVER_PORT)
+  if [[ -n "$PORT_PID" ]]; then
+    echo "Found process $PORT_PID listening on port 3007. Terminating..."
+    kill -15 "$PORT_PID" 2>/dev/null || kill -9 "$PORT_PID" 2>/dev/null
   fi
 
   # Stop WireMock
   echo "Stopping WireMock..."
   docker compose -f "$DOCKER_COMPOSE_FILE" down -v --remove-orphans || true
+
+  echo "Checking for processes running on server port..."
+  lsof -i:$SERVER_PORT && echo "🚨WARN: Process found on port $SERVER_PORT🚨"
+
 
   echo "✅ Cleanup complete"
 }
