@@ -35,13 +35,18 @@ class PrisonerController {
     })
 
     try {
-      const [transactions] = await Promise.all([
+      const [transactions, subAccountBalances] = await Promise.all([
         this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(req.params.prisonNumber as string),
-        // this.services.prisonerFinanceService.getAccountBalance(req.params.prisonNumber as string),
+        this.services.prisonerFinanceService.getSubAccountBalances(req.params.prisonNumber as string),
       ])
 
       res.render('pages/prisoner/profile/prisonerProfile', {
         transactions,
+        subAccountBalances: {
+          spends: subAccountBalances[0].amount,
+          privateCash: subAccountBalances[1].amount,
+          savings: subAccountBalances[2].amount,
+        },
       })
     } catch (error) {
       next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error'))

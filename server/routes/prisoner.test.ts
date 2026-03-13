@@ -95,6 +95,11 @@ describe('Prisoners', () => {
     const prisonNumber = 'A9971EC'
     it('should return a 200, render the correct page and call the audit service', async () => {
       prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue([])
+      prisonerFinanceService.getSubAccountBalances.mockResolvedValue([
+        { subAccountId: '', balanceDateTime: '', amount: 1 },
+        { subAccountId: '', balanceDateTime: '', amount: 1 },
+        { subAccountId: '', balanceDateTime: '', amount: 1 },
+      ])
 
       await request(app).get(`/prisoner/${prisonNumber}`).expect(200).expect('Content-Type', /html/)
 

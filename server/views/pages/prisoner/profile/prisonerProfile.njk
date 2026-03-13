@@ -54,7 +54,8 @@
             heading : "Prisoner's transactions",
             "data-testid" : "prisoner-transactions-table-container"
             }) %}
-      {{ govukTable({
+            <div class="hmpps-summary-container__table_container">
+              {{ govukTable({
     attributes: {
       "data-testid": "prisoner-transactions-table"
     },
@@ -67,6 +68,7 @@
     ],
     rows: tableRows
   }) }}
+              </div>
 </div>
 {% endcall %}
 {% endblock %}
