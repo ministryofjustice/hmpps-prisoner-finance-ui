@@ -3,7 +3,7 @@ import path from 'path'
 import nunjucks from 'nunjucks'
 import express from 'express'
 import fs from 'fs'
-import { formatDateForView, initialiseName, penceToPound } from './utils'
+import { formatDateForView, initialiseName, penceToPound, createProfileTabsForPrisoner } from './utils'
 import config from '../config'
 import logger from '../../logger'
 
@@ -45,4 +45,5 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)
   njkEnv.addFilter('formatDateForView', formatDateForView)
   njkEnv.addFilter('penceToPound', penceToPound)
+  njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
 }

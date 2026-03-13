@@ -1,68 +1,46 @@
-<div class="govuk-grid-row">
-  <div class="govuk-grid-column-full">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-full hmpps-profile-banner-top">
-        <div class="hmpps-profile-banner-photo">
-          <img class="hmpps-profile-photo" data-testid="prisonerProfileImage" src="/assets/images/prisoner-profile-image.png" alt="Photo of {{ prisonerName.firstLast }} is not available" data-qa="prisoner-photo"/>
+<div class="hmpps-profile-banner-top">
+  <div class="hmpps-profile-banner-photo">
+    <img class="hmpps-profile-photo" data-testid="prisonerProfileImage" src="/assets/images/prisoner-profile-image.png" alt="Photo of {{ prisonerName.firstLast }} is not available" data-qa="prisoner-photo"/>
+  </div>
+
+  <h2 class="govuk-heading-l hmpps-profile-prisoner-name" data-testid="prisonerName">{{ params.prisoner.lastName | capitalize }}, {{ params.prisoner.firstName | capitalize }}</h2>
+
+  <div class="info">
+    <p class="govuk-body govuk-!-font-size-24 hmpps-profile-prisoner-number" data-testid="prisonerNumber">
+      {{params.prisoner.prisonerNumber}}<span class="govuk-visually-hidden"> prison number</span>
+    </p>
+
+    <div class="info__links">
+        <div>
+          <h3 class="govuk-heading-s">Location</h3>
+          <a data-testid="cell-location" href="#" class="govuk-link govuk-link--inverse">
+            {{params.prisoner.cellLocation}}<span class="govuk-visually-hidden"> location</span>
+          </a>
         </div>
-        <h2 class="govuk-heading-l hmpps-profile-prisoner-name" data-testid="prisonerName">{{ params.prisoner.lastName | capitalize }}, {{ params.prisoner.firstName | capitalize }}</h2>
-        <div class="info">
-          <p class="govuk-body govuk-!-font-size-24 hmpps-profile-prisoner-number" data-testid="prisonerNumber">
-           {{params.prisoner.prisonerNumber}}<span class="govuk-visually-hidden"> prison number</span>
-          </p>
-          <div class="info__links">
-              <div class="">
-                <h3 class="govuk-heading-s">Location</h3>
-                  <a data-testid="cell-location" href="#" class="govuk-link govuk-link--inverse">
-                    {{params.prisoner.cellLocation}}<span class="govuk-visually-hidden"> location</span>
-                  </a>
-              </div>
-              <div class="">
-                <h3 class="govuk-heading-s">Category</h3>
-                  <a data-testid="category" href="#" class="govuk-link govuk-link--inverse">
-                    {{ params.prisoner.category | default("Not entered")}}
-                    <span class="govuk-visually-hidden"> category</span>
-                  </a>
-              </div>
-              <div class="">
-                <h3 class="govuk-heading-s">CSRA</h3>
-                  <a data-testid="csra" href="#" class="govuk-link govuk-link--inverse">
-                   {{ params.prisoner.csra | default("Not entered")}} <span class="govuk-visually-hidden"> CSRA</span>
-                  </a>
-              </div>
-              <div class="remove-column-gutter-right">
-                <h3 class="govuk-heading-s">Incentive level</h3>
-                  <a data-testid="incentive-level" href="#" class="govuk-link govuk-link--inverse">
-                    {{params.prisoner.currentIncentive.level.description}}<span class="govuk-visually-hidden"> incentive level</span>
-                  </a>
-              </div>
-          </div>
-          </div>
+        <div>
+          <h3 class="govuk-heading-s">Category</h3>
+          <a data-testid="category" href="#" class="govuk-link govuk-link--inverse">
+            {{ params.prisoner.category | default("Not entered")}}
+            <span class="govuk-visually-hidden"> category</span>
+          </a>
         </div>
-      </div>
-
-    <div class="govuk-grid-row">
-  <div class="govuk-grid-column-full hmpps-profile-banner-alerts">
-    <div class="govuk-grid-row">
-
-
-
-    <ul class="alerts-list" data-qa="alert-flags">
-
-
-
-
-
-
-    </ul>
-
-
-
-
-
+        <div>
+          <h3 class="govuk-heading-s">CSRA</h3>
+          <a data-testid="csra" href="#" class="govuk-link govuk-link--inverse">
+            {{ params.prisoner.csra | default("Not entered")}} <span class="govuk-visually-hidden"> CSRA</span>
+          </a>
+        </div>
+        <div>
+          <h3 class="govuk-heading-s">Incentive level</h3>
+          <a data-testid="incentive-level" href="#" class="govuk-link govuk-link--inverse">
+            {{params.prisoner.currentIncentive.level.description}}<span class="govuk-visually-hidden"> incentive level</span>
+          </a>
+        </div>
     </div>
   </div>
 </div>
-  </div>
-</div>
+
+<div class="hmpps-profile-banner-alerts">
+  <ul class="alerts-list" data-qa="alert-flags">
+  </ul>
 </div>

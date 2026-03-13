@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { AxeBuilder } from '@axe-core/playwright'
+import { link } from 'fs'
 import { login, resetStubs } from '../testUtils'
 import PrisonerMoneyPage from '../pages/prisonerMoneyPage'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
@@ -157,5 +158,17 @@ test.describe('Prisoner Money', () => {
     expect(page.locator('[data-testid="category"]')).toContainText('C')
     expect(page.locator('[data-testid="csra"]')).toContainText('Standard')
     expect(page.locator('[data-testid="incentive-level"]')).toContainText('Enhanced')
+  })
+
+  test('should display the prisoner information tab', async ({ page }) => {
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    await PrisonerMoneyPage.verifyOnPage(page)
+
+    const profileTabs = page.locator('[data-testid="profile-tabs"]')
+    const overviewTabLink = profileTabs.locator('li a').first()
+    expect(overviewTabLink).toHaveAttribute(
+      'href',
+      `https://prisoner-dev.digital.prison.service.justice.gov.uk/${prisonNumber}`,
+    )
   })
 })

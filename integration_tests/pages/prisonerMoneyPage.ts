@@ -9,6 +9,7 @@ export default class PrisonerMoneyPage extends AbstractPage {
   readonly tableTransactions: Locator
 
   readonly balanceCard: Locator
+
   readonly prisonerInformationHeader: Locator
 
   private constructor(page: Page) {
@@ -21,8 +22,8 @@ export default class PrisonerMoneyPage extends AbstractPage {
   }
 
   static async verifyOnPage(page: Page): Promise<PrisonerMoneyPage> {
-    const prisonerTransactionsPage = new PrisonerMoneyPage(page)
-    await expect(prisonerTransactionsPage.heading).toBeVisible()
-    return prisonerTransactionsPage
+    const prisonerMoneyPage = new PrisonerMoneyPage(page)
+    await expect(prisonerMoneyPage.heading).toBeVisible()
+    return prisonerMoneyPage
   }
 }

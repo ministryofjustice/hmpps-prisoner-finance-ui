@@ -1,93 +1,136 @@
+/* Wrapper for the whole banner (creates the grey area underneath) */
+.hmpps-profile-banner {
+  background-color: #f3f2f1;
+  /* GOV.UK light grey */
+  padding-bottom: 30px;
+  /* Provides space for the photo to overlap into */
+  margin-bottom: 20px;
+}
+
+/* The Blue Top Section */
 .hmpps-profile-banner-top {
-  padding: 30px 30px 15px 30px;
-  min-height: 130px;
+  background-color: #1d70b8;
+  /* GOV.UK Brand Blue */
+  padding: 20px 30px 0 30px;
+  /* 0 bottom padding so blue stops at the overlap */
 
-  position: relative;
   display: grid;
-  grid-template-columns: 135px 1fr 1fr;
-  grid-template-rows: 0fr 1fr;
-  gap: 0 0;
-  grid-template-areas:
-    'photo name name'
-    'photo info info';
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 30px;
+}
 
-  background-color: govuk-colour('blue');
-
-  @media print {
-    padding: 15px 10px;
-    grid-template-rows: 3em 6em;
-  }
+/* 1. Photo Section & Overlap */
+.hmpps-profile-banner-photo {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  /* Spans across both Name and Info rows */
+  align-self: end;
+  margin-bottom: -30px;
+  /* Pulls the image down out of the blue box */
+  z-index: 2;
 
   .hmpps-profile-photo {
-    grid-area: photo;
-  }
-
-  .hmpps-profile-banner-photo {
-    img {
-      width: 120px;
-      height: 150px;
-      position: absolute;
-    }
-  }
-
-  .hmpps-profile-prisoner-name {
-    grid-area: name;
-    line-height: 26px;
-  }
-
-  .info {
-    grid-area: info;
-    display: flex;
-    gap: 0 60px;
-    flex-wrap: wrap;
-    min-width: fit-content;
-
-    &__links {
-      display: flex;
-      gap: 12px 60px;
-      flex-wrap: wrap;
-      min-width: fit-content;
-
-      @media print {
-        gap: 12px 30px;
-
-        & a {
-          color: govuk-colour('white');
-        }
-      }
-    }
-
-    .hmpps-profile-prisoner-number {
-      margin-right: auto;
-      margin-bottom: 4px;
-    }
-
-    h3 {
-      white-space: nowrap;
-      margin-bottom: 0;
-    }
-  }
-
-  h2,
-  p,
-  h3 {
-    color: govuk-colour('white');
-  }
-
-  h2 {
-    margin-bottom: govuk-spacing(2);
+    display: block;
+    width: 120px;
+    height: 120px;
+    border: 4px solid #ffffff;
+    /* Thick white border from screenshot */
+    background-color: #e5e5e5;
+    object-fit: cover;
   }
 }
 
-.hmpps-profile-banner-alerts {
-  background-color: #f3f2f1;
-  overflow: auto;
+/* 2. Prisoner Name */
+.hmpps-profile-prisoner-name {
+  grid-column: 2;
+  grid-row: 1;
+  color: #ffffff;
+  margin-bottom: 0;
+  padding-top: 10px;
+}
 
-  &>div {
-    padding: 0 15px;
+/* 3. Info Wrapper (Holds Number and Links) */
+.info {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  justify-content: space-between;
+  /* Pushes ID left, links right */
+  align-items: baseline;
+  padding-bottom: 20px;
+}
 
-    @media (max-width: 640px) {
-      padding: 0 10px;
+.hmpps-profile-prisoner-number {
+  color: #ffffff;
+  margin-bottom: 0;
+}
+
+/* 4. Right-aligned Links Grid */
+.info__links {
+  display: flex;
+  gap: 40px;
+  /* Spacing between data points */
+  flex-wrap: wrap;
+
+  >div {
+    display: flex;
+    flex-direction: column;
+
+    h3 {
+      color: #ffffff;
+      margin-bottom: 5px;
+      font-weight: bold;
     }
+
+    a {
+      color: #ffffff;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+
+      &:hover {
+        color: #f3f2f1;
+        text-decoration-thickness: 2px;
+      }
+    }
+  }
+}
+
+.hmpps-tabs-list {
+  display: flex;
+  flex-wrap: wrap; // Prevents breaking on smaller screens
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid #b1b4b6; // govuk-border-colour
+}
+
+.hmpps-tabs-list-item {
+  margin-right: 20px;
+}
+
+.hmpps-tabs-link {
+  display: inline-block;
+  padding: 10px 0; // Clickable area
+  color: #1d70b8; // govuk-blue
+  font-weight: 700; // Bold text like the target image
+  text-decoration: none; // Removes standard link underline
+  border-bottom: 4px solid transparent; // Invisible border prevents layout shift on hover
+  margin-bottom: -1px; // Pulls the active border down to cover the grey baseline
+
+  &:hover {
+    color: #003078; // govuk-link-hover-colour
+    border-bottom-color: #505a5f; // govuk-secondary-text-colour
+  }
+}
+
+// The active state (blue underline, black text)
+.hmpps-tabs-link--active {
+  color: #0b0c0c; // govuk-text-colour
+  border-bottom-color: #1d70b8; // govuk-blue
+
+  &:hover {
+    color: #0b0c0c;
+    border-bottom-color: #1d70b8;
   }
 }
