@@ -59,6 +59,7 @@ describe('prisoner transactions page', () => {
       applicationName: 'Hmpps Prisoner Finance Ui',
       transactions: payload,
       prisoner: { firstName: 'BOB', lastName: 'Taylor' },
+      balance: 1000,
     })
 
     $ = cheerio.load(html)
@@ -82,5 +83,8 @@ describe('prisoner transactions page', () => {
 
     expect(transactionsTable.find('thead tr th').length).toBe(6)
     expect(transactionsTable.find('tbody tr').length).toBe(payload.length)
+
+    expect($('.hmpps-summary-container__heading').text().trim()).toBe('Total')
+    expect($('.hmpps-balance-card__amount').text().trim()).toBe('£10.00')
   })
 })

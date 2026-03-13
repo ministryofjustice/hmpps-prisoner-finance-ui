@@ -13,4 +13,7 @@ $govuk-page-width: $moj-page-width;
 @import './components/card';
 @import './components/summary-container';
 @import './components/balance-card';
+@import './components/hmpps-balance-cards';
+
+
 @import './overrides/local';

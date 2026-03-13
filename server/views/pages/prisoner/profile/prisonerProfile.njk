@@ -1,4 +1,5 @@
 {% from "components/summaryContainer/summaryContainer.njk" import summaryContainer %}
+{% from "../../../components/balanceCard/balanceCard.njk" import balanceCard %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% extends "../../../partials/layout.njk" %}
@@ -7,6 +8,30 @@
 {% set mainClasses = "govuk-body" %}
 
 {% block content %}
+
+<div class="hmpps-balance-cards govuk-grid-column-two-thirds ">
+   {{ balanceCard({
+      "heading": "Spends",
+      "amount": subAccountBalances.spends,
+      "data-testid": "spends-card"
+    }) }}
+
+    {{ balanceCard({
+      "heading": "Private Cash",
+      "amount": subAccountBalances.privateCash,
+      "data-testid": "private-cash-card"
+    }) }}
+
+    {{ balanceCard({
+      "heading": "Savings",
+      "amount": subAccountBalances.savings,
+      "data-testid": "savings-card"
+    }) }}
+
+  </div>
+
+
+
 
 {% set tableRows = [] %}
 
@@ -25,7 +50,10 @@
   {% endif %}
 {% endfor %}
 <div class="govuk-grid-column-two-thirds">
-{% call summaryContainer({ heading : "Prisoner's transactions"}) %}
+{% call summaryContainer({
+            heading : "Prisoner's transactions",
+            "data-testid" : "prisoner-transactions-table-container"
+            }) %}
       {{ govukTable({
     attributes: {
       "data-testid": "prisoner-transactions-table"
