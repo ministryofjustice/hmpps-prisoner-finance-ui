@@ -2,7 +2,7 @@ import { expect } from '@playwright/test'
 import * as cheerio from 'cheerio'
 import nunjucks from 'nunjucks'
 import { PrisonerTransactionResponse } from '../../interfaces/PrisonerTransactionResponse'
-import { formatDateForView, penceToPound } from '../../utils/utils'
+import { formatDateForView, penceToPound, createProfileTabsForPrisoner } from '../../utils/utils'
 
 describe('prisoner transactions page', () => {
   const payload: Array<PrisonerTransactionResponse> = [
@@ -54,6 +54,7 @@ describe('prisoner transactions page', () => {
     njkEnv.addFilter('assetMap', (asset: string) => asset)
     njkEnv.addFilter('formatDateForView', formatDateForView)
     njkEnv.addFilter('penceToPound', penceToPound)
+    njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
 
     const html = njkEnv.render('pages/prisonerTransactions.njk', {
       applicationName: 'Hmpps Prisoner Finance Ui',

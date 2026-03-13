@@ -1,5 +1,6 @@
 import nunjucks from 'nunjucks'
 import * as cheerio from 'cheerio'
+import { createProfileTabsForPrisoner } from '../../../utils/utils'
 
 const PRISONER = {
   firstName: 'John',
@@ -25,6 +26,8 @@ describe('View Components - Prisoner Information Header', () => {
       lstripBlocks: true,
     },
   )
+
+  njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
 
   function renderPrisonerInformationHeader(params: Record<string, unknown>) {
     const macroString = `
@@ -98,5 +101,24 @@ describe('View Components - Prisoner Information Header', () => {
 
     expect(category.text()).toContain('Not entered')
     expect(csra.text()).toContain('Not entered')
+  })
+
+  it('should render default tabs and correct hrefs', () => {
+    const $ = renderPrisonerInformationHeader({
+      prisoner: PRISONER,
+    })
+
+    const profileTabs = $('[data-testid="profile-tabs"]')
+    const tabs = profileTabs.children('li')
+
+    const content = createProfileTabsForPrisoner({ prisonNumber: PRISONER.prisonerNumber })
+
+    expect(tabs).toHaveLength(content.length)
+
+    content.forEach(({ href, tabName }, i) => {
+      const atag = $(tabs[i]).find('a')
+      expect(atag.text()).toContain(tabName)
+      expect(atag.attr('href')).toBe(href)
+    })
   })
 })

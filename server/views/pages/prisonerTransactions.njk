@@ -6,29 +6,33 @@
 {% set pageTitle = applicationName + " - Finance" %}
 {% set mainClasses = "govuk-body" %}
 
-{% block content %}
 
-<a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
 
-{{ prisonerInformationHeader({
+{% block beforeContent %}
+
+<a href="/" id="backLink" class="govuk-back-link govuk-!-margin-top-4" data-testid="backLink">Back</a>
+
+  {{ prisonerInformationHeader({
       prisoner:prisoner
-    }) }}
+  }) }}
 
 
-<div class="card-group govuk-grid-row" id="prisonerFinanceCard">
+{% endblock %}
 
-
-
-  <div class="govuk-grid-column-one-third card-group__item">
-    {{ balanceCard({
-      "heading": "Total",
-      "amount": balance,
-      "data-testid": "view-prisoner-balance-card"
-    }) }}
+{% block content %}
+  {# 2. The rest of your content stays exactly the same #}
+  <div class="card-group govuk-grid-row" id="prisonerFinanceCard">
+    <div class="govuk-grid-column-one-third card-group__item">
+      {{ balanceCard({
+        "heading": "Total",
+        "amount": balance,
+        "data-testid": "view-prisoner-balance-card"
+      }) }}
+    </div>
   </div>
-</div>
 
-<h1 id="prisonerTransactionsHeading">Prisoner Transactions</h1>
+  <h1 id="prisonerTransactionsHeading">Prisoner Transactions</h1>
+
 
 <table class="govuk-table" data-testid="prisoner-transactions-table">
     <thead class="govuk-table__head">

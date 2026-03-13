@@ -43,3 +43,29 @@ export const initialiseName = (fullName?: string): string | null => {
   const array = fullName.split(' ')
   return `${array[0][0]}. ${array.reverse()[0]}`
 }
+
+type TabContent = {
+  tabName: string
+  href: string
+}
+
+export const createProfileTabsForPrisoner = ({
+  prisonNumber,
+  envDomain = 'dev',
+}: {
+  prisonNumber: string
+  envDomain?: 'dev' | 'preprod' | 'production'
+}): TabContent[] => {
+  const envDomains: Record<string, string> = { dev: '-dev', production: '', preprod: '-preprod' }
+
+  const baseUrl = `https://prisoner${envDomains[envDomain]}.digital.prison.service.justice.gov.uk/prisoner`
+
+  return [
+    { tabName: 'Overview', href: `${baseUrl}/${prisonNumber}` },
+    { tabName: 'Personal', href: `${baseUrl}/${prisonNumber}/personal` },
+    { tabName: 'Case notes', href: `${baseUrl}/${prisonNumber}/case-notes` },
+    { tabName: 'Alerts', href: `${baseUrl}/${prisonNumber}/alerts/active` },
+    { tabName: 'Offences', href: `${baseUrl}/${prisonNumber}/offences` },
+    { tabName: 'Work and skills', href: `${baseUrl}/${prisonNumber}/work-and-skills` },
+  ]
+}

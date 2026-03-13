@@ -41,6 +41,9 @@ export default defineConfig({
     ...devices['Desktop Chrome'],
     testIdAttribute: 'data-qa',
     baseURL: 'http://localhost:3007',
+    extraHTTPHeaders: {
+      'Cache-Control': 'no-cache',
+    },
   },
 
   /* Configure projects */
