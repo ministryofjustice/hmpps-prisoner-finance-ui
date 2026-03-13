@@ -58,57 +58,15 @@ describe('initialise name', () => {
 
 describe('createProfileTabsForPrisoner', () => {
   it('returns all tabs with correct titles', () => {
+    const prisonNumber = 'A147788'
     const tabContent = createProfileTabsForPrisoner({
-      envDomain: 'dev',
-      prisonNumber: 'A147788',
+      prisonNumber,
     })
     expect(tabContent).toHaveLength(6)
     const titles = ['Overview', 'Personal', 'Case notes', 'Alerts', 'Offences', 'Work and skills']
-    tabContent.forEach(({ tabName }, i) => {
+    tabContent.forEach(({ tabName, href }, i) => {
       expect(tabName).toBe(titles[i])
-    })
-  })
-
-  it('includes prison number in the dev domain href', () => {
-    const tabContent = createProfileTabsForPrisoner({
-      envDomain: 'dev',
-      prisonNumber: 'A147788',
-    })
-    expect(tabContent).toHaveLength(6)
-    tabContent.forEach(({ href }) => {
-      expect(href).toContain('https://prisoner-dev.digital.prison.service.justice.gov.uk/prisoner/A147788')
-    })
-  })
-
-  it('includes the dev domain by default', () => {
-    const tabContent = createProfileTabsForPrisoner({
-      prisonNumber: 'A147788',
-    })
-    expect(tabContent).toHaveLength(6)
-    tabContent.forEach(({ href }) => {
-      expect(href).toContain('https://prisoner-dev.digital.prison.service.justice.gov.uk/')
-    })
-  })
-
-  it('includes the preprod domain when specified', () => {
-    const tabContent = createProfileTabsForPrisoner({
-      envDomain: 'preprod',
-      prisonNumber: 'A147788',
-    })
-    expect(tabContent).toHaveLength(6)
-    tabContent.forEach(({ href }) => {
-      expect(href).toContain('https://prisoner-preprod.digital.prison.service.justice.gov.uk/')
-    })
-  })
-
-  it('includes the production domain when specified', () => {
-    const tabContent = createProfileTabsForPrisoner({
-      envDomain: 'production',
-      prisonNumber: 'A147788',
-    })
-    expect(tabContent).toHaveLength(6)
-    tabContent.forEach(({ href }) => {
-      expect(href).toContain('https://prisoner.digital.prison.service.justice.gov.uk/')
+      expect(href).toContain(`prisoner/${prisonNumber}`)
     })
   })
 })

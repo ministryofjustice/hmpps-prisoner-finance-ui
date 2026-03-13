@@ -1,4 +1,5 @@
 import { format, parseISO } from 'date-fns'
+import config from '../config'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -49,23 +50,14 @@ type TabContent = {
   href: string
 }
 
-export const createProfileTabsForPrisoner = ({
-  prisonNumber,
-  envDomain = 'dev',
-}: {
-  prisonNumber: string
-  envDomain?: 'dev' | 'preprod' | 'production'
-}): TabContent[] => {
-  const envDomains: Record<string, string> = { dev: '-dev', production: '', preprod: '-preprod' }
-
-  const baseUrl = `https://prisoner${envDomains[envDomain]}.digital.prison.service.justice.gov.uk/prisoner`
-
+const baseUrl = config.prisoner_profile_url
+export const createProfileTabsForPrisoner = ({ prisonNumber }: { prisonNumber: string }): TabContent[] => {
   return [
-    { tabName: 'Overview', href: `${baseUrl}/${prisonNumber}` },
-    { tabName: 'Personal', href: `${baseUrl}/${prisonNumber}/personal` },
-    { tabName: 'Case notes', href: `${baseUrl}/${prisonNumber}/case-notes` },
-    { tabName: 'Alerts', href: `${baseUrl}/${prisonNumber}/alerts/active` },
-    { tabName: 'Offences', href: `${baseUrl}/${prisonNumber}/offences` },
-    { tabName: 'Work and skills', href: `${baseUrl}/${prisonNumber}/work-and-skills` },
+    { tabName: 'Overview', href: `${baseUrl}/prisoner/${prisonNumber}` },
+    { tabName: 'Personal', href: `${baseUrl}/prisoner/${prisonNumber}/personal` },
+    { tabName: 'Case notes', href: `${baseUrl}/prisoner/${prisonNumber}/case-notes` },
+    { tabName: 'Alerts', href: `${baseUrl}/prisoner/${prisonNumber}/alerts/active` },
+    { tabName: 'Offences', href: `${baseUrl}/prisoner/${prisonNumber}/offences` },
+    { tabName: 'Work and skills', href: `${baseUrl}/prisoner/${prisonNumber}/work-and-skills` },
   ]
 }

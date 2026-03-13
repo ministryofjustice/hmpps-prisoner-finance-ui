@@ -1,13 +1,13 @@
 {% set tabs = {prisonNumber : params.prisoner.prisonerNumber, envDomain : 'dev'} | createProfileTabsForPrisoner %}
 
-<div class="hmpps-profile-banner-tabs">
-  <nav class="govuk-!-display-none-print">
+<div class="hmpps-profile-banner-tabs govuk-grid-column-full govuk-!-margin-top-5">
+  <nav class="govuk-!-display-none-print ">
     <ul class="hmpps-profile-tab-links" data-testid="profile-tabs">
       {% for tab in tabs %}
-        <li class="hmpps-profile-tab-item">
+        <li class="govuk-heading-s ">
           <a
             href="{{ tab.href | default('#') }}"
-            class="hmpps-profile-tab-link {{ 'hmpps-profile-tab-link--active' if tab.active }}"
+            class="govuk-link govuk-link--no-visited-state govuk-link--no-underline"
             data-qa="{{tab.tabName}}"
           >
             {{tab.tabName}}
@@ -16,4 +16,5 @@
       {% endfor %}
     </ul>
   </nav>
+  <hr>
 </div>

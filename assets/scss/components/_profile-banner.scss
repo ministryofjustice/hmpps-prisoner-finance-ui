@@ -1,10 +1,20 @@
 /* Wrapper for the whole banner (creates the grey area underneath) */
 .hmpps-profile-banner {
   background-color: #f3f2f1;
-  /* GOV.UK light grey */
-  padding-bottom: 30px;
-  /* Provides space for the photo to overlap into */
-  margin-bottom: 20px;
+
+  &-tabs {
+    height: 100% nav {
+      height: 100%;
+    }
+  }
+}
+
+.hmpps-profile-banner-alerts {
+  height: 20px
+}
+
+.hmpps-profile-banner-tabs {
+  height: 10rem
 }
 
 /* The Blue Top Section */
@@ -96,17 +106,21 @@
   }
 }
 
-.hmpps-tabs-list {
+.hmpps-profile-tab-links {
   display: flex;
-  flex-wrap: wrap; // Prevents breaking on smaller screens
+  flex-wrap: wrap;
+  flex-direction: row;
   margin: 0;
   padding: 0;
   list-style: none;
   border-bottom: 1px solid #b1b4b6; // govuk-border-colour
+  gap: 1rem;
+  align-content: end;
 }
 
 .hmpps-tabs-list-item {
   margin-right: 20px;
+  align-self: flex-end;
 }
 
 .hmpps-tabs-link {
