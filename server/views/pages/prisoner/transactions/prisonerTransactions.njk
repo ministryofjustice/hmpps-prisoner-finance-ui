@@ -1,4 +1,5 @@
 {% extends "../../../partials/layout.njk" %}
+
 {% from "../../../components/balanceCard/balanceCard.njk" import balanceCard %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 
@@ -7,7 +8,7 @@
 
 {% block content %}
 
-<a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+<a href="/prisoner/{{prisonNumber}}" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
 
   <h1 id="prisonerTransactionsHeading">
     {{ prisoner.firstName | capitalize }} {{ prisoner.lastName | capitalize }}'s Transactions

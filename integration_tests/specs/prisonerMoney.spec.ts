@@ -92,7 +92,7 @@ test.describe('Prisoner Money', () => {
     expect(balanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
   })
 
-  test('Backlink should render and return to index', async ({ page }) => {
+  test('Backlink should render and return to profile page', async ({ page }) => {
     await page.goto(`/prisoner/${prisonNumber}/money`)
 
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
@@ -101,7 +101,7 @@ test.describe('Prisoner Money', () => {
 
     await prisonerMoneyPage.backButton.click()
 
-    expect(new URL(page.url()).pathname).toBe('/')
+    expect(new URL(page.url()).pathname).toBe(`/prisoner/${prisonNumber}`)
   })
 
   test('Should handle 404 and render error', async ({ page }) => {

@@ -19,6 +19,7 @@ class PrisonerController {
       ])
 
       res.render('pages/prisoner/transactions/prisonerTransactions', {
+        prisonNumber: req.params.prisonNumber as string,
         applicationName: 'Transactions',
         transactions,
         balance: accountBalance.amount,
@@ -41,6 +42,7 @@ class PrisonerController {
       ])
 
       res.render('pages/prisoner/profile/prisonerProfile', {
+        prisonNumber: req.params.prisonNumber as string,
         transactions,
         subAccountBalances: {
           spends: subAccountBalances[0].amount,

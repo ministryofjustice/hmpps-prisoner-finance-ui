@@ -41,6 +41,7 @@ describe('prisoner transactions page', () => {
   ]
 
   let $: cheerio.CheerioAPI
+  const prisonNumber = 'A12345'
 
   beforeAll(() => {
     const njkEnv = nunjucks.configure(
@@ -56,6 +57,7 @@ describe('prisoner transactions page', () => {
     njkEnv.addFilter('penceToPound', penceToPound)
 
     const html = njkEnv.render('pages/prisoner/transactions/prisonerTransactions.njk', {
+      prisonNumber,
       applicationName: 'Hmpps Prisoner Finance Ui',
       transactions: payload,
       prisoner: { firstName: 'BOB', lastName: 'Taylor' },
@@ -77,7 +79,7 @@ describe('prisoner transactions page', () => {
     const backLink = $('#backLink')
 
     expect(backLink.text()).toContain('Back')
-    expect(backLink.attr('href')).toBe('/')
+    expect(backLink.attr('href')).toBe(`/prisoner/${prisonNumber}`)
 
     const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
 
