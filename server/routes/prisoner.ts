@@ -21,5 +21,17 @@ export default function routes(services: Services): Router {
     prisonerController.transactions,
   )
 
+  prisonerRouter.get(
+    '/:prisonNumber',
+
+    prisonerPermissionsGuard(services.prisonPermissionsService, {
+      requestDependentOn: [PrisonerMoneyPermission.read],
+      getPrisonerNumberFunction: req => req.params.prisonNumber as string,
+    }),
+
+    getPrisonerData(services),
+    prisonerController.profile,
+  )
+
   return prisonerRouter
 }

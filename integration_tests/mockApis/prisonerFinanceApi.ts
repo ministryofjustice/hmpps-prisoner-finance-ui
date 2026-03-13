@@ -1,6 +1,7 @@
 import { stubFor } from './wiremock'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
+import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBalanceResponse'
 
 // this is the path prefix set in feature.env PRISONER_FINANCE_API_URL
 const API_PREFIX = '/prisoner-finance-api'
@@ -73,6 +74,18 @@ export default {
       request: {
         method: 'GET',
         urlPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/balance`,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: payload,
+      },
+    }),
+  stubGetPrisonerSubAccountBalance: (prisonNumber: string, subAccountRef: string, payload: SubAccountBalanceResponse) =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/balance/${subAccountRef}`,
       },
       response: {
         status: 200,

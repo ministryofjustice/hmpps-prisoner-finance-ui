@@ -14,7 +14,7 @@ test.describe('Index Page', () => {
     expect(index.card).toBeVisible()
     expect(index.card.locator('h2')).toContainText('View prisoner finances')
     expect(index.card.locator('p')).toContainText("View transactions and balances for a prisoner's accounts.")
-    expect(index.card.locator('a')).toHaveAttribute('href', '/prisoner/A9971EC/money')
+    expect(index.card.locator('a')).toHaveAttribute('href', '/prisoner/A9971EC')
   })
 
   test('Should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {

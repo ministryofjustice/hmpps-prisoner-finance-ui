@@ -45,4 +45,5 @@ export default function nunjucksSetup(app: express.Express): void {
   njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)
   njkEnv.addFilter('formatDateForView', formatDateForView)
   njkEnv.addFilter('penceToPound', penceToPound)
+  njkEnv.addFilter('min', Math.min)
 }
