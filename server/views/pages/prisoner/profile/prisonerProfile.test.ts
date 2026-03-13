@@ -70,6 +70,7 @@ describe('prisoner profile page', () => {
     njkEnv.addFilter('assetMap', (asset: string) => asset)
     njkEnv.addFilter('formatDateForView', formatDateForView)
     njkEnv.addFilter('penceToPound', penceToPound)
+    njkEnv.addFilter('min', Math.min)
 
     const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
       applicationName: 'Hmpps Prisoner Finance Ui',

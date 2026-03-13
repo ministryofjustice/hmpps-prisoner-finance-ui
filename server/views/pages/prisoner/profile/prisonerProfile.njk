@@ -10,20 +10,20 @@
 
 {% set tableRows = [] %}
 
+
 {% for i in range(5) %}
-  {% set row = transactions[i] %}
-  {% set rowData = [
-    { text: row.date | formatDateForView },
-    { text: row.description },
-    { text: row.accountType },
-    { text: row.credit | penceToPound},
-    { text: row.debit | penceToPound}
-  ] %}
-  {% set tableRows = (tableRows.push(rowData), tableRows) %}
+  {% if i < transactions | length %}
+    {% set row = transactions[i] %}
+    {% set rowData = [
+      { text: row.date | formatDateForView },
+      { text: row.description },
+      { text: row.accountType },
+      { text: (row.credit | penceToPound)},
+      { text: (row.debit | penceToPound)}
+    ] %}
+    {% set tableRows = (tableRows.push(rowData), tableRows) %}
+  {% endif %}
 {% endfor %}
-
-
-
 <div class="govuk-grid-column-two-thirds">
 {% call summaryContainer({ heading : "Prisoner's transactions"}) %}
       {{ govukTable({
@@ -41,5 +41,4 @@
   }) }}
 </div>
 {% endcall %}
-
 {% endblock %}
