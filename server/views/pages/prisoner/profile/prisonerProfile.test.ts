@@ -2,7 +2,6 @@ import { expect } from '@playwright/test'
 import * as cheerio from 'cheerio'
 import nunjucks from 'nunjucks'
 import { PrisonerTransactionResponse } from '../../../../interfaces/PrisonerTransactionResponse'
-import { createProfileTabsForPrisoner, formatDateForView, penceToPound } from '../../../../utils/utils'
 import { setUpNunJucksFilters } from '../../../../utils/nunjucksSetup'
 
 describe('prisoner profile page', () => {

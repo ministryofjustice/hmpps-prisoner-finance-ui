@@ -1,6 +1,5 @@
 import nunjucks from 'nunjucks'
 import * as cheerio from 'cheerio'
-import { penceToPound } from '../../../utils/utils'
 import { setUpNunJucksFilters } from '../../../utils/nunjucksSetup'
 
 describe('View Components - BalanceCard', () => {

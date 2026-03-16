@@ -11,7 +11,7 @@ export const setUpNunJucksFilters = (njkEnv: nunjucks.Environment, assetManifest
   if (assetManifest !== null) njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)
   else
     // test setups
-    njkEnv.addFilter('assetMap', (url: string) => '')
+    njkEnv.addFilter('assetMap', (_url: string) => '')
 
   njkEnv.addFilter('initialiseName', initialiseName)
   njkEnv.addFilter('formatDateForView', formatDateForView)
