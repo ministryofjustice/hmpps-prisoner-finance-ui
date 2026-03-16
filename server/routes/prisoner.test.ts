@@ -59,10 +59,7 @@ describe('/prisoner', () => {
     prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue([])
     prisonerFinanceService.getAccountBalance.mockResolvedValue({ accountId: '', balanceDateTime: '', amount: 1000 })
 
-    const response = await request(app)
-      .get(`/prisoner/${prisonNumber}/money`)
-      .expect(200)
-      .expect('Content-Type', /html/)
+    await request(app).get(`/prisoner/${prisonNumber}/money`).expect(200).expect('Content-Type', /html/)
 
     expect(auditService.logPageView).toHaveBeenCalledWith(
       Page.PRISONER_MONEY,
