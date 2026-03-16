@@ -116,5 +116,5 @@ export default {
   },
   ingressUrl: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   environmentName: get('ENVIRONMENT_NAME', 'dev'),
-  prisoner_profile_url: get('PRISONER_PROFILE_URL', 'http://localhost:3999'),
+  prisoner_profile_url: get('PRISONER_PROFILE_URL', 'http://localhost:3999', requiredInProduction),
 }
