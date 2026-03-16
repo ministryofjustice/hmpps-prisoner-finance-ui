@@ -165,6 +165,9 @@ test.describe('Prisoner Money', () => {
 
     const profileTabs = page.locator('[data-testid="profile-tabs"]')
     const overviewTabLink = profileTabs.locator('li a').first()
-    expect(overviewTabLink).toHaveAttribute('href', `http://localhost:3999/prisoner/${prisonNumber}`)
+    expect(overviewTabLink).toHaveAttribute(
+      'href',
+      `https://prisoner-dev.digital.prison.service.justice.gov.uk/prisoner/${prisonNumber}`,
+    )
   })
 })
