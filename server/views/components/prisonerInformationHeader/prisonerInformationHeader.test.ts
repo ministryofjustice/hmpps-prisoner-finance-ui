@@ -43,7 +43,7 @@ describe('View Components - Prisoner Information Header', () => {
       prisoner: PRISONER,
     })
 
-    expect($('[data-testid="prisonerName"]').text()).toBe(`${PRISONER.lastName}, ${PRISONER.firstName}`)
+    expect($('[data-testid="prisonerName"]').text().trim()).toBe(`${PRISONER.lastName}, ${PRISONER.firstName}`)
   })
 
   it('should render the heading profile image', () => {

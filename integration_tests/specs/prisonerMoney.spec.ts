@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test'
 import { AxeBuilder } from '@axe-core/playwright'
-import { link } from 'fs'
 import { login, resetStubs } from '../testUtils'
 import PrisonerMoneyPage from '../pages/prisonerMoneyPage'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
@@ -166,9 +165,6 @@ test.describe('Prisoner Money', () => {
 
     const profileTabs = page.locator('[data-testid="profile-tabs"]')
     const overviewTabLink = profileTabs.locator('li a').first()
-    expect(overviewTabLink).toHaveAttribute(
-      'href',
-      `https://prisoner-dev.digital.prison.service.justice.gov.uk/${prisonNumber}`,
-    )
+    expect(overviewTabLink).toHaveAttribute('href', `http://localhost:3999/prisoner/${prisonNumber}`)
   })
 })
