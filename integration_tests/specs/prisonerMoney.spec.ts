@@ -55,6 +55,7 @@ test.describe('Prisoner Money', () => {
 
   const prisonNumber = 'ABC123XZ'
   test.beforeEach(async ({ page }) => {
+    await resetStubs()
     await login(page)
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
@@ -71,14 +72,16 @@ test.describe('Prisoner Money', () => {
     expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
 
     const rows = prisonerMoneyPage.tableTransactions.locator('tbody tr')
+
     expect(rows).toHaveCount(transactionPayload.length)
 
-    expect(page.locator('[data-testid=row-date]').first()).toHaveText('10/03/2026')
-    expect(page.locator('[data-testid=row-description]').first()).toHaveText(transactionPayload[0].description)
-    expect(page.locator('[data-testid=row-credit]').first()).toHaveText('£0.00')
-    expect(page.locator('[data-testid=row-debit]').first()).toHaveText('£0.10')
-    expect(page.locator('[data-testid=row-location]').first()).toHaveText(transactionPayload[0].location)
-    expect(page.locator('[data-testid=row-account-type]').first()).toHaveText(transactionPayload[0].accountType)
+    const cells = rows.first().locator('td')
+    expect(cells.nth(0)).toHaveText('10/03/2026')
+    expect(cells.nth(1)).toHaveText(transactionPayload[0].description)
+    expect(cells.nth(2)).toHaveText('£0.00')
+    expect(cells.nth(3)).toHaveText('£0.10')
+    expect(cells.nth(4)).toHaveText(transactionPayload[0].location)
+    expect(cells.nth(5)).toHaveText(transactionPayload[0].accountType)
   })
 
   test('Should display the balance card with the total amount', async ({ page }) => {
@@ -93,7 +96,7 @@ test.describe('Prisoner Money', () => {
     expect(balanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
   })
 
-  test('Backlink should render and return to index', async ({ page }) => {
+  test('Backlink should render and return to profile page', async ({ page }) => {
     await page.goto(`/prisoner/${prisonNumber}/money`)
 
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
@@ -102,7 +105,7 @@ test.describe('Prisoner Money', () => {
 
     await prisonerMoneyPage.backButton.click()
 
-    expect(new URL(page.url()).pathname).toBe('/')
+    expect(new URL(page.url()).pathname).toBe(`/prisoner/${prisonNumber}`)
   })
 
   test('Should handle 404 and render error', async ({ page }) => {

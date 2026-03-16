@@ -1,0 +1,27 @@
+.hmpps-summary-container {
+  border: 1px solid govuk-colour('dark-grey');
+  box-shadow: 0 5px govuk-colour('mid-grey');
+  width: 100%;
+  display: block;
+  @include govuk-responsive-margin(4, 'bottom');
+
+
+
+  &__header {
+    background-color: govuk-colour('light-grey');
+    @include govuk-responsive-padding(3, 'left');
+    @include govuk-responsive-padding(3, 'right');
+    @include govuk-responsive-margin(3, 'bottom');
+
+    h2 {
+      line-height: 50px;
+      font-size: 24px;
+      font-weight: bold;
+      margin: 0;
+    }
+  }
+
+  &__table_container {
+    padding: 0 1rem
+  }
+}

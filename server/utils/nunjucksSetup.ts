@@ -7,6 +7,18 @@ import { formatDateForView, initialiseName, penceToPound, createProfileTabsForPr
 import config from '../config'
 import logger from '../../logger'
 
+export const setUpNunJucksFilters = (njkEnv: nunjucks.Environment, assetManifest: Record<string, string> = null) => {
+  if (assetManifest !== null) njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)
+  else
+    // test setups
+    njkEnv.addFilter('assetMap', (_url: string) => '')
+
+  njkEnv.addFilter('initialiseName', initialiseName)
+  njkEnv.addFilter('formatDateForView', formatDateForView)
+  njkEnv.addFilter('penceToPound', penceToPound)
+  njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
+}
+
 export default function nunjucksSetup(app: express.Express): void {
   app.set('view engine', 'njk')
 
@@ -41,9 +53,5 @@ export default function nunjucksSetup(app: express.Express): void {
     },
   )
 
-  njkEnv.addFilter('initialiseName', initialiseName)
-  njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)
-  njkEnv.addFilter('formatDateForView', formatDateForView)
-  njkEnv.addFilter('penceToPound', penceToPound)
-  njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
+  setUpNunJucksFilters(njkEnv, assetManifest)
 }

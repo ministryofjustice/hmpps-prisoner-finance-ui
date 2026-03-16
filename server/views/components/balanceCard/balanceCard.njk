@@ -1,19 +1,14 @@
-{% macro balanceCard(params) %}
-  <div class="hmpps-balance-card" data-testid="{{ params['data-testid'] }}">
-    <div class="hmpps-balance-card__header">
-      <h2 class="hmpps-balance-card__heading">
-        {{ params.heading }}
-      </h2>
-    </div>
+{% from "components/summaryContainer/summaryContainer.njk" import summaryContainer %}
 
+{% macro balanceCard(params) %}
+  {% call summaryContainer(params) %}
     <div class="hmpps-balance-card__body">
       <h3 class="govuk-heading-m hmpps-balance-card__subHeading">
           Total
       </h3>
 
       <p class="govuk-body hmpps-balance-card__amount">{{ params.amount | penceToPound }}</p>
-
     </div>
+  {% endcall %}
 
-  </div>
 {% endmacro %}

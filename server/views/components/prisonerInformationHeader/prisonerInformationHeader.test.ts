@@ -1,6 +1,7 @@
 import nunjucks from 'nunjucks'
 import * as cheerio from 'cheerio'
 import { createProfileTabsForPrisoner } from '../../../utils/utils'
+import { setUpNunJucksFilters } from '../../../utils/nunjucksSetup'
 
 const PRISONER = {
   firstName: 'John',
@@ -27,7 +28,7 @@ describe('View Components - Prisoner Information Header', () => {
     },
   )
 
-  njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
+  setUpNunJucksFilters(njkEnv)
 
   function renderPrisonerInformationHeader(params: Record<string, unknown>) {
     const macroString = `

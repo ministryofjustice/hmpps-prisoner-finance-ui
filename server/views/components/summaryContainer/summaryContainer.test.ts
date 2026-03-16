@@ -1,8 +1,7 @@
 import nunjucks from 'nunjucks'
 import * as cheerio from 'cheerio'
-import { setUpNunJucksFilters } from '../../../utils/nunjucksSetup'
 
-describe('View Components - BalanceCard', () => {
+describe('View Components - summaryContainer', () => {
   const njkEnv = nunjucks.configure(
     ['server/views', 'node_modules/govuk-frontend/dist', 'node_modules/@ministryofjustice/frontend/'],
     {
@@ -11,24 +10,24 @@ describe('View Components - BalanceCard', () => {
       lstripBlocks: true,
     },
   )
-  setUpNunJucksFilters(njkEnv)
 
   function renderCard(params: Record<string, unknown>) {
     const macroString = `
-      {% from "components/balanceCard/balanceCard.njk" import balanceCard %}
-      {{ balanceCard(params) }}
+    {% from "components/summaryContainer/summaryContainer.njk" import summaryContainer %}
+        {% call summaryContainer(params) %}
+          <h1 data-testid="test-child">hello world</h1>
+        {% endcall %}
     `
     const output = njkEnv.renderString(macroString, { params })
     return cheerio.load(output)
   }
 
-  it('should render the heading and balance amount', () => {
+  it('should render the heading and render child', () => {
     const $ = renderCard({
       heading: 'Test',
-      amount: 1000,
     })
 
     expect($('.hmpps-summary-container__heading').text().trim()).toBe('Test')
-    expect($('.hmpps-balance-card__amount').text().trim()).toBe('£10.00')
+    expect($('[data-testid="test-child"]').text().trim()).toBe('hello world')
   })
 })
