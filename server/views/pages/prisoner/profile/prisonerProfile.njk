@@ -88,7 +88,13 @@
   </div>
    <div class="govuk-grid-column-one-quarter">
     {{ actionBlock({
-        actions: [{text: "Credit account"}, { text: "Debit account" }, { text: "Sub account transfer" }, { text: "Adjudications" }, {text: "Export statement" } , {text: "Close account"}]
+        actions: [
+        {text: "Credit account", 'dataTestId': 'credit-menu'},
+        {text: "Debit account", 'dataTestId': 'debit-menu'},
+        {text: "Sub account transfer", 'dataTestId': 'subaccount-menu'},
+        {text: "Adjudications", 'dataTestId': 'adjudications-menu'},
+        {text: "Export statement", 'dataTestId': 'export-menu'},
+        {text: "Close account", 'dataTestId': 'close-menu'}]
     }) }}
   </div>  
 </div>
