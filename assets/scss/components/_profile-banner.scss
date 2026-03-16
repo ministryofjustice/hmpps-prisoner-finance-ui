@@ -98,13 +98,13 @@
 
     /* Force white links and kill the purple visited state */
     a, a:link, a:visited {
-      color: #ffffff !important;
+      color: #ffffff;
       text-decoration: underline;
       text-decoration-thickness: 1px;
       text-underline-offset: 3px;
 
       &:hover {
-        color: #f3f2f1 !important;
+        color: #f3f2f1;
         text-decoration-thickness: 2px;
       }
     }
@@ -158,11 +158,11 @@
 
   /* Force blue text, block purple visited state completely */
   &, &:link, &:visited {
-    color: #1d70b8 !important; /* govuk-blue */
+    color: #1d70b8; /* govuk-blue */
   }
 
   &:hover {
-    color: #003078 !important; /* govuk-link-hover-colour */
+    color: #003078; /* govuk-link-hover-colour */
     border-bottom-color: #505a5f; /* govuk-secondary-text-colour */
   }
 }
@@ -172,7 +172,7 @@
   border-bottom-color: #1d70b8; /* govuk-blue */
 
   &, &:link, &:visited {
-    color: #1d70b8 !important;
+    color: #1d70b8;
   }
 
   &:hover {
