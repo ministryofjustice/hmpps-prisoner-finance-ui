@@ -50,15 +50,15 @@ type TabContent = {
   href: string
 }
 
-const baseUrl = config.prisoner_profile_url
+const baseUrlPrisonerProfile = config.prisoner_profile_url
 export const createProfileTabsForPrisoner = ({ prisonNumber }: { prisonNumber: string }): TabContent[] => {
   return [
-    { tabName: 'Overview', href: `${baseUrl}/prisoner/${prisonNumber}` },
-    { tabName: 'Personal', href: `${baseUrl}/prisoner/${prisonNumber}/personal` },
-    { tabName: 'Case notes', href: `${baseUrl}/prisoner/${prisonNumber}/case-notes` },
-    { tabName: 'Alerts', href: `${baseUrl}/prisoner/${prisonNumber}/alerts/active` },
-    { tabName: 'Offences', href: `${baseUrl}/prisoner/${prisonNumber}/offences` },
-    { tabName: 'Work and skills', href: `${baseUrl}/prisoner/${prisonNumber}/work-and-skills` },
+    { tabName: 'Overview', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}` },
+    { tabName: 'Personal', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/personal` },
+    { tabName: 'Case notes', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/case-notes` },
+    { tabName: 'Alerts', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/alerts/active` },
+    { tabName: 'Offences', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/offences` },
+    { tabName: 'Work and skills', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/work-and-skills` },
     { tabName: 'Finance', href: `/prisoner/${prisonNumber}/money` },
   ]
 }
