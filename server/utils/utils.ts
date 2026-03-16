@@ -1,4 +1,5 @@
 import { format, parseISO } from 'date-fns'
+import config from '../config'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -42,4 +43,22 @@ export const initialiseName = (fullName?: string): string | null => {
 
   const array = fullName.split(' ')
   return `${array[0][0]}. ${array.reverse()[0]}`
+}
+
+type TabContent = {
+  tabName: string
+  href: string
+}
+
+const baseUrlPrisonerProfile = config.prisoner_profile_url
+export const createProfileTabsForPrisoner = ({ prisonNumber }: { prisonNumber: string }): TabContent[] => {
+  return [
+    { tabName: 'Overview', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}` },
+    { tabName: 'Personal', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/personal` },
+    { tabName: 'Case notes', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/case-notes` },
+    { tabName: 'Alerts', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/alerts/active` },
+    { tabName: 'Offences', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/offences` },
+    { tabName: 'Work and skills', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/work-and-skills` },
+    { tabName: 'Finance', href: `/prisoner/${prisonNumber}/money` },
+  ]
 }

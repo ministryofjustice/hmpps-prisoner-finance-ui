@@ -1,0 +1,181 @@
+/* Wrapper for the whole banner (creates the grey area underneath) */
+.hmpps-profile-banner {
+  background-color: #f3f2f1;
+
+  &-tabs {
+    height: 100%;
+    nav {
+      height: 100%;
+    }
+  }
+}
+
+.hmpps-profile-banner-alerts {
+  height: 4rem;
+}
+
+.hmpps-profile-banner-tabs {
+  margin-top: 2rem;
+}
+
+/* The Blue Top Section */
+.hmpps-profile-banner-top {
+  background-color: #1d70b8; /* GOV.UK Brand Blue */
+  padding: 20px 30px 0 30px; /* 0 bottom padding so blue stops at the overlap */
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 30px;
+}
+
+/* 1. Photo Section & Overlap */
+.hmpps-profile-banner-photo {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  align-self: end;
+  margin-bottom: -30px;
+  z-index: 2;
+
+  background: transparent;
+  padding: 0;
+  border: none;
+
+  .hmpps-profile-photo {
+    display: block;
+    width: 110px;
+    height: auto;
+    background-color: #e5e5e5;
+    object-fit: cover;
+
+    box-shadow: 0 0 0 1px #b1b4b6;   /* Outer thin grey frame (govuk-border-colour) */
+    outline: none;                   /* Prevent browser outline bugs */
+    padding: 0;
+  }
+}
+
+/* 2. Prisoner Name */
+.hmpps-profile-prisoner-name {
+  grid-column: 2;
+  grid-row: 1;
+  color: #ffffff;
+  margin-bottom: 0;
+  padding-top: 10px;
+}
+
+/* 3. Info Wrapper (Holds Number and Links) */
+.info {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
+  justify-content: space-between; /* Pushes ID left, links right */
+  align-items: baseline;
+  padding-bottom: 20px;
+}
+
+.hmpps-profile-prisoner-number {
+  color: #ffffff;
+  margin-bottom: 0;
+}
+
+/* 4. Right-aligned Links Grid */
+.info__links {
+  display: flex;
+  gap: 40px; /* Spacing between data points */
+  flex-wrap: wrap;
+
+  > div {
+    display: flex;
+    flex-direction: column;
+
+    /* Enforcing GOV.UK fonts so it never falls back to serif */
+    h3, .govuk-heading-s, span {
+      color: #ffffff;
+      font-family: "GDS Transport", arial, sans-serif;
+      font-weight: 700;
+      margin: 0 0 5px 0;
+      font-size: 19px;
+    }
+
+    /* Force white links and kill the purple visited state */
+    a, a:link, a:visited {
+      color: #ffffff;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+
+      &:hover {
+        color: #f3f2f1;
+        text-decoration-thickness: 2px;
+      }
+    }
+  }
+}
+
+/* 5. Tabs Section */
+.hmpps-profile-tab-links {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-bottom: 1px solid #b1b4b6; /* govuk-border-colour */
+  gap: 1rem;
+  align-content: end;
+  column-gap: 20px;
+}
+
+.hmpps-tabs-list-item {
+  margin-right: 0;
+  padding: 0;
+  align-self: flex-end;
+}
+
+.hmpps-tabs-link {
+  display: block;
+  position: relative;
+  padding: 12px 0;
+  min-height: 24px;
+  min-width: 24px;
+  line-height: 24px;  font-family: "GDS Transport", arial, sans-serif;
+  font-weight: 700;
+  font-size: 19px;
+  text-decoration: none; /* Removes standard link underline */
+  border-bottom: 4px solid transparent;
+  margin-bottom: -1px; /* Pulls the active border down to cover the grey baseline */
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 44px; /* Massively exceeds 24px requirement */
+    min-height: 44px;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Force blue text, block purple visited state completely */
+  &, &:link, &:visited {
+    color: #1d70b8; /* govuk-blue */
+  }
+
+  &:hover {
+    color: #003078; /* govuk-link-hover-colour */
+    border-bottom-color: #505a5f; /* govuk-secondary-text-colour */
+  }
+}
+
+/* The active state (blue text, thick blue underline) */
+.hmpps-tabs-link--active {
+  border-bottom-color: #1d70b8; /* govuk-blue */
+
+  &, &:link, &:visited {
+    color: #1d70b8;
+  }
+
+  &:hover {
+    border-bottom-color: #1d70b8;
+  }
+}

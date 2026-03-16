@@ -1,4 +1,10 @@
-import { convertToTitleCase, initialiseName, penceToPound, formatDateForView } from './utils'
+import {
+  convertToTitleCase,
+  initialiseName,
+  penceToPound,
+  formatDateForView,
+  createProfileTabsForPrisoner,
+} from './utils'
 
 describe('penceToPound', () => {
   it.each([
@@ -47,5 +53,20 @@ describe('initialise name', () => {
     ['Double barrelled', 'Robert-John Smith-Jones-Wilson', 'R. Smith-Jones-Wilson'],
   ])('%s initialiseName(%s, %s)', (_: string, a: string, expected: string) => {
     expect(initialiseName(a)).toEqual(expected)
+  })
+})
+
+describe('createProfileTabsForPrisoner', () => {
+  it('returns all tabs with correct titles', () => {
+    const prisonNumber = 'A147788'
+    const tabContent = createProfileTabsForPrisoner({
+      prisonNumber,
+    })
+    expect(tabContent).toHaveLength(7)
+    const titles = ['Overview', 'Personal', 'Case notes', 'Alerts', 'Offences', 'Work and skills', 'Finance']
+    tabContent.forEach(({ tabName, href }, i) => {
+      expect(tabName).toBe(titles[i])
+      expect(href).toContain(`prisoner/${prisonNumber}`)
+    })
   })
 })

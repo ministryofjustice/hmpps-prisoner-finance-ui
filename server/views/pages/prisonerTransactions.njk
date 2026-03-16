@@ -1,27 +1,36 @@
 {% extends "../partials/layout.njk" %}
 {% from "../components/card/card.njk" import card %}
 {% from "../components/balanceCard/balanceCard.njk" import balanceCard %}
+{% from "../components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
 
 {% set pageTitle = applicationName + " - Finance" %}
 {% set mainClasses = "govuk-body" %}
 
+{% block beforeContent %}
+
+<a href="/" id="backLink" class="govuk-back-link govuk-!-margin-top-4" data-testid="backLink">Back</a>
+
+  {{ prisonerInformationHeader({
+      prisoner:prisoner
+  }) }}
+
+
+{% endblock %}
+
 {% block content %}
-
-<a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
-
-  <h1 id="prisonerTransactionsHeading">
-    {{ prisoner.firstName | capitalize }} {{ prisoner.lastName | capitalize }}'s Transactions
-  </h1>
-
-<div class="card-group govuk-grid-row" id="prisonerFinanceCard">
-  <div class="govuk-grid-column-one-third card-group__item">
-    {{ balanceCard({
-      "heading": "Total",
-      "amount": balance,
-      "data-testid": "view-prisoner-balance-card"
-    }) }}
+  {# 2. The rest of your content stays exactly the same #}
+  <div class="card-group govuk-grid-row" id="prisonerFinanceCard">
+    <div class="govuk-grid-column-one-third card-group__item">
+      {{ balanceCard({
+        "heading": "Total",
+        "amount": balance,
+        "data-testid": "view-prisoner-balance-card"
+      }) }}
+    </div>
   </div>
-</div>
+
+  <h1 id="prisonerTransactionsHeading">Prisoner Transactions</h1>
+
 
 <table class="govuk-table" data-testid="prisoner-transactions-table">
     <thead class="govuk-table__head">

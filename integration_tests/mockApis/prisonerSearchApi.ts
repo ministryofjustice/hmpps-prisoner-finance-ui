@@ -30,6 +30,15 @@ export default {
           lastName: 'SMITH',
           prisonId: 'MDI',
           status: 'ACTIVE IN',
+          cellLocation: 'RECP',
+          category: 'C',
+          csra: 'Standard',
+          currentIncentive: {
+            level: {
+              code: 'STD',
+              description: 'Enhanced',
+            },
+          },
         },
       },
     })
@@ -50,6 +59,7 @@ export default {
           lastName: 'TAYLOR',
           prisonId: 'LEI',
           status: 'ACTIVE IN',
+          cellLocation: 'RECP',
         },
       },
     })

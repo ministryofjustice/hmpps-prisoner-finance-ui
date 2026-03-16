@@ -27,6 +27,17 @@ describe('PrisonerSearchApiClient', () => {
         prisonerNumber: prisonNumber,
         firstName: 'JOHN',
         lastName: 'SMITH',
+        prisonId: 'MDI',
+        status: 'ACTIVE IN',
+        cellLocation: 'RECP',
+        category: 'C',
+        csra: 'Standard',
+        currentIncentive: {
+          level: {
+            code: 'STD',
+            description: 'Enhanced',
+          },
+        },
       } as Prisoner
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)

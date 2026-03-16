@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { AxeBuilder } from '@axe-core/playwright'
-import { login } from '../testUtils'
+import { login, resetStubs } from '../testUtils'
 import PrisonerMoneyPage from '../pages/prisonerMoneyPage'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
@@ -8,6 +8,10 @@ import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 
 test.describe('Prisoner Money', () => {
+  test.afterEach(async () => {
+    await resetStubs()
+  })
+
   const transactionPayload: Array<PrisonerTransactionResponse> = [
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -62,7 +66,7 @@ test.describe('Prisoner Money', () => {
 
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
     expect(prisonerMoneyPage.heading).toBeVisible()
-    expect(prisonerMoneyPage.heading).toContainText("John Smith's Transactions")
+    expect(prisonerMoneyPage.heading).toContainText('Prisoner Transactions')
     expect(prisonerMoneyPage.tableTransactions).toBeVisible()
     expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
 
@@ -140,5 +144,30 @@ test.describe('Prisoner Money', () => {
       .analyze()
 
     expect(accessibilityScanResults.violations).toEqual([])
+  })
+
+  test('Should display prisoner information header', async ({ page }) => {
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    const { prisonerInformationHeader } = await PrisonerMoneyPage.verifyOnPage(page)
+
+    expect(prisonerInformationHeader).toBeVisible()
+    expect(page.locator('[data-testid="prisonerName"]')).toContainText('Smith, John')
+    expect(page.locator('[data-testid="prisonerNumber"]')).toContainText(prisonNumber)
+    expect(page.locator('[data-testid="cell-location"]')).toContainText('RECP')
+    expect(page.locator('[data-testid="category"]')).toContainText('C')
+    expect(page.locator('[data-testid="csra"]')).toContainText('Standard')
+    expect(page.locator('[data-testid="incentive-level"]')).toContainText('Enhanced')
+  })
+
+  test('should display the prisoner information tab', async ({ page }) => {
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    await PrisonerMoneyPage.verifyOnPage(page)
+
+    const profileTabs = page.locator('[data-testid="profile-tabs"]')
+    const overviewTabLink = profileTabs.locator('li a').first()
+    expect(overviewTabLink).toHaveAttribute(
+      'href',
+      `https://prisoner-dev.digital.prison.service.justice.gov.uk/prisoner/${prisonNumber}`,
+    )
   })
 })
