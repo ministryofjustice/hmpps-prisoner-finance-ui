@@ -14,6 +14,8 @@ export default class PrisonerProfilePage extends AbstractPage {
 
   readonly transactionsLink: Locator
 
+  readonly profileHeader: Locator
+
   private constructor(page: Page) {
     super(page)
     this.heading = page.locator('#prisonerProfileHeading')
@@ -22,6 +24,7 @@ export default class PrisonerProfilePage extends AbstractPage {
     this.backButton = page.locator('[data-testid="backLink"]')
     this.balanceCards = page.locator('[data-testid="prisoner-balance-cards"]')
     this.transactionsLink = page.locator('[data-testid="transactions-page-link"]')
+    this.profileHeader = page.locator('[data-testid="hmpps-profile-banner"]')
   }
 
   static async verifyOnPage(page: Page): Promise<PrisonerProfilePage> {

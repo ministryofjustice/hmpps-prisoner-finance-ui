@@ -1,8 +1,8 @@
-{% extends "../../../partials/layout.njk" %}
+{% extends "partials/layout.njk" %}
 
-{% from "../../../components/balanceCard/balanceCard.njk" import balanceCard %}
+{% from "components/balanceCard/balanceCard.njk" import balanceCard %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "../../../components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
+{% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
 
 {% set pageTitle = applicationName + " - Finance" %}
 {% set mainClasses = "govuk-body" %}

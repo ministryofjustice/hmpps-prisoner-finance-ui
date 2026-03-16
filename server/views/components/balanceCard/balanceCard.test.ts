@@ -1,6 +1,7 @@
 import nunjucks from 'nunjucks'
 import * as cheerio from 'cheerio'
 import { penceToPound } from '../../../utils/utils'
+import { setUpNunJucksFilters } from '../../../utils/nunjucksSetup'
 
 describe('View Components - BalanceCard', () => {
   const njkEnv = nunjucks.configure(
@@ -11,7 +12,7 @@ describe('View Components - BalanceCard', () => {
       lstripBlocks: true,
     },
   )
-  njkEnv.addFilter('penceToPound', penceToPound)
+  setUpNunJucksFilters(njkEnv)
 
   function renderCard(params: Record<string, unknown>) {
     const macroString = `

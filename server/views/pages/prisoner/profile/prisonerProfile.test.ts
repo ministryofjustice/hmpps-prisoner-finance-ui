@@ -2,7 +2,8 @@ import { expect } from '@playwright/test'
 import * as cheerio from 'cheerio'
 import nunjucks from 'nunjucks'
 import { PrisonerTransactionResponse } from '../../../../interfaces/PrisonerTransactionResponse'
-import { formatDateForView, penceToPound } from '../../../../utils/utils'
+import { createProfileTabsForPrisoner, formatDateForView, penceToPound } from '../../../../utils/utils'
+import { setUpNunJucksFilters } from '../../../../utils/nunjucksSetup'
 
 describe('prisoner profile page', () => {
   const payload: Array<PrisonerTransactionResponse> = [
@@ -59,9 +60,8 @@ describe('prisoner profile page', () => {
         lstripBlocks: true,
       },
     )
-    njkEnv.addFilter('assetMap', (asset: string) => asset)
-    njkEnv.addFilter('formatDateForView', formatDateForView)
-    njkEnv.addFilter('penceToPound', penceToPound)
+
+    setUpNunJucksFilters(njkEnv)
 
     const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
       applicationName: 'Hmpps Prisoner Finance Ui',
@@ -71,9 +71,29 @@ describe('prisoner profile page', () => {
         privateCash: { amount: 3456 },
         savings: { amount: 0 },
       },
+      prisoner: {
+        firstName: 'John',
+        lastName: 'Smith',
+        prisonerNumber: 'AB123456',
+        cellLocation: 'RECP',
+        csra: 'Standard',
+        category: 'C',
+        currentIncentive: {
+          level: {
+            code: 'STD',
+            description: 'Standard',
+          },
+        },
+      },
+      prisonNumber: 'AB123456',
     })
 
     $ = cheerio.load(html)
+  })
+
+  it("should render prisoner's profile header", () => {
+    const profileHeader = $('[data-testid="hmpps-profile-banner"]')
+    expect(profileHeader).toBeDefined()
   })
 
   it('should render the transaction table in the summary container', () => {

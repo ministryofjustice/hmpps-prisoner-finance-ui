@@ -1,5 +1,6 @@
 import nunjucks from 'nunjucks'
 import * as cheerio from 'cheerio'
+import { setUpNunJucksFilters } from '../../../utils/nunjucksSetup'
 
 describe('View Components - Card', () => {
   const njkEnv = nunjucks.configure(
@@ -10,6 +11,8 @@ describe('View Components - Card', () => {
       lstripBlocks: true,
     },
   )
+
+  setUpNunJucksFilters(njkEnv)
 
   function renderCard(params: Record<string, unknown>) {
     const macroString = `

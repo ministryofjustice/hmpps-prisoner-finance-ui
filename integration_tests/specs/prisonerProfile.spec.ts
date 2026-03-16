@@ -98,6 +98,13 @@ test.describe('Prisoner Profile', () => {
     expect(cells.nth(4)).toHaveText('£0.10')
   })
 
+  test("Should display prisoner's profile header", async ({ page }) => {
+    await page.goto(`/prisoner/${prisonNumber}`)
+
+    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+    expect(prisonerProfilePage.profileHeader).toBeVisible()
+  })
+
   test('Should display the sub account balance cards', async ({ page }) => {
     await page.goto(`/prisoner/${prisonNumber}`)
 

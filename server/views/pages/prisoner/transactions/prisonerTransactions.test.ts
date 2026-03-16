@@ -3,6 +3,7 @@ import * as cheerio from 'cheerio'
 import nunjucks from 'nunjucks'
 import { PrisonerTransactionResponse } from '../../../../interfaces/PrisonerTransactionResponse'
 import { formatDateForView, penceToPound, createProfileTabsForPrisoner } from '../../../../utils/utils'
+import { setUpNunJucksFilters } from '../../../../utils/nunjucksSetup'
 
 describe('prisoner transactions page', () => {
   const payload: Array<PrisonerTransactionResponse> = [
@@ -52,10 +53,8 @@ describe('prisoner transactions page', () => {
         lstripBlocks: true,
       },
     )
-    njkEnv.addFilter('assetMap', (asset: string) => asset)
-    njkEnv.addFilter('formatDateForView', formatDateForView)
-    njkEnv.addFilter('penceToPound', penceToPound)
-    njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
+
+    setUpNunJucksFilters(njkEnv)
 
     const html = njkEnv.render('pages/prisoner/transactions/prisonerTransactions.njk', {
       prisonNumber,
