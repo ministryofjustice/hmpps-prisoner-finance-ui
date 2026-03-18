@@ -129,7 +129,6 @@ describe('prisoner profile page', () => {
   })
 
   it('Should render the actions menu', () => {
-
     const creditMenu = $('[data-testid="credit-menu"]')
     expect(creditMenu.text()).toEqual('Credit account')
 

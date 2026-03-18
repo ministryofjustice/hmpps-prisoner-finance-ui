@@ -21,7 +21,7 @@ describe('View Components - ActionBlock', () => {
   }
 
   it('should render the action block with 1 action', () => {
-    const $ = renderCard({actions: [{text: 'action 1', 'dataTestId': 'test-child'}]})
+    const $ = renderCard({ actions: [{ text: 'action 1', dataTestId: 'test-child' }] })
 
     expect($('[data-testid="test-child"]').text().trim()).toBe('action 1')
   })
