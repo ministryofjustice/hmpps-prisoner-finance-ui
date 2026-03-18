@@ -1,0 +1,14 @@
+    {% macro actionBlock(params) %}
+    
+    <div class="hmpps-actions-block govuk-!-margin-bottom-5">
+      <h2 class="govuk-heading-m">Actions</h2>
+      <ul class="hmpps-actions-block__list">
+        {% for action in params.actions %}
+        <li>
+          <a href="{{ action.url }}" class="govuk-link govuk-link--no-visited-state" data-testid="{{ action.dataTestId }}" referrerpolicy="no-referrer-when-downgrade">{{ action.text }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    {% endmacro %}
