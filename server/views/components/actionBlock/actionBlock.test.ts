@@ -20,7 +20,7 @@ describe('View Components - ActionBlock', () => {
     return cheerio.load(output)
   }
 
-  it('should render the action block with 1 action', () => {
+  it('Should render a link for each action provided', () => {
     const $ = renderActionBlock({ actions: [{ text: 'action 1', dataTestId: 'test-child' }] })
 
     expect($('[data-testid="test-child"]').text().trim()).toBe('action 1')
