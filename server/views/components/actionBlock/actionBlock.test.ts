@@ -11,7 +11,7 @@ describe('View Components - ActionBlock', () => {
     },
   )
 
-  function renderCard(params: Record<string, unknown>) {
+  function renderActionBlock(params: Record<string, unknown>) {
     const macroString = `
       {% from "components/actionBlock/actionBlock.njk" import actionBlock %}
       {{ actionBlock(params) }}
@@ -21,7 +21,7 @@ describe('View Components - ActionBlock', () => {
   }
 
   it('should render the action block with 1 action', () => {
-    const $ = renderCard({ actions: [{ text: 'action 1', dataTestId: 'test-child' }] })
+    const $ = renderActionBlock({ actions: [{ text: 'action 1', dataTestId: 'test-child' }] })
 
     expect($('[data-testid="test-child"]').text().trim()).toBe('action 1')
   })
