@@ -212,7 +212,7 @@ test.describe('Prisoner Money', () => {
 
     const profileTabs = page.locator('[data-testid="profile-tabs"]')
     const overviewTabLink = profileTabs.locator('li a').first()
-    expect(overviewTabLink).toHaveAttribute(
+    await expect(overviewTabLink).toHaveAttribute(
       'href',
       `https://prisoner-dev.digital.prison.service.justice.gov.uk/prisoner/${prisonNumber}`,
     )
@@ -232,5 +232,143 @@ test.describe('Prisoner Money', () => {
     const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
     expect(noTransactionsMessage).toBeVisible()
     expect(noTransactionsMessage).toHaveText('No transactions to show')
+  })
+
+  test('should display the filter', async ({ page }) => {
+    await baseStubs()
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    await PrisonerMoneyPage.verifyOnPage(page)
+
+    const filterComponent = page.locator('[data-module="moj-filter"]')
+    const filterSelected = page.locator('[class="moj-filter__selected"]')
+    const filterOptions = page.locator('[class="moj-filter__options"]')
+
+    await expect(filterSelected).toBeVisible()
+    await expect(filterComponent).toBeVisible()
+    await expect(filterOptions).toBeVisible()
+  })
+
+  test('should filter by valid start and end Date', async ({ page }) => {
+    await baseStubs()
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    await PrisonerMoneyPage.verifyOnPage(page)
+
+    const startDateFilter = page.locator('input[id="startDate"]')
+    const endDateFilter = page.locator('input[id="endDate"]')
+    const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+
+    await expect(startDateFilter).toBeVisible()
+    await expect(endDateFilter).toBeVisible()
+
+    const startDateVal = '10/10/2010'
+    const endDateVal = '10/12/2010'
+
+    await startDateFilter.fill(startDateVal)
+    await endDateFilter.fill(endDateVal)
+
+    await applyFilterButton.click()
+
+    const endDateError = page.locator('[id="endDate-error"]')
+    const startDateError = page.locator('[id="startDate-error"]')
+
+    expect(endDateError).not.toBeVisible()
+    expect(startDateError).not.toBeVisible()
+
+    await expect(page).toHaveURL(
+      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
+    )
+  })
+
+  test('should show validation errors on start and end date', async ({ page }) => {
+    await baseStubs()
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    await PrisonerMoneyPage.verifyOnPage(page)
+
+    const startDateFilter = page.locator('input[id="startDate"]')
+    const endDateFilter = page.locator('input[id="endDate"]')
+    const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+
+    await expect(startDateFilter).toBeVisible()
+    await expect(endDateFilter).toBeVisible()
+
+    const startDateVal = 'NotAdate'
+    const endDateVal = '99/99/99999'
+
+    await startDateFilter.fill(startDateVal)
+    await endDateFilter.fill(endDateVal)
+
+    await applyFilterButton.click()
+
+    const endDateError = page.locator('[id="endDate-error"]')
+    const startDateError = page.locator('[id="startDate-error"]')
+
+    await expect(endDateError).toContainText('End date must be a real date, like 18/01/2026')
+    await expect(startDateError).toContainText('Start date must be a real date, like 18/01/2026')
+
+    await expect(page).toHaveURL(
+      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
+    )
+  })
+
+  test('should show validation error when end date is earlier than start date', async ({ page }) => {
+    await baseStubs()
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    await PrisonerMoneyPage.verifyOnPage(page)
+
+    const startDateFilter = page.locator('input[id="startDate"]')
+    const endDateFilter = page.locator('input[id="endDate"]')
+    const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+
+    await expect(startDateFilter).toBeVisible()
+    await expect(endDateFilter).toBeVisible()
+
+    const startDateVal = '10/11/2011'
+    const endDateVal = '10/11/2010'
+
+    await startDateFilter.fill(startDateVal)
+    await endDateFilter.fill(endDateVal)
+
+    await applyFilterButton.click()
+
+    const endDateError = page.locator('[id="endDate-error"]')
+    const startDateError = page.locator('[id="startDate-error"]')
+
+    await expect(endDateError).toContainText('End date cannot be earlier than start date')
+    await expect(startDateError).not.toBeVisible()
+
+    await expect(page).toHaveURL(
+      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
+    )
+  })
+
+  test('should be able to removed selected filters', async ({ page }) => {
+    await baseStubs()
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    await PrisonerMoneyPage.verifyOnPage(page)
+
+    const startDateFilter = page.locator('input[id="startDate"]')
+    const endDateFilter = page.locator('input[id="endDate"]')
+    const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+
+    expect(startDateFilter).toBeVisible()
+    expect(endDateFilter).toBeVisible()
+
+    const startDateVal = '10/10/10'
+    const endDateVal = '10/12/10'
+
+    await startDateFilter.fill(startDateVal)
+    await endDateFilter.fill(endDateVal)
+
+    await applyFilterButton.click()
+
+    await expect(page).toHaveURL(
+      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
+    )
+
+    const startDatefilterTag = page.getByRole('link', { name: 'Start date' })
+
+    await startDatefilterTag.click()
+    await expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?endDate=${encodeURIComponent(endDateVal)}#filterForm`)
+    expect(await endDateFilter.inputValue()).toBe(endDateVal)
   })
 })

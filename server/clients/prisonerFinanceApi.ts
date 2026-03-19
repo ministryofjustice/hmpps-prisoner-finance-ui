@@ -5,16 +5,25 @@ import logger from '../../logger'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
 import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
+import { datePickerToISODate } from '../utils/utils'
 
 export default class PrisonerFinanceApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
     super('Prisoner Finance API', config.apis.prisonerFinanceApi, logger, authenticationClient)
   }
 
-  async getPrisonerTransactionsByPrisonNumber(prisonNumber: string): Promise<Array<PrisonerTransactionResponse>> {
+  async getPrisonerTransactionsByPrisonNumber(
+    prisonNumber: string,
+    startDate: string = null,
+    endDate: string = null,
+  ): Promise<Array<PrisonerTransactionResponse>> {
     return this.get(
       {
         path: `/prisoners/${prisonNumber}/money/transactions`,
+        query: {
+          startDate: startDate ? datePickerToISODate(startDate) : undefined,
+          endDate: endDate ? datePickerToISODate(endDate) : undefined,
+        },
       },
       asSystem(),
     )

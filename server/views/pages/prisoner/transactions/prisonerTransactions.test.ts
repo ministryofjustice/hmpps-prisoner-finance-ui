@@ -90,6 +90,14 @@ describe('prisoner transactions page', () => {
 
     expect($('.hmpps-summary-container__heading').text().trim()).toBe('Total')
     expect($('.hmpps-balance-card__amount').text().trim()).toBe('£10.00')
+
+    const filterComponent = $('[data-module="moj-filter"]')
+    const filterSelected = $('[class="moj-filter__selected"]')
+    const filterOptions = $('[class="moj-filter__options"]')
+
+    expect(filterSelected.length).not.toBe(0)
+    expect(filterComponent.length).not.toBe(0)
+    expect(filterOptions.length).not.toBe(0)
   })
 
   it('Should render no transactions', () => {

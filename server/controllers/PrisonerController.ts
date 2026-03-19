@@ -2,6 +2,13 @@ import createError from 'http-errors'
 import { NextFunction, Request, Response } from 'express'
 import { Services } from '../services'
 import { Page } from '../services/auditService'
+import { buildMojSelectedFilter } from '../utils/mojFilterHelper'
+import { formatValidationErrors, transactionsFilterSchema } from '../validators/transactionsFilterValidator'
+
+const transactionFilterConfig = {
+  startDate: { label: 'Start date', category: 'Date' },
+  endDate: { label: 'End date', category: 'Date' },
+}
 
 class PrisonerController {
   constructor(private readonly services: Services) {}
@@ -13,6 +20,17 @@ class PrisonerController {
     })
 
     try {
+      const { startDate, endDate } = req.query as Record<string, string>
+
+      const parseResult = transactionsFilterSchema.safeParse(req.query)
+
+      // I think this logic will probably be changed to not call the API if there are errors and display "no transactions" perhaps?
+      let zodErrors = {}
+      if (!parseResult.success) {
+        zodErrors = formatValidationErrors(parseResult.error)
+      }
+      const selectedFilters = buildMojSelectedFilter(transactionFilterConfig, req.query)
+
       const [transactions, accountBalance] = await Promise.all([
         this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(req.params.prisonNumber as string),
         this.services.prisonerFinanceService.getAccountBalance(req.params.prisonNumber as string),
@@ -23,6 +41,12 @@ class PrisonerController {
         applicationName: 'Transactions',
         transactions,
         balance: accountBalance.amount,
+        filters: {
+          startDate,
+          endDate,
+          selectedFilters,
+        },
+        ...zodErrors,
       })
     } catch (error) {
       next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error'))
