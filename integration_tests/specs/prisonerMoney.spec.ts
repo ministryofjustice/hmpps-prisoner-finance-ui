@@ -168,9 +168,76 @@ test.describe('Prisoner Money', () => {
 
     const profileTabs = page.locator('[data-testid="profile-tabs"]')
     const overviewTabLink = profileTabs.locator('li a').first()
-    expect(overviewTabLink).toHaveAttribute(
+    await expect(overviewTabLink).toHaveAttribute(
       'href',
       `https://prisoner-dev.digital.prison.service.justice.gov.uk/prisoner/${prisonNumber}`,
     )
+  })
+
+  test('should display the filter', async ({ page }) => {
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    await PrisonerMoneyPage.verifyOnPage(page)
+
+    const filterComponent = page.locator('[data-module="moj-filter"]')
+    const filterSelected = page.locator('[class="moj-filter__selected"]')
+    const filterOptions = page.locator('[class="moj-filter__options"]')
+
+    await expect(filterSelected).toBeVisible()
+    await expect(filterComponent).toBeVisible()
+    await expect(filterOptions).toBeVisible()
+  })
+
+  test('should filter by start and end Date', async ({ page }) => {
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    await PrisonerMoneyPage.verifyOnPage(page)
+
+    const startDateFilter = page.locator('input[id="startDate"]')
+    const endDateFilter = page.locator('input[id="endDate"]')
+    const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+
+    await expect(startDateFilter).toBeVisible()
+    await expect(endDateFilter).toBeVisible()
+
+    const startDateVal = '10/10/10'
+    const endDateVal = '10/12/10'
+
+    await startDateFilter.fill(startDateVal)
+    await endDateFilter.fill(endDateVal)
+
+    await applyFilterButton.click()
+
+    await expect(page).toHaveURL(
+      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}`,
+    )
+  })
+
+  test('should be able to removed selected filters', async ({ page }) => {
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    await PrisonerMoneyPage.verifyOnPage(page)
+
+    const startDateFilter = page.locator('input[id="startDate"]')
+    const endDateFilter = page.locator('input[id="endDate"]')
+    const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+
+    expect(startDateFilter).toBeVisible()
+    expect(endDateFilter).toBeVisible()
+
+    const startDateVal = '10/10/10'
+    const endDateVal = '10/12/10'
+
+    await startDateFilter.fill(startDateVal)
+    await endDateFilter.fill(endDateVal)
+
+    await applyFilterButton.click()
+
+    await expect(page).toHaveURL(
+      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}`,
+    )
+
+    const startDatefilterTag = page.getByRole('link', { name: 'Start date' })
+
+    await startDatefilterTag.click()
+    await expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?endDate=${encodeURIComponent(endDateVal)}`)
+    expect(await endDateFilter.inputValue()).toBe(endDateVal)
   })
 })
