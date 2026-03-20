@@ -140,6 +140,6 @@ describe('prisoner profile page', () => {
     const cheerioPage = cheerio.load(html)
     const noTransactionsMessage = cheerioPage('[data-testid="no-transactions-message"]')
     expect(noTransactionsMessage.length).not.toBe(0)
-    expect(noTransactionsMessage.text()).toContain('No Transactions')
+    expect(noTransactionsMessage.text()).toContain('No transactions to show')
   })
 })

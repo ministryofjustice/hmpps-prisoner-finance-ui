@@ -102,6 +102,6 @@ describe('prisoner transactions page', () => {
 
     expect(cheerioPage('table[data-testid="prisoner-transactions-table"]').length).toBe(0)
     expect(noTransactionsMessage.length).not.toBe(0)
-    expect(noTransactionsMessage.text()).toContain('No Transactions')
+    expect(noTransactionsMessage.text()).toContain('No transactions to show')
   })
 })

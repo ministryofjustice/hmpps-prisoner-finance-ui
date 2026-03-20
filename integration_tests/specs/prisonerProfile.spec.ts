@@ -211,6 +211,6 @@ test.describe('Prisoner Profile', () => {
 
     const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
     expect(noTransactionsMessage).toBeVisible()
-    expect(noTransactionsMessage).toHaveText('No Transactions')
+    expect(noTransactionsMessage).toHaveText('No transactions to show')
   })
 })
