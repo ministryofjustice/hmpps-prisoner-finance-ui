@@ -64,6 +64,7 @@
                   "data-testid" : "prisoner-transactions-table-container"
                   }) %}
           <div class="hmpps-summary-container__table_container">
+            {% if transactions | length > 0 %}
               {{ govukTable({
                   attributes: {
                     "data-testid": "prisoner-transactions-table"
@@ -77,6 +78,9 @@
                   ],
                   rows: tableRows
                 }) }}
+            {% else %}
+              <h4 data-testid="no-transactions-message"> No transactions to show </h4>
+            {% endif %}
           </div>
 
       <div class="govuk-!-static-padding-left-3 govuk-!-static-padding-bottom-3">

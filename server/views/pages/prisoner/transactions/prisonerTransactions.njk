@@ -1,8 +1,8 @@
 {% extends "partials/layout.njk" %}
 
 {% from "components/balanceCard/balanceCard.njk" import balanceCard %}
-{% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
 
 {% set pageTitle = applicationName + " - Finance" %}
 {% set mainClasses = "govuk-body" %}
@@ -46,21 +46,25 @@
   {% set tableRows = (tableRows.push(rowData), tableRows) %}
 {% endfor %}
 
-{{ govukTable({
-  attributes: {
-    "data-testid": "prisoner-transactions-table"
-  },
-  caption: "Transactions",
-  captionClasses: "govuk-table__caption--m",
-  head: [
-    { text: "Date of transaction" },
-    { text: "Description/ Line Item" },
-    { text: "Credit" },
-    { text: "Debit" },
-    { text: "Location" },
-    { text: "Account Type" }
-  ],
-  rows: tableRows
-}) }}
+{% if transactions | length > 0 %}
+  {{ govukTable({
+    attributes: {
+      "data-testid": "prisoner-transactions-table"
+    },
+    caption: "Transactions",
+    captionClasses: "govuk-table__caption--m",
+    head: [
+      { text: "Date of transaction" },
+      { text: "Description/ Line Item" },
+      { text: "Credit" },
+      { text: "Debit" },
+      { text: "Location" },
+      { text: "Account Type" }
+    ],
+    rows: tableRows
+  }) }}
+{% else %}
+  <h4 data-testid="no-transactions-message"> No transactions to show </h4>
+{% endif %}
 
 {% endblock %}

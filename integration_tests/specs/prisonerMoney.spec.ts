@@ -54,15 +54,20 @@ test.describe('Prisoner Money', () => {
   }
 
   const prisonNumber = 'ABC123XZ'
-  test.beforeEach(async ({ page }) => {
-    await resetStubs()
-    await login(page)
+
+  const baseStubs = async () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
     await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
+  }
+
+  test.beforeEach(async ({ page }) => {
+    await resetStubs()
+    await login(page)
   })
 
   test('Should display Header and Transactions table', async ({ page }) => {
+    await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}/money`)
 
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
@@ -85,6 +90,7 @@ test.describe('Prisoner Money', () => {
   })
 
   test('Should display the balance card with the total amount', async ({ page }) => {
+    await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}/money`)
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
 
@@ -97,6 +103,7 @@ test.describe('Prisoner Money', () => {
   })
 
   test('Backlink should render and return to profile page', async ({ page }) => {
+    await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}/money`)
 
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
@@ -122,6 +129,8 @@ test.describe('Prisoner Money', () => {
   })
 
   test('Should handle 500 and render error', async ({ page }) => {
+    await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
     await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
 
     const response = await page.goto(`/prisoner/${prisonNumber}/money`)
@@ -139,6 +148,7 @@ test.describe('Prisoner Money', () => {
   })
 
   test('Should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
+    await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}/money`)
     await PrisonerMoneyPage.verifyOnPage(page)
 
@@ -150,6 +160,7 @@ test.describe('Prisoner Money', () => {
   })
 
   test('Should display prisoner information header', async ({ page }) => {
+    await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}/money`)
     const { prisonerInformationHeader } = await PrisonerMoneyPage.verifyOnPage(page)
 
@@ -163,6 +174,7 @@ test.describe('Prisoner Money', () => {
   })
 
   test('should display the prisoner information tab', async ({ page }) => {
+    await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}/money`)
     await PrisonerMoneyPage.verifyOnPage(page)
 
@@ -172,5 +184,20 @@ test.describe('Prisoner Money', () => {
       'href',
       `https://prisoner-dev.digital.prison.service.justice.gov.uk/prisoner/${prisonNumber}`,
     )
+  })
+
+  test('should display no transactions', async ({ page }) => {
+    await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
+    await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
+
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+
+    const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
+    expect(prisonerMoneyPage.tableTransactions).not.toBeVisible()
+
+    const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
+    expect(noTransactionsMessage).toBeVisible()
+    expect(noTransactionsMessage).toHaveText('No transactions to show')
   })
 })
