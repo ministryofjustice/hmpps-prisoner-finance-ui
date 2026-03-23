@@ -7,8 +7,6 @@
       font-weight: bold;
       margin: 0;
     }
-    @include govuk-responsive-padding(3, 'left');
-    @include govuk-responsive-padding(3, 'right');
   }
 
   &__amount {

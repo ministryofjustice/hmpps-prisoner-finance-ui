@@ -21,7 +21,7 @@
     }
   }
 
-  &__table_container {
-    padding: 0 1rem
+  &__content {
+    @include govuk-responsive-padding(3);
   }
 }

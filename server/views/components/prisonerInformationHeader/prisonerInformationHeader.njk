@@ -1,8 +1,8 @@
 {% macro prisonerInformationHeader(params) %}
-  <div data-testid="hmpps-profile-banner" class="hmpps-profile-banner">
+  <div data-testid="hmpps-profile-banner" class="hmpps-profile-banner govuk-grid-row">
     <div id="prisonerInformationHeader">
       {% include "./profileBannerTop.njk" %}
-      {% include "./profileBannerTabs.njk" %}
     </div>
   </div>
+  {% include "./profileBannerTabs.njk" %}
 {% endmacro %}

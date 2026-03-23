@@ -66,6 +66,8 @@ test.describe('Prisoner Profile', () => {
     { subAccountId: '', balanceDateTime: '', amount: 0 },
   ]
 
+  const prisonNumber = 'ABC123XZ'
+
   const baseStubs = async () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
@@ -73,7 +75,7 @@ test.describe('Prisoner Profile', () => {
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', balancePayload[2])
   }
-  const prisonNumber = 'ABC123XZ'
+
   test.beforeEach(async ({ page }) => {
     await resetStubs()
     await login(page)
@@ -147,6 +149,32 @@ test.describe('Prisoner Profile', () => {
     await prisonerProfilePage.backButton.click()
 
     expect(new URL(page.url()).pathname).toBe('/')
+  })
+
+  test('Should render the actions menu block', async ({ page }) => {
+    await baseStubs()
+    await page.goto(`/prisoner/${prisonNumber}`)
+    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+
+    expect(prisonerProfilePage.actionMenuBlock).toBeVisible()
+
+    expect(page.locator('[data-testid="credit-menu"]')).toBeVisible()
+    expect(page.locator('[data-testid="credit-menu"]')).toContainText('Credit account')
+
+    expect(page.locator('[data-testid="debit-menu"]')).toBeVisible()
+    expect(page.locator('[data-testid="debit-menu"]')).toContainText('Debit account')
+
+    expect(page.locator('[data-testid="subaccount-menu"]')).toBeVisible()
+    expect(page.locator('[data-testid="subaccount-menu"]')).toContainText('Sub account transfer')
+
+    expect(page.locator('[data-testid="adjudications-menu"]')).toBeVisible()
+    expect(page.locator('[data-testid="adjudications-menu"]')).toContainText('Adjudications')
+
+    expect(page.locator('[data-testid="export-menu"]')).toBeVisible()
+    expect(page.locator('[data-testid="export-menu"]')).toContainText('Export statement')
+
+    expect(page.locator('[data-testid="close-menu"]')).toBeVisible()
+    expect(page.locator('[data-testid="close-menu"]')).toContainText('Close account')
   })
 
   test('Should handle 404 and render error', async ({ page }) => {

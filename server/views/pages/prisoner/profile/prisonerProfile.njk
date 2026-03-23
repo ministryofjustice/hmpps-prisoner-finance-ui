@@ -4,8 +4,7 @@
 {% from "components/summaryContainer/summaryContainer.njk" import summaryContainer %}
 {% from "components/balanceCard/balanceCard.njk" import balanceCard %}
 {% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
-
-
+{% from "components/actionBlock/actionBlock.njk" import actionBlock %}
 
 {% set pageTitle = applicationName + " - Profile" %}
 {% set mainClasses = "govuk-body" %}
@@ -23,9 +22,12 @@
 
 {% block content %}
 
+<h2 id="prisonerProfileHeading" >Finances</h2>
+
 <div class="govuk-grid-row">
-  <div class="govuk-grid-column-two-thirds">
-    <h2 id="prisonerProfileHeading" >Finances</h2>
+
+  <div class="govuk-grid-column-three-quarters">
+  
     <div class="hmpps-balance-cards" data-testid="prisoner-balance-cards">
       {{ balanceCard({
           "heading": "Spends",
@@ -83,12 +85,23 @@
             {% endif %}
           </div>
 
-      <div class="govuk-!-static-padding-left-3 govuk-!-static-padding-bottom-3">
+      <div>
         <a href="/prisoner/{{prisonNumber}}/money" data-testid="transactions-page-link" >View all transactions</a>
       </div>
       {% endcall %}
     </div>
 
   </div>
+   <div class="govuk-grid-column-one-quarter">
+    {{ actionBlock({
+        actions: [
+        {text: "Credit account", 'dataTestId': 'credit-menu'},
+        {text: "Debit account", 'dataTestId': 'debit-menu'},
+        {text: "Sub account transfer", 'dataTestId': 'subaccount-menu'},
+        {text: "Adjudications", 'dataTestId': 'adjudications-menu'},
+        {text: "Export statement", 'dataTestId': 'export-menu'},
+        {text: "Close account", 'dataTestId': 'close-menu'}]
+    }) }}
+  </div>  
 </div>
 {% endblock %}

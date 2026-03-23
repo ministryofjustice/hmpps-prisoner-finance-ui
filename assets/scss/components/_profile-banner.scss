@@ -15,7 +15,8 @@
 }
 
 .hmpps-profile-banner-tabs {
-  margin-top: 2rem;
+  @include govuk-responsive-margin(3, 'top');
+  @include govuk-responsive-margin(3, 'bottom');
 }
 
 /* The Blue Top Section */
@@ -75,6 +76,7 @@
 .hmpps-profile-prisoner-number {
   color: #ffffff;
   margin-bottom: 0;
+  font-size: 1.5rem;
 }
 
 /* 4. Right-aligned Links Grid */

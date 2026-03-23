@@ -142,4 +142,24 @@ describe('prisoner profile page', () => {
     expect(noTransactionsMessage.length).not.toBe(0)
     expect(noTransactionsMessage.text()).toContain('No transactions to show')
   })
+
+  it('Should render the actions menu', () => {
+    const creditMenu = $('[data-testid="credit-menu"]')
+    expect(creditMenu.text()).toEqual('Credit account')
+
+    const debitMenu = $('[data-testid="debit-menu"]')
+    expect(debitMenu.text()).toEqual('Debit account')
+
+    const subAccountMenu = $('[data-testid="subaccount-menu"]')
+    expect(subAccountMenu.text()).toEqual('Sub account transfer')
+
+    const adjudicationsMenu = $('[data-testid="adjudications-menu"]')
+    expect(adjudicationsMenu.text()).toEqual('Adjudications')
+
+    const exportMenu = $('[data-testid="export-menu"]')
+    expect(exportMenu.text()).toEqual('Export statement')
+
+    const closeMenu = $('[data-testid="close-menu"]')
+    expect(closeMenu.text()).toEqual('Close account')
+  })
 })
