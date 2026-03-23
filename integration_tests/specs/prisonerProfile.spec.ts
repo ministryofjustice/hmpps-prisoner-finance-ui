@@ -213,4 +213,41 @@ test.describe('Prisoner Profile', () => {
     expect(noTransactionsMessage).toBeVisible()
     expect(noTransactionsMessage).toHaveText('No transactions to show')
   })
+
+  const accounts = [
+    { name: 'Spends', subAccountRef: 'SPENDS', testId: 'spends-card', payloadIndex: 0 },
+    { name: 'Private Cash', subAccountRef: 'CASH', testId: 'private-cash-card', payloadIndex: 1 },
+    { name: 'Savings', subAccountRef: 'SAVINGS', testId: 'savings-card', payloadIndex: 2 },
+  ]
+
+  for (const { name, subAccountRef, testId } of accounts) {
+    test(`page should load normally if ${name} account returns 404`, async ({ page }) => {
+      const stubPromises = [
+        prisonerSearchApi.stubGetPrisoner(prisonNumber),
+        prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, []),
+        prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, subAccountRef),
+      ]
+
+      accounts
+        .filter(a => a.subAccountRef !== subAccountRef)
+        .forEach(other => {
+          stubPromises.push(
+            prisonerFinanceApi.stubGetPrisonerSubAccountBalance(
+              prisonNumber,
+              other.subAccountRef,
+              balancePayload[other.payloadIndex],
+            ),
+          )
+        })
+
+      await Promise.all(stubPromises)
+
+      await page.goto(`/prisoner/${prisonNumber}`)
+
+      const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+
+      const errorCard = prisonerProfilePage.balanceCards.locator(`[data-testid="${testId}"]`)
+      await expect(errorCard.locator('.hmpps-balance-card__amount')).toContainText('£0.00')
+    })
+  }
 })

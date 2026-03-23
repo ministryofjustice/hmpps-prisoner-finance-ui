@@ -15,10 +15,21 @@ export default class PrisonerFinanceService {
   }
 
   async getSubAccountBalances(prisonNumber: string): Promise<Record<string, SubAccountBalanceResponse>> {
+    const fetchBalance = async (accountCode: string): Promise<SubAccountBalanceResponse> => {
+      try {
+        return await this.prisonerFinanceApiClient.getSubAccountBalance(prisonNumber, accountCode)
+      } catch (error) {
+        if (error.responseStatus === 404) {
+          return { subAccountId: '', balanceDateTime: '', amount: 0 }
+        }
+        throw error
+      }
+    }
+
     const [spends, cash, savings] = await Promise.all([
-      this.prisonerFinanceApiClient.getSubAccountBalance(prisonNumber, 'SPENDS'),
-      this.prisonerFinanceApiClient.getSubAccountBalance(prisonNumber, 'CASH'),
-      this.prisonerFinanceApiClient.getSubAccountBalance(prisonNumber, 'SAVINGS'),
+      fetchBalance('SPENDS'),
+      fetchBalance('CASH'),
+      fetchBalance('SAVINGS'),
     ])
 
     return {

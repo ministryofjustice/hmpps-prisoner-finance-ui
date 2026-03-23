@@ -93,4 +93,23 @@ export default {
         jsonBody: payload,
       },
     }),
+
+  stubGetPrisonerSubAccountBalanceNotFound: (prisonNumber: string, subAccountRef: string) =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/balance/${subAccountRef}`,
+      },
+      response: {
+        status: 404,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 404,
+          errorCode: null,
+          userMessage: 'Account not found',
+          developerMessage: null,
+          moreInfo: null,
+        },
+      },
+    }),
 }
