@@ -135,7 +135,7 @@ test.describe('Prisoner Profile', () => {
     const { transactionsLink } = prisonerProfilePage
     expect(transactionsLink).toBeVisible()
     expect(transactionsLink).toHaveAttribute('href', `/prisoner/${prisonNumber}/money`)
-    expect(transactionsLink).toContainText('View expanded transactions')
+    expect(transactionsLink).toContainText('View all transactions')
   })
 
   test('Backlink should render and return to index', async ({ page }) => {

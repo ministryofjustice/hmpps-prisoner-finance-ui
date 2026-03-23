@@ -101,7 +101,7 @@ describe('prisoner profile page', () => {
   it('should render the transaction table in the summary container', () => {
     const summaryContainer = $('[data-testid="prisoner-transactions-table-container"]')
 
-    expect(summaryContainer.find('.hmpps-summary-container__heading').text().trim()).toBe("Prisoner's transactions")
+    expect(summaryContainer.find('.hmpps-summary-container__heading').text().trim()).toBe('All account transactions')
     expect(summaryContainer.find('.govuk-table').length).not.toBe(0)
   })
 
