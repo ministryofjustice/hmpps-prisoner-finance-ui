@@ -49,9 +49,35 @@ describe('prisoner profile page', () => {
   ]
 
   let $: cheerio.CheerioAPI
+  let njkEnv: nunjucks.Environment
+
+  const params = {
+    applicationName: 'Hmpps Prisoner Finance Ui',
+    transactions: payload,
+    subAccountBalances: {
+      spends: { amount: 1234 },
+      privateCash: { amount: 3456 },
+      savings: { amount: 0 },
+    },
+    prisoner: {
+      firstName: 'John',
+      lastName: 'Smith',
+      prisonerNumber: 'AB123456',
+      cellLocation: 'RECP',
+      csra: 'Standard',
+      category: 'C',
+      currentIncentive: {
+        level: {
+          code: 'STD',
+          description: 'Standard',
+        },
+      },
+    },
+    prisonNumber: 'AB123456',
+  }
 
   beforeAll(() => {
-    const njkEnv = nunjucks.configure(
+    njkEnv = nunjucks.configure(
       ['server/views', 'node_modules/govuk-frontend/dist', 'node_modules/@ministryofjustice/frontend/'],
       {
         autoescape: true,
@@ -62,44 +88,21 @@ describe('prisoner profile page', () => {
 
     setUpNunJucksFilters(njkEnv)
 
-    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
-      applicationName: 'Hmpps Prisoner Finance Ui',
-      transactions: payload,
-      subAccountBalances: {
-        spends: { amount: 1234 },
-        privateCash: { amount: 3456 },
-        savings: { amount: 0 },
-      },
-      prisoner: {
-        firstName: 'John',
-        lastName: 'Smith',
-        prisonerNumber: 'AB123456',
-        cellLocation: 'RECP',
-        csra: 'Standard',
-        category: 'C',
-        currentIncentive: {
-          level: {
-            code: 'STD',
-            description: 'Standard',
-          },
-        },
-      },
-      prisonNumber: 'AB123456',
-    })
+    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', params)
 
     $ = cheerio.load(html)
   })
 
   it("should render prisoner's profile header", () => {
     const profileHeader = $('[data-testid="hmpps-profile-banner"]')
-    expect(profileHeader).toBeDefined()
+    expect(profileHeader.length).not.toBe(0)
   })
 
   it('should render the transaction table in the summary container', () => {
     const summaryContainer = $('[data-testid="prisoner-transactions-table-container"]')
 
-    expect(summaryContainer.find('.hmpps-summary-container__heading').text().trim()).toBe("Prisoner's transactions")
-    expect(summaryContainer.find('.govuk-table')).toBeDefined()
+    expect(summaryContainer.find('.hmpps-summary-container__heading').text().trim()).toBe('All account transactions')
+    expect(summaryContainer.find('.govuk-table').length).not.toBe(0)
   })
 
   it('Should render the transactions table with 5 rows', () => {
@@ -111,7 +114,7 @@ describe('prisoner profile page', () => {
 
   it('Should render a balance card for Spends, Private Cash, Savings', () => {
     const balanceCards = $('.hmpps-balance-cards')
-    expect(balanceCards).toBeDefined()
+    expect(balanceCards.length).not.toBe(0)
 
     expect(balanceCards.find('.hmpps-summary-container').length).toEqual(3)
 
@@ -126,6 +129,18 @@ describe('prisoner profile page', () => {
     const savingsCard = balanceCards.children('[data-testid="savings-card"]')
     expect(savingsCard.find('[data-testid="container_heading"]').text()).toEqual('Savings')
     expect(savingsCard.find('.hmpps-balance-card__amount').text()).toEqual('£0.00')
+  })
+
+  it('Should render no transactions', () => {
+    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
+      ...params,
+      transactions: [],
+    })
+
+    const cheerioPage = cheerio.load(html)
+    const noTransactionsMessage = cheerioPage('[data-testid="no-transactions-message"]')
+    expect(noTransactionsMessage.length).not.toBe(0)
+    expect(noTransactionsMessage.text()).toContain('No transactions to show')
   })
 
   it('Should render the actions menu', () => {

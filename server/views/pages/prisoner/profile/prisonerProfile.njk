@@ -60,10 +60,11 @@
           {% set tableRows = (tableRows.push(rowData), tableRows) %}
       {% endfor %}
       {% call summaryContainer({
-                  heading : "Prisoner's transactions",
+                  heading : "All account transactions",
                   "data-testid" : "prisoner-transactions-table-container"
                   }) %}
           <div class="hmpps-summary-container__table_container">
+            {% if transactions | length > 0 %}
               {{ govukTable({
                   attributes: {
                     "data-testid": "prisoner-transactions-table"
@@ -77,10 +78,13 @@
                   ],
                   rows: tableRows
                 }) }}
+            {% else %}
+              <p data-testid="no-transactions-message"> No transactions to show </p>
+            {% endif %}
           </div>
 
       <div class="govuk-!-static-padding-left-3 govuk-!-static-padding-bottom-3">
-        <a href="/prisoner/{{prisonNumber}}/money" data-testid="transactions-page-link" >View expanded transactions</a>
+        <a href="/prisoner/{{prisonNumber}}/money" data-testid="transactions-page-link" >View all transactions</a>
       </div>
       {% endcall %}
     </div>
