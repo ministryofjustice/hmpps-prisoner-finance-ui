@@ -12,7 +12,6 @@ import {
 } from './utils'
 import config from '../config'
 import logger from '../../logger'
-import { services } from '../services'
 
 export const setUpNunJucksFilters = (njkEnv: nunjucks.Environment, assetManifest: Record<string, string> = null) => {
   if (assetManifest !== null) njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)

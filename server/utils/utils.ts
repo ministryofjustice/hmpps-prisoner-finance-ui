@@ -1,8 +1,6 @@
 import { format, parseISO } from 'date-fns'
 import config from '../config'
-import { services } from '../services'
 import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
-import PrisonRegisterService from '../services/prisonRegisterService'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
