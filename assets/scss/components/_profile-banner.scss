@@ -133,7 +133,7 @@
   align-self: flex-end;
 }
 
-.hmpps-tabs-link {
+.hmpps-tabs {
   display: block;
   position: relative;
   padding: 12px 0;
@@ -158,6 +158,9 @@
     height: 100%;
   }
 
+}
+
+.hmpps-tabs-link {
   /* Force blue text, block purple visited state completely */
   &, &:link, &:visited {
     color: #1d70b8; /* govuk-blue */
@@ -165,19 +168,14 @@
 
   &:hover {
     color: #003078; /* govuk-link-hover-colour */
-    border-bottom-color: #505a5f; /* govuk-secondary-text-colour */
+    text-decoration: underline;
+    text-decoration-thickness: max(3px, 0.1875rem, 0.12em);
   }
+
 }
 
 /* The active state (blue text, thick blue underline) */
 .hmpps-tabs-link--active {
   border-bottom-color: #1d70b8; /* govuk-blue */
-
-  &, &:link, &:visited {
-    color: #1d70b8;
-  }
-
-  &:hover {
-    border-bottom-color: #1d70b8;
-  }
+  color: black;
 }
