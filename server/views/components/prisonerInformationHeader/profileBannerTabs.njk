@@ -6,12 +6,12 @@
       {% for tab in tabs %}
         <li class="hmpps-tabs-list-item">
           {% if loop.last %}
-            <span class="hmpps-tabs hmpps-tabs-link--active">{{tab.tabName}}</span>
+            <span class="hmpps-tabs hmpps-tabs-link--active" data-testid="active-tab">{{tab.tabName}}</span>
           {% else %}
           <a
             href="{{ tab.href | default('#') }}"
             class="hmpps-tabs hmpps-tabs-link"
-            data-qa="{{tab.tabName}}"
+            data-testid="{{tab.tabName}}"
           >
             {{tab.tabName}}
           </a>
