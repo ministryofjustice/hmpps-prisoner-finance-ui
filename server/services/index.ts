@@ -6,7 +6,6 @@ import AuditService from './auditService'
 import config from '../config'
 import logger from '../../logger'
 import PrisonerSearchService from './prisonerSearchService'
-import PrisonRegisterApiClient from '../clients/prisonRegisterApiClient'
 import PrisonRegisterService from './prisonRegisterService'
 
 export const services = () => {

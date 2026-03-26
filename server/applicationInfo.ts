@@ -14,7 +14,18 @@ export type ApplicationInfo = {
 }
 
 export default (): ApplicationInfo => {
-  const packageJson = path.join(__dirname, '../../package.json')
-  const { name: applicationName } = JSON.parse(fs.readFileSync(packageJson).toString())
+  let applicationName: string
+  try {
+    const packageJsonPath = path.join(__dirname, '../../package.json')
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath).toString())
+
+    applicationName = packageJson.name
+  } catch (e) {
+    // Here we have a different path for the package.json when running unit tests
+    const packageJsonPath = path.join(__dirname, '../package.json')
+    const packageJson = JSON.parse(fs.readFileSync(packageJsonPath).toString())
+
+    applicationName = packageJson.name
+  }
   return { applicationName, buildNumber, gitRef, gitShortHash: gitRef.substring(0, 7), productId, branchName }
 }
