@@ -117,9 +117,13 @@ describe('View Components - Prisoner Information Header', () => {
     expect(tabs).toHaveLength(content.length)
 
     content.forEach(({ href, tabName }, i) => {
-      const atag = $(tabs[i]).find('a')
-      expect(atag.text()).toContain(tabName)
-      expect(atag.attr('href')).toBe(href)
+      const element = $(tabs[i]).children().first()
+      expect(element.text()).toContain(tabName)
+      if (element.prop('tagName') === 'A') {
+        expect(element.attr('href')).toBe(href)
+      } else {
+        expect(element.prop('tagName')).toBe('SPAN')
+      }
     })
   })
 })
