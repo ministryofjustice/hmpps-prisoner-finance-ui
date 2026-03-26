@@ -6,6 +6,7 @@ import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTra
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
+import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 
 test.describe('Prisoner Money', () => {
   test.afterEach(async () => {
@@ -59,6 +60,7 @@ test.describe('Prisoner Money', () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
     await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
+    await prisonRegisterApi.stubGetPrisonNames()
   }
 
   test.beforeEach(async ({ page }) => {
@@ -85,7 +87,7 @@ test.describe('Prisoner Money', () => {
     expect(cells.nth(1)).toHaveText(transactionPayload[0].description)
     expect(cells.nth(2)).toHaveText('£0.00')
     expect(cells.nth(3)).toHaveText('£0.10')
-    expect(cells.nth(4)).toHaveText(transactionPayload[0].location)
+    expect(cells.nth(4)).toHaveText('Leeds (HMP)')
     expect(cells.nth(5)).toHaveText(transactionPayload[0].accountType)
   })
 
@@ -120,6 +122,7 @@ test.describe('Prisoner Money', () => {
 
     await prisonerSearchApi.stubGetPrisoner(notFoundPrisonNumber)
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(notFoundPrisonNumber)
+    await prisonRegisterApi.stubGetPrisonNames()
 
     const response = await page.goto(`/prisoner/${notFoundPrisonNumber}/money`)
 
@@ -132,6 +135,7 @@ test.describe('Prisoner Money', () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
     await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
+    await prisonRegisterApi.stubGetPrisonNames()
 
     const response = await page.goto(`/prisoner/${prisonNumber}/money`)
 
@@ -190,6 +194,7 @@ test.describe('Prisoner Money', () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
     await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
+    await prisonRegisterApi.stubGetPrisonNames()
 
     await page.goto(`/prisoner/${prisonNumber}/money`)
 

@@ -8,6 +8,7 @@ import {
   createProfileTabsForPrisoner,
   convertPrisonIdToName,
 } from './utils'
+import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
 
 describe('penceToPound', () => {
   it.each([
@@ -77,43 +78,30 @@ describe('createProfileTabsForPrisoner', () => {
 describe('convertconvertPrisonIdToName', () => {
   it('returns full prison name from prison Id', () => {
     const prisonId = 'LEI'
-    const mockPrisonRegisterService = {
-      getPrisonNames: async () => [
-        {
-          prisonId: 'LEI',
-          prisonName: 'Leeds (HMP)',
-        },
-      ],
-    } as unknown as jest.Mocked<PrisonRegisterService>
 
-    // Calling before assertion to load the cache
-    convertPrisonIdToName(prisonId, mockPrisonRegisterService)
+    const prisonsData: PrisonRegisterName[] = [
+      {
+        prisonId: 'LEI',
+        prisonName: 'Leeds (HMP)',
+      },
+    ]
 
-    setTimeout(() => {
-      const prisonName = convertPrisonIdToName(prisonId, mockPrisonRegisterService)
+    const prisonName = convertPrisonIdToName(prisonId, prisonsData)
 
-      expect(prisonName).toBe(`Leeds (HMP)`)
-    }, 1000)
+    expect(prisonName).toBe(`Leeds (HMP)`)
   })
 
   it('returns prisonId when prisonId not found in cache', () => {
     const prisonId = 'MDI'
-    const mockPrisonRegisterService = {
-      getPrisonNames: async () => [
-        {
-          prisonId: 'LEI',
-          prisonName: 'Leeds (HMP)',
-        },
-      ],
-    } as unknown as jest.Mocked<PrisonRegisterService>
+    const prisonsData: PrisonRegisterName[] = [
+      {
+        prisonId: 'LEI',
+        prisonName: 'Leeds (HMP)',
+      },
+    ]
 
-    // Calling before assertion to load the cache
-    convertPrisonIdToName(prisonId, mockPrisonRegisterService)
+    const prisonName = convertPrisonIdToName(prisonId, prisonsData)
 
-    setTimeout(() => {
-      const prisonName = convertPrisonIdToName(prisonId, mockPrisonRegisterService)
-
-      expect(prisonName).toBe(`MDI`)
-    }, 1000)
+    expect(prisonName).toBe(`MDI`)
   })
 })

@@ -6,15 +6,18 @@ import AuditService, { Page } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
 import PrisonerSearchService from '../services/prisonerSearchService'
 import mockPermissions from './testutils/mockPermissions'
+import PrisonRegisterService from '../services/prisonRegisterService'
 
 jest.mock('../services/prisonerFinanceService')
 jest.mock('../services/prisonerSearchService')
+jest.mock('../services/prisonRegisterService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerFinanceService = new PrisonerFinanceService(null) as jest.Mocked<PrisonerFinanceService>
 const prisonerSearchService = new PrisonerSearchService(null) as jest.Mocked<PrisonerSearchService>
 const prisonPermissionsService = {} as unknown as PermissionsService
+const prisonRegisterService = new PrisonRegisterService(null) as jest.Mocked<PrisonRegisterService>
 
 let app: Express
 
@@ -39,12 +42,15 @@ describe('Prisoners', () => {
       },
     })
 
+    prisonRegisterService.getPrisonNames.mockResolvedValue([{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }])
+
     app = appWithAllRoutes({
       services: {
         auditService,
         prisonerFinanceService,
         prisonPermissionsService,
         prisonerSearchService,
+        prisonRegisterService,
       },
       userSupplier: () => user,
     })

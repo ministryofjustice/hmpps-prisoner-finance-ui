@@ -31,7 +31,7 @@ export const services = () => {
     auditService: new AuditService(hmppsAuditClient),
     prisonerFinanceService: new PrisonerFinanceService(prisonerFinanceApiClient),
     prisonerSearchService: new PrisonerSearchService(prisonerSearchApiClient),
-    prisonRegister: new PrisonRegisterService(prisonRegisterApiClient),
+    prisonRegisterService: new PrisonRegisterService(prisonRegisterApiClient),
     prisonPermissionsService,
   }
 }

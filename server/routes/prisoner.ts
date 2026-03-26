@@ -3,6 +3,7 @@ import { PrisonerMoneyPermission, prisonerPermissionsGuard } from '@ministryofju
 import { Services } from '../services'
 import PrisonerController from '../controllers/PrisonerController'
 import getPrisonerData from '../middleware/getPrisonerData'
+import getPrisonNames from '../middleware/getPrisonNames'
 
 export default function routes(services: Services): Router {
   const prisonerRouter = Router()
@@ -18,6 +19,7 @@ export default function routes(services: Services): Router {
     }),
 
     getPrisonerData(services),
+    getPrisonNames(services),
     prisonerController.transactions,
   )
 

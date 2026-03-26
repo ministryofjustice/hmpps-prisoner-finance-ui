@@ -66,15 +66,7 @@ export const createProfileTabsForPrisoner = ({ prisonNumber }: { prisonNumber: s
   ]
 }
 
-let prisonNames: PrisonRegisterName[] = []
-
-export const convertPrisonIdToName = (prisonId: string, prisonRegister: PrisonRegisterService): string => {
-  if (prisonNames.length === 0) {
-    prisonRegister.getPrisonNames().then(names => {
-      prisonNames = names
-    })
-  }
-
+export const convertPrisonIdToName = (prisonId: string, prisonNames: PrisonRegisterName[]): string => {
   const res = prisonNames.find(prison => prison.prisonId === prisonId)?.prisonName ?? prisonId
   return res
 }

@@ -12,7 +12,7 @@ export default class PrisonRegisterApiClient extends RestClient {
   async getPrisonNames(): Promise<PrisonRegisterName[]> {
     return this.get(
       {
-        path: `prisons/names`,
+        path: `/prisons/names`,
       },
       asSystem(),
     )

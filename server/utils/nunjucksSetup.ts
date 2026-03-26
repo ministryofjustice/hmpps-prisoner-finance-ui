@@ -24,9 +24,7 @@ export const setUpNunJucksFilters = (njkEnv: nunjucks.Environment, assetManifest
   njkEnv.addFilter('formatDateForView', formatDateForView)
   njkEnv.addFilter('penceToPound', penceToPound)
   njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
-  njkEnv.addFilter('convertPrisonIdToName', (prisonId: string) =>
-    convertPrisonIdToName(prisonId, services().prisonRegister),
-  )
+  njkEnv.addFilter('convertPrisonIdToName', convertPrisonIdToName)
 }
 
 export default function nunjucksSetup(app: express.Express): void {

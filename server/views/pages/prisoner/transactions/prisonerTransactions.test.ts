@@ -49,6 +49,7 @@ describe('prisoner transactions page', () => {
     transactions: payload,
     prisoner: { firstName: 'BOB', lastName: 'Taylor' },
     balance: 1000,
+    prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
   }
 
   beforeAll(() => {
