@@ -1,5 +1,8 @@
 import { format, parseISO } from 'date-fns'
 import config from '../config'
+import { services } from '../services'
+import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
+import PrisonRegisterService from '../services/prisonRegisterService'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -61,4 +64,17 @@ export const createProfileTabsForPrisoner = ({ prisonNumber }: { prisonNumber: s
     { tabName: 'Work and skills', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/work-and-skills` },
     { tabName: 'Finance', href: `/prisoner/${prisonNumber}/money` },
   ]
+}
+
+let prisonNames: PrisonRegisterName[] = []
+
+export const convertPrisonIdToName = (prisonId: string, prisonRegister: PrisonRegisterService): string => {
+  if (prisonNames.length === 0) {
+    prisonRegister.getPrisonNames().then(names => {
+      prisonNames = names
+    })
+  }
+
+  const res = prisonNames.find(prison => prison.prisonId === prisonId)?.prisonName ?? prisonId
+  return res
 }

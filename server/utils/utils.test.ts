@@ -1,9 +1,12 @@
+import { mock } from 'node:test'
+import PrisonRegisterService from '../services/prisonRegisterService'
 import {
   convertToTitleCase,
   initialiseName,
   penceToPound,
   formatDateForView,
   createProfileTabsForPrisoner,
+  convertPrisonIdToName,
 } from './utils'
 
 describe('penceToPound', () => {
@@ -68,5 +71,49 @@ describe('createProfileTabsForPrisoner', () => {
       expect(tabName).toBe(titles[i])
       expect(href).toContain(`prisoner/${prisonNumber}`)
     })
+  })
+})
+
+describe('convertconvertPrisonIdToName', () => {
+  it('returns full prison name from prison Id', () => {
+    const prisonId = 'LEI'
+    const mockPrisonRegisterService = {
+      getPrisonNames: async () => [
+        {
+          prisonId: 'LEI',
+          prisonName: 'Leeds (HMP)',
+        },
+      ],
+    } as unknown as jest.Mocked<PrisonRegisterService>
+
+    // Calling before assertion to load the cache
+    convertPrisonIdToName(prisonId, mockPrisonRegisterService)
+
+    setTimeout(() => {
+      const prisonName = convertPrisonIdToName(prisonId, mockPrisonRegisterService)
+
+      expect(prisonName).toBe(`Leeds (HMP)`)
+    }, 1000)
+  })
+
+  it('returns prisonId when prisonId not found in cache', () => {
+    const prisonId = 'MDI'
+    const mockPrisonRegisterService = {
+      getPrisonNames: async () => [
+        {
+          prisonId: 'LEI',
+          prisonName: 'Leeds (HMP)',
+        },
+      ],
+    } as unknown as jest.Mocked<PrisonRegisterService>
+
+    // Calling before assertion to load the cache
+    convertPrisonIdToName(prisonId, mockPrisonRegisterService)
+
+    setTimeout(() => {
+      const prisonName = convertPrisonIdToName(prisonId, mockPrisonRegisterService)
+
+      expect(prisonName).toBe(`MDI`)
+    }, 1000)
   })
 })
