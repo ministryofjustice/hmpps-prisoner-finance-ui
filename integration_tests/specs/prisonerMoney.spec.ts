@@ -341,7 +341,7 @@ test.describe('Prisoner Money', () => {
     )
   })
 
-  test('should be able to removed selected filters', async ({ page }) => {
+  test('should be able to remove selected filters', async ({ page }) => {
     await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}/money`)
     await PrisonerMoneyPage.verifyOnPage(page)
@@ -370,5 +370,36 @@ test.describe('Prisoner Money', () => {
     await startDatefilterTag.click()
     await expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?endDate=${encodeURIComponent(endDateVal)}#filterForm`)
     expect(await endDateFilter.inputValue()).toBe(endDateVal)
+  })
+
+  test('Should clear all filters', async ({ page }) => {
+    await baseStubs()
+    await page.goto(`/prisoner/${prisonNumber}/money`)
+    await PrisonerMoneyPage.verifyOnPage(page)
+
+    const startDateFilter = page.locator('input[id="startDate"]')
+    const endDateFilter = page.locator('input[id="endDate"]')
+    const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+
+    expect(startDateFilter).toBeVisible()
+    expect(endDateFilter).toBeVisible()
+
+    const startDateVal = '10/10/10'
+    const endDateVal = '10/12/10'
+
+    await startDateFilter.fill(startDateVal)
+    await endDateFilter.fill(endDateVal)
+
+    await applyFilterButton.click()
+
+    await expect(page).toHaveURL(
+      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
+    )
+
+    const clearFilters = page.getByText('Clear Filters')
+
+    await clearFilters.click()
+
+    await expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?#filterForm`)
   })
 })

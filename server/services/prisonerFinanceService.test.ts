@@ -1,4 +1,3 @@
-import { deepStrictEqual } from 'assert'
 import PrisonerFinanceApiClient from '../clients/prisonerFinanceApi'
 import PrisonerFinanceService from './prisonerFinanceService'
 

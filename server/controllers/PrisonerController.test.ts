@@ -1,6 +1,5 @@
 import { PermissionsService } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import e, { Request, Response } from 'express'
-import { error } from 'console'
 import { ApplicationInfo } from '../applicationInfo'
 import AuditService from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
