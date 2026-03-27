@@ -82,13 +82,41 @@ test.describe('Prisoner Money', () => {
 
     expect(rows).toHaveCount(transactionPayload.length)
 
-    const cells = rows.first().locator('td')
-    expect(cells.nth(0)).toHaveText('10/03/2026')
-    expect(cells.nth(1)).toHaveText(transactionPayload[0].description)
-    expect(cells.nth(2)).toHaveText('£0.00')
-    expect(cells.nth(3)).toHaveText('£0.10')
-    expect(cells.nth(4)).toHaveText('Leeds (HMP)')
-    expect(cells.nth(5)).toHaveText(transactionPayload[0].accountType)
+    // Row 1
+    let cells = rows.nth(0).locator('td')
+    await expect(cells.nth(0)).toHaveText('10/03/2026')
+    await expect(cells.nth(1)).toHaveText('test')
+    await expect(cells.nth(2)).toHaveText('£0.00')
+    await expect(cells.nth(3)).toHaveText('£0.10')
+    await expect(cells.nth(4)).toHaveText('Leeds (HMP)')
+    await expect(cells.nth(5)).toHaveText('CASH')
+
+    // Row 2
+    cells = rows.nth(1).locator('td')
+    await expect(cells.nth(0)).toHaveText('11/03/2026')
+    await expect(cells.nth(1)).toHaveText('')
+    await expect(cells.nth(2)).toHaveText('£0.20')
+    await expect(cells.nth(3)).toHaveText('£0.00')
+    await expect(cells.nth(4)).toHaveText('Moorland (HMP & YOI)')
+    await expect(cells.nth(5)).toHaveText('SAVINGS')
+
+    // Row 3
+    cells = rows.nth(2).locator('td')
+    await expect(cells.nth(0)).toHaveText('10/03/2026')
+    await expect(cells.nth(1)).toHaveText('Cash to Savings Transfer')
+    await expect(cells.nth(2)).toHaveText('£0.00')
+    await expect(cells.nth(3)).toHaveText('£0.10')
+    await expect(cells.nth(4)).toHaveText('')
+    await expect(cells.nth(5)).toHaveText('CASH')
+
+    // Row 4
+    cells = rows.nth(3).locator('td')
+    await expect(cells.nth(0)).toHaveText('10/03/2026')
+    await expect(cells.nth(1)).toHaveText('Cash to Savings Transfer')
+    await expect(cells.nth(2)).toHaveText('£0.10')
+    await expect(cells.nth(3)).toHaveText('£0.00')
+    await expect(cells.nth(4)).toHaveText('')
+    await expect(cells.nth(5)).toHaveText('SAVINGS')
   })
 
   test('Should display the balance card with the total amount', async ({ page }) => {
