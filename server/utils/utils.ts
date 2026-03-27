@@ -1,4 +1,4 @@
-import { format, parseISO } from 'date-fns'
+import { format, parse, parseISO } from 'date-fns'
 import config from '../config'
 import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
 
@@ -67,4 +67,9 @@ export const createProfileTabsForPrisoner = ({ prisonNumber }: { prisonNumber: s
 export const convertPrisonIdToName = (prisonId: string, prisonNames: PrisonRegisterName[]): string => {
   const res = prisonNames.find(prison => prison.prisonId === prisonId)?.prisonName ?? prisonId
   return res
+}
+
+export const datePickerToISODate = (datePickerDate: string): string => {
+  const parsedDate = parse(datePickerDate, 'dd/MM/yyyy', new Date())
+  return format(parsedDate, 'yyyy-MM-dd')
 }

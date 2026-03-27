@@ -5,6 +5,7 @@ import {
   formatDateForView,
   createProfileTabsForPrisoner,
   convertPrisonIdToName,
+  datePickerToISODate,
 } from './utils'
 import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
 
@@ -101,5 +102,16 @@ describe('convertPrisonIdToName', () => {
     const prisonName = convertPrisonIdToName(prisonId, prisonsData)
 
     expect(prisonName).toBe(`MDI`)
+  })
+})
+
+describe('convertPrisonIdToName', () => {
+  it('Should convert datePickerDate to ISO Date', () => {
+    expect(datePickerToISODate('10/12/2010')).toBe('2010-12-10')
+  })
+
+  it('Should throw an exception when date is invalid', () => {
+    expect(() => datePickerToISODate('AAAA')).toThrow(RangeError)
+    expect(() => datePickerToISODate('99/99/9999')).toThrow(RangeError)
   })
 })

@@ -6,8 +6,12 @@ import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceRespon
 export default class PrisonerFinanceService {
   constructor(private readonly prisonerFinanceApiClient: PrisonerFinanceApiClient) {}
 
-  getPrisonerTransactionsByPrisonNumber(prisonNumber: string): Promise<Array<PrisonerTransactionResponse>> {
-    return this.prisonerFinanceApiClient.getPrisonerTransactionsByPrisonNumber(prisonNumber)
+  getPrisonerTransactionsByPrisonNumber(
+    prisonNumber: string,
+    startDate: string = null,
+    endDate: string = null,
+  ): Promise<Array<PrisonerTransactionResponse>> {
+    return this.prisonerFinanceApiClient.getPrisonerTransactionsByPrisonNumber(prisonNumber, startDate, endDate)
   }
 
   getAccountBalance(prisonNumber: string): Promise<AccountBalanceResponse> {
