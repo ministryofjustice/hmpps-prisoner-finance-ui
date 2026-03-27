@@ -24,7 +24,6 @@ class PrisonerController {
 
       const parseResult = transactionsFilterSchema.safeParse(req.query)
 
-      // I think this logic will probably be changed to not call the API if there are errors and display "no transactions" perhaps?
       let zodErrors = {}
       if (!parseResult.success) {
         zodErrors = formatValidationErrors(parseResult.error)
@@ -32,7 +31,14 @@ class PrisonerController {
       const selectedFilters = buildMojSelectedFilter(transactionFilterConfig, req.query)
 
       const [transactions, accountBalance] = await Promise.all([
-        this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(req.params.prisonNumber as string),
+        parseResult.success
+          ? this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(
+              req.params.prisonNumber as string,
+              startDate,
+              endDate,
+            )
+          : Promise.resolve([]),
+
         this.services.prisonerFinanceService.getAccountBalance(req.params.prisonNumber as string),
       ])
 

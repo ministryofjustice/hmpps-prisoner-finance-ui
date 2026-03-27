@@ -1,3 +1,4 @@
+import { deepStrictEqual } from 'assert'
 import PrisonerFinanceApiClient from '../clients/prisonerFinanceApi'
 import PrisonerFinanceService from './prisonerFinanceService'
 
@@ -21,9 +22,11 @@ describe('AuditHistoryService', () => {
       apiClient.getPrisonerTransactionsByPrisonNumber.mockResolvedValue([])
 
       const prisonNumber = 'A1234BC'
-      await service.getPrisonerTransactionsByPrisonNumber(prisonNumber)
+      const startDate = '10/10/2010'
+      const endDate = '10/10/2020'
+      await service.getPrisonerTransactionsByPrisonNumber(prisonNumber, startDate, endDate)
 
-      expect(apiClient.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith(prisonNumber)
+      expect(apiClient.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith(prisonNumber, startDate, endDate)
     })
   })
 
