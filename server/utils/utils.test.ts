@@ -73,7 +73,7 @@ describe('createProfileTabsForPrisoner', () => {
   })
 })
 
-describe('convertconvertPrisonIdToName', () => {
+describe('convertPrisonIdToName', () => {
   it('returns full prison name from prison Id', () => {
     const prisonId = 'LEI'
 
