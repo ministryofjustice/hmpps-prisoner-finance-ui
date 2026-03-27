@@ -12,7 +12,7 @@ import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionRe
 jest.mock('../applicationInfo')
 jest.mock('../services/auditService')
 jest.mock('../services/prisonerFinanceService')
-jest.mock('../services/PrisonerSearchService')
+jest.mock('../services/prisonerSearchService')
 jest.mock('../services/prisonRegisterService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 
