@@ -14,12 +14,11 @@ class PrisonerController {
   constructor(private readonly services: Services) {}
 
   public transactions = async (req: Request, res: Response, next: NextFunction) => {
-    await this.services.auditService.logPageView(Page.PRISONER_MONEY, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
     try {
+      await this.services.auditService.logPageView(Page.PRISONER_MONEY, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
       const { startDate, endDate } = req.query as Record<string, string>
 
       const parseResult = transactionsFilterSchema.safeParse(req.query)
