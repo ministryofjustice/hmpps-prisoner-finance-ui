@@ -4,7 +4,9 @@ import {
   penceToPound,
   formatDateForView,
   createProfileTabsForPrisoner,
+  convertPrisonIdToName,
 } from './utils'
+import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
 
 describe('penceToPound', () => {
   it.each([
@@ -68,5 +70,36 @@ describe('createProfileTabsForPrisoner', () => {
       expect(tabName).toBe(titles[i])
       expect(href).toContain(`prisoner/${prisonNumber}`)
     })
+  })
+})
+
+describe('convertPrisonIdToName', () => {
+  it('returns full prison name from prison Id', () => {
+    const prisonId = 'LEI'
+
+    const prisonsData: PrisonRegisterName[] = [
+      {
+        prisonId: 'LEI',
+        prisonName: 'Leeds (HMP)',
+      },
+    ]
+
+    const prisonName = convertPrisonIdToName(prisonId, prisonsData)
+
+    expect(prisonName).toBe(`Leeds (HMP)`)
+  })
+
+  it('returns prisonId when prisonId not found in cache', () => {
+    const prisonId = 'MDI'
+    const prisonsData: PrisonRegisterName[] = [
+      {
+        prisonId: 'LEI',
+        prisonName: 'Leeds (HMP)',
+      },
+    ]
+
+    const prisonName = convertPrisonIdToName(prisonId, prisonsData)
+
+    expect(prisonName).toBe(`MDI`)
   })
 })

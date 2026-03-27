@@ -40,7 +40,7 @@
     { text: row.description },
     { text: row.credit | penceToPound},
     { text: row.debit | penceToPound},
-    { text: row.location },
+    { text: row.location | convertPrisonIdToName(prisonNames)},
     { text: row.accountType }
   ] %}
   {% set tableRows = (tableRows.push(rowData), tableRows) %}

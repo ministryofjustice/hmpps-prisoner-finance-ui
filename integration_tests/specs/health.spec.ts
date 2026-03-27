@@ -6,6 +6,7 @@ import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonApi from '../mockApis/prisonApi'
 
 import { resetStubs } from '../testUtils'
+import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 
 test.describe('Health', () => {
   test.afterEach(async () => {
@@ -19,6 +20,7 @@ test.describe('Health', () => {
         prisonerFinanceApi.stubPing(),
         tokenVerification.stubPing(),
         prisonerSearchApi.stubPing(),
+        prisonRegisterApi.stubPing(),
         prisonApi.stubPing(),
       ])
     })

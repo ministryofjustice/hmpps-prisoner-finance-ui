@@ -107,6 +107,15 @@ export default {
       },
       agent: new AgentConfig(Number(get('PRISON_API_TIMEOUT_RESPONSE', 10000))),
     },
+    prisonRegister: {
+      url: get('PRISON_REGISTER_API_URL', 'http://localhost:8083', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('PRISON_REGISTER_API_TIMEOUT_RESPONSE', 5000)),
+        deadline: Number(get('PRISON_REGISTER_API_TIMEOUT_DEADLINE', 5000)),
+      },
+      agent: new AgentConfig(Number(get('PRISON_REGISTER_API_TIMEOUT_RESPONSE', 5000))),
+    },
   },
   serviceUrls: {
     digitalPrison: get('DPS_HOME_PAGE_URL', 'https://dps-dev.prison.service.justice.gov.uk', requiredInProduction),

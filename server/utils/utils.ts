@@ -1,5 +1,6 @@
 import { format, parseISO } from 'date-fns'
 import config from '../config'
+import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
 
 const properCase = (word: string): string =>
   word.length >= 1 ? word[0].toUpperCase() + word.toLowerCase().slice(1) : word
@@ -61,4 +62,9 @@ export const createProfileTabsForPrisoner = ({ prisonNumber }: { prisonNumber: s
     { tabName: 'Work and skills', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/work-and-skills` },
     { tabName: 'Finances', href: `/prisoner/${prisonNumber}/money` },
   ]
+}
+
+export const convertPrisonIdToName = (prisonId: string, prisonNames: PrisonRegisterName[]): string => {
+  const res = prisonNames.find(prison => prison.prisonId === prisonId)?.prisonName ?? prisonId
+  return res
 }

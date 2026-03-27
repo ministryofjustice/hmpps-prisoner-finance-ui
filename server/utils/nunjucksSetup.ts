@@ -3,7 +3,13 @@ import path from 'path'
 import nunjucks from 'nunjucks'
 import express from 'express'
 import fs from 'fs'
-import { formatDateForView, initialiseName, penceToPound, createProfileTabsForPrisoner } from './utils'
+import {
+  formatDateForView,
+  initialiseName,
+  penceToPound,
+  createProfileTabsForPrisoner,
+  convertPrisonIdToName,
+} from './utils'
 import config from '../config'
 import logger from '../../logger'
 
@@ -17,6 +23,7 @@ export const setUpNunJucksFilters = (njkEnv: nunjucks.Environment, assetManifest
   njkEnv.addFilter('formatDateForView', formatDateForView)
   njkEnv.addFilter('penceToPound', penceToPound)
   njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
+  njkEnv.addFilter('convertPrisonIdToName', convertPrisonIdToName)
 }
 
 export default function nunjucksSetup(app: express.Express): void {

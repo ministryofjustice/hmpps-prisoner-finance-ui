@@ -6,6 +6,7 @@ import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTra
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
+import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 
 test.describe('Prisoner Money', () => {
   test.afterEach(async () => {
@@ -39,10 +40,10 @@ test.describe('Prisoner Money', () => {
     },
     {
       date: '2026-03-10T10:43:28.194Z',
-      description: 'Cash to Savings Transfer',
+      description: 'Transaction in secret prison',
       credit: 10,
       debit: 0,
-      location: '',
+      location: 'XXX',
       accountType: 'SAVINGS',
     },
   ]
@@ -59,6 +60,7 @@ test.describe('Prisoner Money', () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
     await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
+    await prisonRegisterApi.stubGetPrisonNames()
   }
 
   test.beforeEach(async ({ page }) => {
@@ -80,13 +82,41 @@ test.describe('Prisoner Money', () => {
 
     expect(rows).toHaveCount(transactionPayload.length)
 
-    const cells = rows.first().locator('td')
-    expect(cells.nth(0)).toHaveText('10/03/2026')
-    expect(cells.nth(1)).toHaveText(transactionPayload[0].description)
-    expect(cells.nth(2)).toHaveText('£0.00')
-    expect(cells.nth(3)).toHaveText('£0.10')
-    expect(cells.nth(4)).toHaveText(transactionPayload[0].location)
-    expect(cells.nth(5)).toHaveText(transactionPayload[0].accountType)
+    // Row 1
+    let cells = rows.nth(0).locator('td')
+    await expect(cells.nth(0)).toHaveText('10/03/2026')
+    await expect(cells.nth(1)).toHaveText('test')
+    await expect(cells.nth(2)).toHaveText('£0.00')
+    await expect(cells.nth(3)).toHaveText('£0.10')
+    await expect(cells.nth(4)).toHaveText('Leeds (HMP)')
+    await expect(cells.nth(5)).toHaveText('CASH')
+
+    // Row 2
+    cells = rows.nth(1).locator('td')
+    await expect(cells.nth(0)).toHaveText('11/03/2026')
+    await expect(cells.nth(1)).toHaveText('')
+    await expect(cells.nth(2)).toHaveText('£0.20')
+    await expect(cells.nth(3)).toHaveText('£0.00')
+    await expect(cells.nth(4)).toHaveText('Moorland (HMP & YOI)')
+    await expect(cells.nth(5)).toHaveText('SAVINGS')
+
+    // Row 3
+    cells = rows.nth(2).locator('td')
+    await expect(cells.nth(0)).toHaveText('10/03/2026')
+    await expect(cells.nth(1)).toHaveText('Cash to Savings Transfer')
+    await expect(cells.nth(2)).toHaveText('£0.00')
+    await expect(cells.nth(3)).toHaveText('£0.10')
+    await expect(cells.nth(4)).toHaveText('')
+    await expect(cells.nth(5)).toHaveText('CASH')
+
+    // Row 4
+    cells = rows.nth(3).locator('td')
+    await expect(cells.nth(0)).toHaveText('10/03/2026')
+    await expect(cells.nth(1)).toHaveText('Transaction in secret prison')
+    await expect(cells.nth(2)).toHaveText('£0.10')
+    await expect(cells.nth(3)).toHaveText('£0.00')
+    await expect(cells.nth(4)).toHaveText('XXX')
+    await expect(cells.nth(5)).toHaveText('SAVINGS')
   })
 
   test('Should display the balance card with the total amount', async ({ page }) => {
@@ -120,6 +150,7 @@ test.describe('Prisoner Money', () => {
 
     await prisonerSearchApi.stubGetPrisoner(notFoundPrisonNumber)
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(notFoundPrisonNumber)
+    await prisonRegisterApi.stubGetPrisonNames()
 
     const response = await page.goto(`/prisoner/${notFoundPrisonNumber}/money`)
 
@@ -132,6 +163,7 @@ test.describe('Prisoner Money', () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
     await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
+    await prisonRegisterApi.stubGetPrisonNames()
 
     const response = await page.goto(`/prisoner/${prisonNumber}/money`)
 
@@ -190,6 +222,7 @@ test.describe('Prisoner Money', () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
     await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
+    await prisonRegisterApi.stubGetPrisonNames()
 
     await page.goto(`/prisoner/${prisonNumber}/money`)
 
