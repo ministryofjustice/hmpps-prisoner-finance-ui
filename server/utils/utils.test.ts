@@ -63,7 +63,7 @@ describe('createProfileTabsForPrisoner', () => {
       prisonNumber,
     })
     expect(tabContent).toHaveLength(7)
-    const titles = ['Overview', 'Personal', 'Case notes', 'Alerts', 'Offences', 'Work and skills', 'Finance']
+    const titles = ['Overview', 'Personal', 'Case notes', 'Alerts', 'Offences', 'Work and skills', 'Finances']
     tabContent.forEach(({ tabName, href }, i) => {
       expect(tabName).toBe(titles[i])
       expect(href).toContain(`prisoner/${prisonNumber}`)

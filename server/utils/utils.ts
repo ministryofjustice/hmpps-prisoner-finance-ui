@@ -59,6 +59,6 @@ export const createProfileTabsForPrisoner = ({ prisonNumber }: { prisonNumber: s
     { tabName: 'Alerts', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/alerts/active` },
     { tabName: 'Offences', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/offences` },
     { tabName: 'Work and skills', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}/work-and-skills` },
-    { tabName: 'Finance', href: `/prisoner/${prisonNumber}/money` },
+    { tabName: 'Finances', href: `/prisoner/${prisonNumber}/money` },
   ]
 }
