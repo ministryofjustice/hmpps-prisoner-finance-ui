@@ -40,10 +40,10 @@ test.describe('Prisoner Money', () => {
     },
     {
       date: '2026-03-10T10:43:28.194Z',
-      description: 'Cash to Savings Transfer',
+      description: 'Transaction in secret prison',
       credit: 10,
       debit: 0,
-      location: '',
+      location: 'XXX',
       accountType: 'SAVINGS',
     },
   ]
@@ -112,10 +112,10 @@ test.describe('Prisoner Money', () => {
     // Row 4
     cells = rows.nth(3).locator('td')
     await expect(cells.nth(0)).toHaveText('10/03/2026')
-    await expect(cells.nth(1)).toHaveText('Cash to Savings Transfer')
+    await expect(cells.nth(1)).toHaveText('Transaction in secret prison')
     await expect(cells.nth(2)).toHaveText('£0.10')
     await expect(cells.nth(3)).toHaveText('£0.00')
-    await expect(cells.nth(4)).toHaveText('')
+    await expect(cells.nth(4)).toHaveText('XXX')
     await expect(cells.nth(5)).toHaveText('SAVINGS')
   })
 
