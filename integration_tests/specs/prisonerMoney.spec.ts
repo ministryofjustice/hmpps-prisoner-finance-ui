@@ -274,6 +274,9 @@ test.describe('Prisoner Money', () => {
     expect(endDateError).not.toBeVisible()
     expect(startDateError).not.toBeVisible()
 
+    const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
+    expect(noTransactionsMessage).not.toBeVisible()
+
     await expect(page).toHaveURL(
       `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
     )
@@ -305,6 +308,10 @@ test.describe('Prisoner Money', () => {
     await expect(endDateError).toContainText('End date must be a real date, like 18/01/2026')
     await expect(startDateError).toContainText('Start date must be a real date, like 18/01/2026')
 
+    const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
+    expect(noTransactionsMessage).toBeVisible()
+    expect(noTransactionsMessage).toHaveText("Please fix the filter's errors to view transactions")
+
     await expect(page).toHaveURL(
       `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
     )
@@ -335,6 +342,10 @@ test.describe('Prisoner Money', () => {
 
     await expect(endDateError).toContainText('End date cannot be earlier than start date')
     await expect(startDateError).not.toBeVisible()
+
+    const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
+    expect(noTransactionsMessage).toBeVisible()
+    expect(noTransactionsMessage).toHaveText("Please fix the filter's errors to view transactions")
 
     await expect(page).toHaveURL(
       `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,

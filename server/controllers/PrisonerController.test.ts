@@ -85,6 +85,7 @@ describe('PrisonerController - Transactions', () => {
         endDate,
         selectedFilters: expect.anything(),
       },
+      hasValidationErrors: true,
       errorMap: expect.anything(),
       errors: expect.anything(),
     })
@@ -127,6 +128,7 @@ describe('PrisonerController - Transactions', () => {
       applicationName: 'Transactions',
       transactions: mockTransactions,
       balance: mockBalance.amount,
+      hasValidationErrors: false,
       filters: {
         startDate,
         endDate,

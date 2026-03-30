@@ -51,6 +51,7 @@ class PrisonerController {
           endDate,
           selectedFilters,
         },
+        hasValidationErrors: !parseResult.success,
         ...zodErrors,
       })
     } catch (error) {

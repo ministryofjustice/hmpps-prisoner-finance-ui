@@ -134,7 +134,13 @@
           rows: tableRows
         }) }}
       {% else %}
-        <p data-testid="no-transactions-message"> No transactions to show </p>
+        <p data-testid="no-transactions-message">
+          {% if hasValidationErrors %}
+            Please fix the filter's errors to view transactions
+          {% else %}
+            No transactions to show
+          {% endif %}
+        </p>
       {% endif %}
       </div>
   </div>
