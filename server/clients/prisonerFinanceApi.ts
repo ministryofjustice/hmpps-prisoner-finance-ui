@@ -14,8 +14,8 @@ export default class PrisonerFinanceApiClient extends RestClient {
 
   async getPrisonerTransactionsByPrisonNumber(
     prisonNumber: string,
-    startDate: string = null,
-    endDate: string = null,
+    startDate: string | null = null,
+    endDate: string | null = null,
   ): Promise<Array<PrisonerTransactionResponse>> {
     return this.get(
       {
