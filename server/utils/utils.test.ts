@@ -105,7 +105,7 @@ describe('convertPrisonIdToName', () => {
   })
 })
 
-describe('convertPrisonIdToName', () => {
+describe('datePickerToISODate', () => {
   it('Should convert datePickerDate to ISO Date', () => {
     expect(datePickerToISODate('10/12/2010')).toBe('2010-12-10')
   })

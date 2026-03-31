@@ -63,7 +63,7 @@ describe('PrisonerController - Transactions', () => {
 
     prisonerFinanceService.getAccountBalance.mockResolvedValue(mockBalance)
 
-    await prisonerController.transactions(mockReq, mockRes, mockNext)
+    await prisonerController.getTransactions(mockReq, mockRes, mockNext)
 
     expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).not.toHaveBeenCalled()
     expect(prisonerFinanceService.getAccountBalance).toHaveBeenCalledWith(mockReq.params.prisonNumber)
@@ -111,7 +111,7 @@ describe('PrisonerController - Transactions', () => {
     ]
     prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactions)
 
-    await prisonerController.transactions(mockReq, mockRes, mockNext)
+    await prisonerController.getTransactions(mockReq, mockRes, mockNext)
 
     expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalled()
     expect(prisonerFinanceService.getAccountBalance).toHaveBeenCalledWith(mockReq.params.prisonNumber)
@@ -142,7 +142,7 @@ describe('PrisonerController - Transactions', () => {
       throw new Error('Expected error')
     })
 
-    await prisonerController.transactions(mockReq, mockRes, mockNext)
+    await prisonerController.getTransactions(mockReq, mockRes, mockNext)
 
     expect(mockRes.render).not.toHaveBeenCalled()
     expect(mockNext).toHaveBeenCalled()

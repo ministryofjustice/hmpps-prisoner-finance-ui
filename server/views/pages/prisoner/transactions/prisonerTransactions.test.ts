@@ -95,9 +95,9 @@ describe('prisoner transactions page', () => {
     const filterSelected = $('[class="moj-filter__selected"]')
     const filterOptions = $('[class="moj-filter__options"]')
 
-    expect(filterSelected.length).not.toBe(0)
-    expect(filterComponent.length).not.toBe(0)
-    expect(filterOptions.length).not.toBe(0)
+    expect(filterSelected.length).toBe(1)
+    expect(filterComponent.length).toBe(1)
+    expect(filterOptions.length).toBe(1)
   })
 
   it('Should render no transactions', () => {
@@ -110,7 +110,7 @@ describe('prisoner transactions page', () => {
     const noTransactionsMessage = cheerioPage('[data-testid="no-transactions-message"]')
 
     expect(cheerioPage('table[data-testid="prisoner-transactions-table"]').length).toBe(0)
-    expect(noTransactionsMessage.length).not.toBe(0)
+    expect(noTransactionsMessage.length).toBe(1)
     expect(noTransactionsMessage.text()).toContain('No transactions to show')
   })
 })

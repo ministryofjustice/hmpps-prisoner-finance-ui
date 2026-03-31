@@ -1,5 +1,5 @@
 import { ParsedQs } from 'qs'
-import { buildMojSelectedFilter } from './mojFilterHelper'
+import { buildMojSelectedFilter, SelectedFilterItem } from './mojFilterHelper'
 
 describe('buildMojSelectedFilter', () => {
   it('Should exclude filters from hrefs', () => {
@@ -8,8 +8,13 @@ describe('buildMojSelectedFilter', () => {
       endDate: { label: 'End date', category: 'Date' },
       otherDate: { label: 'Other date', category: 'Date' },
     }
-
-    const reverseParamMap = Object.fromEntries(Object.entries(filtersConfig).map(([key, value]) => [value.label, key]))
+    const elementATextToQueryParam: Record<string, string> = {
+      'Start Date': 'startDate',
+      'End Date': 'endDate',
+      'Other Date': 'otherDate',
+    }
+    const queryParamDoesNotIncludeItself = (item: SelectedFilterItem) =>
+      !item.href.includes(`=${elementATextToQueryParam[item.text]}`)
 
     const mockQuery: ParsedQs = {
       startDate: '02/02/02',
@@ -20,7 +25,9 @@ describe('buildMojSelectedFilter', () => {
     const res = buildMojSelectedFilter(filtersConfig, mockQuery)
 
     expect(res.find(el => el.heading.text === 'Date').items.length).toBe(3)
-    expect(res[0].items.every(item => !item.href.includes(`=${reverseParamMap[item.text]}`))).toBeTruthy()
+    const { items } = res[0]
+
+    expect(items.every(queryParamDoesNotIncludeItself)).toBe(true)
   })
 
   it('Should group filters by Category', () => {

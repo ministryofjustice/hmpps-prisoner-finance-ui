@@ -13,8 +13,9 @@ const transactionFilterConfig = {
 class PrisonerController {
   constructor(private readonly services: Services) {}
 
-  public transactions = async (req: Request, res: Response, next: NextFunction) => {
+  public getTransactions = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const prisonNumber = req.params.prisonNumber.toString()
       await this.services.auditService.logPageView(Page.PRISONER_MONEY, {
         who: res.locals.user.username,
         correlationId: req.id,
@@ -29,20 +30,17 @@ class PrisonerController {
       }
       const selectedFilters = buildMojSelectedFilter(transactionFilterConfig, req.query)
 
-      const [transactions, accountBalance] = await Promise.all([
-        parseResult.success
-          ? this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(
-              req.params.prisonNumber as string,
-              startDate,
-              endDate,
-            )
-          : Promise.resolve([]),
+      const transactionsPromise = parseResult.success
+        ? this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(prisonNumber, startDate, endDate)
+        : Promise.resolve([])
 
-        this.services.prisonerFinanceService.getAccountBalance(req.params.prisonNumber as string),
+      const [transactions, accountBalance] = await Promise.all([
+        transactionsPromise,
+        this.services.prisonerFinanceService.getAccountBalance(prisonNumber),
       ])
 
       res.render('pages/prisoner/transactions/prisonerTransactions', {
-        prisonNumber: req.params.prisonNumber as string,
+        prisonNumber,
         applicationName: 'Transactions',
         transactions,
         balance: accountBalance.amount,
@@ -59,20 +57,21 @@ class PrisonerController {
     }
   }
 
-  public profile = async (req: Request, res: Response, next: NextFunction) => {
-    await this.services.auditService.logPageView(Page.PRISONER_PROFILE, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
+  public getProfile = async (req: Request, res: Response, next: NextFunction) => {
     try {
+      const prisonNumber = req.params.prisonNumber.toString()
+      await this.services.auditService.logPageView(Page.PRISONER_PROFILE, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
+
       const [transactions, subAccountBalances] = await Promise.all([
-        this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(req.params.prisonNumber as string),
-        this.services.prisonerFinanceService.getSubAccountBalances(req.params.prisonNumber as string),
+        this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(prisonNumber),
+        this.services.prisonerFinanceService.getSubAccountBalances(prisonNumber),
       ])
 
       res.render('pages/prisoner/profile/prisonerProfile', {
-        prisonNumber: req.params.prisonNumber as string,
+        prisonNumber,
         transactions: transactions.slice(0, 5),
         subAccountBalances: {
           spends: subAccountBalances.SPENDS,

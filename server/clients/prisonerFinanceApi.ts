@@ -21,8 +21,8 @@ export default class PrisonerFinanceApiClient extends RestClient {
       {
         path: `/prisoners/${prisonNumber}/money/transactions`,
         query: {
-          startDate: startDate ? datePickerToISODate(startDate) : undefined,
-          endDate: endDate ? datePickerToISODate(endDate) : undefined,
+          ...(startDate && { startDate: datePickerToISODate(startDate) }),
+          ...(endDate && { endDate: datePickerToISODate(endDate) }),
         },
       },
       asSystem(),
