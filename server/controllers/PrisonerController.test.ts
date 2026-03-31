@@ -17,49 +17,41 @@ jest.mock('../services/prisonRegisterService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 
 describe('PrisonerController - Transactions', () => {
-  let applicationInfo
-  let auditService: jest.Mocked<AuditService>
-  let prisonerFinanceService: jest.Mocked<PrisonerFinanceService>
-  let prisonerSearchService
-  let prisonRegisterService
-  let prisonPermissionsService
+  const applicationInfo = {} as unknown as jest.Mocked<ApplicationInfo>
+  const auditService = new AuditService(null) as jest.Mocked<AuditService>
+  const prisonerFinanceService = new PrisonerFinanceService(null) as jest.Mocked<PrisonerFinanceService>
+  const prisonerSearchService = {} as unknown as jest.Mocked<PrisonerSearchService>
+  const prisonRegisterService = {} as unknown as jest.Mocked<PrisonRegisterService>
+  const prisonPermissionsService = {} as unknown as jest.Mocked<PermissionsService>
 
-  let prisonerController: PrisonerController
-  let mockRes: Response
-  let mockNext: e.NextFunction
+  const prisonerController: PrisonerController = new PrisonerController({
+    applicationInfo,
+    auditService,
+    prisonerFinanceService,
+    prisonerSearchService,
+    prisonRegisterService,
+    prisonPermissionsService,
+  })
+
+  const mockRes: Response = {
+    locals: { user: { username: 'test-user' } },
+    render: jest.fn(),
+    status: jest.fn().mockReturnThis(),
+  } as unknown as Response
+
+  const mockNext: e.NextFunction = jest.fn()
 
   const mockBalance: AccountBalanceResponse = { accountId: '', balanceDateTime: '', amount: 10 }
 
   beforeEach(() => {
-    applicationInfo = {} as unknown as jest.Mocked<ApplicationInfo>
-    auditService = new AuditService(null) as jest.Mocked<AuditService>
-    prisonerFinanceService = new PrisonerFinanceService(null) as jest.Mocked<PrisonerFinanceService>
-    prisonerSearchService = {} as unknown as jest.Mocked<PrisonerSearchService>
-    prisonRegisterService = {} as unknown as jest.Mocked<PrisonRegisterService>
-    prisonPermissionsService = {} as unknown as jest.Mocked<PermissionsService>
-
-    prisonerController = new PrisonerController({
-      applicationInfo,
-      auditService,
-      prisonerFinanceService,
-      prisonerSearchService,
-      prisonRegisterService,
-      prisonPermissionsService,
-    })
-
-    mockRes = {
-      locals: { user: { username: 'test-user' } },
-      render: jest.fn(),
-      status: jest.fn().mockReturnThis(),
-    } as unknown as Response
-
-    mockNext = jest.fn()
+    jest.clearAllMocks()
   })
+
   test.each([
-    ['AAAA', undefined],
-    ['99/99/9999', '123231321'],
-    [undefined, 'WOWOW'],
-  ])('Should not call getTransaction if there are validation Errors', async (startDate, endDate) => {
+    { case: 'Invalid startDate', startDate: 'AAAA', endDate: undefined },
+    { case: 'Invalid startDate and endDate', startDate: '99/99/9999', endDate: '123231321' },
+    { case: 'Invalid endDate', startDate: undefined, endDate: 'WOWOW' },
+  ])(`Should not call getTransaction when $case`, async ({ startDate, endDate }) => {
     const mockReq = {
       id: 'req-id-123',
       query: { startDate, endDate },
@@ -92,11 +84,11 @@ describe('PrisonerController - Transactions', () => {
   })
 
   test.each([
-    [undefined, undefined],
-    ['10/10/2010', undefined],
-    ['10/10/2010', '10/10/2020'],
-    [undefined, '10/10/2020'],
-  ])('Should  call getTransaction if there are no validation Errors', async (startDate, endDate) => {
+    { case: 'Both startDate and endDate are undefined', startDate: undefined, endDate: undefined },
+    { case: 'Just startDate is defined', startDate: '10/10/2010', endDate: undefined },
+    { case: 'Both startDate and endDate are defined', startDate: '10/10/2010', endDate: '10/10/2020' },
+    { case: 'Just endDate is defined', startDate: undefined, endDate: '10/10/2020' },
+  ])('Should  call getTransaction if there are no validation Errors when $case', async ({ startDate, endDate }) => {
     const mockReq = {
       id: 'req-id-123',
       query: { startDate, endDate },

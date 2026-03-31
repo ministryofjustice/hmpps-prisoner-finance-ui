@@ -17,6 +17,18 @@ interface FilterConfigItem {
   category: string
 }
 
+const buildClearFilterItem = (query: QueryString.ParsedQs, key: string, label: string): SelectedFilterItem => {
+  const newQuery = { ...query }
+  delete newQuery[key]
+
+  const queryString = new URLSearchParams(newQuery as Record<string, string>).toString()
+
+  return {
+    text: label,
+    href: `?${queryString}#filterForm`,
+  }
+}
+
 export const buildMojSelectedFilter = (
   filtersConfig: Record<string, FilterConfigItem>,
   query: QueryString.ParsedQs,
@@ -24,18 +36,10 @@ export const buildMojSelectedFilter = (
   const selectedMap: Record<string, SelectedFilterItem[]> = {}
 
   Object.entries(filtersConfig).forEach(([key, filterConf]) => {
-    const value = query[key]
+    const queryStringParam = query[key]
 
-    if (value) {
-      const newQuery = { ...query }
-      delete newQuery[key]
-
-      const queryString = new URLSearchParams(newQuery as Record<string, string>).toString()
-
-      const item: SelectedFilterItem = {
-        text: filterConf.label,
-        href: `?${queryString}#filterForm`,
-      }
+    if (queryStringParam) {
+      const item: SelectedFilterItem = buildClearFilterItem(query, key, filterConf.label)
 
       if (!selectedMap[filterConf.category]) {
         selectedMap[filterConf.category] = []

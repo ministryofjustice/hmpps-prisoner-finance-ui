@@ -381,6 +381,7 @@ test.describe('Prisoner Money', () => {
     await startDatefilterTag.click()
     await expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?endDate=${encodeURIComponent(endDateVal)}#filterForm`)
     expect(await endDateFilter.inputValue()).toBe(endDateVal)
+    expect(await startDateFilter.textContent()).toHaveLength(0)
   })
 
   test('Should clear all filters', async ({ page }) => {
@@ -411,6 +412,9 @@ test.describe('Prisoner Money', () => {
 
     await clearFilters.click()
 
-    await expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?#filterForm`)
+    expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?#filterForm`)
+
+    expect(await startDateFilter.textContent()).toHaveLength(0)
+    expect(await endDateFilter.textContent()).toHaveLength(0)
   })
 })

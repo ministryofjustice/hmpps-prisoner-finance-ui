@@ -46,7 +46,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         },
         {
           tokenType: 'SYSTEM_TOKEN',
-          user: { username: undefined },
+          user: {},
         },
       )
     })
@@ -79,7 +79,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         },
         {
           tokenType: 'SYSTEM_TOKEN',
-          user: { username: undefined },
+          user: {},
         },
       )
     })
@@ -111,7 +111,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         },
         {
           tokenType: 'SYSTEM_TOKEN',
-          user: { username: undefined },
+          user: {},
         },
       )
     })
@@ -143,7 +143,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         },
         {
           tokenType: 'SYSTEM_TOKEN',
-          user: { username: undefined },
+          user: {},
         },
       )
     })
@@ -169,7 +169,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         },
         {
           tokenType: 'SYSTEM_TOKEN',
-          user: { username: undefined },
+          user: {},
         },
       )
     })
@@ -196,7 +196,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         },
         {
           tokenType: 'SYSTEM_TOKEN',
-          user: { username: undefined },
+          user: {},
         },
       )
     })
