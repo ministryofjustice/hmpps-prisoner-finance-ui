@@ -20,7 +20,7 @@ export default function routes(services: Services): Router {
 
     getPrisonerData(services),
     getPrisonNames(services),
-    prisonerController.transactions,
+    prisonerController.getTransactions,
   )
 
   prisonerRouter.get(
@@ -32,7 +32,7 @@ export default function routes(services: Services): Router {
     }),
 
     getPrisonerData(services),
-    prisonerController.profile,
+    prisonerController.getProfile,
   )
 
   return prisonerRouter

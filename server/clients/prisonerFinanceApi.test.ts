@@ -42,10 +42,108 @@ describe('PrisonerFinanceSyncApiClient', () => {
       expect(getSpy).toHaveBeenCalledWith(
         {
           path: `/prisoners/${prisonNumber}/money/transactions`,
+          query: {},
         },
         {
           tokenType: 'SYSTEM_TOKEN',
-          user: { username: undefined },
+          user: {},
+        },
+      )
+    })
+
+    it('should call the API with startDate and endDate', async () => {
+      const prisonNumber = 'ABC123AC'
+      const expectedResponse: Array<PrisonerTransactionResponse> = [
+        {
+          date: '2026-03-10T10:43:28.094Z',
+          description: 'test',
+          credit: 0,
+          debit: 0,
+          location: 'LEI',
+          accountType: 'PRISONER',
+        },
+      ]
+
+      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
+
+      const response = await client.getPrisonerTransactionsByPrisonNumber(prisonNumber, '10/10/2010', '10/12/2010')
+
+      expect(response).toEqual(expectedResponse)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/prisoners/${prisonNumber}/money/transactions`,
+          query: {
+            startDate: '2010-10-10',
+            endDate: '2010-12-10',
+          },
+        },
+        {
+          tokenType: 'SYSTEM_TOKEN',
+          user: {},
+        },
+      )
+    })
+
+    it('should call the API with startDate only', async () => {
+      const prisonNumber = 'ABC123AC'
+      const expectedResponse: Array<PrisonerTransactionResponse> = [
+        {
+          date: '2026-03-10T10:43:28.094Z',
+          description: 'test',
+          credit: 0,
+          debit: 0,
+          location: 'LEI',
+          accountType: 'PRISONER',
+        },
+      ]
+
+      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
+
+      const response = await client.getPrisonerTransactionsByPrisonNumber(prisonNumber, '10/10/2010')
+
+      expect(response).toEqual(expectedResponse)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/prisoners/${prisonNumber}/money/transactions`,
+          query: {
+            startDate: '2010-10-10',
+          },
+        },
+        {
+          tokenType: 'SYSTEM_TOKEN',
+          user: {},
+        },
+      )
+    })
+
+    it('should call the API with endDate only', async () => {
+      const prisonNumber = 'ABC123AC'
+      const expectedResponse: Array<PrisonerTransactionResponse> = [
+        {
+          date: '2026-03-10T10:43:28.094Z',
+          description: 'test',
+          credit: 0,
+          debit: 0,
+          location: 'LEI',
+          accountType: 'PRISONER',
+        },
+      ]
+
+      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
+
+      const response = await client.getPrisonerTransactionsByPrisonNumber(prisonNumber, null, '10/10/2010')
+
+      expect(response).toEqual(expectedResponse)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/prisoners/${prisonNumber}/money/transactions`,
+          query: {
+            endDate: '2010-10-10',
+          },
+        },
+        {
+          tokenType: 'SYSTEM_TOKEN',
+          user: {},
         },
       )
     })
@@ -71,7 +169,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         },
         {
           tokenType: 'SYSTEM_TOKEN',
-          user: { username: undefined },
+          user: {},
         },
       )
     })
@@ -98,7 +196,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         },
         {
           tokenType: 'SYSTEM_TOKEN',
-          user: { username: undefined },
+          user: {},
         },
       )
     })

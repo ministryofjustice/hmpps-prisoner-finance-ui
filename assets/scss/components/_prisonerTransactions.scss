@@ -1,0 +1,53 @@
+.prisoner-transactions-page {
+
+  .moj-filter__options {
+    padding: govuk-spacing(4);
+
+    .govuk-form-group {
+      margin-bottom: govuk-spacing(3);
+    }
+  }
+
+  .moj-filter-layout__content {
+    padding-left: govuk-spacing(2);
+  }
+
+  button.govuk-button--blue {
+    background-color: govuk-colour('blue');
+    box-shadow: 0 2px 0 govuk-shade(govuk-colour('blue'), 40%);
+
+    &:focus {
+      outline: 3px solid transparent;
+      box-shadow: inset 0 0 0 2px govuk-colour("white");
+    }
+
+    &:hover {
+      background-color: govuk-shade(govuk-colour('blue'), 20%);
+    }
+
+    &, &:link, &:visited, &:active, &:hover {
+      color: govuk-colour('white');
+    }
+  }
+
+  .moj-action-bar__filter {
+    button {
+      &:focus {
+        outline: 3px solid transparent;
+        box-shadow: inset 0 0 0 2px govuk-colour("white");
+      }
+    }
+
+    &.moj-action-bar__filter::after {
+      display: none;
+      content: none;
+      border: none;
+    }
+
+    border-left: none;
+  }
+
+  .moj-filter-layout__filter--small {
+    max-width: 340px;
+  }
+}
