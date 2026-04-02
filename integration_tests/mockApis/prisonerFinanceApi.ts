@@ -21,7 +21,12 @@ export default {
       },
     }),
 
-  stubGetPrisonerTransactionsByPrisonNumber: (prisonNumber: string, payload: Page<PrisonerTransactionResponse>) =>
+  stubGetPrisonerTransactionsByPrisonNumber: (
+    prisonNumber: string,
+    payload: Page<PrisonerTransactionResponse>,
+    startDate?: string,
+    endDate?: string,
+  ) =>
     stubFor({
       request: {
         method: 'GET',
@@ -29,8 +34,8 @@ export default {
         queryParameters: {
           pageNumber: { equalTo: '1' },
           pageSize: { equalTo: '999' },
-          startDate: { absent: true },
-          endDate: { absent: true },
+          startDate: startDate ? { equalTo: startDate } : { absent: true },
+          endDate: endDate ? { equalTo: endDate } : { absent: true },
         },
       },
       response: {
@@ -48,8 +53,6 @@ export default {
         queryParameters: {
           pageNumber: { equalTo: '1' },
           pageSize: { equalTo: '999' },
-          startDate: { absent: true },
-          endDate: { absent: true },
         },
       },
       response: {
@@ -72,8 +75,6 @@ export default {
         queryParameters: {
           pageNumber: { equalTo: '1' },
           pageSize: { equalTo: '999' },
-          startDate: { absent: true },
-          endDate: { absent: true },
         },
       },
       response: {

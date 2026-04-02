@@ -285,6 +285,13 @@ test.describe('Prisoner Money', () => {
     await startDateFilter.fill(startDateVal)
     await endDateFilter.fill(endDateVal)
 
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      pageTransactionsResponse,
+      '2010-10-10',
+      '2010-12-10',
+    )
+
     await applyFilterButton.click()
 
     const endDateError = page.locator('[id="endDate-error"]')
@@ -292,6 +299,9 @@ test.describe('Prisoner Money', () => {
 
     await expect(endDateError).not.toBeVisible()
     await expect(startDateError).not.toBeVisible()
+
+    await expect(startDateFilter).toBeVisible()
+    await expect(endDateFilter).toBeVisible()
 
     const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
     await expect(noTransactionsMessage).not.toBeVisible()
@@ -383,11 +393,18 @@ test.describe('Prisoner Money', () => {
     expect(startDateFilter).toBeVisible()
     expect(endDateFilter).toBeVisible()
 
-    const startDateVal = '10/10/10'
-    const endDateVal = '10/12/10'
+    const startDateVal = '10/10/2010'
+    const endDateVal = '10/12/2010'
 
     await startDateFilter.fill(startDateVal)
     await endDateFilter.fill(endDateVal)
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      pageTransactionsResponse,
+      '2010-10-10',
+      '2010-12-10',
+    )
 
     await applyFilterButton.click()
 
@@ -395,7 +412,17 @@ test.describe('Prisoner Money', () => {
       `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
     )
 
+    await expect(startDateFilter).toBeVisible()
+    await expect(endDateFilter).toBeVisible()
+
     const startDatefilterTag = page.getByRole('link', { name: 'Start date' })
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      pageTransactionsResponse,
+      undefined,
+      '2010-12-10',
+    )
 
     await startDatefilterTag.click()
     await expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?endDate=${encodeURIComponent(endDateVal)}#filterForm`)
@@ -415,11 +442,18 @@ test.describe('Prisoner Money', () => {
     expect(startDateFilter).toBeVisible()
     expect(endDateFilter).toBeVisible()
 
-    const startDateVal = '10/10/10'
-    const endDateVal = '10/12/10'
+    const startDateVal = '10/10/2010'
+    const endDateVal = '10/12/2010'
 
     await startDateFilter.fill(startDateVal)
     await endDateFilter.fill(endDateVal)
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      pageTransactionsResponse,
+      '2010-10-10',
+      '2010-12-10',
+    )
 
     await applyFilterButton.click()
 
