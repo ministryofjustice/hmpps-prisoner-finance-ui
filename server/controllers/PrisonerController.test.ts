@@ -8,6 +8,7 @@ import PrisonerController from './PrisonerController'
 import PrisonerSearchService from '../services/prisonerSearchService'
 import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
+import { Page } from '../interfaces/Pageable'
 
 jest.mock('../applicationInfo')
 jest.mock('../services/auditService')
@@ -99,6 +100,7 @@ describe('PrisonerController - Transactions', () => {
     } as unknown as Request
 
     prisonerFinanceService.getAccountBalance.mockResolvedValue(mockBalance)
+
     const mockTransactions: PrisonerTransactionResponse[] = [
       {
         date: '10-10-2010',
@@ -109,7 +111,17 @@ describe('PrisonerController - Transactions', () => {
         accountType: 'CASH',
       },
     ]
-    prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactions)
+
+    const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+      content: mockTransactions,
+      totalElements: mockTransactions.length,
+      totalPages: 1,
+      pageNumber: 1,
+      pageSize: 99,
+      isLastPage: true,
+    }
+
+    prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
 
     await prisonerController.getTransactions(mockReq, mockRes, mockNext)
 

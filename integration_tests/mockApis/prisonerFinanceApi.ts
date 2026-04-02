@@ -2,6 +2,7 @@ import { stubFor } from './wiremock'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
 import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBalanceResponse'
+import { Page } from '../../server/interfaces/Pageable'
 
 // this is the path prefix set in feature.env PRISONER_FINANCE_API_URL
 const API_PREFIX = '/prisoner-finance-api'
@@ -20,11 +21,22 @@ export default {
       },
     }),
 
-  stubGetPrisonerTransactionsByPrisonNumber: (prisonNumber: string, payload: Array<PrisonerTransactionResponse>) =>
+  stubGetPrisonerTransactionsByPrisonNumber: (
+    prisonNumber: string,
+    payload: Page<PrisonerTransactionResponse>,
+    startDate?: string,
+    endDate?: string,
+  ) =>
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
+        urlPathPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
+        queryParameters: {
+          pageNumber: { equalTo: '1' },
+          pageSize: { equalTo: '999' },
+          startDate: startDate ? { equalTo: startDate } : { absent: true },
+          endDate: endDate ? { equalTo: endDate } : { absent: true },
+        },
       },
       response: {
         status: 200,
@@ -37,7 +49,11 @@ export default {
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
+        urlPathPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
+        queryParameters: {
+          pageNumber: { equalTo: '1' },
+          pageSize: { equalTo: '999' },
+        },
       },
       response: {
         status: 404,
@@ -55,7 +71,11 @@ export default {
     stubFor({
       request: {
         method: 'GET',
-        urlPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
+        urlPathPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
+        queryParameters: {
+          pageNumber: { equalTo: '1' },
+          pageSize: { equalTo: '999' },
+        },
       },
       response: {
         status: 500,

@@ -1,4 +1,6 @@
 import PrisonerFinanceApiClient from '../clients/prisonerFinanceApi'
+import { Page } from '../interfaces/Pageable'
+import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 import PrisonerFinanceService from './prisonerFinanceService'
 
 jest.mock('../clients/prisonerFinanceApi')
@@ -16,9 +18,18 @@ describe('AuditHistoryService', () => {
     jest.resetAllMocks()
   })
 
+  const emptyPageTransactionsResponse: Page<PrisonerTransactionResponse> = {
+    content: [],
+    totalElements: 0,
+    totalPages: 1,
+    pageNumber: 1,
+    pageSize: 99,
+    isLastPage: true,
+  }
+
   describe('getPrisonerTransactionsByPrisonNumber', () => {
     it('should call the API client', async () => {
-      apiClient.getPrisonerTransactionsByPrisonNumber.mockResolvedValue([])
+      apiClient.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(emptyPageTransactionsResponse)
 
       const prisonNumber = 'A1234BC'
       const startDate = '10/10/2010'

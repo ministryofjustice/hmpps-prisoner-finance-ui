@@ -7,6 +7,7 @@ import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceRe
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
+import { Page } from '../../server/interfaces/Pageable'
 
 test.describe('Prisoner Money', () => {
   test.afterEach(async () => {
@@ -48,6 +49,24 @@ test.describe('Prisoner Money', () => {
     },
   ]
 
+  const pageTransactionsResponse: Page<PrisonerTransactionResponse> = {
+    content: transactionPayload,
+    totalElements: transactionPayload.length,
+    totalPages: 1,
+    pageNumber: 1,
+    pageSize: 99,
+    isLastPage: true,
+  }
+
+  const emptyPageTransactionsResponse: Page<PrisonerTransactionResponse> = {
+    content: [],
+    totalElements: 0,
+    totalPages: 1,
+    pageNumber: 1,
+    pageSize: 99,
+    isLastPage: true,
+  }
+
   const balancePayload: AccountBalanceResponse = {
     accountId: '123456',
     balanceDateTime: '12:34:56',
@@ -58,7 +77,7 @@ test.describe('Prisoner Money', () => {
 
   const baseStubs = async () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse)
     await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
     await prisonRegisterApi.stubGetPrisonNames()
   }
@@ -220,7 +239,7 @@ test.describe('Prisoner Money', () => {
 
   test('should display no transactions', async ({ page }) => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, emptyPageTransactionsResponse)
     await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
     await prisonRegisterApi.stubGetPrisonNames()
 
@@ -266,16 +285,26 @@ test.describe('Prisoner Money', () => {
     await startDateFilter.fill(startDateVal)
     await endDateFilter.fill(endDateVal)
 
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      pageTransactionsResponse,
+      '2010-10-10',
+      '2010-12-10',
+    )
+
     await applyFilterButton.click()
 
     const endDateError = page.locator('[id="endDate-error"]')
     const startDateError = page.locator('[id="startDate-error"]')
 
-    expect(endDateError).not.toBeVisible()
-    expect(startDateError).not.toBeVisible()
+    await expect(endDateError).not.toBeVisible()
+    await expect(startDateError).not.toBeVisible()
+
+    await expect(startDateFilter).toBeVisible()
+    await expect(endDateFilter).toBeVisible()
 
     const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
-    expect(noTransactionsMessage).not.toBeVisible()
+    await expect(noTransactionsMessage).not.toBeVisible()
 
     await expect(page).toHaveURL(
       `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
@@ -364,11 +393,18 @@ test.describe('Prisoner Money', () => {
     expect(startDateFilter).toBeVisible()
     expect(endDateFilter).toBeVisible()
 
-    const startDateVal = '10/10/10'
-    const endDateVal = '10/12/10'
+    const startDateVal = '10/10/2010'
+    const endDateVal = '10/12/2010'
 
     await startDateFilter.fill(startDateVal)
     await endDateFilter.fill(endDateVal)
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      pageTransactionsResponse,
+      '2010-10-10',
+      '2010-12-10',
+    )
 
     await applyFilterButton.click()
 
@@ -376,7 +412,17 @@ test.describe('Prisoner Money', () => {
       `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
     )
 
+    await expect(startDateFilter).toBeVisible()
+    await expect(endDateFilter).toBeVisible()
+
     const startDatefilterTag = page.getByRole('link', { name: 'Start date' })
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      pageTransactionsResponse,
+      undefined,
+      '2010-12-10',
+    )
 
     await startDatefilterTag.click()
     await expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?endDate=${encodeURIComponent(endDateVal)}#filterForm`)
@@ -396,11 +442,18 @@ test.describe('Prisoner Money', () => {
     expect(startDateFilter).toBeVisible()
     expect(endDateFilter).toBeVisible()
 
-    const startDateVal = '10/10/10'
-    const endDateVal = '10/12/10'
+    const startDateVal = '10/10/2010'
+    const endDateVal = '10/12/2010'
 
     await startDateFilter.fill(startDateVal)
     await endDateFilter.fill(endDateVal)
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      pageTransactionsResponse,
+      '2010-10-10',
+      '2010-12-10',
+    )
 
     await applyFilterButton.click()
 

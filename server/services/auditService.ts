@@ -1,6 +1,6 @@
 import HmppsAuditClient, { AuditEvent } from '../data/hmppsAuditClient'
 
-export enum Page {
+export enum AuditPage {
   INDEX = 'INDEX_PAGE',
   PRISONER_MONEY = 'PRISONER_MONEY_PAGE',
   PRISONER_PROFILE = 'PRISONER_PROFILE_PAGE',
@@ -21,7 +21,7 @@ export default class AuditService {
     await this.hmppsAuditClient.sendMessage(event)
   }
 
-  async logPageView(page: Page, eventDetails: PageViewEventDetails) {
+  async logPageView(page: AuditPage, eventDetails: PageViewEventDetails) {
     const event: AuditEvent = {
       ...eventDetails,
       what: `PAGE_VIEW_${page}`,
