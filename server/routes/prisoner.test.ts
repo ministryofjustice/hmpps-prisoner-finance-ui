@@ -2,11 +2,13 @@ import type { Express } from 'express'
 import request from 'supertest'
 import { PrisonerMoneyPermission, PermissionsService } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import { appWithAllRoutes, user } from './testutils/appSetup'
-import AuditService, { Page } from '../services/auditService'
+import AuditService, { AuditPage } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
 import PrisonerSearchService from '../services/prisonerSearchService'
 import mockPermissions from './testutils/mockPermissions'
 import PrisonRegisterService from '../services/prisonRegisterService'
+import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
+import { Page } from '../interfaces/Pageable'
 
 jest.mock('../services/prisonerFinanceService')
 jest.mock('../services/prisonerSearchService')
@@ -61,14 +63,23 @@ describe('Prisoners', () => {
   })
 
   const prisonNumber = 'A9971EC'
+  const emptyPageTransactionsResponse: Page<PrisonerTransactionResponse> = {
+    content: [],
+    totalElements: 0,
+    totalPages: 1,
+    pageNumber: 1,
+    pageSize: 99,
+    isLastPage: true,
+  }
+
   it('should return a 200, render the correct page and call the audit service', async () => {
-    prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue([])
+    prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(emptyPageTransactionsResponse)
     prisonerFinanceService.getAccountBalance.mockResolvedValue({ accountId: '', balanceDateTime: '', amount: 1000 })
 
     await request(app).get(`/prisoner/${prisonNumber}/money`).expect(200).expect('Content-Type', /html/)
 
     expect(auditService.logPageView).toHaveBeenCalledWith(
-      Page.PRISONER_MONEY,
+      AuditPage.PRISONER_MONEY,
       expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
     )
   })
@@ -112,7 +123,7 @@ describe('Prisoners', () => {
 
   describe('/prisoner/:prisonNumber/money', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
-      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue([])
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(emptyPageTransactionsResponse)
       prisonerFinanceService.getAccountBalance.mockResolvedValue({ accountId: '', balanceDateTime: '', amount: 1000 })
 
       const response = await request(app)
@@ -121,7 +132,7 @@ describe('Prisoners', () => {
         .expect('Content-Type', /html/)
 
       expect(auditService.logPageView).toHaveBeenCalledWith(
-        Page.PRISONER_MONEY,
+        AuditPage.PRISONER_MONEY,
         expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
       )
       expect(response.text).toContain('Prisoner Transactions')
@@ -160,7 +171,7 @@ describe('Prisoners', () => {
 
   describe('/prisoner/:prisonNumber', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
-      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue([])
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(emptyPageTransactionsResponse)
       prisonerFinanceService.getSubAccountBalances.mockResolvedValue({
         SPENDS: { subAccountId: '', balanceDateTime: '', amount: 1 },
         CASH: { subAccountId: '', balanceDateTime: '', amount: 1 },
@@ -170,7 +181,7 @@ describe('Prisoners', () => {
       await request(app).get(`/prisoner/${prisonNumber}`).expect(200).expect('Content-Type', /html/)
 
       expect(auditService.logPageView).toHaveBeenCalledWith(
-        Page.PRISONER_PROFILE,
+        AuditPage.PRISONER_PROFILE,
         expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
       )
     })

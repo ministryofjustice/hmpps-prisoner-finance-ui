@@ -2,6 +2,7 @@ import PrisonerFinanceApiClient from '../clients/prisonerFinanceApi'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
 import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
+import { Page } from '../interfaces/Pageable'
 
 export default class PrisonerFinanceService {
   constructor(private readonly prisonerFinanceApiClient: PrisonerFinanceApiClient) {}
@@ -10,7 +11,7 @@ export default class PrisonerFinanceService {
     prisonNumber: string,
     startDate: string | null = null,
     endDate: string | null = null,
-  ): Promise<Array<PrisonerTransactionResponse>> {
+  ): Promise<Page<PrisonerTransactionResponse>> {
     return this.prisonerFinanceApiClient.getPrisonerTransactionsByPrisonNumber(prisonNumber, startDate, endDate)
   }
 

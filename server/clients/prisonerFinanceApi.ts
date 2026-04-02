@@ -6,6 +6,7 @@ import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionRe
 import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
 import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
 import { datePickerToISODate } from '../utils/utils'
+import { Page } from '../interfaces/Pageable'
 
 export default class PrisonerFinanceApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -16,13 +17,15 @@ export default class PrisonerFinanceApiClient extends RestClient {
     prisonNumber: string,
     startDate: string | null = null,
     endDate: string | null = null,
-  ): Promise<Array<PrisonerTransactionResponse>> {
+  ): Promise<Page<PrisonerTransactionResponse>> {
     return this.get(
       {
         path: `/prisoners/${prisonNumber}/money/transactions`,
         query: {
           ...(startDate && { startDate: datePickerToISODate(startDate) }),
           ...(endDate && { endDate: datePickerToISODate(endDate) }),
+          pageNumber: 1,
+          pageSize: 999,
         },
       },
       asSystem(),

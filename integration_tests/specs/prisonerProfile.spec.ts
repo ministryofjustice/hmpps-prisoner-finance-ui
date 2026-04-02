@@ -7,6 +7,7 @@ import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBal
 
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
+import { Page } from '../../server/interfaces/Pageable'
 
 test.describe('Prisoner Profile', () => {
   const transactionPayload: Array<PrisonerTransactionResponse> = [
@@ -60,6 +61,24 @@ test.describe('Prisoner Profile', () => {
     },
   ]
 
+  const pageTransactionsResponse: Page<PrisonerTransactionResponse> = {
+    content: transactionPayload,
+    totalElements: transactionPayload.length,
+    totalPages: 1,
+    pageNumber: 1,
+    pageSize: 99,
+    isLastPage: true,
+  }
+
+  const emptyPageTransactionsResponse: Page<PrisonerTransactionResponse> = {
+    content: [],
+    totalElements: 0,
+    totalPages: 1,
+    pageNumber: 1,
+    pageSize: 99,
+    isLastPage: true,
+  }
+
   const balancePayload: SubAccountBalanceResponse[] = [
     { subAccountId: '', balanceDateTime: '', amount: 1234 },
     { subAccountId: '', balanceDateTime: '', amount: 3456 },
@@ -70,7 +89,7 @@ test.describe('Prisoner Profile', () => {
 
   const baseStubs = async () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse)
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', balancePayload[0])
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', balancePayload[2])
@@ -226,7 +245,7 @@ test.describe('Prisoner Profile', () => {
 
   test('should display no transactions', async ({ page }) => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, emptyPageTransactionsResponse)
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', balancePayload[0])
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', balancePayload[2])
@@ -252,7 +271,7 @@ test.describe('Prisoner Profile', () => {
     test(`page should load normally if ${name} account returns 404`, async ({ page }) => {
       const stubPromises = [
         prisonerSearchApi.stubGetPrisoner(prisonNumber),
-        prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, []),
+        prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, emptyPageTransactionsResponse),
         prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, subAccountRef),
       ]
 
