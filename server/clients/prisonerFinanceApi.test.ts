@@ -42,7 +42,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
       expect(getSpy).toHaveBeenCalledWith(
         {
           path: `/prisoners/${prisonNumber}/money/transactions`,
-          query: { pageNumber: 1, pageSize: 999 },
+          query: { pageNumber: '1', pageSize: '25' },
         },
         {
           tokenType: 'SYSTEM_TOKEN',
@@ -75,8 +75,8 @@ describe('PrisonerFinanceSyncApiClient', () => {
           query: {
             startDate: '2010-10-10',
             endDate: '2010-12-10',
-            pageNumber: 1,
-            pageSize: 999,
+            pageNumber: '1',
+            pageSize: '25',
           },
         },
         {
@@ -109,8 +109,8 @@ describe('PrisonerFinanceSyncApiClient', () => {
           path: `/prisoners/${prisonNumber}/money/transactions`,
           query: {
             startDate: '2010-10-10',
-            pageNumber: 1,
-            pageSize: 999,
+            pageNumber: '1',
+            pageSize: '25',
           },
         },
         {
@@ -143,8 +143,8 @@ describe('PrisonerFinanceSyncApiClient', () => {
           path: `/prisoners/${prisonNumber}/money/transactions`,
           query: {
             endDate: '2010-10-10',
-            pageNumber: 1,
-            pageSize: 999,
+            pageNumber: '1',
+            pageSize: '25',
           },
         },
         {

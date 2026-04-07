@@ -17,6 +17,7 @@ export default class PrisonerFinanceApiClient extends RestClient {
     prisonNumber: string,
     startDate: string | null = null,
     endDate: string | null = null,
+    page: string = '1',
   ): Promise<Page<PrisonerTransactionResponse>> {
     return this.get(
       {
@@ -24,8 +25,8 @@ export default class PrisonerFinanceApiClient extends RestClient {
         query: {
           ...(startDate && { startDate: datePickerToISODate(startDate) }),
           ...(endDate && { endDate: datePickerToISODate(endDate) }),
-          pageNumber: 1,
-          pageSize: 999,
+          pageNumber: page,
+          pageSize: '25',
         },
       },
       asSystem(),

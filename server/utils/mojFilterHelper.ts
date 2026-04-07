@@ -18,10 +18,11 @@ interface FilterConfigItem {
 }
 
 const buildClearFilterItem = (query: QueryString.ParsedQs, key: string, label: string): SelectedFilterItem => {
-  const newQuery = { ...query }
+  // removing a filter should send you to page one
+  const newQuery: Record<string, string> = { ...query, page: '1' }
   delete newQuery[key]
 
-  const queryString = new URLSearchParams(newQuery as Record<string, string>).toString()
+  const queryString = new URLSearchParams(newQuery).toString()
 
   return {
     text: label,

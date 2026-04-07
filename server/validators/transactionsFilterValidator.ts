@@ -17,6 +17,8 @@ export const transactionsFilterSchema = z
     endDate: z.string().trim().optional().refine(isValidDatePickerDate, {
       message: 'End date must be a real date, like 18/01/2026',
     }),
+
+    page: z.coerce.number().optional(),
   })
   .superRefine((data, ctx) => {
     const { startDate, endDate } = data

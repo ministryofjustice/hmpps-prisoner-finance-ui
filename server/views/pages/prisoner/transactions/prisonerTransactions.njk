@@ -8,7 +8,8 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "moj/components/filter/macro.njk" import mojFilter %}
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
-
+{% from "moj/components/pagination/macro.njk" import mojPagination %}
+{% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
 {% set pageTitle = applicationName + " - Finance" %}
 {% set mainClasses = "govuk-body" %}
@@ -117,6 +118,11 @@
       {% endfor %}
 
       {% if transactions | length > 0 %}
+
+      <div id="top-pagination">
+        {{ mojPagination(paginationItems) }}
+      </div>
+
         {{ govukTable({
           attributes: {
             "data-testid": "prisoner-transactions-table"
@@ -133,6 +139,11 @@
           ],
           rows: tableRows
         }) }}
+
+      <div id="bottom-pagination">
+        {{ mojPagination(paginationItems) }}
+      </div>
+
       {% else %}
         <p data-testid="no-transactions-message">
           {% if hasValidationErrors %}
@@ -145,5 +156,6 @@
       </div>
   </div>
 </div>
+
 
 {% endblock %}

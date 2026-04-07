@@ -470,4 +470,75 @@ test.describe('Prisoner Money', () => {
     expect(await startDateFilter.textContent()).toHaveLength(0)
     expect(await endDateFilter.textContent()).toHaveLength(0)
   })
+
+  test('Should render pagination component and allow progression', async ({ page }) => {
+    await baseStubs()
+
+    const createPageTransactionResponse = (pageNumber: number): Page<PrisonerTransactionResponse> => {
+      return {
+        content: transactionPayload,
+        totalElements: 100,
+        totalPages: 20,
+        pageNumber,
+        pageSize: 5,
+        isLastPage: pageNumber === 20,
+      }
+    }
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      createPageTransactionResponse(10),
+      '2026-04-09',
+      '2026-04-12',
+      '10',
+      '25',
+    )
+
+    const buildQueriesForPage = (pageNumber: number) =>
+      `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}`
+
+    await page.goto(`/prisoner/${prisonNumber}/money${buildQueriesForPage(10)}`)
+
+    const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page)
+
+    await expect(topPagination).toBeVisible()
+    await expect(bottomPagination).toBeVisible()
+
+    const topNavButton = topPagination.locator("[aria-label='Page 9']")
+    await expect(topNavButton).toBeVisible()
+    expect(await topNavButton.getAttribute('href')).toBe(buildQueriesForPage(9))
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      createPageTransactionResponse(9),
+      '2026-04-09',
+      '2026-04-12',
+      '9',
+      '25',
+    )
+
+    await topNavButton.click()
+
+    expect(page.url()).toContain(buildQueriesForPage(9))
+
+    const topResultText = topPagination.locator('.moj-pagination__results')
+    await expect(topResultText).toBeVisible()
+
+    expect(await topResultText.innerText()).toBe('Showing 41 to 45 of 100 total results')
+
+    const bottomResultText = bottomPagination.locator('.moj-pagination__results')
+    await expect(bottomResultText).toBeVisible()
+
+    expect(await bottomResultText.innerText()).toBe('Showing 41 to 45 of 100 total results')
+
+    const topCurrentPageLi = topPagination.locator('.govuk-pagination__item--current')
+    const topCurrentPageA = topCurrentPageLi.locator('a')
+    expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await topCurrentPageA.innerText()).toBe('9')
+
+    const bottomCurrentPageLi = bottomPagination.locator('.govuk-pagination__item--current')
+    const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
+    expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await bottomCurrentPageA.innerText()).toBe('9')
+  })
 })

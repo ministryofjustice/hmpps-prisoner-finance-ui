@@ -73,6 +73,7 @@ describe('PrisonerController - Transactions', () => {
       applicationName: 'Transactions',
       transactions: [],
       balance: mockBalance.amount,
+      paginationItems: expect.anything(),
       filters: {
         startDate,
         endDate,
@@ -133,6 +134,7 @@ describe('PrisonerController - Transactions', () => {
       transactions: mockTransactions,
       balance: mockBalance.amount,
       hasValidationErrors: false,
+      paginationItems: expect.anything(),
       filters: {
         startDate,
         endDate,

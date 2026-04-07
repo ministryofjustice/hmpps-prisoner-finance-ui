@@ -26,14 +26,16 @@ export default {
     payload: Page<PrisonerTransactionResponse>,
     startDate?: string,
     endDate?: string,
+    pageNumber: string = '1',
+    pageSize: string = '25',
   ) =>
     stubFor({
       request: {
         method: 'GET',
         urlPathPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
         queryParameters: {
-          pageNumber: { equalTo: '1' },
-          pageSize: { equalTo: '999' },
+          pageNumber: { equalTo: pageNumber },
+          pageSize: { equalTo: pageSize },
           startDate: startDate ? { equalTo: startDate } : { absent: true },
           endDate: endDate ? { equalTo: endDate } : { absent: true },
         },
@@ -52,7 +54,7 @@ export default {
         urlPathPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
         queryParameters: {
           pageNumber: { equalTo: '1' },
-          pageSize: { equalTo: '999' },
+          pageSize: { equalTo: '25' },
         },
       },
       response: {
@@ -74,7 +76,7 @@ export default {
         urlPathPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
         queryParameters: {
           pageNumber: { equalTo: '1' },
-          pageSize: { equalTo: '999' },
+          pageSize: { equalTo: '25' },
         },
       },
       response: {

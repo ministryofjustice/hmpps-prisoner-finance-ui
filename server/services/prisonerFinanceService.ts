@@ -11,8 +11,9 @@ export default class PrisonerFinanceService {
     prisonNumber: string,
     startDate: string | null = null,
     endDate: string | null = null,
+    page: string = '1',
   ): Promise<Page<PrisonerTransactionResponse>> {
-    return this.prisonerFinanceApiClient.getPrisonerTransactionsByPrisonNumber(prisonNumber, startDate, endDate)
+    return this.prisonerFinanceApiClient.getPrisonerTransactionsByPrisonNumber(prisonNumber, startDate, endDate, page)
   }
 
   getAccountBalance(prisonNumber: string): Promise<AccountBalanceResponse> {

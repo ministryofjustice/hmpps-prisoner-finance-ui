@@ -12,6 +12,10 @@ export default class PrisonerMoneyPage extends AbstractPage {
 
   readonly prisonerInformationHeader: Locator
 
+  readonly topPagination: Locator
+
+  readonly bottomPagination: Locator
+
   private constructor(page: Page) {
     super(page)
     this.heading = page.locator('#prisonerTransactionsHeading')
@@ -19,6 +23,8 @@ export default class PrisonerMoneyPage extends AbstractPage {
     this.backButton = page.locator('[data-testid="backLink"]')
     this.balanceCard = page.locator('[data-testid="view-prisoner-balance-card"]')
     this.prisonerInformationHeader = page.locator('[data-testid="hmpps-profile-banner"]')
+    this.topPagination = page.locator('#top-pagination')
+    this.bottomPagination = page.locator('#bottom-pagination')
   }
 
   static async verifyOnPage(page: Page): Promise<PrisonerMoneyPage> {
