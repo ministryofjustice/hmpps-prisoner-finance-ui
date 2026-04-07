@@ -3,8 +3,8 @@
 {% macro balanceCard(params) %}
   {% call summaryContainer(params) %}
     <div class="hmpps-balance-card__body">
-      <h3 class="govuk-heading-m hmpps-balance-card__subHeading">
-          Total
+      <h3 class="govuk-heading-l hmpps-balance-card__subHeading">
+          Account Total
       </h3>
 
       <p class="govuk-body hmpps-balance-card__amount">{{ params.amount | penceToPound }}</p>
