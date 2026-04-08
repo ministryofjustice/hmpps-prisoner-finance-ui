@@ -49,13 +49,21 @@ describe('PrisonerController - Transactions', () => {
   })
 
   test.each([
-    { case: 'Invalid startDate', startDate: 'AAAA', endDate: undefined },
-    { case: 'Invalid startDate and endDate', startDate: '99/99/9999', endDate: '123231321' },
-    { case: 'Invalid endDate', startDate: undefined, endDate: 'WOWOW' },
-  ])(`Should not call getTransaction when $case`, async ({ startDate, endDate }) => {
+    { case: 'Invalid startDate', startDate: 'AAAA', endDate: undefined, credit: undefined, debit: undefined },
+    {
+      case: 'Invalid startDate and endDate',
+      startDate: '99/99/9999',
+      endDate: '123231321',
+      credit: undefined,
+      debit: undefined,
+    },
+    { case: 'Invalid endDate', startDate: undefined, endDate: 'WOWOW', credit: undefined, debit: undefined },
+    { case: 'Invalid credit', startDate: undefined, endDate: undefined, credit: 'xxxx', debit: undefined },
+    { case: 'Invalid debit', startDate: undefined, endDate: undefined, credit: undefined, debit: 'xxxx' },
+  ])(`Should not call getTransaction when $case`, async ({ startDate, endDate, credit, debit }) => {
     const mockReq = {
       id: 'req-id-123',
-      query: { startDate, endDate },
+      query: { startDate, endDate, credit, debit },
       params: { prisonNumber: 'ABC123XX' },
       protocol: 'http',
       get: jest.fn().mockReturnValue('localhost:3000'),
@@ -76,6 +84,8 @@ describe('PrisonerController - Transactions', () => {
       filters: {
         startDate,
         endDate,
+        credit,
+        debit,
         selectedFilters: expect.anything(),
       },
       hasValidationErrors: true,

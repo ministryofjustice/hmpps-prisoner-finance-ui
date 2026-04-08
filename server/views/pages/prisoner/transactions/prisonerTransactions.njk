@@ -6,6 +6,7 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "moj/components/filter/macro.njk" import mojFilter %}
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
 
@@ -64,7 +65,29 @@
               value: filters.endDate,
               errorMessage: { text: errorMap.endDate } if errorMap.endDate else null
             }) }}
-          {% endset -%}
+
+            {{ govukCheckboxes({
+              fieldset: {
+                legend: {
+                  text: "Credit or debit",
+                  classes: "govuk-fieldset__legend--s"
+                }
+              },
+              items: [
+                {
+                  value: "true",
+                  text: "Credit",
+                  id: "creditFilter"
+                },
+                {
+                  value: "true",
+                  text: "Debit",
+                  id: "debitFilter"
+                }
+              ]
+            }) }}
+
+          {% endset %}
 
           {{ mojFilter({
               heading: {

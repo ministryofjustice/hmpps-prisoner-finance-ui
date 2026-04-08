@@ -1,4 +1,4 @@
-import { z } from 'zod'
+import { boolean, z } from 'zod'
 import { parse, isValid, format } from 'date-fns'
 
 const isValidDatePickerDate = (val: string | undefined): boolean => {
@@ -6,6 +6,12 @@ const isValidDatePickerDate = (val: string | undefined): boolean => {
   const parsed = parse(val, 'dd/MM/yyyy', new Date())
 
   return isValid(parsed) && format(parsed, 'dd/MM/yyyy') === val
+}
+
+const isValidBoolean = (val: string | undefined): boolean => {
+  if (val === 'true') return true
+  if (val === 'false') return true
+  return false
 }
 
 export const transactionsFilterSchema = z
@@ -16,6 +22,14 @@ export const transactionsFilterSchema = z
 
     endDate: z.string().trim().optional().refine(isValidDatePickerDate, {
       message: 'End date must be a real date, like 18/01/2026',
+    }),
+
+    credit: z.string().trim().optional().refine(isValidBoolean, {
+      message: 'Credit must be true or false',
+    }),
+
+    debit: z.string().trim().optional().refine(isValidBoolean, {
+      message: 'Debit must be true or false',
     }),
   })
   .superRefine((data, ctx) => {
