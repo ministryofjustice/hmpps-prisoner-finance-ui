@@ -8,6 +8,13 @@ const isValidDatePickerDate = (val: string | undefined): boolean => {
   return isValid(parsed) && format(parsed, 'dd/MM/yyyy') === val
 }
 
+const booleanFromQuery = (message: string) =>
+  z
+    .string()
+    .optional()
+    .refine(val => val === undefined || val === '' || val === 'true' || val === 'false', { message })
+    .transform(val => val === 'true')
+
 export const transactionsFilterSchema = z
   .object({
     startDate: z.string().trim().optional().refine(isValidDatePickerDate, {
@@ -17,6 +24,10 @@ export const transactionsFilterSchema = z
     endDate: z.string().trim().optional().refine(isValidDatePickerDate, {
       message: 'End date must be a real date, like 18/01/2026',
     }),
+
+    credit: booleanFromQuery('Credit must be true or false\n'),
+
+    debit: booleanFromQuery('Debit must be true or false\n'),
   })
   .superRefine((data, ctx) => {
     const { startDate, endDate } = data

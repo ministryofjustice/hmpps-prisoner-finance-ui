@@ -105,6 +105,18 @@ describe('prisoner transactions page', () => {
     expect(filterSelected.length).toBe(1)
     expect(filterComponent.length).toBe(1)
     expect(filterOptions.length).toBe(1)
+
+    const endDateFilterComponent = $('[id="endDate"]')
+    const startDateFilterComponent = $('[id="startDate"]')
+
+    expect(endDateFilterComponent.length).toBe(1)
+    expect(startDateFilterComponent.length).toBe(1)
+
+    const creditFilterComponent = $('[id="creditFilter"]')
+    const debitFilterComponent = $('[id="debitFilter"]')
+
+    expect(creditFilterComponent.length).toBe(1)
+    expect(debitFilterComponent.length).toBe(1)
   })
 
   it('Should render no transactions', () => {

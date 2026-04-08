@@ -6,6 +6,7 @@
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "moj/components/filter/macro.njk" import mojFilter %}
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
 
@@ -66,12 +67,18 @@
       <div class="moj-filter">
         <form method="get" action="#filterForm" id="filterForm">
           {%- set filterOptionsHtml %}
+          
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Date Range</legend>
+
             {{ mojDatePicker({
               id: 'startDate',
               name: 'startDate',
               leadingZeros: 'true',
-              label: { text: "Start date", classes: "govuk-label--s" },
+              label: { text: "From"},
               value: filters.startDate,
+              hint: {
+                text: "For example, 17/05/2024."
+              },
               errorMessage: { text: errorMap.startDate } if errorMap.startDate else null
             }) }}
 
@@ -79,10 +86,43 @@
               id: 'endDate',
               name: 'endDate',
               leadingZeros: 'true',
-              label: { text: "End date", classes: "govuk-label--s" },
+              label: { text: "To", classes: "govuk-label--s" },
               value: filters.endDate,
+              hint: {
+                text: "For example, 17/05/2024."
+              },
               errorMessage: { text: errorMap.endDate } if errorMap.endDate else null
             }) }}
+
+            {{ govukCheckboxes({
+              name: "creditDebit",
+              fieldset: {
+                legend: {
+                  text: "Credit or debit",
+                  classes: "govuk-fieldset__legend--s"
+                }
+              },
+              items: [
+                {
+                  name: "credit",
+                  checked: filters.credit === 'true',
+                  value: "true",
+                  text: "Credit",
+                  id: "creditFilter"
+                },
+                {
+                  name: "debit",
+                  checked: filters.debit === 'true',
+                  value: "true",
+                  text: "Debit",
+                  id: "debitFilter"
+                }
+              ],
+              errorMessage: {
+                text: errorMap.credit | default("") + errorMap.debit | default("")
+              } if errorMap.credit or errorMap.debit else null
+            }) }}
+
           {% endset -%}
 
           {{ mojFilter({
