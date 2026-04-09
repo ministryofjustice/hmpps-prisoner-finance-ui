@@ -48,12 +48,18 @@
       <div class="moj-filter">
         <form method="get" action="#filterForm" id="filterForm">
           {%- set filterOptionsHtml %}
+          
+            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Date Range</legend>
+
             {{ mojDatePicker({
               id: 'startDate',
               name: 'startDate',
               leadingZeros: 'true',
-              label: { text: "Start date", classes: "govuk-label--s" },
+              label: { text: "From"},
               value: filters.startDate,
+              hint: {
+                text: "For example, 17/05/2024."
+              },
               errorMessage: { text: errorMap.startDate } if errorMap.startDate else null
             }) }}
 
@@ -61,8 +67,11 @@
               id: 'endDate',
               name: 'endDate',
               leadingZeros: 'true',
-              label: { text: "End date", classes: "govuk-label--s" },
+              label: { text: "To", classes: "govuk-label--s" },
               value: filters.endDate,
+              hint: {
+                text: "For example, 17/05/2024."
+              },
               errorMessage: { text: errorMap.endDate } if errorMap.endDate else null
             }) }}
 
