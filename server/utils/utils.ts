@@ -74,11 +74,15 @@ export const datePickerToISODate = (datePickerDate: string): string => {
   return format(parsedDate, 'yyyy-MM-dd')
 }
 
-export const formatPrisonerAccountType = (accountType: string) : string => {
-  switch(accountType) {
-    case 'CASH': return 'Private cash'
-    case 'SPENDS': return 'Spends'
-    case 'SAVINGS': return 'Savings'
-    default: return accountType
+export const formatPrisonerAccountType = (accountType: string): string => {
+  switch (accountType) {
+    case 'CASH':
+      return 'Private cash'
+    case 'SPENDS':
+      return 'Spends'
+    case 'SAVINGS':
+      return 'Savings'
+    default:
+      return accountType
   }
 }
