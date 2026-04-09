@@ -27,14 +27,31 @@
 {% block content %}
 <div class="prisoner-transactions-page">
 
-  <h1 id="prisonerTransactionsHeading">Prisoner Transactions</h1>
+  <h1 id="prisonerTransactionsHeading">Transactions for all sub accounts</h1>
 
   <div class="card-group govuk-grid-row" id="prisonerFinanceCard">
     <div class="govuk-grid-column-one-third card-group__item">
       {{ balanceCard({
-        "heading": "Total",
+        "heading": "Current balance",
         "amount": balance,
-        "data-testid": "view-prisoner-balance-card"
+        "data-testid": "view-prisoner-current-balance-card",
+        "showSubHeading": false
+      }) }}
+    </div>
+    <div class="govuk-grid-column-one-third card-group__item">
+      {{ balanceCard({
+        "heading": "Hold balance",
+        "amount": 0,
+        "data-testid": "view-prisoner-hold-balance-card",
+        "showSubHeading": false
+      }) }}
+    </div>
+    <div class="govuk-grid-column-one-third card-group__item">
+      {{ balanceCard({
+        "heading": "Total balance",
+        "amount": balance,
+        "data-testid": "view-prisoner-total-balance-card",
+        "showSubHeading": false
       }) }}
     </div>
   </div>
@@ -111,7 +128,7 @@
           { text: row.credit | penceToPound},
           { text: row.debit | penceToPound},
           { text: row.location | convertPrisonIdToName(prisonNames)},
-          { text: row.accountType }
+          { text: row.accountType | formatPrisonerAccountType }
         ] %}
         {% set tableRows = (tableRows.push(rowData), tableRows) %}
       {% endfor %}

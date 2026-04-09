@@ -6,6 +6,7 @@ import {
   createProfileTabsForPrisoner,
   convertPrisonIdToName,
   datePickerToISODate,
+  formatPrisonerAccountType,
 } from './utils'
 import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
 
@@ -113,5 +114,16 @@ describe('datePickerToISODate', () => {
   it('Should throw an exception when date is invalid', () => {
     expect(() => datePickerToISODate('AAAA')).toThrow(RangeError)
     expect(() => datePickerToISODate('99/99/9999')).toThrow(RangeError)
+  })
+})
+
+describe('formatPrisonerAccountType', () => {
+  it.each([
+    [`Returns what it recieves`, 'junk', 'junk'],
+    ['Cash', 'CASH', 'Private cash'],
+    ['Spends', 'SPENDS', 'Spends'],
+    ['Savings', 'SAVINGS', 'Savings'],
+  ])('%s formatPrisonerAccountType(%s, %s)', (_: string, input: string, expected: string) => {
+    expect(formatPrisonerAccountType(input)).toEqual(expected)
   })
 })
