@@ -40,13 +40,17 @@ class PrisonerController {
       let zodErrors = {}
       if (!parseResult.success) {
         zodErrors = formatValidationErrors(parseResult.error)
-
-        console.log(`${parseResult.error}`)
       }
       const selectedFilters = buildMojSelectedFilter(transactionFilterConfig, req.query)
 
       const transactionsPromise = parseResult.success
-        ? this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(prisonNumber, startDate, endDate)
+        ? this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(
+            prisonNumber,
+            startDate,
+            endDate,
+            debit,
+            credit,
+          )
         : Promise.resolve(emptyPage)
 
       const [transactions, accountBalance] = await Promise.all([

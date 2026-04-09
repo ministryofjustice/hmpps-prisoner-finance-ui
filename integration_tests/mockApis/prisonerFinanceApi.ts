@@ -26,6 +26,8 @@ export default {
     payload: Page<PrisonerTransactionResponse>,
     startDate?: string,
     endDate?: string,
+    credit?: string,
+    debit?: string,
   ) =>
     stubFor({
       request: {
@@ -36,6 +38,8 @@ export default {
           pageSize: { equalTo: '999' },
           startDate: startDate ? { equalTo: startDate } : { absent: true },
           endDate: endDate ? { equalTo: endDate } : { absent: true },
+          credit: credit ? { equalTo: credit } : { absent: true },
+          debit: debit ? { equalTo: debit } : { absent: true },
         },
       },
       response: {

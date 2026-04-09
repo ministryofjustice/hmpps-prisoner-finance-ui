@@ -67,6 +67,7 @@
             }) }}
 
             {{ govukCheckboxes({
+              name: "creditDebit",
               fieldset: {
                 legend: {
                   text: "Credit or debit",
@@ -75,19 +76,26 @@
               },
               items: [
                 {
+                  name: "credit",
+                  checked: filters.credit === 'true',
                   value: "true",
                   text: "Credit",
                   id: "creditFilter"
                 },
                 {
+                  name: "debit",
+                  checked: filters.debit === 'true',
                   value: "true",
                   text: "Debit",
                   id: "debitFilter"
                 }
-              ]
+              ],
+              errorMessage: {
+                text: errorMap.credit | default("") + errorMap.debit | default("")
+              } if errorMap.credit or errorMap.debit else null
             }) }}
 
-          {% endset %}
+          {% endset -%}
 
           {{ mojFilter({
               heading: {
