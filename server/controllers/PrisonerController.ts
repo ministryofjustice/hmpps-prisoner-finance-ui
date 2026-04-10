@@ -10,6 +10,8 @@ import { Page } from '../interfaces/Pageable'
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
   endDate: { label: 'End date', category: 'Date' },
+  credit: { label: 'Credit', category: 'Credit or debit' },
+  debit: { label: 'Debit', category: 'Credit or debit' },
 }
 
 const emptyPage: Page<PrisonerTransactionResponse> = {
@@ -31,7 +33,7 @@ class PrisonerController {
         who: res.locals.user.username,
         correlationId: req.id,
       })
-      const { startDate, endDate } = req.query as Record<string, string>
+      const { startDate, endDate, credit, debit } = req.query as Record<string, string>
 
       const parseResult = transactionsFilterSchema.safeParse(req.query)
 
@@ -42,7 +44,13 @@ class PrisonerController {
       const selectedFilters = buildMojSelectedFilter(transactionFilterConfig, req.query)
 
       const transactionsPromise = parseResult.success
-        ? this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(prisonNumber, startDate, endDate)
+        ? this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(
+            prisonNumber,
+            startDate,
+            endDate,
+            debit,
+            credit,
+          )
         : Promise.resolve(emptyPage)
 
       const [transactions, accountBalance] = await Promise.all([
@@ -58,6 +66,8 @@ class PrisonerController {
         filters: {
           startDate,
           endDate,
+          credit,
+          debit,
           selectedFilters,
         },
         hasValidationErrors: !parseResult.success,
