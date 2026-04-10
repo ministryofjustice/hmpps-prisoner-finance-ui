@@ -466,19 +466,19 @@ test.describe('Prisoner Money', () => {
       const startDateError = page.locator('[id="startDate-error"]')
       const creditDebitError = page.locator('[id="creditDebit-error"]')
 
+      const checkMessages = []
       for (const { errorMessage, errorComponent } of [
         { errorMessage: startDateErrorMessage, errorComponent: startDateError },
         { errorMessage: endDateErrorMessage, errorComponent: endDateError },
         { errorMessage: `${creditErrorMessage ?? ''}${debitErrorMessage ?? ''}`, errorComponent: creditDebitError },
       ]) {
         if (errorMessage) {
-          // eslint-disable-next-line no-await-in-loop
-          await expect(errorComponent).toContainText(errorMessage)
+          checkMessages.push(expect(errorComponent).toContainText(errorMessage))
         } else {
-          // eslint-disable-next-line no-await-in-loop
-          await expect(errorComponent).not.toBeVisible()
+          checkMessages.push(expect(errorComponent).not.toBeVisible())
         }
       }
+      Promise.all(checkMessages)
 
       const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
       expect(noTransactionsMessage).toBeVisible()
