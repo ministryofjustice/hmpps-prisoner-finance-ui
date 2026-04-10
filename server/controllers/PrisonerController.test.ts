@@ -72,7 +72,8 @@ describe('PrisonerController - Transactions', () => {
       prisonNumber: mockReq.params.prisonNumber,
       applicationName: 'Transactions',
       transactions: [],
-      balance: mockBalance.amount,
+      currentBalance: mockBalance.amount,
+      holdBalance: 0,
       filters: {
         startDate,
         endDate,
@@ -131,7 +132,8 @@ describe('PrisonerController - Transactions', () => {
       prisonNumber: mockReq.params.prisonNumber,
       applicationName: 'Transactions',
       transactions: mockTransactions,
-      balance: mockBalance.amount,
+      currentBalance: mockBalance.amount,
+      holdBalance: 0,
       hasValidationErrors: false,
       filters: {
         startDate,

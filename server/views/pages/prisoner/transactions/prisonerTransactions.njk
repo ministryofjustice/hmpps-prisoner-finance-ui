@@ -29,30 +29,32 @@
 
   <h1 id="prisonerTransactionsHeading">Transactions for all sub accounts</h1>
 
-  <div class="card-group govuk-grid-row" id="prisonerFinanceCard">
-    <div class="govuk-grid-column-one-third card-group__item">
-      {{ balanceCard({
-        "heading": "Current balance",
-        "amount": balance,
-        "data-testid": "view-prisoner-current-balance-card",
-        "showSubHeading": false
-      }) }}
-    </div>
-    <div class="govuk-grid-column-one-third card-group__item">
-      {{ balanceCard({
-        "heading": "Hold balance",
-        "amount": 0,
-        "data-testid": "view-prisoner-hold-balance-card",
-        "showSubHeading": false
-      }) }}
-    </div>
-    <div class="govuk-grid-column-one-third card-group__item">
-      {{ balanceCard({
-        "heading": "Total balance",
-        "amount": balance,
-        "data-testid": "view-prisoner-total-balance-card",
-        "showSubHeading": false
-      }) }}
+  <div class="govuk-grid-row">
+    <div class="card-group govuk-grid-column-two-thirds" id="prisonerFinanceCard">
+      <div class="govuk-grid-column-one-third  card-group__item">
+        {{ balanceCard({
+          "heading": "Current balance",
+          "amount": currentBalance,
+          "data-testid": "view-prisoner-current-balance-card",
+          "showSubHeading": false
+        }) }}
+      </div>
+      <div class="govuk-grid-column-one-third  card-group__item">
+        {{ balanceCard({
+          "heading": "Hold balance",
+          "amount": holdBalance,
+          "data-testid": "view-prisoner-hold-balance-card",
+          "showSubHeading": false
+        }) }}
+      </div>
+      <div class="govuk-grid-column-one-third  card-group__item">
+        {{ balanceCard({
+          "heading": "Total balance",
+          "amount": currentBalance + holdBalance,
+          "data-testid": "view-prisoner-total-balance-card",
+          "showSubHeading": false
+        }) }}
+      </div>
     </div>
   </div>
 

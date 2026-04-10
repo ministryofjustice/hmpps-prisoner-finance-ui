@@ -48,7 +48,8 @@ describe('prisoner transactions page', () => {
     applicationName: 'Hmpps Prisoner Finance Ui',
     transactions: payload,
     prisoner: { firstName: 'BOB', lastName: 'Taylor' },
-    balance: 1000,
+    currentBalance: 1000,
+    holdBalance: 0,
     prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
   }
 

@@ -75,7 +75,7 @@ export const datePickerToISODate = (datePickerDate: string): string => {
 }
 
 export const formatPrisonerAccountType = (accountType: string): string => {
-  switch (accountType) {
+  switch (accountType.toUpperCase()) {
     case 'CASH':
       return 'Private cash'
     case 'SPENDS':
