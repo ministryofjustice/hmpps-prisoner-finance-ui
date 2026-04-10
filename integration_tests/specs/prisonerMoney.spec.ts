@@ -93,7 +93,7 @@ test.describe('Prisoner Money', () => {
 
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
     expect(prisonerMoneyPage.heading).toBeVisible()
-    expect(prisonerMoneyPage.heading).toContainText('Prisoner Transactions')
+    expect(prisonerMoneyPage.heading).toContainText('Transactions for all sub accounts')
     expect(prisonerMoneyPage.tableTransactions).toBeVisible()
     expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
 
@@ -108,7 +108,7 @@ test.describe('Prisoner Money', () => {
     await expect(cells.nth(2)).toHaveText('£0.00')
     await expect(cells.nth(3)).toHaveText('£0.10')
     await expect(cells.nth(4)).toHaveText('Leeds (HMP)')
-    await expect(cells.nth(5)).toHaveText('CASH')
+    await expect(cells.nth(5)).toHaveText('Private cash')
 
     // Row 2
     cells = rows.nth(1).locator('td')
@@ -117,7 +117,7 @@ test.describe('Prisoner Money', () => {
     await expect(cells.nth(2)).toHaveText('£0.20')
     await expect(cells.nth(3)).toHaveText('£0.00')
     await expect(cells.nth(4)).toHaveText('Moorland (HMP & YOI)')
-    await expect(cells.nth(5)).toHaveText('SAVINGS')
+    await expect(cells.nth(5)).toHaveText('Savings')
 
     // Row 3
     cells = rows.nth(2).locator('td')
@@ -126,7 +126,7 @@ test.describe('Prisoner Money', () => {
     await expect(cells.nth(2)).toHaveText('£0.00')
     await expect(cells.nth(3)).toHaveText('£0.10')
     await expect(cells.nth(4)).toHaveText('')
-    await expect(cells.nth(5)).toHaveText('CASH')
+    await expect(cells.nth(5)).toHaveText('Private cash')
 
     // Row 4
     cells = rows.nth(3).locator('td')
@@ -135,7 +135,7 @@ test.describe('Prisoner Money', () => {
     await expect(cells.nth(2)).toHaveText('£0.10')
     await expect(cells.nth(3)).toHaveText('£0.00')
     await expect(cells.nth(4)).toHaveText('XXX')
-    await expect(cells.nth(5)).toHaveText('SAVINGS')
+    await expect(cells.nth(5)).toHaveText('Savings')
   })
 
   test('Should display the balance card with the total amount', async ({ page }) => {
@@ -143,12 +143,20 @@ test.describe('Prisoner Money', () => {
     await page.goto(`/prisoner/${prisonNumber}/money`)
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
 
-    expect(prisonerMoneyPage.balanceCard).toBeVisible()
-    const { balanceCard } = prisonerMoneyPage
+    expect(prisonerMoneyPage.currentBalanceCard).toBeVisible()
 
-    expect(balanceCard.locator('h3')).toContainText('Total')
-    expect(balanceCard.locator('h2')).toContainText('Total')
-    expect(balanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
+    expect(prisonerMoneyPage.holdBalanceCard).toBeVisible()
+
+    expect(prisonerMoneyPage.totalBalanceCard).toBeVisible()
+
+    expect(prisonerMoneyPage.currentBalanceCard.locator('h2')).toContainText('Current balance')
+    expect(prisonerMoneyPage.currentBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
+
+    expect(prisonerMoneyPage.holdBalanceCard.locator('h2')).toContainText('Hold balance')
+    expect(prisonerMoneyPage.holdBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£0.00')
+
+    expect(prisonerMoneyPage.totalBalanceCard.locator('h2')).toContainText('Total balance')
+    expect(prisonerMoneyPage.totalBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
   })
 
   test('Backlink should render and return to profile page', async ({ page }) => {

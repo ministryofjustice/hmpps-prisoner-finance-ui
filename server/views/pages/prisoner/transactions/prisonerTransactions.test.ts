@@ -48,7 +48,8 @@ describe('prisoner transactions page', () => {
     applicationName: 'Hmpps Prisoner Finance Ui',
     transactions: payload,
     prisoner: { firstName: 'BOB', lastName: 'Taylor' },
-    balance: 1000,
+    currentBalance: 1000,
+    holdBalance: 0,
     prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
   }
 
@@ -88,8 +89,14 @@ describe('prisoner transactions page', () => {
     expect(transactionsTable.find('thead tr th').length).toBe(6)
     expect(transactionsTable.find('tbody tr').length).toBe(payload.length)
 
-    expect($('.hmpps-summary-container__heading').text().trim()).toBe('Total')
-    expect($('.hmpps-balance-card__amount').text().trim()).toBe('£10.00')
+    expect($('[data-testid="view-prisoner-current-balance-card_header"]').text().trim()).toBe('Current balance')
+    expect($('[data-testid="view-prisoner-current-balance-card_amount"]').text().trim()).toBe('£10.00')
+
+    expect($('[data-testid="view-prisoner-hold-balance-card_header"]').text().trim()).toBe('Hold balance')
+    expect($('[data-testid="view-prisoner-hold-balance-card_amount"]').text().trim()).toBe('£0.00')
+
+    expect($('[data-testid="view-prisoner-total-balance-card_header"]').text().trim()).toBe('Total balance')
+    expect($('[data-testid="view-prisoner-total-balance-card_amount"]').text().trim()).toBe('£10.00')
 
     const filterComponent = $('[data-module="moj-filter"]')
     const filterSelected = $('[class="moj-filter__selected"]')

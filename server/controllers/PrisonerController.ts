@@ -54,7 +54,8 @@ class PrisonerController {
         prisonNumber,
         applicationName: 'Transactions',
         transactions: transactions.content,
-        balance: accountBalance.amount,
+        currentBalance: accountBalance.amount,
+        holdBalance: 0,
         filters: {
           startDate,
           endDate,

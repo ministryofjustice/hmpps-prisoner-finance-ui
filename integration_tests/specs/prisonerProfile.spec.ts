@@ -117,7 +117,7 @@ test.describe('Prisoner Profile', () => {
     const cells = rows.first().locator('td')
     expect(cells.nth(0)).toHaveText('10/03/2026')
     expect(cells.nth(1)).toHaveText(transactionPayload[0].description)
-    expect(cells.nth(2)).toHaveText(transactionPayload[0].accountType)
+    expect(cells.nth(2)).toHaveText('Private cash')
     expect(cells.nth(3)).toHaveText('£0.00')
     expect(cells.nth(4)).toHaveText('£0.10')
   })
@@ -136,16 +136,16 @@ test.describe('Prisoner Profile', () => {
 
     const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
     const spendsCard = prisonerProfilePage.balanceCards.locator('[data-testid="spends-card"]')
-    expect(spendsCard.locator('[data-testid="container_heading"]')).toContainText('Spends')
-    expect(spendsCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
+    expect(spendsCard.locator('[data-testid="spends-card_header"]')).toContainText('Spends')
+    expect(spendsCard.locator('[data-testid="spends-card_amount"]')).toContainText('£12.34')
 
     const privateCashCard = prisonerProfilePage.balanceCards.locator('[data-testid="private-cash-card"]')
-    expect(privateCashCard.locator('[data-testid="container_heading"]')).toContainText('Private Cash')
-    expect(privateCashCard.locator('.hmpps-balance-card__amount')).toContainText('£34.56')
+    expect(privateCashCard.locator('[data-testid="private-cash-card_header"]')).toContainText('Private Cash')
+    expect(privateCashCard.locator('[data-testid="private-cash-card_amount"]')).toContainText('£34.56')
 
     const savingsCard = prisonerProfilePage.balanceCards.locator('[data-testid="savings-card"]')
-    expect(savingsCard.locator('[data-testid="container_heading"]')).toContainText('Savings')
-    expect(savingsCard.locator('.hmpps-balance-card__amount')).toContainText('£0.00')
+    expect(savingsCard.locator('[data-testid="savings-card_header"]')).toContainText('Savings')
+    expect(savingsCard.locator('[data-testid="savings-card_amount"]')).toContainText('£0.00')
   })
 
   test('Should contain a link to the expanded transactions link', async ({ page }) => {
