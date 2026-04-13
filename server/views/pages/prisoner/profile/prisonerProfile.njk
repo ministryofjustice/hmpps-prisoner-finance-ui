@@ -32,19 +32,22 @@
       {{ balanceCard({
           "heading": "Spends",
           "amount": subAccountBalances.spends.amount,
-          "data-testid": "spends-card"
+          "data-testid": "spends-card",
+          "showSubHeading": true
         }) }}
 
         {{ balanceCard({
           "heading": "Private Cash",
           "amount": subAccountBalances.privateCash.amount,
-          "data-testid": "private-cash-card"
+          "data-testid": "private-cash-card",
+          "showSubHeading": true
         }) }}
 
         {{ balanceCard({
           "heading": "Savings",
           "amount": subAccountBalances.savings.amount,
-          "data-testid": "savings-card"
+          "data-testid": "savings-card",
+          "showSubHeading": true
         }) }}
 
     </div>
@@ -55,7 +58,7 @@
           {% set rowData = [
             { text: row.date | formatDateForView },
             { text: row.description },
-            { text: row.accountType },
+            { text: row.accountType | formatPrisonerAccountType },
             { text: (row.credit | penceToPound)},
             { text: (row.debit | penceToPound)}
           ] %}
