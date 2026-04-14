@@ -93,7 +93,7 @@ test.describe('Prisoner Money', () => {
 
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
     expect(prisonerMoneyPage.heading).toBeVisible()
-    expect(prisonerMoneyPage.heading).toContainText('Prisoner Transactions')
+    expect(prisonerMoneyPage.heading).toContainText('Transactions for all sub accounts')
     expect(prisonerMoneyPage.tableTransactions).toBeVisible()
     expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
 
@@ -108,7 +108,7 @@ test.describe('Prisoner Money', () => {
     await expect(cells.nth(2)).toHaveText('£0.00')
     await expect(cells.nth(3)).toHaveText('£0.10')
     await expect(cells.nth(4)).toHaveText('Leeds (HMP)')
-    await expect(cells.nth(5)).toHaveText('CASH')
+    await expect(cells.nth(5)).toHaveText('Private cash')
 
     // Row 2
     cells = rows.nth(1).locator('td')
@@ -117,7 +117,7 @@ test.describe('Prisoner Money', () => {
     await expect(cells.nth(2)).toHaveText('£0.20')
     await expect(cells.nth(3)).toHaveText('£0.00')
     await expect(cells.nth(4)).toHaveText('Moorland (HMP & YOI)')
-    await expect(cells.nth(5)).toHaveText('SAVINGS')
+    await expect(cells.nth(5)).toHaveText('Savings')
 
     // Row 3
     cells = rows.nth(2).locator('td')
@@ -126,7 +126,7 @@ test.describe('Prisoner Money', () => {
     await expect(cells.nth(2)).toHaveText('£0.00')
     await expect(cells.nth(3)).toHaveText('£0.10')
     await expect(cells.nth(4)).toHaveText('')
-    await expect(cells.nth(5)).toHaveText('CASH')
+    await expect(cells.nth(5)).toHaveText('Private cash')
 
     // Row 4
     cells = rows.nth(3).locator('td')
@@ -135,7 +135,7 @@ test.describe('Prisoner Money', () => {
     await expect(cells.nth(2)).toHaveText('£0.10')
     await expect(cells.nth(3)).toHaveText('£0.00')
     await expect(cells.nth(4)).toHaveText('XXX')
-    await expect(cells.nth(5)).toHaveText('SAVINGS')
+    await expect(cells.nth(5)).toHaveText('Savings')
   })
 
   test('Should display the balance card with the total amount', async ({ page }) => {
@@ -143,12 +143,20 @@ test.describe('Prisoner Money', () => {
     await page.goto(`/prisoner/${prisonNumber}/money`)
     const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
 
-    expect(prisonerMoneyPage.balanceCard).toBeVisible()
-    const { balanceCard } = prisonerMoneyPage
+    expect(prisonerMoneyPage.currentBalanceCard).toBeVisible()
 
-    expect(balanceCard.locator('h3')).toContainText('Total')
-    expect(balanceCard.locator('h2')).toContainText('Total')
-    expect(balanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
+    expect(prisonerMoneyPage.holdBalanceCard).toBeVisible()
+
+    expect(prisonerMoneyPage.totalBalanceCard).toBeVisible()
+
+    expect(prisonerMoneyPage.currentBalanceCard.locator('h2')).toContainText('Current balance')
+    expect(prisonerMoneyPage.currentBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
+
+    expect(prisonerMoneyPage.holdBalanceCard.locator('h2')).toContainText('Hold balance')
+    expect(prisonerMoneyPage.holdBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£0.00')
+
+    expect(prisonerMoneyPage.totalBalanceCard.locator('h2')).toContainText('Total balance')
+    expect(prisonerMoneyPage.totalBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
   })
 
   test('Backlink should render and return to profile page', async ({ page }) => {
@@ -267,119 +275,226 @@ test.describe('Prisoner Money', () => {
     await expect(filterOptions).toBeVisible()
   })
 
-  test('should filter by valid start and end Date', async ({ page }) => {
-    await baseStubs()
-    await page.goto(`/prisoner/${prisonNumber}/money`)
-    await PrisonerMoneyPage.verifyOnPage(page)
+  const casesValidFilters = [
+    {
+      caseName: 'just startDate',
+      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=10%2F10%2F2010&endDate=#filterForm`,
+      action: async (page: PrisonerMoneyPage) => {
+        await page.startDateFilter.fill('10/10/2010')
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+          startDate: '2010-10-10',
+        })
+      },
+    },
+    {
+      caseName: 'both startDate and endDate',
+      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=10%2F10%2F2010&endDate=10%2F10%2F2020#filterForm`,
+      action: async (page: PrisonerMoneyPage) => {
+        await page.startDateFilter.fill('10/10/2010')
+        await page.endDateFilter.fill('10/10/2020')
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+          startDate: '2010-10-10',
+          endDate: '2020-10-10',
+        })
+      },
+    },
+    {
+      caseName: 'just endDate',
+      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=&endDate=10%2F10%2F2020#filterForm`,
+      action: async (page: PrisonerMoneyPage) => {
+        await page.endDateFilter.fill('10/10/2020')
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+          endDate: '2020-10-10',
+        })
+      },
+    },
+    {
+      caseName: 'just debit',
+      debit: 'true',
+      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=&endDate=&debit=true#filterForm`,
+      action: async (page: PrisonerMoneyPage) => {
+        await page.debitFilter.click()
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+          debit: 'true',
+        })
+      },
+    },
+    {
+      caseName: 'just credit',
+      credit: 'true',
+      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=&endDate=&credit=true#filterForm`,
+      action: async (page: PrisonerMoneyPage) => {
+        await page.creditFilter.click()
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+          credit: 'true',
+        })
+      },
+    },
+    {
+      caseName: 'both debit and credit',
+      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=&endDate=&credit=true&debit=true#filterForm`,
+      action: async (page: PrisonerMoneyPage) => {
+        await page.creditFilter.click()
+        await page.debitFilter.click()
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+          debit: 'true',
+          credit: 'true',
+        })
+      },
+    },
+  ]
+  for (const { caseName, expectedUrl, action } of casesValidFilters) {
+    test(`should filter by ${caseName}`, async ({ page }) => {
+      await baseStubs()
+      await page.goto(`/prisoner/${prisonNumber}/money`)
+      const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
 
-    const startDateFilter = page.locator('input[id="startDate"]')
-    const endDateFilter = page.locator('input[id="endDate"]')
-    const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+      await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
+      await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
+      await expect(prisonerMoneyPage.creditFilter).toBeVisible()
+      await expect(prisonerMoneyPage.debitFilter).toBeVisible()
 
-    await expect(startDateFilter).toBeVisible()
-    await expect(endDateFilter).toBeVisible()
+      await action(prisonerMoneyPage)
+      await prisonerMoneyPage.applyFilterButton.click()
 
-    const startDateVal = '10/10/2010'
-    const endDateVal = '10/12/2010'
+      const endDateError = page.locator('[id="endDate-error"]')
+      const startDateError = page.locator('[id="startDate-error"]')
+      const creditError = page.locator('[id="credit-error"]')
+      const debitError = page.locator('[id="debit-error"]')
 
-    await startDateFilter.fill(startDateVal)
-    await endDateFilter.fill(endDateVal)
+      await expect(endDateError).not.toBeVisible()
+      await expect(startDateError).not.toBeVisible()
+      await expect(creditError).not.toBeVisible()
+      await expect(debitError).not.toBeVisible()
 
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
-      prisonNumber,
-      pageTransactionsResponse,
-      '2010-10-10',
-      '2010-12-10',
-    )
+      await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
+      await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
+      await expect(prisonerMoneyPage.creditFilter).toBeVisible()
+      await expect(prisonerMoneyPage.debitFilter).toBeVisible()
 
-    await applyFilterButton.click()
+      const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
+      await expect(noTransactionsMessage).not.toBeVisible()
 
-    const endDateError = page.locator('[id="endDate-error"]')
-    const startDateError = page.locator('[id="startDate-error"]')
+      await expect(page).toHaveURL(expectedUrl)
+    })
+  }
 
-    await expect(endDateError).not.toBeVisible()
-    await expect(startDateError).not.toBeVisible()
+  const casesInvalidFilters = [
+    {
+      caseName: 'invalid startDate',
+      startDateErrorMessage: 'Start date must be a real date, like 18/01/2026',
+      startUrl: `/prisoner/${prisonNumber}/money#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=XXXX&endDate=#filterForm`,
+      action: async (page: PrisonerMoneyPage) => {
+        await page.startDateFilter.fill('XXXX')
+        await page.applyFilterButton.click()
+      },
+    },
+    {
+      caseName: 'invalid startDate and endDate',
+      startDateErrorMessage: 'Start date must be a real date, like 18/01/2026',
+      endDateErrorMessage: 'End date must be a real date, like 18/01/2026',
+      startUrl: `/prisoner/${prisonNumber}/money#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=XXXX&endDate=XXXX#filterForm`,
+      action: async (page: PrisonerMoneyPage) => {
+        await page.startDateFilter.fill('XXXX')
+        await page.endDateFilter.fill('XXXX')
+        await page.applyFilterButton.click()
+      },
+    },
+    {
+      caseName: 'invalid endDate',
+      endDateErrorMessage: 'End date must be a real date, like 18/01/2026',
+      startUrl: `/prisoner/${prisonNumber}/money#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=&endDate=99%2F99%2F9999#filterForm`,
+      action: async (page: PrisonerMoneyPage) => {
+        await page.endDateFilter.fill('99/99/9999')
+        await page.applyFilterButton.click()
+      },
+    },
+    {
+      caseName: 'endate earlier than startDate',
+      endDateErrorMessage: 'End date cannot be earlier than start date',
+      startUrl: `/prisoner/${prisonNumber}/money#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=10%2F10%2F2020&endDate=10%2F10%2F2010#filterForm`,
+      action: async (page: PrisonerMoneyPage) => {
+        await page.startDateFilter.fill('10/10/2020')
+        await page.endDateFilter.fill('10/10/2010')
+        await page.applyFilterButton.click()
+      },
+    },
+    {
+      caseName: 'invalid debit',
+      debitErrorMessage: 'Debit must be true or false\n',
+      startUrl: `/prisoner/${prisonNumber}/money?debit=xxxx#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/money?debit=xxxx#filterForm`,
+      action: async (_page: PrisonerMoneyPage) => {},
+    },
+    {
+      caseName: 'invalid credit',
+      creditErrorMessage: 'Credit must be true or false\n',
+      startUrl: `/prisoner/${prisonNumber}/money?credit=xxxx#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/money?credit=xxxx#filterForm`,
+      action: async (_page: PrisonerMoneyPage) => {},
+    },
+    {
+      caseName: 'invalid debit and credit',
+      debitErrorMessage: 'Debit must be true or false\n',
+      creditErrorMessage: 'Credit must be true or false\n',
+      startUrl: `/prisoner/${prisonNumber}/money?credit=xxxx&debit=xxxx#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/money?credit=xxxx&debit=xxxx#filterForm`,
+      action: async (_page: PrisonerMoneyPage) => {},
+    },
+  ]
+  for (const {
+    caseName,
+    startDateErrorMessage,
+    endDateErrorMessage,
+    debitErrorMessage,
+    creditErrorMessage,
+    startUrl,
+    expectedUrl,
+    action,
+  } of casesInvalidFilters) {
+    test(`should show validation errors on ${caseName}`, async ({ page }) => {
+      await baseStubs()
 
-    await expect(startDateFilter).toBeVisible()
-    await expect(endDateFilter).toBeVisible()
+      await page.goto(startUrl)
 
-    const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
-    await expect(noTransactionsMessage).not.toBeVisible()
+      const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
 
-    await expect(page).toHaveURL(
-      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
-    )
-  })
+      await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
+      await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
+      await expect(prisonerMoneyPage.creditFilter).toBeVisible()
+      await expect(prisonerMoneyPage.debitFilter).toBeVisible()
 
-  test('should show validation errors on start and end date', async ({ page }) => {
-    await baseStubs()
-    await page.goto(`/prisoner/${prisonNumber}/money`)
-    await PrisonerMoneyPage.verifyOnPage(page)
+      await action(prisonerMoneyPage)
 
-    const startDateFilter = page.locator('input[id="startDate"]')
-    const endDateFilter = page.locator('input[id="endDate"]')
-    const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+      const endDateError = page.locator('[id="endDate-error"]')
+      const startDateError = page.locator('[id="startDate-error"]')
+      const creditDebitError = page.locator('[id="creditDebit-error"]')
 
-    await expect(startDateFilter).toBeVisible()
-    await expect(endDateFilter).toBeVisible()
+      const checkMessages = []
+      for (const { errorMessage, errorComponent } of [
+        { errorMessage: startDateErrorMessage, errorComponent: startDateError },
+        { errorMessage: endDateErrorMessage, errorComponent: endDateError },
+        { errorMessage: `${creditErrorMessage ?? ''}${debitErrorMessage ?? ''}`, errorComponent: creditDebitError },
+      ]) {
+        if (errorMessage) {
+          checkMessages.push(expect(errorComponent).toContainText(errorMessage))
+        } else {
+          checkMessages.push(expect(errorComponent).not.toBeVisible())
+        }
+      }
+      Promise.all(checkMessages)
 
-    const startDateVal = 'NotAdate'
-    const endDateVal = '99/99/99999'
+      const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
+      expect(noTransactionsMessage).toBeVisible()
+      expect(noTransactionsMessage).toHaveText("Please fix the filter's errors to view transactions")
 
-    await startDateFilter.fill(startDateVal)
-    await endDateFilter.fill(endDateVal)
-
-    await applyFilterButton.click()
-
-    const endDateError = page.locator('[id="endDate-error"]')
-    const startDateError = page.locator('[id="startDate-error"]')
-
-    await expect(endDateError).toContainText('End date must be a real date, like 18/01/2026')
-    await expect(startDateError).toContainText('Start date must be a real date, like 18/01/2026')
-
-    const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
-    expect(noTransactionsMessage).toBeVisible()
-    expect(noTransactionsMessage).toHaveText("Please fix the filter's errors to view transactions")
-
-    await expect(page).toHaveURL(
-      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
-    )
-  })
-
-  test('should show validation error when end date is earlier than start date', async ({ page }) => {
-    await baseStubs()
-    await page.goto(`/prisoner/${prisonNumber}/money`)
-    await PrisonerMoneyPage.verifyOnPage(page)
-
-    const startDateFilter = page.locator('input[id="startDate"]')
-    const endDateFilter = page.locator('input[id="endDate"]')
-    const applyFilterButton = page.locator('[data-test-id="submit-button"]')
-
-    await expect(startDateFilter).toBeVisible()
-    await expect(endDateFilter).toBeVisible()
-
-    const startDateVal = '10/11/2011'
-    const endDateVal = '10/11/2010'
-
-    await startDateFilter.fill(startDateVal)
-    await endDateFilter.fill(endDateVal)
-
-    await applyFilterButton.click()
-
-    const endDateError = page.locator('[id="endDate-error"]')
-    const startDateError = page.locator('[id="startDate-error"]')
-
-    await expect(endDateError).toContainText('End date cannot be earlier than start date')
-    await expect(startDateError).not.toBeVisible()
-
-    const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
-    expect(noTransactionsMessage).toBeVisible()
-    expect(noTransactionsMessage).toHaveText("Please fix the filter's errors to view transactions")
-
-    await expect(page).toHaveURL(
-      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
-    )
-  })
+      expect(page).toHaveURL(expectedUrl)
+    })
+  }
 
   test('should be able to remove selected filters', async ({ page }) => {
     await baseStubs()
@@ -399,12 +514,10 @@ test.describe('Prisoner Money', () => {
     await startDateFilter.fill(startDateVal)
     await endDateFilter.fill(endDateVal)
 
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
-      prisonNumber,
-      pageTransactionsResponse,
-      '2010-10-10',
-      '2010-12-10',
-    )
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+      startDate: '2010-10-10',
+      endDate: '2010-12-10',
+    })
 
     await applyFilterButton.click()
 
@@ -417,15 +530,14 @@ test.describe('Prisoner Money', () => {
 
     const startDatefilterTag = page.getByRole('link', { name: 'Start date' })
 
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
-      prisonNumber,
-      pageTransactionsResponse,
-      undefined,
-      '2010-12-10',
-    )
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+      endDate: '2010-12-10',
+    })
 
     await startDatefilterTag.click()
-    await expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?endDate=${encodeURIComponent(endDateVal)}#filterForm`)
+    await expect(page).toHaveURL(
+      `/prisoner/${prisonNumber}/money?endDate=${encodeURIComponent(endDateVal)}&page=1#filterForm`,
+    )
     expect(await endDateFilter.inputValue()).toBe(endDateVal)
     expect(await startDateFilter.textContent()).toHaveLength(0)
   })
@@ -433,32 +545,34 @@ test.describe('Prisoner Money', () => {
   test('Should clear all filters', async ({ page }) => {
     await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}/money`)
-    await PrisonerMoneyPage.verifyOnPage(page)
+    const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
 
-    const startDateFilter = page.locator('input[id="startDate"]')
-    const endDateFilter = page.locator('input[id="endDate"]')
     const applyFilterButton = page.locator('[data-test-id="submit-button"]')
 
-    expect(startDateFilter).toBeVisible()
-    expect(endDateFilter).toBeVisible()
+    expect(prisonerMoneyPage.startDateFilter).toBeVisible()
+    expect(prisonerMoneyPage.endDateFilter).toBeVisible()
+    expect(prisonerMoneyPage.creditFilter).toBeVisible()
+    expect(prisonerMoneyPage.debitFilter).toBeVisible()
 
     const startDateVal = '10/10/2010'
     const endDateVal = '10/12/2010'
 
-    await startDateFilter.fill(startDateVal)
-    await endDateFilter.fill(endDateVal)
+    await prisonerMoneyPage.startDateFilter.fill(startDateVal)
+    await prisonerMoneyPage.endDateFilter.fill(endDateVal)
+    await prisonerMoneyPage.creditFilter.click()
+    await prisonerMoneyPage.debitFilter.click()
 
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
-      prisonNumber,
-      pageTransactionsResponse,
-      '2010-10-10',
-      '2010-12-10',
-    )
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+      startDate: '2010-10-10',
+      endDate: '2010-12-10',
+      credit: 'true',
+      debit: 'true',
+    })
 
     await applyFilterButton.click()
 
     await expect(page).toHaveURL(
-      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
+      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}&credit=true&debit=true#filterForm`,
     )
 
     const clearFilters = page.getByText('Clear Filters')
@@ -467,8 +581,10 @@ test.describe('Prisoner Money', () => {
 
     expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?#filterForm`)
 
-    expect(await startDateFilter.textContent()).toHaveLength(0)
-    expect(await endDateFilter.textContent()).toHaveLength(0)
+    expect(await prisonerMoneyPage.startDateFilter.textContent()).toHaveLength(0)
+    expect(await prisonerMoneyPage.endDateFilter.textContent()).toHaveLength(0)
+    expect(await prisonerMoneyPage.creditFilter).not.toBeChecked()
+    expect(await prisonerMoneyPage.debitFilter).not.toBeChecked()
   })
 
   test('Should render pagination component and allow progression', async ({ page }) => {
@@ -488,14 +604,18 @@ test.describe('Prisoner Money', () => {
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
       prisonNumber,
       createPageTransactionResponse(10),
-      '2026-04-09',
-      '2026-04-12',
-      '10',
-      '25',
+      {
+        startDate: '2026-04-09',
+        endDate: '2026-04-12',
+        pageNumber: '10',
+        pageSize: '25',
+        credit: 'true',
+        debit: 'true',
+      },
     )
 
     const buildQueriesForPage = (pageNumber: number) =>
-      `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}`
+      `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
 
     await page.goto(`/prisoner/${prisonNumber}/money${buildQueriesForPage(10)}`)
 
@@ -508,14 +628,14 @@ test.describe('Prisoner Money', () => {
     await expect(topNavButton).toBeVisible()
     expect(await topNavButton.getAttribute('href')).toBe(buildQueriesForPage(9))
 
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
-      prisonNumber,
-      createPageTransactionResponse(9),
-      '2026-04-09',
-      '2026-04-12',
-      '9',
-      '25',
-    )
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, createPageTransactionResponse(9), {
+      startDate: '2026-04-09',
+      endDate: '2026-04-12',
+      pageNumber: '9',
+      pageSize: '25',
+      credit: 'true',
+      debit: 'true',
+    })
 
     await topNavButton.click()
 

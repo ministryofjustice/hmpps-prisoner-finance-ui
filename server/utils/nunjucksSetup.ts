@@ -9,6 +9,7 @@ import {
   penceToPound,
   createProfileTabsForPrisoner,
   convertPrisonIdToName,
+  formatPrisonerAccountType,
 } from './utils'
 import config from '../config'
 import logger from '../../logger'
@@ -24,6 +25,7 @@ export const setUpNunJucksFilters = (njkEnv: nunjucks.Environment, assetManifest
   njkEnv.addFilter('penceToPound', penceToPound)
   njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
   njkEnv.addFilter('convertPrisonIdToName', convertPrisonIdToName)
+  njkEnv.addFilter('formatPrisonerAccountType', formatPrisonerAccountType)
 }
 
 export default function nunjucksSetup(app: express.Express): void {

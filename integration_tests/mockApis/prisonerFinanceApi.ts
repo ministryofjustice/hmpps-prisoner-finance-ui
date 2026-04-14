@@ -24,20 +24,26 @@ export default {
   stubGetPrisonerTransactionsByPrisonNumber: (
     prisonNumber: string,
     payload: Page<PrisonerTransactionResponse>,
-    startDate?: string,
-    endDate?: string,
-    pageNumber: string = '1',
-    pageSize: string = '25',
+    options?: {
+      startDate?: string
+      endDate?: string
+      credit?: string
+      debit?: string
+      pageNumber?: string
+      pageSize?: string
+    },
   ) =>
     stubFor({
       request: {
         method: 'GET',
         urlPathPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
         queryParameters: {
-          pageNumber: { equalTo: pageNumber },
-          pageSize: { equalTo: pageSize },
-          startDate: startDate ? { equalTo: startDate } : { absent: true },
-          endDate: endDate ? { equalTo: endDate } : { absent: true },
+          pageNumber: options && options.pageNumber ? { equalTo: options.pageNumber } : { equalTo: '1' },
+          pageSize: options && options.pageSize ? { equalTo: options.pageSize } : { equalTo: '25' },
+          startDate: options && options.startDate ? { equalTo: options.startDate } : { absent: true },
+          endDate: options && options.endDate ? { equalTo: options.endDate } : { absent: true },
+          credit: options && options.credit ? { equalTo: options.credit } : { absent: true },
+          debit: options && options.debit ? { equalTo: options.debit } : { absent: true },
         },
       },
       response: {

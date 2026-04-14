@@ -39,6 +39,9 @@ type BuildPaginationItemsParams<T> = {
   filters: z.infer<typeof transactionsFilterSchema>
 }
 
+const stringifyFilters = (filters: z.infer<typeof transactionsFilterSchema>) =>
+  Object.fromEntries(Object.entries(filters).map(([key, val]) => [key, String(val)]))
+
 const MAX_VISIBLE_WITHOUT_DOTS = 7
 
 export default function buildPaginationItems<T>({
@@ -54,7 +57,6 @@ export default function buildPaginationItems<T>({
   const previous = buildPreviousLink(pageNumber, filters)
   const next = buildNextLink(pageNumber, totalPages, filters)
   const results = buildResultsSummary(pageNumber, pageSize, totalElements)
-
   return {
     items,
     previous,
@@ -168,7 +170,8 @@ function createPageItem(
   filters: z.infer<typeof transactionsFilterSchema>,
 ): PaginationItem {
   const pageString = page.toString()
-  const filtersWithPage: Record<string, string> = { ...filters, page: pageString }
+  const stringifiedFilters = stringifyFilters(filters)
+  const filtersWithPage: Record<string, string> = { ...stringifiedFilters, page: pageString }
   const queryString = new URLSearchParams(filtersWithPage)
 
   return {
@@ -191,7 +194,8 @@ function buildPreviousLink(
   }
 
   const pageString = (pageNumber - 1).toString()
-  const filtersWithPage: Record<string, string> = { ...filters, page: pageString }
+  const stringifiedFilters = stringifyFilters(filters)
+  const filtersWithPage: Record<string, string> = { ...stringifiedFilters, page: pageString }
   const queryString = new URLSearchParams(filtersWithPage)
 
   return {
@@ -209,7 +213,8 @@ function buildNextLink(
     return null
   }
   const pageString = (pageNumber + 1)?.toString()
-  const filtersWithPage: Record<string, string> = { ...filters, page: pageString }
+  const stringifiedFilters = stringifyFilters(filters)
+  const filtersWithPage: Record<string, string> = { ...stringifiedFilters, page: pageString }
   const queryString = new URLSearchParams(filtersWithPage)
 
   return {

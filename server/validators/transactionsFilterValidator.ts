@@ -8,6 +8,20 @@ const isValidDatePickerDate = (val: string | undefined): boolean => {
   return isValid(parsed) && format(parsed, 'dd/MM/yyyy') === val
 }
 
+const booleanFromQuery = (message: string) =>
+  z
+    .string()
+    .optional()
+    .refine(val => val === undefined || val === '' || val === 'true' || val === 'false', { message })
+    .transform(val => {
+      // If it's missing or empty, keep it undefined
+      if (val === undefined || val === '' || val === 'false') {
+        return undefined
+      }
+      // Otherwise, return the boolean result
+      return val === 'true'
+    })
+
 export const transactionsFilterSchema = z
   .object({
     startDate: z.string().trim().optional().refine(isValidDatePickerDate, {
@@ -19,6 +33,10 @@ export const transactionsFilterSchema = z
     }),
 
     page: z.coerce.number().optional(),
+
+    credit: booleanFromQuery('Credit must be true or false\n'),
+
+    debit: booleanFromQuery('Debit must be true or false\n'),
   })
   .superRefine((data, ctx) => {
     const { startDate, endDate } = data

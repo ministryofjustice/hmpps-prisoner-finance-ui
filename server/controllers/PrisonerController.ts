@@ -11,6 +11,8 @@ import buildPaginationItems from '../utils/mojPaginationHelper'
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
   endDate: { label: 'End date', category: 'Date' },
+  credit: { label: 'Credit', category: 'Credit or debit' },
+  debit: { label: 'Debit', category: 'Credit or debit' },
 }
 
 const emptyPage: Page<PrisonerTransactionResponse> = {
@@ -32,8 +34,8 @@ class PrisonerController {
         who: res.locals.user.username,
         correlationId: req.id,
       })
-      const { startDate, endDate, page } = req.query as Record<string, string>
 
+      const { startDate, endDate, credit, debit, page } = req.query as Record<string, string>
       const parsedQueries = transactionsFilterSchema.safeParse(req.query)
 
       let zodErrors = {}
@@ -49,6 +51,8 @@ class PrisonerController {
             startDate,
             endDate,
             page,
+            debit,
+            credit,
           )
         : Promise.resolve(emptyPage)
 
@@ -57,17 +61,22 @@ class PrisonerController {
         this.services.prisonerFinanceService.getAccountBalance(prisonNumber),
       ])
 
-      const { content, ...paginationItems } = buildPaginationItems({ ...transactionPage, filters: parsedQueries.data })
+      const { content, ...paginationItems } = parsedQueries.success
+        ? buildPaginationItems({ ...transactionPage, filters: parsedQueries.data })
+        : { content: emptyPage.content }
 
       res.render('pages/prisoner/transactions/prisonerTransactions', {
         prisonNumber,
         applicationName: 'Transactions',
         transactions: content,
-        balance: accountBalance.amount,
         paginationItems,
+        currentBalance: accountBalance.amount,
+        holdBalance: 0,
         filters: {
           startDate,
           endDate,
+          credit,
+          debit,
           selectedFilters,
         },
         hasValidationErrors: !parsedQueries.success,

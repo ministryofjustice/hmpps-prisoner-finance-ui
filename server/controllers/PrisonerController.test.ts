@@ -49,13 +49,16 @@ describe('PrisonerController - Transactions', () => {
   })
 
   test.each([
-    { case: 'Invalid startDate', startDate: 'AAAA', endDate: undefined },
+    { case: 'Invalid startDate', startDate: 'AAAA' },
     { case: 'Invalid startDate and endDate', startDate: '99/99/9999', endDate: '123231321' },
-    { case: 'Invalid endDate', startDate: undefined, endDate: 'WOWOW' },
-  ])(`Should not call getTransaction when $case`, async ({ startDate, endDate }) => {
+    { case: 'Invalid endDate', endDate: 'WOWOW' },
+    { case: 'Invalid credit', credit: 'xxxx' },
+    { case: 'Invalid debit', debit: 'xxxx' },
+    { case: 'Invalid credit and debit', debit: 'xxxx', credit: 'XASD' },
+  ])(`Should not call getTransaction when $case`, async ({ startDate, endDate, credit, debit }) => {
     const mockReq = {
       id: 'req-id-123',
-      query: { startDate, endDate },
+      query: { startDate, endDate, credit, debit },
       params: { prisonNumber: 'ABC123XX' },
       protocol: 'http',
       get: jest.fn().mockReturnValue('localhost:3000'),
@@ -72,11 +75,14 @@ describe('PrisonerController - Transactions', () => {
       prisonNumber: mockReq.params.prisonNumber,
       applicationName: 'Transactions',
       transactions: [],
-      balance: mockBalance.amount,
       paginationItems: expect.anything(),
+      currentBalance: mockBalance.amount,
+      holdBalance: 0,
       filters: {
         startDate,
         endDate,
+        credit,
+        debit,
         selectedFilters: expect.anything(),
       },
       hasValidationErrors: true,
@@ -86,62 +92,79 @@ describe('PrisonerController - Transactions', () => {
   })
 
   test.each([
-    { case: 'Both startDate and endDate are undefined', startDate: undefined, endDate: undefined },
-    { case: 'Just startDate is defined', startDate: '10/10/2010', endDate: undefined },
+    { case: 'All params are undefined' },
+    { case: 'Just startDate is defined', startDate: '10/10/2010' },
     { case: 'Both startDate and endDate are defined', startDate: '10/10/2010', endDate: '10/10/2020' },
-    { case: 'Just endDate is defined', startDate: undefined, endDate: '10/10/2020' },
-  ])('Should  call getTransaction if there are no validation Errors when $case', async ({ startDate, endDate }) => {
-    const mockReq = {
-      id: 'req-id-123',
-      query: { startDate, endDate },
-      params: { prisonNumber: 'ABC123XX' },
-      protocol: 'http',
-      get: jest.fn().mockReturnValue('localhost:3000'),
-      originalUrl: '/audit',
-    } as unknown as Request
+    { case: 'Just endDate is defined', endDate: '10/10/2020' },
+    { case: 'Just debit is defined', debit: 'true' },
+    { case: 'Just credit is defined', credit: 'true' },
+    { case: 'Both debit and credit are defined', debit: 'true', credit: 'true' },
+  ])(
+    'Should  call getTransaction if there are no validation Errors when $case',
+    async ({ startDate, endDate, debit, credit }) => {
+      const mockReq = {
+        id: 'req-id-123',
+        query: { startDate, endDate, debit, credit, page: '1' },
+        params: { prisonNumber: 'ABC123XX' },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+      } as unknown as Request
 
-    prisonerFinanceService.getAccountBalance.mockResolvedValue(mockBalance)
+      prisonerFinanceService.getAccountBalance.mockResolvedValue(mockBalance)
 
-    const mockTransactions: PrisonerTransactionResponse[] = [
-      {
-        date: '10-10-2010',
-        description: 'Canteen transaction',
-        credit: 10,
-        debit: 10,
-        location: 'LEI',
-        accountType: 'CASH',
-      },
-    ]
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '10-10-2010',
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+        },
+      ]
 
-    const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
-      content: mockTransactions,
-      totalElements: mockTransactions.length,
-      totalPages: 1,
-      pageNumber: 1,
-      pageSize: 99,
-      isLastPage: true,
-    }
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
 
-    prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
 
-    await prisonerController.getTransactions(mockReq, mockRes, mockNext)
+      await prisonerController.getTransactions(mockReq, mockRes, mockNext)
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalled()
 
-    expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalled()
-    expect(prisonerFinanceService.getAccountBalance).toHaveBeenCalledWith(mockReq.params.prisonNumber)
-    expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerTransactions', {
-      prisonNumber: mockReq.params.prisonNumber,
-      applicationName: 'Transactions',
-      transactions: mockTransactions,
-      balance: mockBalance.amount,
-      hasValidationErrors: false,
-      paginationItems: expect.anything(),
-      filters: {
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith(
+        mockReq.params.prisonNumber,
         startDate,
         endDate,
-        selectedFilters: expect.anything(),
-      },
-    })
-  })
+        '1',
+        debit,
+        credit,
+      )
+      expect(prisonerFinanceService.getAccountBalance).toHaveBeenCalledWith(mockReq.params.prisonNumber)
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerTransactions', {
+        prisonNumber: mockReq.params.prisonNumber,
+        applicationName: 'Transactions',
+        transactions: mockTransactions,
+        currentBalance: mockBalance.amount,
+        holdBalance: 0,
+        paginationItems: expect.anything(),
+        hasValidationErrors: false,
+        filters: {
+          startDate,
+          endDate,
+          debit,
+          credit,
+          selectedFilters: expect.anything(),
+        },
+      })
+    },
+  )
 
   it('should catch exceptions', async () => {
     const mockReq = {

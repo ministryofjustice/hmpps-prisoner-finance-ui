@@ -135,7 +135,7 @@ describe('Prisoners', () => {
         AuditPage.PRISONER_MONEY,
         expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
       )
-      expect(response.text).toContain('Prisoner Transactions')
+      expect(response.text).toContain('Transactions for all sub accounts')
     })
 
     it('should handle API errors (e.g. 404 Not Found)', async () => {

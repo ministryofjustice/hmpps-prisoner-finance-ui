@@ -35,13 +35,17 @@ describe('AuditHistoryService', () => {
       const startDate = '10/10/2010'
       const endDate = '10/10/2020'
       const page = '1'
-      await service.getPrisonerTransactionsByPrisonNumber(prisonNumber, startDate, endDate, page)
+      const debit = 'true'
+      const credit = 'false'
+      await service.getPrisonerTransactionsByPrisonNumber(prisonNumber, startDate, endDate, page, debit, credit)
 
       expect(apiClient.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith(
         prisonNumber,
         startDate,
         endDate,
         page,
+        debit,
+        credit,
       )
     })
   })
