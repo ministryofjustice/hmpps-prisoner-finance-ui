@@ -24,8 +24,12 @@ export default {
   stubGetPrisonerTransactionsByPrisonNumber: (
     prisonNumber: string,
     payload: Page<PrisonerTransactionResponse>,
-    startDate?: string,
-    endDate?: string,
+    options?: {
+      startDate?: string
+      endDate?: string
+      credit?: string
+      debit?: string
+    },
   ) =>
     stubFor({
       request: {
@@ -34,8 +38,10 @@ export default {
         queryParameters: {
           pageNumber: { equalTo: '1' },
           pageSize: { equalTo: '999' },
-          startDate: startDate ? { equalTo: startDate } : { absent: true },
-          endDate: endDate ? { equalTo: endDate } : { absent: true },
+          startDate: options && options.startDate ? { equalTo: options.startDate } : { absent: true },
+          endDate: options && options.endDate ? { equalTo: options.endDate } : { absent: true },
+          credit: options && options.credit ? { equalTo: options.credit } : { absent: true },
+          debit: options && options.debit ? { equalTo: options.debit } : { absent: true },
         },
       },
       response: {
