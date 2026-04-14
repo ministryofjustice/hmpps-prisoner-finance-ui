@@ -661,4 +661,158 @@ test.describe('Prisoner Money', () => {
     expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
     expect(await bottomCurrentPageA.innerText()).toBe('9')
   })
+
+  test('should allow progression with next button', async ({ page }) => {
+    await baseStubs()
+
+    const createPageTransactionResponse = (pageNumber: number): Page<PrisonerTransactionResponse> => {
+      return {
+        content: transactionPayload,
+        totalElements: 100,
+        totalPages: 20,
+        pageNumber,
+        pageSize: 5,
+        isLastPage: pageNumber === 20,
+      }
+    }
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      createPageTransactionResponse(10),
+      {
+        startDate: '2026-04-09',
+        endDate: '2026-04-12',
+        pageNumber: '10',
+        pageSize: '25',
+        credit: 'true',
+        debit: 'true',
+      },
+    )
+
+    const buildQueriesForPage = (pageNumber: number) =>
+      `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
+
+    await page.goto(`/prisoner/${prisonNumber}/money${buildQueriesForPage(10)}`)
+
+    const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page)
+
+    await expect(topPagination).toBeVisible()
+    await expect(bottomPagination).toBeVisible()
+
+    const nextNavButton = topPagination.locator("[rel='next']")
+    await expect(nextNavButton).toBeVisible()
+    expect(await nextNavButton.getAttribute('href')).toBe(buildQueriesForPage(11))
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      createPageTransactionResponse(11),
+      {
+        startDate: '2026-04-09',
+        endDate: '2026-04-12',
+        pageNumber: '11',
+        pageSize: '25',
+        credit: 'true',
+        debit: 'true',
+      },
+    )
+
+    await nextNavButton.click()
+
+    expect(page.url()).toContain(buildQueriesForPage(11))
+
+    const topResultText = topPagination.locator('.moj-pagination__results')
+    await expect(topResultText).toBeVisible()
+
+    expect(await topResultText.innerText()).toBe('Showing 51 to 55 of 100 total results')
+
+    const bottomResultText = bottomPagination.locator('.moj-pagination__results')
+    await expect(bottomResultText).toBeVisible()
+
+    expect(await bottomResultText.innerText()).toBe('Showing 51 to 55 of 100 total results')
+
+    const topCurrentPageLi = topPagination.locator('.govuk-pagination__item--current')
+    const topCurrentPageA = topCurrentPageLi.locator('a')
+    expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await topCurrentPageA.innerText()).toBe('11')
+
+    const bottomCurrentPageLi = bottomPagination.locator('.govuk-pagination__item--current')
+    const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
+    expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await bottomCurrentPageA.innerText()).toBe('11')
+  })
+
+  test('should allow progression with previous button', async ({ page }) => {
+    await baseStubs()
+
+    const createPageTransactionResponse = (pageNumber: number): Page<PrisonerTransactionResponse> => {
+      return {
+        content: transactionPayload,
+        totalElements: 100,
+        totalPages: 20,
+        pageNumber,
+        pageSize: 5,
+        isLastPage: pageNumber === 20,
+      }
+    }
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+      prisonNumber,
+      createPageTransactionResponse(10),
+      {
+        startDate: '2026-04-09',
+        endDate: '2026-04-12',
+        pageNumber: '10',
+        pageSize: '25',
+        credit: 'true',
+        debit: 'true',
+      },
+    )
+
+    const buildQueriesForPage = (pageNumber: number) =>
+      `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
+
+    await page.goto(`/prisoner/${prisonNumber}/money${buildQueriesForPage(10)}`)
+
+    const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page)
+
+    await expect(topPagination).toBeVisible()
+    await expect(bottomPagination).toBeVisible()
+
+    const prevNavButton = topPagination.locator("[rel='prev']")
+    await expect(prevNavButton).toBeVisible()
+    expect(await prevNavButton.getAttribute('href')).toBe(buildQueriesForPage(9))
+
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, createPageTransactionResponse(9), {
+      startDate: '2026-04-09',
+      endDate: '2026-04-12',
+      pageNumber: '9',
+      pageSize: '25',
+      credit: 'true',
+      debit: 'true',
+    })
+
+    await prevNavButton.click()
+
+    expect(page.url()).toContain(buildQueriesForPage(9))
+
+    const topResultText = topPagination.locator('.moj-pagination__results')
+    await expect(topResultText).toBeVisible()
+
+    expect(await topResultText.innerText()).toBe('Showing 41 to 45 of 100 total results')
+
+    const bottomResultText = bottomPagination.locator('.moj-pagination__results')
+    await expect(bottomResultText).toBeVisible()
+
+    expect(await bottomResultText.innerText()).toBe('Showing 41 to 45 of 100 total results')
+
+    const topCurrentPageLi = topPagination.locator('.govuk-pagination__item--current')
+    const topCurrentPageA = topCurrentPageLi.locator('a')
+    expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await topCurrentPageA.innerText()).toBe('9')
+
+    const bottomCurrentPageLi = bottomPagination.locator('.govuk-pagination__item--current')
+    const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
+    expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await bottomCurrentPageA.innerText()).toBe('9')
+  })
 })
