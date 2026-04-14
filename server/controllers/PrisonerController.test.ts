@@ -1,7 +1,7 @@
 import { PermissionsService } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import e, { Request, Response } from 'express'
 import { ApplicationInfo } from '../applicationInfo'
-import AuditService from '../services/auditService'
+import AuditService, { AuditPage } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
 import PrisonRegisterService from '../services/prisonRegisterService'
 import PrisonerController from './PrisonerController'
@@ -9,6 +9,7 @@ import PrisonerSearchService from '../services/prisonerSearchService'
 import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 import { Page } from '../interfaces/Pageable'
+import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
 
 jest.mock('../applicationInfo')
 jest.mock('../services/auditService')
@@ -17,7 +18,7 @@ jest.mock('../services/prisonerSearchService')
 jest.mock('../services/prisonRegisterService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 
-describe('PrisonerController - Transactions', () => {
+describe('PrisonerController', () => {
   const applicationInfo = {} as unknown as jest.Mocked<ApplicationInfo>
   const auditService = new AuditService(null) as jest.Mocked<AuditService>
   const prisonerFinanceService = new PrisonerFinanceService(null) as jest.Mocked<PrisonerFinanceService>
@@ -35,7 +36,7 @@ describe('PrisonerController - Transactions', () => {
   })
 
   const mockRes: Response = {
-    locals: { user: { username: 'test-user' } },
+    locals: { user: { username: 'test-user' }, subAccount: 'CASH' },
     render: jest.fn(),
     status: jest.fn().mockReturnThis(),
   } as unknown as Response
@@ -43,65 +44,18 @@ describe('PrisonerController - Transactions', () => {
   const mockNext: e.NextFunction = jest.fn()
 
   const mockBalance: AccountBalanceResponse = { accountId: '', balanceDateTime: '', amount: 10 }
+  const mockSubAccountBalance: SubAccountBalanceResponse = { subAccountId: '', balanceDateTime: '', amount: 10 }
 
   beforeEach(() => {
-    jest.clearAllMocks()
+    jest.resetAllMocks()
   })
+  describe('getTransactions', () => {
+    it('Should  call getTransactionPage', async () => {
+      const startDate = '10/10/2010'
+      const endDate = '10/10/2020'
+      const debit = 'false'
+      const credit = 'true'
 
-  test.each([
-    { case: 'Invalid startDate', startDate: 'AAAA' },
-    { case: 'Invalid startDate and endDate', startDate: '99/99/9999', endDate: '123231321' },
-    { case: 'Invalid endDate', endDate: 'WOWOW' },
-    { case: 'Invalid credit', credit: 'xxxx' },
-    { case: 'Invalid debit', debit: 'xxxx' },
-    { case: 'Invalid credit and debit', debit: 'xxxx', credit: 'XASD' },
-  ])(`Should not call getTransaction when $case`, async ({ startDate, endDate, credit, debit }) => {
-    const mockReq = {
-      id: 'req-id-123',
-      query: { startDate, endDate, credit, debit },
-      params: { prisonNumber: 'ABC123XX' },
-      protocol: 'http',
-      get: jest.fn().mockReturnValue('localhost:3000'),
-      originalUrl: '/audit',
-    } as unknown as Request
-
-    prisonerFinanceService.getAccountBalance.mockResolvedValue(mockBalance)
-
-    await prisonerController.getTransactions(mockReq, mockRes, mockNext)
-
-    expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).not.toHaveBeenCalled()
-    expect(prisonerFinanceService.getAccountBalance).toHaveBeenCalledWith(mockReq.params.prisonNumber)
-    expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerTransactions', {
-      prisonNumber: mockReq.params.prisonNumber,
-      applicationName: 'Transactions',
-      transactions: [],
-      paginationItems: expect.anything(),
-      currentBalance: mockBalance.amount,
-      holdBalance: 0,
-      filters: {
-        startDate,
-        endDate,
-        credit,
-        debit,
-        selectedFilters: expect.anything(),
-      },
-      hasValidationErrors: true,
-      errorMap: expect.anything(),
-      errors: expect.anything(),
-    })
-  })
-
-  test.each([
-    { case: 'All params are undefined' },
-    { case: 'Just startDate is defined', startDate: '10/10/2010' },
-    { case: 'Both startDate and endDate are defined', startDate: '10/10/2010', endDate: '10/10/2020' },
-    { case: 'Just endDate is defined', endDate: '10/10/2020' },
-    { case: 'Just debit is defined', debit: 'true' },
-    { case: 'Just credit is defined', credit: 'true' },
-    { case: 'Both debit and credit are defined', debit: 'true', credit: 'true' },
-  ])(
-    'Should  call getTransaction if there are no validation Errors when $case',
-    async ({ startDate, endDate, debit, credit }) => {
       const mockReq = {
         id: 'req-id-123',
         query: { startDate, endDate, debit, credit, page: '1' },
@@ -110,8 +64,6 @@ describe('PrisonerController - Transactions', () => {
         get: jest.fn().mockReturnValue('localhost:3000'),
         originalUrl: '/audit',
       } as unknown as Request
-
-      prisonerFinanceService.getAccountBalance.mockResolvedValue(mockBalance)
 
       const mockTransactions: PrisonerTransactionResponse[] = [
         {
@@ -133,22 +85,27 @@ describe('PrisonerController - Transactions', () => {
         isLastPage: true,
       }
 
-      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
+      prisonerFinanceService.getTransactionPage.mockResolvedValue([mockTransactionsPage, mockBalance])
 
       await prisonerController.getTransactions(mockReq, mockRes, mockNext)
-      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalled()
 
-      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith(
-        mockReq.params.prisonNumber,
+      expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.PRISONER_MONEY, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+      })
+      expect(prisonerFinanceService.getTransactionPage).toHaveBeenCalledWith({
+        prisonNumber: mockReq.params.prisonNumber,
         startDate,
         endDate,
-        '1',
+        page: '1',
         debit,
         credit,
-      )
-      expect(prisonerFinanceService.getAccountBalance).toHaveBeenCalledWith(mockReq.params.prisonNumber)
+        subAccountReference: mockRes.locals.subAccount,
+        hasValidationErrors: false,
+      })
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerTransactions', {
         prisonNumber: mockReq.params.prisonNumber,
+        headerTitle: 'Transactions for all sub accounts',
         applicationName: 'Transactions',
         transactions: mockTransactions,
         currentBalance: mockBalance.amount,
@@ -163,25 +120,159 @@ describe('PrisonerController - Transactions', () => {
           selectedFilters: expect.anything(),
         },
       })
-    },
-  )
-
-  it('should catch exceptions', async () => {
-    const mockReq = {
-      id: 'req-id-123',
-      params: { prisonNumber: 'ABC123XX' },
-      protocol: 'http',
-      get: jest.fn().mockReturnValue('localhost:3000'),
-      originalUrl: '/audit',
-    } as unknown as Request
-
-    auditService.logPageView.mockImplementation(() => {
-      throw new Error('Expected error')
     })
 
-    await prisonerController.getTransactions(mockReq, mockRes, mockNext)
+    it('should catch exceptions', async () => {
+      const mockReq = {
+        id: 'req-id-123',
+        params: { prisonNumber: 'ABC123XX' },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+      } as unknown as Request
 
-    expect(mockRes.render).not.toHaveBeenCalled()
-    expect(mockNext).toHaveBeenCalled()
+      auditService.logPageView.mockImplementation(() => {
+        throw new Error('Expected error')
+      })
+
+      await prisonerController.getTransactions(mockReq, mockRes, mockNext)
+
+      expect(mockRes.render).not.toHaveBeenCalled()
+      expect(mockNext).toHaveBeenCalled()
+    })
+  })
+
+  describe('getProfile', () => {
+    it('Should  call getTransaction and getSubAccountBalances', async () => {
+      const mockReq = {
+        id: 'req-id-123',
+        params: { prisonNumber: 'ABC123KK' },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+      } as unknown as Request
+
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '10-10-2010',
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      const mockBalancesResponse = {
+        SPENDS: mockSubAccountBalance,
+        SAVINGS: mockSubAccountBalance,
+        CASH: mockSubAccountBalance,
+      }
+
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
+      prisonerFinanceService.getSubAccountBalances.mockResolvedValue(mockBalancesResponse)
+
+      await prisonerController.getProfile(mockReq, mockRes, mockNext)
+
+      expect(prisonerFinanceService.getSubAccountBalances).toHaveBeenCalledWith(mockReq.params.prisonNumber)
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
+        prisonNumber: mockReq.params.prisonNumber,
+        page: '1',
+      })
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/profile/prisonerProfile', {
+        prisonNumber: mockReq.params.prisonNumber,
+        transactions: mockTransactions,
+        subAccountBalances: {
+          spends: mockBalancesResponse.SPENDS,
+          privateCash: mockBalancesResponse.CASH,
+          savings: mockBalancesResponse.SAVINGS,
+        },
+      })
+    })
+
+    it('Should preview 5 at most', async () => {
+      const mockReq = {
+        id: 'req-id-123',
+        params: { prisonNumber: 'ABC123KK' },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+      } as unknown as Request
+
+      const mockTransactions: PrisonerTransactionResponse[] = Array.from({ length: 100 }, () => {
+        return {
+          date: '10-10-2010',
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+        }
+      })
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      const mockBalancesResponse = {
+        SPENDS: mockSubAccountBalance,
+        SAVINGS: mockSubAccountBalance,
+        CASH: mockSubAccountBalance,
+      }
+
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
+      prisonerFinanceService.getSubAccountBalances.mockResolvedValue(mockBalancesResponse)
+
+      await prisonerController.getProfile(mockReq, mockRes, mockNext)
+
+      expect(auditService.logPageView).toHaveBeenCalled()
+      expect(prisonerFinanceService.getSubAccountBalances).toHaveBeenCalledWith(mockReq.params.prisonNumber)
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
+        prisonNumber: mockReq.params.prisonNumber,
+        page: '1',
+      })
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/profile/prisonerProfile', {
+        prisonNumber: mockReq.params.prisonNumber,
+        transactions: mockTransactions.slice(0, 5),
+        subAccountBalances: {
+          spends: mockBalancesResponse.SPENDS,
+          privateCash: mockBalancesResponse.CASH,
+          savings: mockBalancesResponse.SAVINGS,
+        },
+      })
+    })
+
+    it('should catch exceptions', async () => {
+      const mockReq = {
+        id: 'req-id-123',
+        params: { prisonNumber: 'ABC123XX' },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+      } as unknown as Request
+
+      auditService.logPageView.mockImplementation(() => {
+        throw new Error('Expected error')
+      })
+
+      await prisonerController.getProfile(mockReq, mockRes, mockNext)
+
+      expect(mockRes.render).not.toHaveBeenCalled()
+      expect(mockNext).toHaveBeenCalled()
+    })
   })
 })

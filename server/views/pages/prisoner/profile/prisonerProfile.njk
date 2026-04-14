@@ -27,27 +27,39 @@
 <div class="govuk-grid-row">
 
   <div class="govuk-grid-column-three-quarters">
-  
+
     <div class="hmpps-balance-cards" data-testid="prisoner-balance-cards">
       {{ balanceCard({
           "heading": "Spends",
           "amount": subAccountBalances.spends.amount,
-          "data-testid": "spends-card",
-          "showSubHeading": true
+          "testId": "spends-card",
+          "showSubHeading": true,
+          "balanceCardLink": {
+            "href": "/prisoner/"+prisonNumber+"/money/spends",
+            "text": "Spends transactions"
+          }
         }) }}
 
         {{ balanceCard({
           "heading": "Private Cash",
           "amount": subAccountBalances.privateCash.amount,
-          "data-testid": "private-cash-card",
-          "showSubHeading": true
+          "testId": "private-cash-card",
+          "showSubHeading": true,
+            "balanceCardLink": {
+              "href": "/prisoner/"+prisonNumber+"/money/private-cash",
+              "text": "Private cash transactions"
+          }
         }) }}
 
         {{ balanceCard({
           "heading": "Savings",
           "amount": subAccountBalances.savings.amount,
-          "data-testid": "savings-card",
-          "showSubHeading": true
+          "testId": "savings-card",
+          "showSubHeading": true,
+            "balanceCardLink": {
+              "href": "/prisoner/"+prisonNumber+"/money/savings",
+              "text": "Savings transactions"
+          }
         }) }}
 
     </div>
@@ -66,7 +78,7 @@
       {% endfor %}
       {% call summaryContainer({
                   heading : "All account transactions",
-                  "data-testid" : "prisoner-transactions-table-container"
+                  "testId" : "prisoner-transactions-table-container"
                   }) %}
           <div class="hmpps-summary-container__table_container">
             {% if transactions | length > 0 %}
@@ -105,6 +117,6 @@
         {text: "Export statement", 'dataTestId': 'export-menu'},
         {text: "Close account", 'dataTestId': 'close-menu'}]
     }) }}
-  </div>  
+  </div>
 </div>
 {% endblock %}

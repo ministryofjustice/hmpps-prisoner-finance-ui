@@ -13,14 +13,7 @@ const booleanFromQuery = (message: string) =>
     .string()
     .optional()
     .refine(val => val === undefined || val === '' || val === 'true' || val === 'false', { message })
-    .transform(val => {
-      // If it's missing or empty, keep it undefined
-      if (val === undefined || val === '' || val === 'false') {
-        return undefined
-      }
-      // Otherwise, return the boolean result
-      return val === 'true'
-    })
+    .transform(val => val === 'true')
 
 export const transactionsFilterSchema = z
   .object({

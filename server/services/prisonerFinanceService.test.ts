@@ -32,21 +32,32 @@ describe('AuditHistoryService', () => {
       apiClient.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(emptyPageTransactionsResponse)
 
       const prisonNumber = 'A1234BC'
+      const subAccountReference = 'ABC'
       const startDate = '10/10/2010'
       const endDate = '10/10/2020'
       const page = '1'
       const debit = 'true'
       const credit = 'false'
-      await service.getPrisonerTransactionsByPrisonNumber(prisonNumber, startDate, endDate, page, debit, credit)
 
-      expect(apiClient.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith(
+      await service.getPrisonerTransactionsByPrisonNumber({
         prisonNumber,
+        subAccountReference,
+        page,
         startDate,
         endDate,
-        page,
         debit,
         credit,
-      )
+      })
+
+      expect(apiClient.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
+        prisonNumber,
+        subAccountReference,
+        page,
+        startDate,
+        endDate,
+        debit,
+        credit,
+      })
     })
   })
 
@@ -82,23 +93,89 @@ describe('AuditHistoryService', () => {
         SAVINGS: mockBalance,
       })
     })
+  })
+
+  describe('getSubAccountBalance', () => {
+    const prisonNumber = 'A1234BC'
+    const mockBalance = { subAccountId: '123', balanceDateTime: 'now', amount: 50 }
+
+    it('should return balance for sub-account on success', async () => {
+      apiClient.getSubAccountBalance.mockResolvedValue(mockBalance)
+
+      const result = await service.getSubAccountBalance(prisonNumber, 'SPENDS')
+
+      expect(apiClient.getSubAccountBalance).toHaveBeenCalled()
+      expect(apiClient.getSubAccountBalance).toHaveBeenCalledWith(prisonNumber, 'SPENDS')
+
+      expect(result).toEqual(mockBalance)
+    })
 
     it('should return default zeroed values if the API returns a 404', async () => {
-      apiClient.getSubAccountBalance
-        .mockResolvedValueOnce(mockBalance)
-        .mockRejectedValueOnce({ responseStatus: 404 })
-        .mockResolvedValueOnce(mockBalance)
+      apiClient.getSubAccountBalance.mockRejectedValueOnce({ responseStatus: 404 })
 
-      const result = await service.getSubAccountBalances(prisonNumber)
+      const result = await service.getSubAccountBalance(prisonNumber, 'CASH')
 
-      expect(result.CASH).toEqual({ subAccountId: '', balanceDateTime: '', amount: 0 })
-      expect(result.SPENDS).toEqual(mockBalance)
+      expect(result).toEqual({ subAccountId: '', balanceDateTime: '', amount: 0 })
     })
 
     it('should throw an error if the API returns a non-404 error', async () => {
       apiClient.getSubAccountBalance.mockRejectedValue(new Error('API Down'))
 
-      await expect(service.getSubAccountBalances(prisonNumber)).rejects.toThrow('API Down')
+      await expect(service.getSubAccountBalance(prisonNumber, 'CASH')).rejects.toThrow('API Down')
+    })
+  })
+
+  describe('getTransactionPage', () => {
+    it('should call both getTransactions and getBalance when there are no validation errors', async () => {
+      const mockResponse = { accountId: '0000-0000-0000-0001', amount: 100.5, balanceDateTime: '2023-01-01' }
+      apiClient.getAccountBalance.mockResolvedValue(mockResponse)
+      apiClient.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(emptyPageTransactionsResponse)
+
+      const prisonNumber = 'A1234BC'
+      const startDate = '10/10/2010'
+      const endDate = '10/10/2020'
+      const page = '1'
+      const result = await service.getTransactionPage({
+        prisonNumber,
+        page,
+        startDate,
+        endDate,
+        hasValidationErrors: false,
+      })
+
+      expect(apiClient.getAccountBalance).toHaveBeenCalledWith('A1234BC')
+      expect(apiClient.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
+        prisonNumber,
+        page,
+        startDate,
+        endDate,
+      })
+
+      expect(result).toEqual([emptyPageTransactionsResponse, mockResponse])
+    })
+
+    it('should only call getBalance when there are validation errors', async () => {
+      const mockResponse = { accountId: '0000-0000-0000-0001', amount: 100.5, balanceDateTime: '2023-01-01' }
+      apiClient.getAccountBalance.mockResolvedValue(mockResponse)
+      apiClient.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(emptyPageTransactionsResponse)
+
+      const prisonNumber = 'A1234BC'
+      const startDate = '10/10/2010'
+      const endDate = '10/10/2020'
+      const page = '1'
+
+      const result = await service.getTransactionPage({
+        prisonNumber,
+        page,
+        startDate,
+        endDate,
+        hasValidationErrors: true,
+      })
+
+      expect(apiClient.getAccountBalance).toHaveBeenCalledWith('A1234BC')
+      expect(apiClient.getPrisonerTransactionsByPrisonNumber).not.toHaveBeenCalled()
+
+      expect(result).toEqual([emptyPageTransactionsResponse, mockResponse])
     })
   })
 })

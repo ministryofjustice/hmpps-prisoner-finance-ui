@@ -31,6 +31,7 @@ export default {
       debit?: string
       pageNumber?: string
       pageSize?: string
+      subAccountReference?: string
     },
   ) =>
     stubFor({
@@ -40,6 +41,8 @@ export default {
         queryParameters: {
           pageNumber: options && options.pageNumber ? { equalTo: options.pageNumber } : { equalTo: '1' },
           pageSize: options && options.pageSize ? { equalTo: options.pageSize } : { equalTo: '25' },
+          subAccountReference:
+            options && options.subAccountReference ? { equalTo: options.subAccountReference } : { absent: true },
           startDate: options && options.startDate ? { equalTo: options.startDate } : { absent: true },
           endDate: options && options.endDate ? { equalTo: options.endDate } : { absent: true },
           credit: options && options.credit ? { equalTo: options.credit } : { absent: true },

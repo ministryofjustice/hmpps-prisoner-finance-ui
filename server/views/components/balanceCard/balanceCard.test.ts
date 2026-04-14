@@ -31,4 +31,29 @@ describe('View Components - BalanceCard', () => {
     expect($('.hmpps-summary-container__heading').text().trim()).toBe('Test')
     expect($('.hmpps-balance-card__amount').text().trim()).toBe('£10.00')
   })
+
+  it('should render subHeader if provided', () => {
+    const $ = renderCard({
+      heading: 'Test',
+      amount: 1000,
+      showSubHeading: true,
+    })
+
+    expect($('[data-testid="balance-card-subheading"]').text().trim()).toBe('Account Total')
+  })
+
+  it('should render link to subaccount page if provided', () => {
+    const $ = renderCard({
+      heading: 'Test',
+      amount: 1000,
+      testId: 'privateCash',
+      balanceCardLink: {
+        href: 'private-cash',
+        text: 'private cash transactions',
+      },
+    })
+
+    expect($('[data-testid="privateCash_balance-card-link"]').text().trim()).toBe('private cash transactions')
+    expect($('[data-testid="privateCash_balance-card-link"]').attr('href')).toBe('private-cash')
+  })
 })
