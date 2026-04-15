@@ -80,7 +80,7 @@ function buildPageItems(
     return createPageRange(1, totalPages, pageNumber, filters)
   }
 
-  if (checkIsFirstPage(pageNumber)) {
+  if (pageNumber === 1) {
     return [
       createPageItem(1, pageNumber, filters),
       createPageItem(2, pageNumber, filters),
@@ -89,7 +89,7 @@ function buildPageItems(
     ]
   }
 
-  if (checkIsLastPage(pageNumber, totalPages)) {
+  if (pageNumber === totalPages) {
     return [
       createPageItem(1, pageNumber, filters),
       createDotsItem(),
@@ -237,12 +237,4 @@ function buildResultsSummary(
     to,
     text: ` results`,
   }
-}
-
-function checkIsFirstPage(pageNumber: number): boolean {
-  return pageNumber === 1
-}
-
-function checkIsLastPage(pageNumber: number, totalPages: number): boolean {
-  return pageNumber === totalPages
 }
