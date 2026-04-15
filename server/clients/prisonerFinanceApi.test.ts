@@ -42,7 +42,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
       expect(getSpy).toHaveBeenCalledWith(
         {
           path: `/prisoners/${prisonNumber}/money/transactions`,
-          query: { pageNumber: 1, pageSize: 999 },
+          query: { pageNumber: '1', pageSize: '25' },
         },
         {
           tokenType: 'SYSTEM_TOKEN',
@@ -84,6 +84,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         prisonNumber,
         startDate,
         endDate,
+        '1',
         debit,
         credit,
       )
@@ -97,8 +98,26 @@ describe('PrisonerFinanceSyncApiClient', () => {
             endDate: endDateIso,
             debit,
             credit,
-            pageNumber: 1,
-            pageSize: 999,
+            pageNumber: '1',
+            pageSize: '25',
+          },
+        },
+        {
+          tokenType: 'SYSTEM_TOKEN',
+          user: {},
+        },
+      )
+      expect(response).toEqual(expectedResponse)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/prisoners/${prisonNumber}/money/transactions`,
+          query: {
+            startDate: startDateIso,
+            endDate: endDateIso,
+            debit,
+            credit,
+            pageNumber: '1',
+            pageSize: '25',
           },
         },
         {

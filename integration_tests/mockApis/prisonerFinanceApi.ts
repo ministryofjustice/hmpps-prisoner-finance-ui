@@ -29,6 +29,8 @@ export default {
       endDate?: string
       credit?: string
       debit?: string
+      pageNumber?: string
+      pageSize?: string
     },
   ) =>
     stubFor({
@@ -36,8 +38,8 @@ export default {
         method: 'GET',
         urlPathPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
         queryParameters: {
-          pageNumber: { equalTo: '1' },
-          pageSize: { equalTo: '999' },
+          pageNumber: options && options.pageNumber ? { equalTo: options.pageNumber } : { equalTo: '1' },
+          pageSize: options && options.pageSize ? { equalTo: options.pageSize } : { equalTo: '25' },
           startDate: options && options.startDate ? { equalTo: options.startDate } : { absent: true },
           endDate: options && options.endDate ? { equalTo: options.endDate } : { absent: true },
           credit: options && options.credit ? { equalTo: options.credit } : { absent: true },
@@ -58,7 +60,7 @@ export default {
         urlPathPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
         queryParameters: {
           pageNumber: { equalTo: '1' },
-          pageSize: { equalTo: '999' },
+          pageSize: { equalTo: '25' },
         },
       },
       response: {
@@ -80,7 +82,7 @@ export default {
         urlPathPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
         queryParameters: {
           pageNumber: { equalTo: '1' },
-          pageSize: { equalTo: '999' },
+          pageSize: { equalTo: '25' },
         },
       },
       response: {

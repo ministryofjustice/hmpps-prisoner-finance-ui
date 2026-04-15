@@ -16,6 +16,10 @@ export default class PrisonerMoneyPage extends AbstractPage {
 
   readonly prisonerInformationHeader: Locator
 
+  readonly topPagination: Locator
+
+  readonly bottomPagination: Locator
+
   readonly applyFilterButton: Locator
 
   readonly startDateFilter: Locator
@@ -35,7 +39,8 @@ export default class PrisonerMoneyPage extends AbstractPage {
     this.holdBalanceCard = page.locator('[data-testid="view-prisoner-hold-balance-card"]')
     this.totalBalanceCard = page.locator('[data-testid="view-prisoner-total-balance-card"]')
     this.prisonerInformationHeader = page.locator('[data-testid="hmpps-profile-banner"]')
-
+    this.topPagination = page.locator('#top-pagination')
+    this.bottomPagination = page.locator('#bottom-pagination')
     this.applyFilterButton = page.locator('[data-test-id="submit-button"]')
     this.startDateFilter = page.locator('input[id="startDate"]')
     this.endDateFilter = page.locator('input[id="endDate"]')

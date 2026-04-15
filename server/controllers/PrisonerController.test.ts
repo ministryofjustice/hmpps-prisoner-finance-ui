@@ -75,6 +75,7 @@ describe('PrisonerController - Transactions', () => {
       prisonNumber: mockReq.params.prisonNumber,
       applicationName: 'Transactions',
       transactions: [],
+      paginationItems: expect.anything(),
       currentBalance: mockBalance.amount,
       holdBalance: 0,
       filters: {
@@ -103,7 +104,7 @@ describe('PrisonerController - Transactions', () => {
     async ({ startDate, endDate, debit, credit }) => {
       const mockReq = {
         id: 'req-id-123',
-        query: { startDate, endDate, debit, credit },
+        query: { startDate, endDate, debit, credit, page: '1' },
         params: { prisonNumber: 'ABC123XX' },
         protocol: 'http',
         get: jest.fn().mockReturnValue('localhost:3000'),
@@ -135,11 +136,13 @@ describe('PrisonerController - Transactions', () => {
       prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
 
       await prisonerController.getTransactions(mockReq, mockRes, mockNext)
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalled()
 
       expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith(
         mockReq.params.prisonNumber,
         startDate,
         endDate,
+        '1',
         debit,
         credit,
       )
@@ -150,6 +153,7 @@ describe('PrisonerController - Transactions', () => {
         transactions: mockTransactions,
         currentBalance: mockBalance.amount,
         holdBalance: 0,
+        paginationItems: expect.anything(),
         hasValidationErrors: false,
         filters: {
           startDate,

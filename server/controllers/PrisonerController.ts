@@ -6,6 +6,7 @@ import { buildMojSelectedFilter } from '../utils/mojFilterHelper'
 import { formatValidationErrors, transactionsFilterSchema } from '../validators/transactionsFilterValidator'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 import { Page } from '../interfaces/Pageable'
+import buildPaginationItems from '../utils/mojPaginationHelper'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -33,35 +34,42 @@ class PrisonerController {
         who: res.locals.user.username,
         correlationId: req.id,
       })
-      const { startDate, endDate, credit, debit } = req.query as Record<string, string>
 
-      const parseResult = transactionsFilterSchema.safeParse(req.query)
+      const { startDate, endDate, credit, debit, page } = req.query as Record<string, string>
+      const parsedQueries = transactionsFilterSchema.safeParse(req.query)
 
       let zodErrors = {}
-      if (!parseResult.success) {
-        zodErrors = formatValidationErrors(parseResult.error)
+      if (!parsedQueries.success) {
+        zodErrors = formatValidationErrors(parsedQueries.error)
       }
+
       const selectedFilters = buildMojSelectedFilter(transactionFilterConfig, req.query)
 
-      const transactionsPromise = parseResult.success
+      const transactionsPromise = parsedQueries.success
         ? this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(
             prisonNumber,
             startDate,
             endDate,
+            page,
             debit,
             credit,
           )
         : Promise.resolve(emptyPage)
 
-      const [transactions, accountBalance] = await Promise.all([
+      const [transactionPage, accountBalance] = await Promise.all([
         transactionsPromise,
         this.services.prisonerFinanceService.getAccountBalance(prisonNumber),
       ])
 
+      const { content, ...paginationItems } = parsedQueries.success
+        ? buildPaginationItems({ ...transactionPage, filters: parsedQueries.data })
+        : { content: emptyPage.content }
+
       res.render('pages/prisoner/transactions/prisonerTransactions', {
         prisonNumber,
         applicationName: 'Transactions',
-        transactions: transactions.content,
+        transactions: content,
+        paginationItems,
         currentBalance: accountBalance.amount,
         holdBalance: 0,
         filters: {
@@ -71,7 +79,7 @@ class PrisonerController {
           debit,
           selectedFilters,
         },
-        hasValidationErrors: !parseResult.success,
+        hasValidationErrors: !parsedQueries.success,
         ...zodErrors,
       })
     } catch (error) {

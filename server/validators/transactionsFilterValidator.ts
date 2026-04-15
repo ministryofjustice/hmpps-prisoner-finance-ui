@@ -13,7 +13,14 @@ const booleanFromQuery = (message: string) =>
     .string()
     .optional()
     .refine(val => val === undefined || val === '' || val === 'true' || val === 'false', { message })
-    .transform(val => val === 'true')
+    .transform(val => {
+      // If it's missing or empty, keep it undefined
+      if (val === undefined || val === '' || val === 'false') {
+        return undefined
+      }
+      // Otherwise, return the boolean result
+      return val === 'true'
+    })
 
 export const transactionsFilterSchema = z
   .object({
@@ -24,6 +31,8 @@ export const transactionsFilterSchema = z
     endDate: z.string().trim().optional().refine(isValidDatePickerDate, {
       message: 'End date must be a real date, like 18/01/2026',
     }),
+
+    page: z.coerce.number().optional(),
 
     credit: booleanFromQuery('Credit must be true or false\n'),
 

@@ -11,6 +11,7 @@ export default class PrisonerFinanceService {
     prisonNumber: string,
     startDate: string | null = null,
     endDate: string | null = null,
+    page: string = '1',
     debit: string | null = null,
     credit: string | null = null,
   ): Promise<Page<PrisonerTransactionResponse>> {
@@ -18,6 +19,7 @@ export default class PrisonerFinanceService {
       prisonNumber,
       startDate,
       endDate,
+      page,
       debit,
       credit,
     )
