@@ -1,5 +1,5 @@
 ---
-# Per environment values which override defaults in hmpps-template-typescript/values.yaml
+# Per environment values which override defaults in hmpps-prisoner-finance-ui/values.yaml
 
 generic-service:
   replicaCount: 2
