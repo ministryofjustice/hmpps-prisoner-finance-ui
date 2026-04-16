@@ -83,7 +83,11 @@ class PrisonerController {
         ...zodErrors,
       })
     } catch (error) {
-      next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error'))
+      if (error.responseStatus === 400 && error.data?.userMessage?.includes('Page requested is out of range')) {
+        next(createError(404, error?.data?.userMessage))
+      } else {
+        next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error'))
+      }
     }
   }
 

@@ -261,6 +261,22 @@ test.describe('Prisoner Money', () => {
     expect(noTransactionsMessage).toHaveText('No transactions to show')
   })
 
+  test('should handle page out of bound and redirect to a 404', async ({ page }) => {
+    await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberReturnsPageOutOfBound(prisonNumber, {
+      pageNumber: '999',
+      pageSize: '25',
+    })
+    await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
+    await prisonRegisterApi.stubGetPrisonNames()
+
+    const response = await page.goto(`/prisoner/${prisonNumber}/money?page=999`)
+
+    expect(response?.status()).toBe(404)
+    expect(page.locator('[data-testid="error-page-message"]')).toContainText('Page requested is out of range')
+    expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
+  })
+
   test('should display the filter', async ({ page }) => {
     await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}/money`)
