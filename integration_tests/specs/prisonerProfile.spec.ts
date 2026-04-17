@@ -14,7 +14,7 @@ import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 test.describe('Prisoner Profile', () => {
   const transactionPayload: Array<PrisonerTransactionResponse> = [
     {
-      date: '2026-03-10T10:43:28.094Z',
+      date: '2026-03-10T10:48:28.094Z',
       description: 'test',
       credit: 0,
       debit: 10,
@@ -22,7 +22,7 @@ test.describe('Prisoner Profile', () => {
       accountType: 'CASH',
     },
     {
-      date: '2026-03-11T10:43:28.094Z',
+      date: '2026-03-11T10:47:28.094Z',
       description: '',
       credit: 20,
       debit: 0,
@@ -38,7 +38,7 @@ test.describe('Prisoner Profile', () => {
       accountType: 'CASH',
     },
     {
-      date: '2026-03-10T10:43:28.194Z',
+      date: '2026-03-10T10:45:28.194Z',
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -46,7 +46,7 @@ test.describe('Prisoner Profile', () => {
       accountType: 'SAVINGS',
     },
     {
-      date: '2026-03-10T10:43:28.194Z',
+      date: '2026-03-10T10:44:28.194Z',
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -117,7 +117,7 @@ test.describe('Prisoner Profile', () => {
     expect(rows).toHaveCount(5)
 
     const cells = rows.first().locator('td')
-    expect(cells.nth(0)).toHaveText('10/03/2026')
+    expect(cells.nth(0)).toHaveText('10/03/2026\n10:48')
     expect(cells.nth(1)).toHaveText(transactionPayload[0].description)
     expect(cells.nth(2)).toHaveText('Private cash')
     expect(cells.nth(3)).toHaveText('£0.00')

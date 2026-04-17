@@ -32,7 +32,7 @@ export const penceToPound = (pence: number): string => {
 }
 
 export const formatDateForView = (utcString: string): string => {
-  return format(parseISO(utcString), 'dd/MM/yyyy')
+  return format(parseISO(utcString), 'dd/MM/yyyy HH:mm').replace(' ', '\n')
 }
 
 export const convertToTitleCase = (sentence: string): string =>

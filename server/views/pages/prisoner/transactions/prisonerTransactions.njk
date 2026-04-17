@@ -170,8 +170,8 @@
           { text: row.description },
           { text: row.credit | penceToPound},
           { text: row.debit | penceToPound},
-          { text: row.location | convertPrisonIdToName(prisonNames)},
-          { text: row.accountType | formatPrisonerAccountType }
+          { text: row.accountType | formatPrisonerAccountType },
+          { text: row.location | convertPrisonIdToName(prisonNames)}
         ] %}
         {% set tableRows = (tableRows.push(rowData), tableRows) %}
       {% endfor %}
@@ -189,12 +189,12 @@
           caption: "",
           captionClasses: "govuk-table__caption--m",
           head: [
-            { text: "Date of transaction" },
+            { text: "Date" },
             { text: "Transaction description" },
             { text: "Credit" },
             { text: "Debit" },
-            { text: "Location" },
-            { text: "Account Type" }
+            { text: "Account" },
+            { text: "Location" }
           ],
           rows: tableRows
         }) }}
