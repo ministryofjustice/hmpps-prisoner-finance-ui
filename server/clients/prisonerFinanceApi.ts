@@ -13,14 +13,23 @@ export default class PrisonerFinanceApiClient extends RestClient {
     super('Prisoner Finance API', config.apis.prisonerFinanceApi, logger, authenticationClient)
   }
 
-  async getPrisonerTransactionsByPrisonNumber(
-    prisonNumber: string,
-    startDate: string | null = null,
-    endDate: string | null = null,
-    page: string = '1',
-    debit: string | null = null,
-    credit: string | null = null,
-  ): Promise<Page<PrisonerTransactionResponse>> {
+  async getPrisonerTransactionsByPrisonNumber({
+    prisonNumber,
+    subAccountReference,
+    page = '1',
+    startDate,
+    endDate,
+    debit,
+    credit,
+  }: {
+    prisonNumber: string
+    subAccountReference?: string
+    page: string
+    startDate?: string
+    endDate?: string
+    debit?: string
+    credit?: string
+  }): Promise<Page<PrisonerTransactionResponse>> {
     return this.get(
       {
         path: `/prisoners/${prisonNumber}/money/transactions`,
@@ -31,6 +40,7 @@ export default class PrisonerFinanceApiClient extends RestClient {
           pageSize: '25',
           ...(debit && { debit }),
           ...(credit && { credit }),
+          ...(subAccountReference && { subAccountReference }),
         },
       },
       asSystem(),

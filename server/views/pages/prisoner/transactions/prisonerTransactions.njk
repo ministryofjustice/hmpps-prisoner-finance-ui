@@ -29,7 +29,7 @@
 {% block content %}
 <div class="prisoner-transactions-page">
 
-  <h1 id="prisonerTransactionsHeading">Transactions for all sub accounts</h1>
+  <h1 id="prisonerTransactionsHeading">{{headerTitle}}</h1>
 
   <div class="govuk-grid-row">
     <div class="card-group govuk-grid-column-two-thirds" id="prisonerFinanceCard">
@@ -37,7 +37,7 @@
         {{ balanceCard({
           "heading": "Current balance",
           "amount": currentBalance,
-          "data-testid": "view-prisoner-current-balance-card",
+          "testId": "view-prisoner-current-balance-card",
           "showSubHeading": false
         }) }}
       </div>
@@ -45,7 +45,7 @@
         {{ balanceCard({
           "heading": "Hold balance",
           "amount": holdBalance,
-          "data-testid": "view-prisoner-hold-balance-card",
+          "testId": "view-prisoner-hold-balance-card",
           "showSubHeading": false
         }) }}
       </div>
@@ -53,7 +53,7 @@
         {{ balanceCard({
           "heading": "Total balance",
           "amount": currentBalance + holdBalance,
-          "data-testid": "view-prisoner-total-balance-card",
+          "testId": "view-prisoner-total-balance-card",
           "showSubHeading": false
         }) }}
       </div>
@@ -75,7 +75,7 @@
               id: 'startDate',
               name: 'startDate',
               leadingZeros: 'true',
-              label: { text: "From"},
+              label: { text: "From", classes: "govuk-label--s"},
               value: filters.startDate,
               hint: {
                 text: "For example, 17/05/2024."

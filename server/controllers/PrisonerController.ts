@@ -5,7 +5,6 @@ import { AuditPage } from '../services/auditService'
 import { buildMojSelectedFilter } from '../utils/mojFilterHelper'
 import { formatValidationErrors, transactionsFilterSchema } from '../validators/transactionsFilterValidator'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
-import { Page } from '../interfaces/Pageable'
 import buildPaginationItems from '../utils/mojPaginationHelper'
 
 const transactionFilterConfig = {
@@ -15,58 +14,45 @@ const transactionFilterConfig = {
   debit: { label: 'Debit', category: 'Credit or debit' },
 }
 
-const emptyPage: Page<PrisonerTransactionResponse> = {
-  content: [],
-  totalElements: 0,
-  totalPages: 1,
-  pageNumber: 1,
-  pageSize: 99,
-  isLastPage: true,
-}
-
 class PrisonerController {
   constructor(private readonly services: Services) {}
 
   public getTransactions = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const prisonNumber = req.params.prisonNumber.toString()
       await this.services.auditService.logPageView(AuditPage.PRISONER_MONEY, {
         who: res.locals.user.username,
         correlationId: req.id,
       })
-
+      const prisonNumber = req.params.prisonNumber.toString()
+      const { subAccount = null, headerTitle = null } = res.locals
       const { startDate, endDate, credit, debit, page } = req.query as Record<string, string>
+
       const parsedQueries = transactionsFilterSchema.safeParse(req.query)
+      const selectedFilters = buildMojSelectedFilter(transactionFilterConfig, req.query)
 
       let zodErrors = {}
       if (!parsedQueries.success) {
         zodErrors = formatValidationErrors(parsedQueries.error)
       }
 
-      const selectedFilters = buildMojSelectedFilter(transactionFilterConfig, req.query)
-
-      const transactionsPromise = parsedQueries.success
-        ? this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(
-            prisonNumber,
-            startDate,
-            endDate,
-            page,
-            debit,
-            credit,
-          )
-        : Promise.resolve(emptyPage)
-
-      const [transactionPage, accountBalance] = await Promise.all([
-        transactionsPromise,
-        this.services.prisonerFinanceService.getAccountBalance(prisonNumber),
-      ])
+      const [transactionPage, accountBalance] = await this.services.prisonerFinanceService.getTransactionPage({
+        prisonNumber,
+        subAccountReference: subAccount,
+        page,
+        startDate,
+        endDate,
+        credit,
+        debit,
+        hasValidationErrors: !parsedQueries.success,
+      })
 
       const { content, ...paginationItems } = parsedQueries.success
-        ? buildPaginationItems({ ...transactionPage, filters: parsedQueries.data })
-        : { content: emptyPage.content }
+        ? buildPaginationItems<PrisonerTransactionResponse>({ ...transactionPage, filters: parsedQueries.data })
+        : { content: [] as PrisonerTransactionResponse[] }
 
       res.render('pages/prisoner/transactions/prisonerTransactions', {
         prisonNumber,
+        headerTitle: headerTitle ?? 'Transactions for all sub accounts',
         applicationName: 'Transactions',
         transactions: content,
         paginationItems,
@@ -94,13 +80,14 @@ class PrisonerController {
   public getProfile = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const prisonNumber = req.params.prisonNumber.toString()
+
       await this.services.auditService.logPageView(AuditPage.PRISONER_PROFILE, {
         who: res.locals.user.username,
         correlationId: req.id,
       })
 
       const [transactions, subAccountBalances] = await Promise.all([
-        this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber(prisonNumber),
+        this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber({ prisonNumber, page: '1' }),
         this.services.prisonerFinanceService.getSubAccountBalances(prisonNumber),
       ])
 

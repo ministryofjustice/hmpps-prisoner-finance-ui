@@ -36,7 +36,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
 
-      const response = await client.getPrisonerTransactionsByPrisonNumber(prisonNumber)
+      const response = await client.getPrisonerTransactionsByPrisonNumber({ prisonNumber, page: '1' })
 
       expect(response).toEqual(expectedResponse)
       expect(getSpy).toHaveBeenCalledWith(
@@ -80,14 +80,14 @@ describe('PrisonerFinanceSyncApiClient', () => {
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
 
-      const response = await client.getPrisonerTransactionsByPrisonNumber(
+      const response = await client.getPrisonerTransactionsByPrisonNumber({
         prisonNumber,
         startDate,
         endDate,
-        '1',
+        page: '1',
         debit,
         credit,
-      )
+      })
 
       expect(response).toEqual(expectedResponse)
       expect(getSpy).toHaveBeenCalledWith(
@@ -116,6 +116,45 @@ describe('PrisonerFinanceSyncApiClient', () => {
             endDate: endDateIso,
             debit,
             credit,
+            pageNumber: '1',
+            pageSize: '25',
+          },
+        },
+        {
+          tokenType: 'SYSTEM_TOKEN',
+          user: {},
+        },
+      )
+    })
+
+    it('should call the API with subAccount only', async () => {
+      const prisonNumber = 'ABC123AC'
+      const expectedResponse: Array<PrisonerTransactionResponse> = [
+        {
+          date: '2026-03-10T10:43:28.094Z',
+          description: 'test',
+          credit: 0,
+          debit: 0,
+          location: 'LEI',
+          accountType: 'PRISONER',
+        },
+      ]
+
+      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
+
+      const subAccountReference = 'CASH'
+      const response = await client.getPrisonerTransactionsByPrisonNumber({
+        prisonNumber,
+        subAccountReference,
+        page: '1',
+      })
+
+      expect(response).toEqual(expectedResponse)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/prisoners/${prisonNumber}/money/transactions`,
+          query: {
+            subAccountReference,
             pageNumber: '1',
             pageSize: '25',
           },

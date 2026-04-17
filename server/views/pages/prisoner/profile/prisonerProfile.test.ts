@@ -145,21 +145,21 @@ describe('prisoner profile page', () => {
 
   it('Should render the actions menu', () => {
     const creditMenu = $('[data-testid="credit-menu"]')
-    expect(creditMenu.text()).toEqual('Credit account')
+    expect(creditMenu.text()).toBe('Credit account')
 
     const debitMenu = $('[data-testid="debit-menu"]')
-    expect(debitMenu.text()).toEqual('Debit account')
+    expect(debitMenu.text()).toBe('Debit account')
 
     const subAccountMenu = $('[data-testid="subaccount-menu"]')
-    expect(subAccountMenu.text()).toEqual('Sub account transfer')
+    expect(subAccountMenu.text()).toBe('Sub account transfer')
 
     const adjudicationsMenu = $('[data-testid="adjudications-menu"]')
-    expect(adjudicationsMenu.text()).toEqual('Adjudications')
+    expect(adjudicationsMenu.text()).toBe('Adjudications')
 
     const exportMenu = $('[data-testid="export-menu"]')
-    expect(exportMenu.text()).toEqual('Export statement')
+    expect(exportMenu.text()).toBe('Export statement')
 
     const closeMenu = $('[data-testid="close-menu"]')
-    expect(closeMenu.text()).toEqual('Close account')
+    expect(closeMenu.text()).toBe('Close account')
   })
 })

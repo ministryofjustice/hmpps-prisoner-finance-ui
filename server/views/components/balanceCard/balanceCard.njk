@@ -5,12 +5,17 @@
     <div class="hmpps-balance-card__body">
 
       {% if params.showSubHeading %}
-      <h3 class="govuk-heading-l hmpps-balance-card__subHeading">
+      <h3 class="govuk-heading-l hmpps-balance-card__subHeading" data-testid="balance-card-subheading">
           Account Total
       </h3>
       {% endif %}
 
-      <p class="govuk-body hmpps-balance-card__amount" data-testid="{{ params['data-testid'] }}_amount">{{ params.amount | penceToPound }}</p>
+      <p class="govuk-body hmpps-balance-card__amount" data-testid="{{ params.testId }}_amount">{{ params.amount | penceToPound }}</p>
+
+      {% if params.balanceCardLink %}
+        <hr class="govuk-section-break govuk-section-break--visible">
+        <a href={{params.balanceCardLink.href}} data-testid="{{ params.testId }}_balance-card-link">{{params.balanceCardLink.text}}</a>
+      {% endif %}
     </div>
   {% endcall %}
 
