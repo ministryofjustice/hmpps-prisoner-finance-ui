@@ -30,17 +30,32 @@ const buildClearFilterItem = (query: QueryString.ParsedQs, key: string, label: s
   }
 }
 
+const clearReqQueryFromFalsyFilters = ({
+  credit,
+  debit,
+  ...restOfTheQuery
+}: QueryString.ParsedQs): QueryString.ParsedQs => {
+  // this methods clears selectedFilters by valid unset values in the URL
+  // ie. the url ?debit=false should not display as selected filters in the UI
+  return {
+    ...(credit && credit !== 'false' && { credit }),
+    ...(debit && debit !== 'false' && { debit }),
+    ...restOfTheQuery,
+  }
+}
+
 export const buildMojSelectedFilter = (
   filtersConfig: Record<string, FilterConfigItem>,
   query: QueryString.ParsedQs,
 ): SelectedFilterCategory[] => {
+  const filteredQuery = clearReqQueryFromFalsyFilters(query)
   const selectedMap: Record<string, SelectedFilterItem[]> = {}
 
   Object.entries(filtersConfig).forEach(([key, filterConf]) => {
-    const queryStringParam = query[key]
+    const queryStringParam = filteredQuery[key]
 
     if (queryStringParam) {
-      const item: SelectedFilterItem = buildClearFilterItem(query, key, filterConf.label)
+      const item: SelectedFilterItem = buildClearFilterItem(filteredQuery, key, filterConf.label)
 
       if (!selectedMap[filterConf.category]) {
         selectedMap[filterConf.category] = []
