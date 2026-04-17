@@ -53,6 +53,35 @@ export default {
       },
     }),
 
+  stubGetPrisonerTransactionsByPrisonNumberReturnsPageOutOfBound: (
+    prisonNumber: string,
+    options?: {
+      pageNumber?: string
+      pageSize?: string
+    },
+  ) =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPathPattern: `${API_PREFIX}/prisoners/${prisonNumber}/money/transactions`,
+        queryParameters: {
+          pageNumber: options && options.pageNumber ? { equalTo: options.pageNumber } : { equalTo: '1' },
+          pageSize: options && options.pageSize ? { equalTo: options.pageSize } : { equalTo: '25' },
+        },
+      },
+      response: {
+        status: 400,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 400,
+          errorCode: 'Page requested is out of range',
+          userMessage: 'Page requested is out of range',
+          developerMessage: 'Page requested is out of range',
+          moreInfo: 'Page requested is out of range',
+        },
+      },
+    }),
+
   stubGetPrisonerTransactionsByPrisonNumberNotFound: (prisonNumber: string) =>
     stubFor({
       request: {
