@@ -142,7 +142,7 @@ test.describe('Prisoner Profile', () => {
     expect(spendsCard.locator('[data-testid="spends-card_amount"]')).toContainText('£12.34')
 
     const privateCashCard = prisonerProfilePage.balanceCards.locator('[data-testid="private-cash-card"]')
-    expect(privateCashCard.locator('[data-testid="private-cash-card_header"]')).toContainText('Private Cash')
+    expect(privateCashCard.locator('[data-testid="private-cash-card_header"]')).toContainText('Private cash')
     expect(privateCashCard.locator('[data-testid="private-cash-card_amount"]')).toContainText('£34.56')
 
     const savingsCard = prisonerProfilePage.balanceCards.locator('[data-testid="savings-card"]')
