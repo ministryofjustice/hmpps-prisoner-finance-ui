@@ -170,8 +170,8 @@
           { text: row.description },
           { text: row.credit | penceToPound},
           { text: row.debit | penceToPound},
-          { text: row.location | convertPrisonIdToName(prisonNames)},
-          { text: row.accountType | formatPrisonerAccountType }
+          { text: row.accountType | formatPrisonerAccountType },
+          { text: row.location | convertPrisonIdToName(prisonNames)}
         ] %}
         {% set tableRows = (tableRows.push(rowData), tableRows) %}
       {% endfor %}
