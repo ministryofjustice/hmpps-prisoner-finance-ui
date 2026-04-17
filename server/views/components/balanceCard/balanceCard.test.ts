@@ -39,7 +39,7 @@ describe('View Components - BalanceCard', () => {
       showSubHeading: true,
     })
 
-    expect($('[data-testid="balance-card-subheading"]').text().trim()).toBe('Account Total')
+    expect($('[data-testid="balance-card-subheading"]').text().trim()).toBe('Account total')
   })
 
   it('should render link to subaccount page if provided', () => {

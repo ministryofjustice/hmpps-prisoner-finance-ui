@@ -112,7 +112,7 @@ describe('prisoner profile page', () => {
     expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(5)
   })
 
-  it('Should render a balance card for Spends, Private Cash, Savings', () => {
+  it('Should render a balance card for Spends, Private cash, Savings', () => {
     const balanceCards = $('.hmpps-balance-cards')
     expect(balanceCards.length).not.toBe(0)
 
@@ -123,7 +123,7 @@ describe('prisoner profile page', () => {
     expect(spendsCard.find('[data-testid="spends-card_amount"]').text()).toEqual('£12.34')
 
     const privateCashCard = balanceCards.children('[data-testid="private-cash-card"]')
-    expect(privateCashCard.find('[data-testid="private-cash-card_header"]').text()).toEqual('Private Cash')
+    expect(privateCashCard.find('[data-testid="private-cash-card_header"]').text()).toEqual('Private cash')
     expect(privateCashCard.find('[data-testid="private-cash-card_amount"]').text()).toEqual('£34.56')
 
     const savingsCard = balanceCards.children('[data-testid="savings-card"]')
