@@ -2,6 +2,7 @@ import { Router, NextFunction, Request, Response } from 'express'
 import { Services } from '../services'
 import CreditPrisonerController from '../controllers/CreditPrisonerController'
 import { CreditPrisonerForm } from '../interfaces/creditPrisonerForm'
+import { reset } from 'supertest/lib/cookies'
 
 export default function routes(services: Services): Router {
   const creditPrisonerRouter = Router()
@@ -12,7 +13,7 @@ export default function routes(services: Services): Router {
 
     console.log(req.session.creditForm.creditSubAccountRef)
 
-    res.send();
+    res.send('Hello');
   })
 
   creditPrisonerRouter.get('/select-subaccount', (req: Request, res: Response, next: NextFunction) =>{
@@ -23,7 +24,7 @@ export default function routes(services: Services): Router {
 
     req.session.creditForm.creditSubAccountRef = 'hello-world'
 
-    res.redirect('/select-subaccount2')
+    res.redirect('./select-subaccount2')
   })
     
 

@@ -87,7 +87,7 @@ export default function routes(services: Services): Router {
     prisonerController.getProfile,
   )
 
-  prisonerRouter.use('/:prisonNumber/money/credit-a-prisoner/', creditPrisonerRouter)
+  prisonerRouter.use('/:prisonNumber/money/credit-a-prisoner', creditPrisonerRouter(services))
 
   return prisonerRouter
 }
