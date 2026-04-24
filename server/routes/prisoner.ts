@@ -4,6 +4,7 @@ import { Services } from '../services'
 import PrisonerController from '../controllers/PrisonerController'
 import getPrisonerData from '../middleware/getPrisonerData'
 import getPrisonNames from '../middleware/getPrisonNames'
+import creditPrisonerRouter from './creditPrisoner'
 
 export default function routes(services: Services): Router {
   const prisonerRouter = Router()
@@ -85,6 +86,8 @@ export default function routes(services: Services): Router {
     getPrisonerData(services),
     prisonerController.getProfile,
   )
+
+  prisonerRouter.use('/:prisonNumber/money/credit-a-prisoner/', creditPrisonerRouter)
 
   return prisonerRouter
 }
