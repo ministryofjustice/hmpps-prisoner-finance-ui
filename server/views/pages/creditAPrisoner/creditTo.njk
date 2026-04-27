@@ -1,0 +1,67 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+
+{% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
+
+{% set pageTitle = applicationName + " - Profile" %}
+{% set mainClasses = "govuk-body" %}
+
+{% block beforeContent %}
+
+  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+
+  {{ prisonerInformationHeader({
+      prisoner:prisoner
+  }) }}
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="credit-to-page govuk-grid-row">
+
+  <form method="POST" action="/credit-to">
+
+{% call govukFieldset({
+  legend: {
+    text: "Credit to",
+    classes: "govuk-fieldset__legend--l",
+    isPageHeading: true
+  }
+}) %}
+
+    {{ govukRadios({
+      name: "creditTo",
+      fieldset: {
+      },
+      items: [
+        {
+          value: "spends",
+          text: "Spends"
+        },
+        {
+          value: "savings",
+          text: "Savings"
+        },
+        {
+          value: "privatecash",
+          text: "Private cash"
+        }
+      ]
+    }) }}
+
+    {% endcall %}
+
+    {{ govukButton({
+      text: "Continue",
+      type: "submit"
+    }) }}
+
+  </form>
+</div>
+
+{% endblock %}
