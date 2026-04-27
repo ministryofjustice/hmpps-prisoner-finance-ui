@@ -5,6 +5,6 @@ export default class CreditPrisonerController {
   constructor(private readonly services: Services) {}
 
   public getCreditTo = async (req: Request, res: Response, next: NextFunction) => {
-    res.render('pages/creditAPrisoner/creditTo')
+    res.render('pages/creditAPrisoner/creditTo/creditTo.njk')
   }
 }

@@ -24,7 +24,10 @@
 
 <div class="credit-to-page govuk-grid-row">
 
-  <form method="POST" action="/credit-to" data-testid='select-credit-to-account'>
+  <form method="POST" action="./credit-to" data-testid='select-credit-to-account'>
+
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
 
 {% call govukFieldset({
   legend: {

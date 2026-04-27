@@ -13,8 +13,32 @@ export default function routes(services: Services): Router {
     res.send('Hello')
   })
 
+  creditPrisonerRouter
+    .get(
+      '/credit-to',
+
+      prisonerPermissionsGuard(services.prisonPermissionsService, {
+        requestDependentOn: [PrisonerMoneyPermission.read],
+        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
+      }),
+
+      getPrisonerData(services),
+      creditPrisonerController.getCreditTo,
+    )
+    .post(
+      '/credit-to',
+      prisonerPermissionsGuard(services.prisonPermissionsService, {
+        requestDependentOn: [PrisonerMoneyPermission.read],
+        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
+      }),
+      getPrisonerData(services),
+      (req: Request, res: Response, next: NextFunction) => {
+        res.redirect('./credit-from')
+      },
+    )
+
   creditPrisonerRouter.get(
-    '/select-subaccount',
+    '/credit-from',
 
     prisonerPermissionsGuard(services.prisonPermissionsService, {
       requestDependentOn: [PrisonerMoneyPermission.read],
@@ -22,7 +46,9 @@ export default function routes(services: Services): Router {
     }),
 
     getPrisonerData(services),
-    creditPrisonerController.getCreditTo,
+    (req: Request, res: Response, next: NextFunction) => {
+      res.render('pages/creditAPrisoner/creditFrom/creditFrom.njk')
+    },
   )
 
   return creditPrisonerRouter
