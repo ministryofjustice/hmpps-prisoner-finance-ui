@@ -5,7 +5,7 @@ import { createRedisClient } from '../data/redisClient'
 import config from '../config'
 import logger from '../../logger'
 
-import { ExpressSessionAdapter } from '../routes/store/expressSessionAdapter'
+import ExpressSessionAdapter from '../routes/store/expressSessionAdapter'
 import InMemoryStore from '../routes/store/inMemoryStore'
 import RedisStore from '../routes/store/redisStore'
 import Store from '../routes/store/store'

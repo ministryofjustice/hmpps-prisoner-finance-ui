@@ -1,47 +1,47 @@
 import session from 'express-session'
 import Store from './store'
 
-export class ExpressSessionAdapter extends session.Store {
-    constructor(private readonly store : Store){
-        super()
-    }
+export default class ExpressSessionAdapter extends session.Store {
+  constructor(private readonly store: Store) {
+    super()
+  }
 
-  public async get(sid: string, callback: (err: any, session?: session.SessionData | null) => void) {
+  public async get(sid: string, callback: (err: Error | null, session?: session.SessionData | null) => void) {
     try {
-      const result = await this.store.get(sid);
+      const result = await this.store.get(sid)
 
       if (result) {
-        return callback(null, JSON.parse(result));
+        return callback(null, JSON.parse(result))
       }
-      
-      return callback(null, null);
+
+      return callback(null, null)
     } catch (error) {
-      return callback(error);
+      return callback(error)
     }
   }
 
-  public async set(sid: string, sessionData: session.SessionData, callback?: (err?: any) => void) {
+  public async set(sid: string, sessionData: session.SessionData, callback?: (err?: Error) => void) {
     try {
-      const value = JSON.stringify(sessionData);
-      
+      const value = JSON.stringify(sessionData)
+
       // Defaults to 1 day (86400 seconds) if no cookie maxAge is set
-      const ttl = sessionData.cookie?.maxAge ? Math.floor(sessionData.cookie.maxAge / 1000) : 86400;
+      const ttl = sessionData.cookie?.maxAge ? Math.floor(sessionData.cookie.maxAge / 1000) : 86400
 
-      await this.store.set(sid, value, ttl);
-      
-      callback?.(null);
+      await this.store.set(sid, value, ttl)
+
+      callback?.(null)
     } catch (error) {
-      callback?.(error);
+      callback?.(error)
     }
   }
 
-  public async destroy(sid: string, callback?: (err?: any) => void) {
+  public async destroy(sid: string, callback?: (err?: Error) => void) {
     try {
-      await this.store.destroy(sid);
+      await this.store.destroy(sid)
 
-      callback?.(null);
+      callback?.(null)
     } catch (error) {
-      callback?.(error);
+      callback?.(error)
     }
   }
 }

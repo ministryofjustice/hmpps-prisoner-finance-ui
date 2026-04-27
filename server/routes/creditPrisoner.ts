@@ -1,23 +1,20 @@
 import { Router, NextFunction, Request, Response } from 'express'
+import { PrisonerMoneyPermission, prisonerPermissionsGuard } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import { Services } from '../services'
 import CreditPrisonerController from '../controllers/CreditPrisonerController'
-import { CreditPrisonerForm } from '../interfaces/creditPrisonerForm'
-import { PrisonerMoneyPermission, prisonerPermissionsGuard } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import getPrisonerData from '../middleware/getPrisonerData'
 
 export default function routes(services: Services): Router {
-  const creditPrisonerRouter = Router({mergeParams : true})
+  const creditPrisonerRouter = Router({ mergeParams: true })
 
   const creditPrisonerController = new CreditPrisonerController(services)
 
-  creditPrisonerRouter.get('/select-subaccount2', (req: Request, res: Response, next: NextFunction) =>{
-
-    console.log(req.session.creditForm.creditSubAccountRef)
-
-    res.send('Hello');
+  creditPrisonerRouter.get('/select-subaccount2', (req: Request, res: Response, next: NextFunction) => {
+    res.send('Hello')
   })
 
-  creditPrisonerRouter.get('/select-subaccount',
+  creditPrisonerRouter.get(
+    '/select-subaccount',
 
     prisonerPermissionsGuard(services.prisonPermissionsService, {
       requestDependentOn: [PrisonerMoneyPermission.read],
@@ -25,7 +22,7 @@ export default function routes(services: Services): Router {
     }),
 
     getPrisonerData(services),
-    creditPrisonerController.getCreditTo
+    creditPrisonerController.getCreditTo,
   )
 
   return creditPrisonerRouter

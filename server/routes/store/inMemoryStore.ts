@@ -18,6 +18,6 @@ export default class InMemoryStore implements Store {
   }
 
   async destroy(sid: string): Promise<void> {
-    
+    /* empty */
   }
 }

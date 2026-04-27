@@ -24,7 +24,7 @@
 
 <div class="credit-to-page govuk-grid-row">
 
-  <form method="POST" action="/credit-to">
+  <form method="POST" action="/credit-to" data-testid='select-credit-to-account'>
 
 {% call govukFieldset({
   legend: {
@@ -41,15 +41,24 @@
       items: [
         {
           value: "spends",
-          text: "Spends"
+          text: "Spends",
+          attributes:{
+            "data-testid" : "sub-account-radio"
+            }
         },
         {
           value: "savings",
-          text: "Savings"
+          text: "Savings",
+          attributes:{
+            "data-testid" : "sub-account-radio"
+            }
         },
         {
           value: "privatecash",
-          text: "Private cash"
+          text: "Private cash",
+          attributes:{
+            "data-testid" : "sub-account-radio"
+            }
         }
       ]
     }) }}
@@ -58,7 +67,10 @@
 
     {{ govukButton({
       text: "Continue",
-      type: "submit"
+      type: "submit",
+       attributes:{
+            "data-testid" : "continue-button"
+            }
     }) }}
 
   </form>

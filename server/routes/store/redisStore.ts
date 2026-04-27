@@ -28,15 +28,15 @@ export default class RedisStore implements Store {
     const result = await this.client.get(`${this.prefix}${key}`)
 
     if (typeof result === 'string') {
-        return result 
-    } else if (result === null) {
-        return null
-    } else {
-        return Buffer.from(result).toString('utf-8')
-    } 
+      return result
+    }
+    if (result === null) {
+      return null
+    }
+    return Buffer.from(result).toString('utf-8')
   }
 
   async destroy(sid: string): Promise<void> {
-    
+    /* empty */
   }
 }
