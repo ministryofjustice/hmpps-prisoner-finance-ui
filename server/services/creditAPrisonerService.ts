@@ -1,20 +1,20 @@
 /* eslint-disable no-param-reassign */
 
 import { SessionData } from 'express-session'
-import CreditPrisonerForm from '../classes/creditPrisonerForm'
+import CreditAPrisonerForm from '../classes/creditAPrisonerForm'
 
 export default class CreditAPrisonerService {
-  createCreditForm(session: SessionData) {
+  static createCreditForm(session: SessionData) {
     if (!session.creditForm) {
-      session.creditForm = new CreditPrisonerForm()
+      session.creditForm = new CreditAPrisonerForm()
     }
   }
 
-  updateCreditForm(session: SessionData, updates: CreditPrisonerForm) {
+  static updateCreditForm(session: SessionData, updates: CreditAPrisonerForm) {
     session.creditForm = { ...session.creditForm, ...updates }
   }
 
-  clearCreditForm(session: SessionData) {
-    session.creditForm = new CreditPrisonerForm()
+  static clearCreditForm(session: SessionData) {
+    session.creditForm = new CreditAPrisonerForm()
   }
 }

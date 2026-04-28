@@ -1,13 +1,13 @@
 import { SessionData } from 'express-session'
 import CreditAPrisonerService from './creditAPrisonerService'
-import CreditPrisonerForm from '../classes/creditPrisonerForm'
+import CreditAPrisonerForm from '../classes/creditAPrisonerForm'
 
 describe('creditAPrisonerService', () => {
   describe('.createCreditForm', () => {
     it('creates credit form on session data if not present', () => {
       const session = {} as SessionData
-      new CreditAPrisonerService().createCreditForm(session)
-      expect(session.creditForm).toBeInstanceOf(CreditPrisonerForm)
+      CreditAPrisonerService.createCreditForm(session)
+      expect(session.creditForm).toBeInstanceOf(CreditAPrisonerForm)
       expect(session.creditForm).toMatchObject({
         creditSubAccountRef: undefined,
         debitSubAccountRef: undefined,
@@ -17,13 +17,13 @@ describe('creditAPrisonerService', () => {
     })
 
     it('doesnt overwrite existing creditForm data', () => {
-      const existingCreditForm = new CreditPrisonerForm()
+      const existingCreditForm = new CreditAPrisonerForm()
       existingCreditForm.creditSubAccountRef = 'TEST'
       existingCreditForm.debitSubAccountRef = 'TEST2'
       existingCreditForm.amount = 100
       existingCreditForm.description = 'TEST3'
       const session = { creditForm: existingCreditForm } as SessionData
-      new CreditAPrisonerService().createCreditForm(session)
+      CreditAPrisonerService.createCreditForm(session)
       expect(session.creditForm).toMatchObject({
         creditSubAccountRef: 'TEST',
         debitSubAccountRef: 'TEST2',
@@ -34,13 +34,13 @@ describe('creditAPrisonerService', () => {
   })
   describe('.updateCreditForm', () => {
     it('should update fields without overwriting others', () => {
-      const existingCreditForm = new CreditPrisonerForm()
+      const existingCreditForm = new CreditAPrisonerForm()
       existingCreditForm.creditSubAccountRef = 'TEST'
       existingCreditForm.debitSubAccountRef = 'TEST2'
       existingCreditForm.amount = 100
       existingCreditForm.description = undefined
       const session = { creditForm: existingCreditForm } as SessionData
-      new CreditAPrisonerService().updateCreditForm(session, { description: 'new description', amount: 200 })
+      CreditAPrisonerService.updateCreditForm(session, { description: 'new description', amount: 200 })
       expect(session.creditForm).toMatchObject({
         creditSubAccountRef: 'TEST',
         debitSubAccountRef: 'TEST2',
@@ -51,13 +51,13 @@ describe('creditAPrisonerService', () => {
   })
   describe('.clearCreditForm', () => {
     it('should reset a credit form to a blank copy', () => {
-      const existingCreditForm = new CreditPrisonerForm()
+      const existingCreditForm = new CreditAPrisonerForm()
       existingCreditForm.creditSubAccountRef = 'TEST'
       existingCreditForm.debitSubAccountRef = 'TEST2'
       existingCreditForm.amount = 100
       existingCreditForm.description = 'description'
       const session = { creditForm: existingCreditForm } as SessionData
-      new CreditAPrisonerService().clearCreditForm(session)
+      CreditAPrisonerService.clearCreditForm(session)
       expect(session.creditForm).toMatchObject({
         creditSubAccountRef: undefined,
         debitSubAccountRef: undefined,

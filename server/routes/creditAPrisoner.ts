@@ -1,15 +1,15 @@
 import { Router, NextFunction, Request, Response } from 'express'
 import { PrisonerMoneyPermission, prisonerPermissionsGuard } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import { Services } from '../services'
-import CreditPrisonerController from '../controllers/CreditPrisonerController'
+import CreditAPrisonerController from '../controllers/CreditAPrisonerController'
 import getPrisonerData from '../middleware/getPrisonerData'
 
 export default function routes(services: Services): Router {
-  const creditPrisonerRouter = Router({ mergeParams: true })
+  const creditAPrisonerRouter = Router({ mergeParams: true })
 
-  const creditPrisonerController = new CreditPrisonerController(services)
+  const creditAPrisonerController = new CreditAPrisonerController(services)
 
-  creditPrisonerRouter
+  creditAPrisonerRouter
     .get(
       '/credit-to',
 
@@ -19,7 +19,7 @@ export default function routes(services: Services): Router {
       }),
 
       getPrisonerData(services),
-      creditPrisonerController.getCreditTo,
+      creditAPrisonerController.getCreditTo,
     )
     .post(
       '/credit-to',
@@ -28,10 +28,10 @@ export default function routes(services: Services): Router {
         getPrisonerNumberFunction: req => req.params.prisonNumber as string,
       }),
       getPrisonerData(services),
-      creditPrisonerController.postCreditTo,
+      creditAPrisonerController.postCreditTo,
     )
 
-  creditPrisonerRouter.get(
+  creditAPrisonerRouter.get(
     '/credit-from',
 
     prisonerPermissionsGuard(services.prisonPermissionsService, {
@@ -45,5 +45,5 @@ export default function routes(services: Services): Router {
     },
   )
 
-  return creditPrisonerRouter
+  return creditAPrisonerRouter
 }

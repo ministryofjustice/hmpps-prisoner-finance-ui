@@ -1,4 +1,4 @@
-export default class CreditPrisonerForm {
+export default class CreditAPrisonerForm {
   creditSubAccountRef?: string
 
   debitSubAccountRef?: string

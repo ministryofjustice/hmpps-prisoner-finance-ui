@@ -43,6 +43,6 @@ test.describe('Credit A Prisoner Pages', () => {
 
     await continueButton.click()
 
-    expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+    expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
   })
 })

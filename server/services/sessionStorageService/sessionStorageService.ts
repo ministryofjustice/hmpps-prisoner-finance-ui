@@ -1,7 +1,7 @@
-import CreditPrisonerForm from '../../classes/creditPrisonerForm'
+import CreditAPrisonerForm from '../../classes/creditAPrisonerForm'
 
 declare module 'express-session' {
   interface SessionData {
-    creditForm?: CreditPrisonerForm
+    creditForm?: CreditAPrisonerForm
   }
 }
