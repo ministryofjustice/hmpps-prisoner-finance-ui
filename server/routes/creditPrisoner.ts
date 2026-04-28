@@ -9,10 +9,6 @@ export default function routes(services: Services): Router {
 
   const creditPrisonerController = new CreditPrisonerController(services)
 
-  creditPrisonerRouter.get('/select-subaccount2', (req: Request, res: Response, next: NextFunction) => {
-    res.send('Hello')
-  })
-
   creditPrisonerRouter
     .get(
       '/credit-to',
@@ -32,9 +28,7 @@ export default function routes(services: Services): Router {
         getPrisonerNumberFunction: req => req.params.prisonNumber as string,
       }),
       getPrisonerData(services),
-      (req: Request, res: Response, next: NextFunction) => {
-        res.redirect('./credit-from')
-      },
+      creditPrisonerController.postCreditTo,
     )
 
   creditPrisonerRouter.get(

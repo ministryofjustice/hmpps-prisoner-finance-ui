@@ -7,4 +7,10 @@ export default class CreditPrisonerController {
   public getCreditTo = async (req: Request, res: Response, next: NextFunction) => {
     res.render('pages/creditAPrisoner/creditTo/creditTo.njk')
   }
+
+  public postCreditTo = async (req: Request, res: Response, next: NextFunction) => {
+    req.session.creditForm.creditSubAccountRef = 'cash'
+
+    res.redirect('./credit-from')
+  }
 }

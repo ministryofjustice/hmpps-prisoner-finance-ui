@@ -28,4 +28,21 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
     })
   })
+
+  test('Remains on credit to page with error message if continue is pressed before an option is selected', async ({
+    page,
+  }) => {
+    await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+
+    const creditToPage = await CreditToPage.verifyOnPage(page)
+
+    const { radioButtons, continueButton } = creditToPage
+
+    expect(radioButtons).toHaveCount(3)
+    expect(await continueButton.textContent()).toContain('Continue')
+
+    await continueButton.click()
+
+    expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+  })
 })
