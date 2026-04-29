@@ -87,7 +87,6 @@ describe('/credit-a-prisoner', () => {
 
   describe('/credit-to', () => {
     describe('GET', () => {
-
       it('Should log page view for credit-to page and render the page', async () => {
         return request(app)
           .get(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)

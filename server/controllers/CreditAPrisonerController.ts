@@ -8,12 +8,11 @@ export default class CreditAPrisonerController {
   constructor(private readonly services: Services) {}
 
   public getCreditTo = async (req: Request, res: Response, next: NextFunction) => {
-
     await this.services.auditService.logPageView(AuditPage.CREDIT_TO, {
       who: res.locals.user.username,
       correlationId: req.id,
     })
-          
+
     if (!req.session.creditForm) {
       CreditAPrisonerService.createCreditForm(req.session as SessionData)
     }
