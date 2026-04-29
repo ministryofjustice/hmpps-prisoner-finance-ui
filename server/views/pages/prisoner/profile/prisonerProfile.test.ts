@@ -146,6 +146,7 @@ describe('prisoner profile page', () => {
   it('Should render the actions menu', () => {
     const creditMenu = $('[data-testid="credit-menu"]')
     expect(creditMenu.text()).toBe('Credit account')
+    expect(creditMenu.attr('href')).toBe('/prisoner/AB123456/money/credit-a-prisoner/credit-to')
 
     const debitMenu = $('[data-testid="debit-menu"]')
     expect(debitMenu.text()).toBe('Debit account')
