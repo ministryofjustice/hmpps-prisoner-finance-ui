@@ -3,7 +3,7 @@ import { PrisonerMoneyPermission, PermissionsService } from '@ministryofjustice/
 
 import signature from 'cookie-signature'
 import request from 'supertest'
-import AuditService from '../services/auditService'
+import AuditService, { AuditPage } from '../services/auditService'
 import mockPermissions from './testutils/mockPermissions'
 import { appWithAllRoutes, user } from './testutils/appSetup'
 import config from '../config'
@@ -14,6 +14,7 @@ import ExpressSessionAdapter from './store/expressSessionAdapter'
 import InMemoryStore from './store/inMemoryStore'
 import CreditAPrisonerForm from '../classes/creditAPrisonerForm'
 
+jest.mock('../services/auditService')
 jest.mock('../services/prisonerSearchService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 
@@ -86,6 +87,21 @@ describe('/credit-a-prisoner', () => {
 
   describe('/credit-to', () => {
     describe('GET', () => {
+
+      it('Should log page view for credit-to page and render the page', async () => {
+        return request(app)
+          .get(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+          .expect('Content-Type', /html/)
+          .expect(200)
+          .expect(res => {
+            expect(res.text).toContain('Credit to')
+            expect(auditService.logPageView).toHaveBeenCalledWith(
+              AuditPage.CREDIT_TO,
+              expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
+            )
+          })
+      })
+
       it('calls the credit a prisoner service and creates a credit a prisoner form if one does not exist', async () => {
         const createACreditFormSpy = jest.spyOn(CreditAPrisonerService, 'createCreditForm')
 
