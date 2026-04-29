@@ -21,9 +21,9 @@ const auditConfig = () => {
     queueUrl: get(
       'AUDIT_SQS_QUEUE_URL',
       'http://localhost:4566/000000000000/mainQueue',
-      auditEnabled && requiredInProduction,
+      auditEnabled ? requiredInProduction : undefined,
     ),
-    serviceName: get('AUDIT_SERVICE_NAME', 'UNASSIGNED', auditEnabled && requiredInProduction),
+    serviceName: get('AUDIT_SERVICE_NAME', 'UNASSIGNED', auditEnabled ? requiredInProduction : undefined),
     region: get('AUDIT_SQS_REGION', 'eu-west-2'),
   }
 }
@@ -39,7 +39,7 @@ export default {
   redis: {
     enabled: get('REDIS_ENABLED', 'false', requiredInProduction) === 'true',
     host: get('REDIS_HOST', 'localhost', requiredInProduction),
-    port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    port: parseInt(process.env.REDIS_PORT as string, 10) || 6379,
     password: production ? process.env.REDIS_AUTH_TOKEN : '',
     tls_enabled: get('REDIS_TLS_ENABLED', 'false'),
   },

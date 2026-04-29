@@ -17,8 +17,8 @@ export default class InMemoryStore implements Store {
     return null
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async destroy(sid: string): Promise<void> {
+  // _ will be the sid in implementation
+  async destroy(_: string): Promise<void> {
     /* empty */
   }
 }

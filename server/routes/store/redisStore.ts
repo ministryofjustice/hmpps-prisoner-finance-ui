@@ -36,8 +36,8 @@ export default class RedisStore implements Store {
     return Buffer.from(result).toString('utf-8')
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  async destroy(sid: string): Promise<void> {
+  // _ will be the sid in implementation
+  async destroy(_: string): Promise<void> {
     /* empty */
   }
 }
