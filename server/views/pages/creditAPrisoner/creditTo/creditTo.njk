@@ -63,8 +63,11 @@
             "data-testid" : "sub-account-radio"
             }
         }
-      ]
+      ],
+      errorMessage: { text: errorMap.errorText, attributes: {"data-testid": "error-message"} } if errorMap.errorText else null
     }) }}
+
+
 
     {% endcall %}
 
