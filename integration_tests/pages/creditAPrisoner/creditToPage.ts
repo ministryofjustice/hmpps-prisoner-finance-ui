@@ -15,8 +15,7 @@ export default class CreditToPage extends AbstractPage {
     this.heading = page.getByRole('heading', { name: 'Credit to' })
     this.radioButtons = page.locator('[data-testid="sub-account-radio"]')
     this.continueButton = page.locator('[data-testid="continue-button"]')
-    this.errorMessage = page.locator('[data-testid="error-message"]')
-
+    this.errorMessage = page.locator('[id="creditTo-error"]')
   }
 
   static async verifyOnPage(page: Page): Promise<CreditToPage> {

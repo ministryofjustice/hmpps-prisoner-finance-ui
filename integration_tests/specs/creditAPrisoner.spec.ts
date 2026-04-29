@@ -38,8 +38,7 @@ test.describe('Credit A Prisoner Pages', () => {
 
       const response = await redisClient.get(unsignedCookie as string)
       const parsedData = JSON.parse(response as string)
-      expect(parsedData.creditForm).toMatchObject({ creditSubAccountRef: 'cash' })
-    })
+      expect(parsedData.creditForm).toMatchObject({ creditSubAccountRef: 'spends' })
   })
 
   test('Remains on credit to page with error message if continue is pressed before an option is selected', async ({
@@ -59,6 +58,40 @@ test.describe('Credit A Prisoner Pages', () => {
     expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
 
     expect(creditToPage.errorMessage).toBeVisible()
-    expect(creditToPage.errorMessage.innerText).toBe('You must select a sub-account before continuing.')
+
+    const errorText = creditToPage.errorMessage
+
+    expect(errorText).toContainText('You must select a sub-account before continuing.')
+  })
+
+  test('Should rerender previously selected button if user returns to page', async ({ page, context }) => {
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      const cookies = await context.cookies()
+      const unsignedCookie = unsignCookie(cookies[0].value)
+
+      const creditToPage = await CreditToPage.verifyOnPage(page)
+
+      const { radioButtons, continueButton } = creditToPage
+
+      expect(radioButtons).toHaveCount(3)
+      expect(await continueButton.textContent()).toContain('Continue')
+
+      await radioButtons.nth(1).click()
+
+      expect(radioButtons.nth(1)).toBeChecked()
+
+      await continueButton.click()
+
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
+
+      const response = await redisClient.get(unsignedCookie as string)
+      const parsedData = JSON.parse(response as string)
+      expect(parsedData.creditForm).toMatchObject({ creditSubAccountRef: 'savings' })
+
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+
+      expect(radioButtons.nth(1)).toBeChecked()
+    })
   })
 })
+

@@ -41,6 +41,7 @@
       name: "creditTo",
       fieldset: {
       },
+      value: subAccountSelected,
       items: [
         {
           value: "spends",
@@ -64,7 +65,7 @@
             }
         }
       ],
-      errorMessage: { text: errorMap.errorText, attributes: {"data-testid": "error-message"} } if errorMap.errorText else null
+      errorMessage: { text: errorMap.errorText } if errorMap.errorText else null
     }) }}
 
 
