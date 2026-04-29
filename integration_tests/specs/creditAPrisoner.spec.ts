@@ -39,32 +39,32 @@ test.describe('Credit A Prisoner Pages', () => {
       const response = await redisClient.get(unsignedCookie as string)
       const parsedData = JSON.parse(response as string)
       expect(parsedData.creditForm).toMatchObject({ creditSubAccountRef: 'spends' })
-  })
+    })
 
-  test('Remains on credit to page with error message if continue is pressed before an option is selected', async ({
-    page,
-  }) => {
-    await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+    test('Remains on credit to page with error message if continue is pressed before an option is selected', async ({
+      page,
+    }) => {
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
 
-    const creditToPage = await CreditToPage.verifyOnPage(page)
+      const creditToPage = await CreditToPage.verifyOnPage(page)
 
-    const { radioButtons, continueButton } = creditToPage
+      const { radioButtons, continueButton } = creditToPage
 
-    expect(radioButtons).toHaveCount(3)
-    expect(await continueButton.textContent()).toContain('Continue')
+      expect(radioButtons).toHaveCount(3)
+      expect(await continueButton.textContent()).toContain('Continue')
 
-    await continueButton.click()
+      await continueButton.click()
 
-    expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
 
-    expect(creditToPage.errorMessage).toBeVisible()
+      expect(creditToPage.errorMessage).toBeVisible()
 
-    const errorText = creditToPage.errorMessage
+      const errorText = creditToPage.errorMessage
 
-    expect(errorText).toContainText('You must select a sub-account before continuing.')
-  })
+      expect(errorText).toContainText('You must select a sub-account before continuing.')
+    })
 
-  test('Should rerender previously selected button if user returns to page', async ({ page, context }) => {
+    test('Should rerender previously selected button if user returns to page', async ({ page, context }) => {
       await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
       const cookies = await context.cookies()
       const unsignedCookie = unsignCookie(cookies[0].value)
@@ -94,4 +94,3 @@ test.describe('Credit A Prisoner Pages', () => {
     })
   })
 })
-
