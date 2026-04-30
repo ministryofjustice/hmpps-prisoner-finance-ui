@@ -1,8 +1,10 @@
 import { Page } from '@playwright/test'
+import signature from 'cookie-signature'
 import tokenVerification from './mockApis/tokenVerification'
 import hmppsAuth, { type UserToken } from './mockApis/hmppsAuth'
 import { resetStubs } from './mockApis/wiremock'
 import prisonApi from './mockApis/prisonApi'
+import config from '../server/config'
 
 export { resetStubs }
 
@@ -28,4 +30,10 @@ export const login = async (
     prisonApi.stubGetUserCaseloads(),
   ])
   await attemptHmppsAuthLogin(page)
+}
+
+export const unsignCookie = (cookieValue: string): string | false => {
+  const decodedValue = decodeURIComponent(cookieValue)
+  const cookieWithoutPrefix = decodedValue.slice(2)
+  return signature.unsign(cookieWithoutPrefix, config.session.secret)
 }

@@ -83,6 +83,8 @@
     "@types/passport-oauth2": "^1.8.0",
     "@types/superagent": "^8.1.9",
     "@types/supertest": "^7.2.0",
+    "@types/cookie-signature": "1.1.2",
+    "cookie-signature": "1.2.2",
     "audit-ci": "^7.1.0",
     "aws-sdk-client-mock": "^4.1.0",
     "cheerio": "1.2.0",
@@ -99,7 +101,8 @@
     "nock": "^14.0.12",
     "supertest": "^7.2.2",
     "ts-jest": "^29.4.9",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.2",
+    "eslint-config-prettier": "^10.1.8"
   },
   "overrides": {
     "@aws-sdk/xml-builder": {
