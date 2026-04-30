@@ -22,8 +22,43 @@
 
 {% block content %}
 
-<div class="credit-to-page govuk-grid-row">
-    <h1>Hello world</h1>
+<div class="credit-from-page govuk-grid-row">
+
+  <form method="POST" action="./credit-from" data-testid='select-credit-from-account'>
+
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+
+{% call govukFieldset({
+  legend: {
+    text: "Credit from",
+    classes: "govuk-fieldset__legend--l",
+    isPageHeading: true
+  }
+}) %}
+
+    {{ govukRadios({
+      name: "creditFrom",
+      fieldset: {
+      },
+      value: subAccountSelected,
+      items: items ,
+      errorMessage: { text: errorMap.errorText } if errorMap.errorText else null
+    }) }}
+
+
+
+    {% endcall %}
+
+    {{ govukButton({
+      text: "Continue",
+      type: "submit",
+       attributes:{
+            "data-testid" : "continue-button"
+            }
+    }) }}
+
+  </form>
 </div>
 
 {% endblock %}

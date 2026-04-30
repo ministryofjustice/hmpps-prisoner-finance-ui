@@ -1,4 +1,4 @@
-import { Router, NextFunction, Request, Response } from 'express'
+import { Router } from 'express'
 import { PrisonerMoneyPermission, prisonerPermissionsGuard } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import { Services } from '../services'
 import CreditAPrisonerController from '../controllers/CreditAPrisonerController'
@@ -10,9 +10,8 @@ export default function routes(services: Services): Router {
   const creditAPrisonerController = new CreditAPrisonerController(services)
 
   creditAPrisonerRouter
+    .route('/credit-to')
     .get(
-      '/credit-to',
-
       prisonerPermissionsGuard(services.prisonPermissionsService, {
         requestDependentOn: [PrisonerMoneyPermission.read],
         getPrisonerNumberFunction: req => req.params.prisonNumber as string,
@@ -22,7 +21,6 @@ export default function routes(services: Services): Router {
       creditAPrisonerController.getCreditTo,
     )
     .post(
-      '/credit-to',
       prisonerPermissionsGuard(services.prisonPermissionsService, {
         requestDependentOn: [PrisonerMoneyPermission.read],
         getPrisonerNumberFunction: req => req.params.prisonNumber as string,
@@ -31,19 +29,26 @@ export default function routes(services: Services): Router {
       creditAPrisonerController.postCreditTo,
     )
 
-  creditAPrisonerRouter.get(
-    '/credit-from',
+  creditAPrisonerRouter
+    .route('/credit-from')
+    .get(
+      prisonerPermissionsGuard(services.prisonPermissionsService, {
+        requestDependentOn: [PrisonerMoneyPermission.read],
+        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
+      }),
 
-    prisonerPermissionsGuard(services.prisonPermissionsService, {
-      requestDependentOn: [PrisonerMoneyPermission.read],
-      getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-    }),
+      getPrisonerData(services),
+      creditAPrisonerController.getCreditFrom,
+    )
+    .post(
+      prisonerPermissionsGuard(services.prisonPermissionsService, {
+        requestDependentOn: [PrisonerMoneyPermission.read],
+        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
+      }),
 
-    getPrisonerData(services),
-    (req: Request, res: Response, next: NextFunction) => {
-      res.render('pages/creditAPrisoner/creditFrom/creditFrom.njk')
-    },
-  )
+      getPrisonerData(services),
+      creditAPrisonerController.postCreditFrom,
+    )
 
   return creditAPrisonerRouter
 }

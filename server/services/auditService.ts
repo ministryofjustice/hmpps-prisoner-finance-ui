@@ -5,6 +5,7 @@ export enum AuditPage {
   PRISONER_MONEY = 'PRISONER_MONEY_PAGE',
   PRISONER_PROFILE = 'PRISONER_PROFILE_PAGE',
   CREDIT_TO = 'CREDIT_TO',
+  CREDIT_FROM = 'CREDIT_FROM',
 }
 
 export interface PageViewEventDetails {

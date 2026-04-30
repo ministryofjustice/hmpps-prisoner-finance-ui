@@ -1,6 +1,7 @@
 import { stubFor } from './wiremock'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
+import AccountResponse from '../../server/interfaces/AccountResponse'
 import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBalanceResponse'
 import { Page } from '../../server/interfaces/Pageable'
 
@@ -170,6 +171,18 @@ export default {
           developerMessage: null,
           moreInfo: null,
         },
+      },
+    }),
+  stubGetAccountByReference: (accountRef: string, payload: AccountResponse) =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: `${API_PREFIX}/accounts/${accountRef}`,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: payload,
       },
     }),
 }
