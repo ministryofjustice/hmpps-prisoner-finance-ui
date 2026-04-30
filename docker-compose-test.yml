@@ -10,11 +10,11 @@ services:
       - "9091:8080"
 
   redis:
-    image: redis:6.2-alpine
+    image: redis:7.4
     restart: always
     ports:
       - '6379:6379'
-    command: redis-server --save 20 1 --loglevel warning # --requirepass eYVX7EwVmmxKPCDmwMtyKVge8oLd2t81
+    command: redis-server --save 20 1 --loglevel warning
     volumes:
       - cache:/data
 volumes:
