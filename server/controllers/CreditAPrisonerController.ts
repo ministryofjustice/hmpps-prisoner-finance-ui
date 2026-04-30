@@ -48,8 +48,8 @@ export default class CreditAPrisonerController {
 
     try {
       // TODO: phase 1 hardcoded to LEI
-      const { subaccounts } = await this.services.prisonerFinanceService.getAccountByReference('LEI')
-      const subaccountsForDisplay = subaccounts.map(({ id, reference }) => {
+      const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference('LEI')
+      const subaccountsForDisplay = subAccounts.map(({ id, reference }) => {
         return {
           value: id,
           text: reference,

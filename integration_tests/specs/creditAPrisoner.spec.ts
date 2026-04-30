@@ -106,7 +106,7 @@ test.describe('Credit A Prisoner Pages', () => {
         createdAt: '',
         createdBy: '',
         type: 'PRISON',
-        subaccounts: [
+        subAccounts: [
           {
             id: 'TESTSUBUUID1',
             reference: '2001:CANT',

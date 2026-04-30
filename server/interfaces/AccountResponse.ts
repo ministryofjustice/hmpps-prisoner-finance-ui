@@ -12,5 +12,5 @@ export default interface AccountResponse {
   createdBy: string
   createdAt: string
   type: 'PRISON' | 'PRISONER'
-  subaccounts: SubAccountResponse[]
+  subAccounts: SubAccountResponse[]
 }
