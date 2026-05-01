@@ -49,10 +49,14 @@ export default class CreditAPrisonerController {
       req.session.creditForm.creditSubAccountId = req.body.creditTo
       res.redirect('./credit-from')
     } else {
+      const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(
+        req.params.prisonNumber as string,
+      )
       res.render('pages/creditAPrisoner/creditTo/creditTo.njk', {
         errorMap: {
           errorText: 'You must select a sub-account before continuing.',
         },
+        subAccounts: this.mapSubAccountsToRadioContents(subAccounts, 'sub-account-radio'),
       })
     }
   }
@@ -86,11 +90,18 @@ export default class CreditAPrisonerController {
       req.session.creditForm.debitSubAccountId = req.body.creditFrom
       res.redirect('./credit-amount')
     } else {
-      res.render('pages/creditAPrisoner/creditFrom/creditFrom.njk', {
-        errorMap: {
-          errorText: 'You must select a sub-account before continuing.',
-        },
-      })
+      try {
+        const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference('LEI')
+        const subaccountsForDisplay = this.mapSubAccountsToRadioContents(subAccounts, 'prison-account-radio')
+        res.render('pages/creditAPrisoner/creditFrom/creditFrom.njk', {
+          items: subaccountsForDisplay,
+          errorMap: {
+            errorText: 'You must select a sub-account before continuing.',
+          },
+        })
+      } catch (e) {
+        next(e)
+      }
     }
   }
 }

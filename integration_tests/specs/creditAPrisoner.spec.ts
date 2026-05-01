@@ -91,6 +91,8 @@ test.describe('Credit A Prisoner Pages', () => {
 
       expect(creditToPage.errorMessage).toBeVisible()
 
+      expect(radioButtons).toHaveCount(3)
+
       const errorText = creditToPage.errorMessage
 
       expect(errorText).toContainText('You must select a sub-account before continuing.')
@@ -237,11 +239,13 @@ test.describe('Credit A Prisoner Pages', () => {
       await CreditToPage.completeAndMoveOn(page)
       const creditFromPage = await CreditFromPage.verifyOnPage(page)
 
-      const { continueButton } = creditFromPage
+      const { continueButton, radioButtons } = creditFromPage
 
       await continueButton.click()
 
       expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
+
+      expect(radioButtons).toHaveCount(3)
 
       expect(await creditFromPage.errorMessage.textContent()).toContain(
         'You must select a sub-account before continuing.',
