@@ -59,7 +59,9 @@ export default class CreditAPrisonerController {
         }
       })
 
-      res.render('pages/creditAPrisoner/creditFrom/creditFrom.njk', { items: subaccountsForDisplay })
+      const debitSubAccountId = req.session?.creditForm?.debitSubAccountId
+
+      res.render('pages/creditAPrisoner/creditFrom/creditFrom.njk', { items: subaccountsForDisplay, debitSubAccountId })
     } catch (e) {
       next(e)
     }

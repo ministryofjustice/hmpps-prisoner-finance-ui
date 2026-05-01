@@ -185,6 +185,38 @@ test.describe('Credit A Prisoner Pages', () => {
       )
     })
 
+    test('if use progresses and returns, the form should remember the previously selected option', async ({
+      page,
+      context,
+    }) => {
+      const cookies = await context.cookies()
+      const unsignedCookie = unsignCookie(cookies[0].value)
+
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      const creditFromPage = await CreditFromPage.verifyOnPage(page)
+
+      const { radioButtons, continueButton } = creditFromPage
+
+      await radioButtons.nth(1).click()
+
+      expect(radioButtons.nth(1)).toBeChecked()
+
+      await continueButton.click()
+
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
+
+      const response = await redisClient.get(unsignedCookie as string)
+      const parsedData = JSON.parse(response as string)
+
+      // creditSubAccountRef is coming from CredittoPage.completeAndMoveOn
+      expect(parsedData.creditForm).toMatchObject({ creditSubAccountRef: 'spends', debitSubAccountId: 'TESTSUBUUID2' })
+
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
+
+      expect(radioButtons.nth(1)).toBeChecked()
+    })
+
     test('should return to credit-to page if user arrives without credit-to account in session storage', async ({
       page,
     }) => {
