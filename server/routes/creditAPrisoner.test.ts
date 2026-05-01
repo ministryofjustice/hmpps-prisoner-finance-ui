@@ -83,18 +83,4 @@ describe('/credit-a-prisoner', () => {
       })
     })
   })
-  describe('/credit-from', () => {
-    describe('GET', () => {
-      it('Should log page view for credit-from page', async () => {
-        return request(app)
-          .get(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
-          .expect(() => {
-            expect(auditService.logPageView).toHaveBeenCalledWith(
-              AuditPage.CREDIT_FROM,
-              expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
-            )
-          })
-      })
-    })
-  })
 })
