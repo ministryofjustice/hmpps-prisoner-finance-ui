@@ -3,30 +3,30 @@ import { expect } from '@playwright/test'
 import nunjucks from 'nunjucks'
 import { setUpNunJucksFilters } from '../../../../utils/nunjucksSetup'
 
-describe('Credit A Prisoner - Credit To Page', () => {
+describe('Credit A Prisoner - Credit From Page', () => {
   let $: cheerio.CheerioAPI
   let njkEnv: nunjucks.Environment
 
-  const subAccounts = [
+  const prisonSubAccounts = [
     {
-      value: 'spends',
-      text: 'Spends',
+      value: 'canteen',
+      text: 'Canteen',
       attributes: {
-        'data-testid': 'sub-account-radio',
+        'data-testid': 'prison-account-radio',
       },
     },
     {
-      value: 'savings',
-      text: 'Savings',
+      value: 'bonus',
+      text: 'Bonus',
       attributes: {
-        'data-testid': 'sub-account-radio',
+        'data-testid': 'prison-account-radio',
       },
     },
     {
-      value: 'privatecash',
-      text: 'Private cash',
+      value: 'reception',
+      text: 'Reception',
       attributes: {
-        'data-testid': 'sub-account-radio',
+        'data-testid': 'prison-account-radio',
       },
     },
   ]
@@ -47,8 +47,8 @@ describe('Credit A Prisoner - Credit To Page', () => {
         },
       },
     },
+    items: prisonSubAccounts,
     prisonNumber: 'AB123456',
-    subAccounts,
   }
 
   beforeAll(() => {
@@ -63,16 +63,16 @@ describe('Credit A Prisoner - Credit To Page', () => {
 
     setUpNunJucksFilters(njkEnv)
 
-    const html = njkEnv.render('pages/creditAPrisoner/creditTo/creditTo.njk', params)
+    const html = njkEnv.render('pages/creditAPrisoner/creditFrom/creditFrom.njk', params)
 
     $ = cheerio.load(html)
   })
 
   test('Renders the clickable radio buttons and continue button', () => {
-    const formCollection = $("[data-testid='select-credit-to-account']")
+    const formCollection = $("[data-testid='select-credit-from-account']")
     expect(formCollection.length).toBe(1)
 
-    const radioButtons = $("[data-testid='sub-account-radio']")
+    const radioButtons = $("[data-testid='prison-account-radio']")
     expect(radioButtons.length).toBe(3)
 
     const continueButton = $("[data-testid='continue-button']")

@@ -10,7 +10,7 @@ export default class CreditToPage extends AbstractPage {
 
   readonly errorMessage: Locator
 
-  private constructor(page: Page) {
+  constructor(page: Page) {
     super(page)
     this.heading = page.getByRole('heading', { name: 'Credit to' })
     this.radioButtons = page.locator('[data-testid="sub-account-radio"]')
@@ -19,8 +19,14 @@ export default class CreditToPage extends AbstractPage {
   }
 
   static async verifyOnPage(page: Page): Promise<CreditToPage> {
-    const prisonerMoneyPage = new CreditToPage(page)
-    await expect(prisonerMoneyPage.heading).toBeVisible()
-    return prisonerMoneyPage
+    const creditToPage = new CreditToPage(page)
+    await expect(creditToPage.heading).toBeVisible()
+    return creditToPage
+  }
+
+  static async completeAndMoveOn(page: Page): Promise<void> {
+    const creditToPage = await this.verifyOnPage(page)
+    await creditToPage.radioButtons.first().click()
+    await creditToPage.continueButton.click()
   }
 }

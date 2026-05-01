@@ -7,6 +7,7 @@ import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
 import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
 import { datePickerToISODate } from '../utils/utils'
 import { Page } from '../interfaces/Pageable'
+import AccountResponse from '../interfaces/AccountResponse'
 
 export default class PrisonerFinanceApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -60,6 +61,15 @@ export default class PrisonerFinanceApiClient extends RestClient {
     return this.get(
       {
         path: `/prisoners/${prisonNumber}/money/balance/${subAccountRef}`,
+      },
+      asSystem(),
+    )
+  }
+
+  async getAccountByReference(accountRef: string): Promise<AccountResponse> {
+    return this.get(
+      {
+        path: `/accounts/${accountRef}`,
       },
       asSystem(),
     )
