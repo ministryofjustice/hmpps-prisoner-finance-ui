@@ -1,5 +1,5 @@
 export default class CreditAPrisonerForm {
-  creditSubAccountRef?: string
+  creditSubAccountId?: string
 
   debitSubAccountId?: string
 

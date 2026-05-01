@@ -42,29 +42,7 @@
       fieldset: {
       },
       value: subAccountSelected,
-      items: [
-        {
-          value: "spends",
-          text: "Spends",
-          attributes:{
-            "data-testid" : "sub-account-radio"
-            }
-        },
-        {
-          value: "savings",
-          text: "Savings",
-          attributes:{
-            "data-testid" : "sub-account-radio"
-            }
-        },
-        {
-          value: "privatecash",
-          text: "Private cash",
-          attributes:{
-            "data-testid" : "sub-account-radio"
-            }
-        }
-      ],
+      items: subAccounts,
       errorMessage: { text: errorMap.errorText } if errorMap.errorText else null
     }) }}
 

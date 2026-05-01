@@ -7,6 +7,30 @@ describe('Credit A Prisoner - Credit To Page', () => {
   let $: cheerio.CheerioAPI
   let njkEnv: nunjucks.Environment
 
+  const subAccounts = [
+    {
+      value: 'spends',
+      text: 'Spends',
+      attributes: {
+        'data-testid': 'sub-account-radio',
+      },
+    },
+    {
+      value: 'savings',
+      text: 'Savings',
+      attributes: {
+        'data-testid': 'sub-account-radio',
+      },
+    },
+    {
+      value: 'privatecash',
+      text: 'Private cash',
+      attributes: {
+        'data-testid': 'sub-account-radio',
+      },
+    },
+  ]
+
   const params = {
     applicationName: 'Hmpps Prisoner Finance Ui',
     prisoner: {
@@ -24,6 +48,7 @@ describe('Credit A Prisoner - Credit To Page', () => {
       },
     },
     prisonNumber: 'AB123456',
+    subAccounts,
   }
 
   beforeAll(() => {

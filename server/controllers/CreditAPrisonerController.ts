@@ -3,9 +3,22 @@ import { NextFunction, Request, Response } from 'express'
 import { Services } from '../services'
 import CreditAPrisonerService from '../services/creditAPrisonerService'
 import { AuditPage } from '../services/auditService'
+import AccountResponse from '../interfaces/AccountResponse'
 
 export default class CreditAPrisonerController {
   constructor(private readonly services: Services) {}
+
+  private mapSubAccountsToRadioContents = (subAccounts: AccountResponse['subAccounts'], dataTestId: string) => {
+    return subAccounts.map(({ id, reference }) => {
+      return {
+        value: id,
+        text: reference,
+        attributes: {
+          'data-testid': dataTestId,
+        },
+      }
+    })
+  }
 
   public getCreditTo = async (req: Request, res: Response, next: NextFunction) => {
     await this.services.auditService.logPageView(AuditPage.CREDIT_TO, {
@@ -13,18 +26,27 @@ export default class CreditAPrisonerController {
       correlationId: req.id,
     })
 
-    if (!req.session.creditForm) {
-      CreditAPrisonerService.createCreditForm(req.session as SessionData)
-    }
+    try {
+      const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(
+        req.params.prisonNumber as string,
+      )
 
-    res.render('pages/creditAPrisoner/creditTo/creditTo.njk', {
-      subAccountSelected: req.session.creditForm.creditSubAccountRef,
-    })
+      if (!req.session.creditForm) {
+        CreditAPrisonerService.createCreditForm(req.session as SessionData)
+      }
+
+      res.render('pages/creditAPrisoner/creditTo/creditTo.njk', {
+        subAccountSelected: req.session.creditForm.creditSubAccountId,
+        subAccounts: this.mapSubAccountsToRadioContents(subAccounts, 'sub-account-radio'),
+      })
+    } catch (e) {
+      next(e)
+    }
   }
 
   public postCreditTo = async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.creditTo) {
-      req.session.creditForm.creditSubAccountRef = req.body.creditTo
+      req.session.creditForm.creditSubAccountId = req.body.creditTo
       res.redirect('./credit-from')
     } else {
       res.render('pages/creditAPrisoner/creditTo/creditTo.njk', {
@@ -41,7 +63,7 @@ export default class CreditAPrisonerController {
       correlationId: req.id,
     })
 
-    if (!req.session?.creditForm?.creditSubAccountRef) {
+    if (!req.session?.creditForm?.creditSubAccountId) {
       res.redirect('./credit-to')
       return
     }
@@ -49,15 +71,7 @@ export default class CreditAPrisonerController {
     try {
       // TODO: phase 1 hardcoded to LEI
       const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference('LEI')
-      const subaccountsForDisplay = subAccounts.map(({ id, reference }) => {
-        return {
-          value: id,
-          text: reference,
-          attributes: {
-            'data-testid': 'prison-account-radio',
-          },
-        }
-      })
+      const subaccountsForDisplay = this.mapSubAccountsToRadioContents(subAccounts, 'prison-account-radio')
 
       const debitSubAccountId = req.session?.creditForm?.debitSubAccountId
 
