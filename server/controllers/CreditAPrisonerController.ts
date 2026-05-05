@@ -126,7 +126,7 @@ export default class CreditAPrisonerController {
       req.session.creditForm.amount = creditAmount
       req.session.creditForm.description = description
 
-      // API CALL HERE
+      //this.services.prisonerFinanceService
 
       res.redirect('./credit-confirmation')
     } else {

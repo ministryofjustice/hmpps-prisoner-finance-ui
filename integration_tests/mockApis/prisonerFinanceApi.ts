@@ -1,3 +1,4 @@
+import { APIRequestContext, expect } from '@playwright/test'
 import { stubFor } from './wiremock'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
@@ -7,6 +8,14 @@ import { Page } from '../../server/interfaces/Pageable'
 
 // this is the path prefix set in feature.env PRISONER_FINANCE_API_URL
 const API_PREFIX = '/prisoner-finance-api'
+const WIREMOCK_URL = 'http://localhost:9091'
+
+type PostTransactionPayload = {
+  creditSubaccountId: string
+  debitSubaccountId: string
+  amount: number
+  description: string
+}
 
 export default {
   stubPing: () =>
@@ -185,8 +194,9 @@ export default {
         jsonBody: payload,
       },
     }),
+
   stubPostTransaction: (
-    requestPayload: { creditSubaccountId: string; debitSubaccountId: string; amount: number; description: string },
+    requestPayload: PostTransactionPayload,
     responsePayload: {
       reference: string
       description: string
@@ -214,6 +224,24 @@ export default {
         jsonBody: responsePayload,
       },
     })
+  },
+
+  getWiremockPostTransactionRequest: async (request: APIRequestContext, requestPayload: PostTransactionPayload) => {
+    const wireMockResponse = await request.post(`${WIREMOCK_URL}/__admin/requests/count`, {
+      data: {
+        method: 'POST',
+        urlPattern: `${API_PREFIX}/transaction`,
+        bodyPatterns: [
+          {
+            equalToJson: JSON.stringify(requestPayload),
+            ignoreArrayOrder: true,
+            ignoreExtraElements: false,
+          },
+        ],
+      },
+    })
+
+    return wireMockResponse
   },
 }
 

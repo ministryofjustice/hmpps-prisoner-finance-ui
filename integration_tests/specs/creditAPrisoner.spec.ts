@@ -374,7 +374,7 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(creditAmountPage.descriptionField).toBeVisible()
       expect(creditAmountPage.doneButton).toBeVisible()
     })
-    test('allows form completion if fields are correctly completed', async ({ page, context }) => {
+    test.only('allows form completion if fields are correctly completed', async ({ page, context, request }) => {
       const cookies = await context.cookies()
       const unsignedCookie = unsignCookie(cookies[0].value)
 
@@ -383,6 +383,22 @@ test.describe('Credit A Prisoner Pages', () => {
       await CreditFromPage.completeAndMoveOn(page)
 
       const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page)
+
+      const reqPayload = {
+        creditSubaccountId: 'TESTSUBUUID1',
+        debitSubaccountId: 'TESTSUBUUID1',
+        amount: 100.1,
+        description: 'test description',
+      }
+
+      prisonerFinanceApi.stubPostTransaction(reqPayload, {
+        reference: 'TEXT',
+        description: 'test description',
+        timestamp: '2026-05-05T09:40:05.531Z',
+        amount: 100.1,
+        entrySequence: 1,
+        postings: [],
+      })
 
       await amountField.fill('100.10')
       await descriptionField.fill('test description')
@@ -400,6 +416,11 @@ test.describe('Credit A Prisoner Pages', () => {
         amount: 100.1,
         description: 'test description',
       })
+
+      const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request, reqPayload)
+      expect(wireMockResponse.status()).toBe(200)
+      const data = await wireMockResponse.json()
+      expect(data.count).toBe(1)
     })
     test('does not allow form completion if amount field is incorrectly completed, rendering an amount error instead. Should restore valid description', async ({
       page,
