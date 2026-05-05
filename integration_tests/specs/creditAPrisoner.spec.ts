@@ -297,7 +297,7 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
     })
   })
-  test.describe.only('Credit Amount Page', () => {
+  test.describe('Credit Amount Page', () => {
     test.beforeEach(async ({ page }) => {
       await resetStubs()
       await login(page)
@@ -391,25 +391,25 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-confirmation`)
 
       const response = await redisClient.get(unsignedCookie as string)
-       const parsedData = JSON.parse(response as string)
+      const parsedData = JSON.parse(response as string)
 
-        // refs are coming from complete and move on calls
+      // refs are coming from complete and move on calls
       expect(parsedData.creditForm).toMatchObject({
         creditSubAccountId: 'TESTSUBUUID1',
         debitSubAccountId: 'TESTSUBUUID1',
-        amount: 100.10, 
-        description: 'test description'
+        amount: 100.1,
+        description: 'test description',
       })
     })
-     test('does not allow form completion if amount field is incorrectly completed, rendering an amount error instead. Should restore valid description', async ({ page, context }) => {
-      const cookies = await context.cookies()
-      const unsignedCookie = unsignCookie(cookies[0].value)
-
+    test('does not allow form completion if amount field is incorrectly completed, rendering an amount error instead. Should restore valid description', async ({
+      page,
+    }) => {
       await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
       await CreditToPage.completeAndMoveOn(page)
       await CreditFromPage.completeAndMoveOn(page)
 
-      const { amountField, descriptionField, doneButton, amountErrorMessage } = await CreditAmountPage.verifyOnPage(page)
+      const { amountField, descriptionField, doneButton, amountErrorMessage } =
+        await CreditAmountPage.verifyOnPage(page)
 
       await amountField.fill('banana')
       await descriptionField.fill('test description')
@@ -420,26 +420,17 @@ test.describe('Credit A Prisoner Pages', () => {
 
       expect(amountErrorMessage).toBeVisible()
 
-       const response = await redisClient.get(unsignedCookie as string)
-       const parsedData = JSON.parse(response as string)
-
-      console.log(parsedData.creditForm)  
-    // refs are coming from complete and move on calls
-      expect(parsedData.creditForm).toMatchObject({
-        creditSubAccountId: 'TESTSUBUUID1',
-        debitSubAccountId: 'TESTSUBUUID1',
-        amount: undefined,
-        description: 'test description'
-      })
-
-      expect(descriptionField.allTextContents).toContain('test description')
+      expect(await descriptionField.inputValue()).toContain('test description')
     })
-    test('does not allow form completion if description field is incorrectly completed, rendering an description error instead', async ({ page }) => {
+    test('does not allow form completion if description field is incorrectly completed, rendering an description error instead. Restores valid amount.', async ({
+      page,
+    }) => {
       await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
       await CreditToPage.completeAndMoveOn(page)
       await CreditFromPage.completeAndMoveOn(page)
 
-      const { amountField, descriptionField, doneButton, descriptionErrorMessage } = await CreditAmountPage.verifyOnPage(page)
+      const { amountField, descriptionField, doneButton, descriptionErrorMessage } =
+        await CreditAmountPage.verifyOnPage(page)
 
       await amountField.fill('100')
       await descriptionField.fill('')
@@ -449,6 +440,31 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
 
       expect(descriptionErrorMessage).toBeVisible()
+      expect(await amountField.inputValue()).toContain('100')
+    })
+    test('does not allow form completion if description and amount field are incorrectly completed, rendering errors for both.', async ({
+      page,
+    }) => {
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const { amountField, descriptionField, doneButton, amountErrorMessage, descriptionErrorMessage } =
+        await CreditAmountPage.verifyOnPage(page)
+
+      await amountField.fill('banana')
+      await descriptionField.fill('')
+      expect(amountErrorMessage).not.toBeVisible()
+      expect(descriptionErrorMessage).not.toBeVisible()
+
+      await doneButton.click()
+
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
+
+      expect(amountErrorMessage).toBeVisible()
+      expect(descriptionErrorMessage).toBeVisible()
+      expect(await descriptionField.inputValue()).toContain('')
+      expect(await amountField.inputValue()).toContain('banana')
     })
   })
 })
