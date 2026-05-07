@@ -128,7 +128,7 @@ export default class CreditAPrisonerController {
 
       try {
         const transactionReq = CreditAPrisonerService.createTransactionRequest(req.session.creditForm)
-        this.services.prisonerFinanceService.postTransaction(transactionReq)
+        await this.services.prisonerFinanceService.postTransaction(transactionReq)
         res.redirect('./credit-confirmation')
       } catch (e) {
         next(e)

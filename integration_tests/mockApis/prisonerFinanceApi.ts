@@ -211,6 +211,33 @@ export default {
     })
   },
 
+  stubPostTransactionReturnError: (requestPayload: TransactionRequest) => {
+    return stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${API_PREFIX}/transactions`,
+        bodyPatterns: [
+          {
+            equalToJson: JSON.stringify(requestPayload),
+            ignoreArrayOrder: true,
+            ignoreExtraElements: false,
+          },
+        ],
+      },
+      response: {
+        status: 500,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 500,
+          errorCode: null,
+          userMessage: 'Internal Server Error',
+          developerMessage: null,
+          moreInfo: null,
+        },
+      },
+    })
+  },
+
   getWiremockPostTransactionRequest: async (request: APIRequestContext) => {
     const wireMockResponse = await request.post(`${WIREMOCK_URL}/__admin/requests/find`, {
       data: {

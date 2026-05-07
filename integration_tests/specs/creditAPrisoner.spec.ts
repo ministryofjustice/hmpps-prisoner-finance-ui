@@ -461,13 +461,44 @@ test.describe('Credit A Prisoner Pages', () => {
 
       await doneButton.click()
 
-      await page.waitForURL(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
       expect((await responsePromise).status()).toBe(500)
 
       const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request)
       expect(wireMockResponse.status()).toBe(200)
       const data = await wireMockResponse.json()
       expect(data.requests.length).toBe(0)
+    })
+    test('Should redirect to error page if post transaction returns an error', async ({ page, context, request }) => {
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page)
+
+      const reqPayload = {
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+        amount: '100.10',
+        description: 'test description',
+      }
+
+      await prisonerFinanceApi.stubPostTransactionReturnError(reqPayload)
+
+      await amountField.fill('100.10')
+      await descriptionField.fill('test description')
+      const responsePromise = page.waitForResponse(btnResponse => btnResponse.status() === 500)
+
+      await doneButton.click()
+
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
+      expect((await responsePromise).status()).toBe(500)
+
+      const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request)
+      expect(wireMockResponse.status()).toBe(200)
+      const data = await wireMockResponse.json()
+      expect(data.requests.length).toBe(1)
+      expect(JSON.parse(data.requests[0].body)).toEqual(reqPayload)
     })
     test('does not allow form completion if amount field is incorrectly completed, rendering an amount error instead. Should restore valid description', async ({
       page,
