@@ -2,31 +2,31 @@ import creditAmountValidator from './creditAmountValidator'
 
 describe('creditAmountValidator', () => {
   describe('Valid String Inputs', () => {
-    it('should accept a whole number string and coerce to a number', () => {
+    it('should accept a whole number string', () => {
       const result = creditAmountValidator.safeParse('100')
       expect(result.success).toBe(true)
       if (result.success) {
-        expect(result.data).toBe(100)
-        expect(typeof result.data).toBe('number')
+        expect(result.data).toBe('100')
+        expect(typeof result.data).toBe('string')
       }
     })
 
     it('should accept a string with one decimal place', () => {
       const result = creditAmountValidator.safeParse('10.5')
       expect(result.success).toBe(true)
-      if (result.success) expect(result.data).toBe(10.5)
+      if (result.success) expect(result.data).toBe('10.5')
     })
 
     it('should accept a string with exactly two decimal places', () => {
       const result = creditAmountValidator.safeParse('10.99')
       expect(result.success).toBe(true)
-      if (result.success) expect(result.data).toBe(10.99)
+      if (result.success) expect(result.data).toBe('10.99')
     })
 
     it('should accept a string with trailing zeroes and normalize it', () => {
       const result = creditAmountValidator.safeParse('10.90')
       expect(result.success).toBe(true)
-      if (result.success) expect(result.data).toBe(10.9) // Number(10.90) === 10.9
+      if (result.success) expect(result.data).toBe('10.90') // Number(10.90) === 10.9
     })
   })
 

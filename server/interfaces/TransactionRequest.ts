@@ -1,4 +1,4 @@
-export interface TransactionRequest {
+export default interface TransactionRequest {
   creditSubAccountId: string
   debitSubAccountId: string
   amount: string

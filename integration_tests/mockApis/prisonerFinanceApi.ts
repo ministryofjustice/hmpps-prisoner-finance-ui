@@ -1,21 +1,16 @@
-import { APIRequestContext, expect } from '@playwright/test'
+import { APIRequestContext } from '@playwright/test'
 import { stubFor } from './wiremock'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
 import AccountResponse from '../../server/interfaces/AccountResponse'
 import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBalanceResponse'
 import { Page } from '../../server/interfaces/Pageable'
+import CreatedTransactionResponse from '../../server/interfaces/CreatedTransactionResponse'
+import TransactionRequest from '../../server/interfaces/TransactionRequest'
 
 // this is the path prefix set in feature.env PRISONER_FINANCE_API_URL
 const API_PREFIX = '/prisoner-finance-api'
 const WIREMOCK_URL = 'http://localhost:9091'
-
-type PostTransactionPayload = {
-  creditSubaccountId: string
-  debitSubaccountId: string
-  amount: number
-  description: string
-}
 
 export default {
   stubPing: () =>
@@ -195,21 +190,11 @@ export default {
       },
     }),
 
-  stubPostTransaction: (
-    requestPayload: PostTransactionPayload,
-    responsePayload: {
-      reference: string
-      description: string
-      timestamp: string
-      amount: number
-      entrySequence: number
-      postings: { subAccountId: string; type: 'CR' | 'DR'; amount: number; entrySequence: number }[]
-    },
-  ) => {
+  stubPostTransaction: (requestPayload: TransactionRequest, responsePayload: CreatedTransactionResponse) => {
     return stubFor({
       request: {
         method: 'POST',
-        urlPattern: `${API_PREFIX}/transaction`,
+        urlPattern: `${API_PREFIX}/transactions`,
         bodyPatterns: [
           {
             equalToJson: JSON.stringify(requestPayload),
@@ -226,18 +211,11 @@ export default {
     })
   },
 
-  getWiremockPostTransactionRequest: async (request: APIRequestContext, requestPayload: PostTransactionPayload) => {
-    const wireMockResponse = await request.post(`${WIREMOCK_URL}/__admin/requests/count`, {
+  getWiremockPostTransactionRequest: async (request: APIRequestContext) => {
+    const wireMockResponse = await request.post(`${WIREMOCK_URL}/__admin/requests/find`, {
       data: {
         method: 'POST',
-        urlPattern: `${API_PREFIX}/transaction`,
-        bodyPatterns: [
-          {
-            equalToJson: JSON.stringify(requestPayload),
-            ignoreArrayOrder: true,
-            ignoreExtraElements: false,
-          },
-        ],
+        urlPattern: `${API_PREFIX}/transactions`,
       },
     })
 

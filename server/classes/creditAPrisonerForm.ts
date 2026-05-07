@@ -3,7 +3,7 @@ export default class CreditAPrisonerForm {
 
   debitSubAccountId?: string
 
-  amount?: number
+  amount?: string
 
   description?: string
 }

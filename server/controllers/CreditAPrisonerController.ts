@@ -126,9 +126,13 @@ export default class CreditAPrisonerController {
       req.session.creditForm.amount = creditAmount
       req.session.creditForm.description = description
 
-      //this.services.prisonerFinanceService
-
-      res.redirect('./credit-confirmation')
+      try {
+        const transactionReq = CreditAPrisonerService.createTransactionRequest(req.session.creditForm)
+        this.services.prisonerFinanceService.postTransaction(transactionReq)
+        res.redirect('./credit-confirmation')
+      } catch (e) {
+        next(e)
+      }
     } else {
       const allErrors = z.flattenError(result.error).fieldErrors
       const templateErrors = Object.fromEntries(

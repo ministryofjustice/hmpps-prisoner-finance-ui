@@ -4,6 +4,8 @@ import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
 import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
 import { Page } from '../interfaces/Pageable'
 import AccountResponse from '../interfaces/AccountResponse'
+import CreatedTransactionResponse from '../interfaces/CreatedTransactionResponse'
+import TransactionRequest from '../interfaces/TransactionRequest'
 
 const emptyPage: Page<PrisonerTransactionResponse> = {
   content: [],
@@ -112,7 +114,11 @@ export default class PrisonerFinanceService {
     return Promise.all([transactionsPromise, balancePromise])
   }
 
-  async getAccountByReference(accountRef: string): Promise<AccountResponse> {
+  getAccountByReference(accountRef: string): Promise<AccountResponse> {
     return this.prisonerFinanceApiClient.getAccountByReference(accountRef)
+  }
+
+  postTransaction(transaction: TransactionRequest): Promise<CreatedTransactionResponse> {
+    return this.prisonerFinanceApiClient.postTransaction(transaction)
   }
 }

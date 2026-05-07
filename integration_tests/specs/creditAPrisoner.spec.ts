@@ -374,7 +374,7 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(creditAmountPage.descriptionField).toBeVisible()
       expect(creditAmountPage.doneButton).toBeVisible()
     })
-    test.only('allows form completion if fields are correctly completed', async ({ page, context, request }) => {
+    test('allows form completion if fields are correctly completed', async ({ page, context, request }) => {
       const cookies = await context.cookies()
       const unsignedCookie = unsignCookie(cookies[0].value)
 
@@ -385,17 +385,17 @@ test.describe('Credit A Prisoner Pages', () => {
       const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page)
 
       const reqPayload = {
-        creditSubaccountId: 'TESTSUBUUID1',
-        debitSubaccountId: 'TESTSUBUUID1',
-        amount: 100.1,
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+        amount: '100.10',
         description: 'test description',
       }
 
-      prisonerFinanceApi.stubPostTransaction(reqPayload, {
+      await prisonerFinanceApi.stubPostTransaction(reqPayload, {
         reference: 'TEXT',
         description: 'test description',
         timestamp: '2026-05-05T09:40:05.531Z',
-        amount: 100.1,
+        amount: '100.10',
         entrySequence: 1,
         postings: [],
       })
@@ -413,14 +413,61 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(parsedData.creditForm).toMatchObject({
         creditSubAccountId: 'TESTSUBUUID1',
         debitSubAccountId: 'TESTSUBUUID1',
-        amount: 100.1,
+        amount: '100.10',
         description: 'test description',
       })
 
-      const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request, reqPayload)
+      const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request)
       expect(wireMockResponse.status()).toBe(200)
       const data = await wireMockResponse.json()
-      expect(data.count).toBe(1)
+      expect(data.requests.length).toBe(1)
+      expect(JSON.parse(data.requests[0].body)).toEqual(reqPayload)
+    })
+    test('Should redirect to error page if the session data is malformed', async ({ page, context, request }) => {
+      const cookies = await context.cookies()
+      const unsignedCookie = unsignCookie(cookies[0].value)
+
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page)
+
+      const reqPayload = {
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+        amount: '100.10',
+        description: 'test description',
+      }
+
+      await prisonerFinanceApi.stubPostTransaction(reqPayload, {
+        reference: 'TEXT',
+        description: 'test description',
+        timestamp: '2026-05-05T09:40:05.531Z',
+        amount: '100.10',
+        entrySequence: 1,
+        postings: [],
+      })
+
+      // overriding cookie with malformed data
+      const response = await redisClient.get(unsignedCookie as string)
+      const parsedData = JSON.parse(response as string)
+      parsedData.creditForm = {}
+      await redisClient.set(unsignedCookie as string, JSON.stringify(parsedData))
+
+      await amountField.fill('100.10')
+      await descriptionField.fill('test description')
+      const responsePromise = page.waitForResponse(btnResponse => btnResponse.status() === 500)
+
+      await doneButton.click()
+
+      await page.waitForURL(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
+      expect((await responsePromise).status()).toBe(500)
+
+      const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request)
+      expect(wireMockResponse.status()).toBe(200)
+      const data = await wireMockResponse.json()
+      expect(data.requests.length).toBe(0)
     })
     test('does not allow form completion if amount field is incorrectly completed, rendering an amount error instead. Should restore valid description', async ({
       page,
