@@ -249,25 +249,3 @@ export default {
     return wireMockResponse
   },
 }
-
-/* {
-  "reference": "string",
-  "description": "string",
-  "timestamp": "2026-05-05T09:40:05.531Z",
-  "amount": 0,
-  "entrySequence": 0,
-  "postings": [
-    {
-      "subAccountId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "type": "CR",
-      "amount": 0,
-      "entrySequence": 0
-    },
-    {
-      "subAccountId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-      "type": "CR",
-      "amount": 0,
-      "entrySequence": 0
-    }
-  ]
-} */
