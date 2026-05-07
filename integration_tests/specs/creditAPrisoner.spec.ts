@@ -469,7 +469,7 @@ test.describe('Credit A Prisoner Pages', () => {
       const data = await wireMockResponse.json()
       expect(data.requests.length).toBe(0)
     })
-    test('Should redirect to error page if post transaction returns an error', async ({ page, context, request }) => {
+    test('Should redirect to error page if post transaction returns an error', async ({ page, request }) => {
       await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
       await CreditToPage.completeAndMoveOn(page)
       await CreditFromPage.completeAndMoveOn(page)
