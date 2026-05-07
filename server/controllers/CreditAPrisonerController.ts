@@ -30,13 +30,11 @@ export default class CreditAPrisonerController {
     })
 
     try {
-      const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(
-        req.params.prisonNumber as string,
-      )
+      const prisonerReference = req.params.prisonNumber as string
 
-      if (!req.session.creditForm) {
-        CreditAPrisonerService.createCreditForm(req.session as SessionData)
-      }
+      const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(prisonerReference)
+
+      CreditAPrisonerService.createCreditFormIfRequired(req.session as SessionData, prisonerReference)
 
       res.render('pages/creditAPrisoner/creditTo/creditTo.njk', {
         subAccountSelected: req.session.creditForm.creditSubAccountId,
@@ -49,7 +47,7 @@ export default class CreditAPrisonerController {
 
   public postCreditTo = async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.creditTo) {
-      req.session.creditForm.creditSubAccountId = req.body.creditTo
+      CreditAPrisonerService.updateCreditForm(req.session as SessionData, { creditSubAccountId: req.body.creditTo })
       res.redirect('./credit-from')
     } else {
       const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(
@@ -90,7 +88,7 @@ export default class CreditAPrisonerController {
 
   public postCreditFrom = async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.creditFrom) {
-      req.session.creditForm.debitSubAccountId = req.body.creditFrom
+      CreditAPrisonerService.updateCreditForm(req.session as SessionData, { debitSubAccountId: req.body.creditFrom })
       res.redirect('./credit-amount')
     } else {
       try {
@@ -120,11 +118,13 @@ export default class CreditAPrisonerController {
     const result = amountFormSchema.safeParse(req.body)
 
     if (result.success) {
-      const creditAmount = result.data?.creditAmount
+      const amount = result.data?.creditAmount
       const description = result.data?.description
 
-      req.session.creditForm.amount = creditAmount
-      req.session.creditForm.description = description
+      CreditAPrisonerService.updateCreditForm(req.session as SessionData, {
+        amount,
+        description,
+      })
 
       try {
         const transactionReq = CreditAPrisonerService.createTransactionRequest(req.session.creditForm)
@@ -148,5 +148,10 @@ export default class CreditAPrisonerController {
         description: req.body.description,
       })
     }
+  }
+
+  public getCreditConfirmation = (req: Request, res: Response, next: NextFunction) => {
+    CreditAPrisonerService.clearCreditForm(req.session as SessionData)
+    res.status(404).send()
   }
 }

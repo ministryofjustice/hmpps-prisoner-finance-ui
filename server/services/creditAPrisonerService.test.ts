@@ -1,30 +1,28 @@
 import { SessionData } from 'express-session'
 import CreditAPrisonerService from './creditAPrisonerService'
-import CreditAPrisonerForm from '../classes/creditAPrisonerForm'
+import CreditAPrisonerForm from '../interfaces/CreditAPrisonerForm'
 
 describe('creditAPrisonerService', () => {
   describe('.createCreditForm', () => {
     it('creates credit form on session data if not present', () => {
       const session = {} as SessionData
-      CreditAPrisonerService.createCreditForm(session)
-      expect(session.creditForm).toBeInstanceOf(CreditAPrisonerForm)
+      CreditAPrisonerService.createCreditFormIfRequired(session, '12345')
       expect(session.creditForm).toMatchObject({
-        creditSubAccountId: undefined,
-        debitSubAccountId: undefined,
-        amount: undefined,
-        description: undefined,
+        prisonerAccountReference: '12345',
       })
     })
 
-    it('doesnt overwrite existing creditForm data', () => {
-      const existingCreditForm = new CreditAPrisonerForm()
+    it('doesnt overwrite existing creditForm data for same prisoner', () => {
+      const existingCreditForm: CreditAPrisonerForm = {}
       existingCreditForm.creditSubAccountId = 'TEST'
       existingCreditForm.debitSubAccountId = 'TEST2'
       existingCreditForm.amount = '100'
       existingCreditForm.description = 'TEST3'
+      existingCreditForm.prisonerAccountReference = '12345'
       const session = { creditForm: existingCreditForm } as SessionData
-      CreditAPrisonerService.createCreditForm(session)
+      CreditAPrisonerService.createCreditFormIfRequired(session, '12345')
       expect(session.creditForm).toMatchObject({
+        prisonerAccountReference: '12345',
         creditSubAccountId: 'TEST',
         debitSubAccountId: 'TEST2',
         amount: '100',
@@ -34,7 +32,7 @@ describe('creditAPrisonerService', () => {
   })
   describe('.updateCreditForm', () => {
     it('should update fields without overwriting others', () => {
-      const existingCreditForm = new CreditAPrisonerForm()
+      const existingCreditForm: CreditAPrisonerForm = {}
       existingCreditForm.creditSubAccountId = 'TEST'
       existingCreditForm.debitSubAccountId = 'TEST2'
       existingCreditForm.amount = '100'
@@ -51,25 +49,20 @@ describe('creditAPrisonerService', () => {
   })
   describe('.clearCreditForm', () => {
     it('should reset a credit form to a blank copy', () => {
-      const existingCreditForm = new CreditAPrisonerForm()
+      const existingCreditForm: CreditAPrisonerForm = {}
       existingCreditForm.creditSubAccountId = 'TEST'
       existingCreditForm.debitSubAccountId = 'TEST2'
       existingCreditForm.amount = '100'
       existingCreditForm.description = 'description'
       const session = { creditForm: existingCreditForm } as SessionData
       CreditAPrisonerService.clearCreditForm(session)
-      expect(session.creditForm).toMatchObject({
-        creditSubAccountId: undefined,
-        debitSubAccountId: undefined,
-        amount: undefined,
-        description: undefined,
-      })
+      expect(session.creditForm).toEqual({})
     })
   })
 
   describe('createTransactionRequest', () => {
     test('should create a TransactionRequest when all data is present', () => {
-      const creditAPrisonerForm = new CreditAPrisonerForm()
+      const creditAPrisonerForm: CreditAPrisonerForm = {}
       creditAPrisonerForm.amount = '10'
       creditAPrisonerForm.creditSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
       creditAPrisonerForm.debitSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afXX'
@@ -87,7 +80,7 @@ describe('creditAPrisonerService', () => {
       test.each([['amount'], ['creditSubAccountId'], ['debitSubAccountId'], ['description']])(
         'should throw an error when %s is missing',
         field => {
-          const creditAPrisonerForm = new CreditAPrisonerForm()
+          const creditAPrisonerForm: CreditAPrisonerForm = {}
           creditAPrisonerForm.amount = '10'
           creditAPrisonerForm.creditSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
           creditAPrisonerForm.debitSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afXX'

@@ -374,7 +374,11 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(creditAmountPage.descriptionField).toBeVisible()
       expect(creditAmountPage.doneButton).toBeVisible()
     })
-    test('allows form completion if fields are correctly completed', async ({ page, context, request }) => {
+    test('allows form completion if fields are correctly completed, and clears credit form session', async ({
+      page,
+      context,
+      request,
+    }) => {
       const cookies = await context.cookies()
       const unsignedCookie = unsignCookie(cookies[0].value)
 
@@ -400,22 +404,25 @@ test.describe('Credit A Prisoner Pages', () => {
         postings: [],
       })
 
+      let response = await redisClient.get(unsignedCookie as string)
+      let parsedData = JSON.parse(response as string)
+
+      // refs are coming from complete and move on calls
+      expect(parsedData.creditForm).toMatchObject({
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+      })
+
       await amountField.fill('100.10')
       await descriptionField.fill('test description')
       await doneButton.click()
 
       expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-confirmation`)
 
-      const response = await redisClient.get(unsignedCookie as string)
-      const parsedData = JSON.parse(response as string)
+      response = await redisClient.get(unsignedCookie as string)
+      parsedData = JSON.parse(response as string)
 
-      // refs are coming from complete and move on calls
-      expect(parsedData.creditForm).toMatchObject({
-        creditSubAccountId: 'TESTSUBUUID1',
-        debitSubAccountId: 'TESTSUBUUID1',
-        amount: '100.10',
-        description: 'test description',
-      })
+      expect(parsedData.creditForm).toEqual({})
 
       const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request)
       expect(wireMockResponse.status()).toBe(200)
@@ -564,6 +571,72 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(descriptionErrorMessage).toBeVisible()
       expect(await descriptionField.inputValue()).toContain('')
       expect(await amountField.inputValue()).toContain('banana')
+    })
+    test('should start a fresh form if the user navigates to a new prisoner account after partial completion', async ({
+      page,
+      context,
+    }) => {
+      const cookies = await context.cookies()
+      const unsignedCookie = unsignCookie(cookies[0].value)
+
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const response = await redisClient.get(unsignedCookie as string)
+      const parsedData = JSON.parse(response as string)
+
+      // refs are coming from complete and move on calls
+      expect(parsedData.creditForm).toMatchObject({
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+      })
+
+      const newPrisonNumber = 'ZZZZ123'
+
+      await prisonerSearchApi.stubGetPrisoner(newPrisonNumber)
+      await prisonerFinanceApi.stubGetAccountByReference(newPrisonNumber, {
+        id: 'TESTUUID',
+        reference: newPrisonNumber,
+        createdAt: '',
+        createdBy: '',
+        type: 'PRISONER',
+        subAccounts: [
+          {
+            id: 'TESTSUBUUID1',
+            reference: 'Spends',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID2',
+            reference: 'Savings',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID3',
+            reference: 'Cash',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+        ],
+      })
+
+      await page.goto(`/prisoner/${newPrisonNumber}/money/credit-a-prisoner/credit-to`)
+
+      const creditToPage = await CreditToPage.verifyOnPage(page)
+
+      const { radioButtons } = creditToPage
+
+      expect(await radioButtons.count()).toBe(3)
+
+      expect(radioButtons.nth(0)).not.toBeChecked()
+      expect(radioButtons.nth(1)).not.toBeChecked()
+      expect(radioButtons.nth(2)).not.toBeChecked()
     })
   })
 })

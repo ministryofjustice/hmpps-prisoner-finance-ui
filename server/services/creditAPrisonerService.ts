@@ -1,13 +1,13 @@
 /* eslint-disable no-param-reassign */
 
 import { SessionData } from 'express-session'
-import CreditAPrisonerForm from '../classes/creditAPrisonerForm'
+import CreditAPrisonerForm from '../interfaces/CreditAPrisonerForm'
 import TransactionRequest from '../interfaces/TransactionRequest'
 
 export default class CreditAPrisonerService {
-  static createCreditForm(session: SessionData) {
-    if (!session.creditForm) {
-      session.creditForm = new CreditAPrisonerForm()
+  static createCreditFormIfRequired(session: SessionData, prisonerReference: string) {
+    if (!session.creditForm || session.creditForm?.prisonerAccountReference !== prisonerReference) {
+      session.creditForm = { prisonerAccountReference: prisonerReference }
     }
   }
 
@@ -34,11 +34,11 @@ export default class CreditAPrisonerService {
     }
   }
 
-  static updateCreditForm(session: SessionData, updates: CreditAPrisonerForm) {
+  static updateCreditForm(session: SessionData, updates: Partial<CreditAPrisonerForm>) {
     session.creditForm = { ...session.creditForm, ...updates }
   }
 
   static clearCreditForm(session: SessionData) {
-    session.creditForm = new CreditAPrisonerForm()
+    session.creditForm = {}
   }
 }

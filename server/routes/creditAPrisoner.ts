@@ -71,5 +71,16 @@ export default function routes(services: Services): Router {
       creditAPrisonerController.postCreditAmount,
     )
 
+  creditAPrisonerRouter.get(
+    '/credit-confirmation',
+    prisonerPermissionsGuard(services.prisonPermissionsService, {
+      requestDependentOn: [PrisonerMoneyPermission.read],
+      getPrisonerNumberFunction: req => req.params.prisonNumber as string,
+    }),
+
+    getPrisonerData(services),
+    creditAPrisonerController.getCreditConfirmation,
+  )
+
   return creditAPrisonerRouter
 }

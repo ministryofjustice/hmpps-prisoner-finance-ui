@@ -1,4 +1,6 @@
-export default class CreditAPrisonerForm {
+export default interface CreditAPrisonerForm {
+  prisonerAccountReference?: string
+
   creditSubAccountId?: string
 
   debitSubAccountId?: string
