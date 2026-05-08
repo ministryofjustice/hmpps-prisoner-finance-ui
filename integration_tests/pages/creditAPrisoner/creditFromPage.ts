@@ -23,4 +23,10 @@ export default class CreditFromPage extends AbstractPage {
     await expect(creditFromPage.heading).toBeVisible()
     return creditFromPage
   }
+
+  static async completeAndMoveOn(page: Page): Promise<void> {
+    const creditFromPage = await this.verifyOnPage(page)
+    await creditFromPage.radioButtons.first().click()
+    await creditFromPage.continueButton.click()
+  }
 }

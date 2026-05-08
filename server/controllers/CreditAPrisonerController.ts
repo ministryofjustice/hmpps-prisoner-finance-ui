@@ -1,9 +1,12 @@
 import { SessionData } from 'express-session'
 import { NextFunction, Request, Response } from 'express'
+import z from 'zod'
 import { Services } from '../services'
 import CreditAPrisonerService from '../services/creditAPrisonerService'
 import { AuditPage } from '../services/auditService'
 import AccountResponse from '../interfaces/AccountResponse'
+import creditAmountValidator from '../validators/creditAmountValidator'
+import descriptionFieldValidator from '../validators/descriptionFieldValidator'
 
 export default class CreditAPrisonerController {
   constructor(private readonly services: Services) {}
@@ -27,13 +30,11 @@ export default class CreditAPrisonerController {
     })
 
     try {
-      const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(
-        req.params.prisonNumber as string,
-      )
+      const prisonerReference = req.params.prisonNumber as string
 
-      if (!req.session.creditForm) {
-        CreditAPrisonerService.createCreditForm(req.session as SessionData)
-      }
+      const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(prisonerReference)
+
+      CreditAPrisonerService.createCreditFormIfRequired(req.session as SessionData, prisonerReference)
 
       res.render('pages/creditAPrisoner/creditTo/creditTo.njk', {
         subAccountSelected: req.session.creditForm.creditSubAccountId,
@@ -46,7 +47,7 @@ export default class CreditAPrisonerController {
 
   public postCreditTo = async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.creditTo) {
-      req.session.creditForm.creditSubAccountId = req.body.creditTo
+      CreditAPrisonerService.updateCreditForm(req.session as SessionData, { creditSubAccountId: req.body.creditTo })
       res.redirect('./credit-from')
     } else {
       const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(
@@ -87,7 +88,7 @@ export default class CreditAPrisonerController {
 
   public postCreditFrom = async (req: Request, res: Response, next: NextFunction) => {
     if (req.body.creditFrom) {
-      req.session.creditForm.debitSubAccountId = req.body.creditFrom
+      CreditAPrisonerService.updateCreditForm(req.session as SessionData, { debitSubAccountId: req.body.creditFrom })
       res.redirect('./credit-amount')
     } else {
       try {
@@ -103,5 +104,54 @@ export default class CreditAPrisonerController {
         next(e)
       }
     }
+  }
+
+  public getCreditAmount = async (req: Request, res: Response, next: NextFunction) => {
+    res.render('pages/creditAPrisoner/creditAmount/creditAmount.njk')
+  }
+
+  public postCreditAmount = async (req: Request, res: Response, next: NextFunction) => {
+    const amountFormSchema = z.object({
+      creditAmount: creditAmountValidator,
+      description: descriptionFieldValidator,
+    })
+    const result = amountFormSchema.safeParse(req.body)
+
+    if (result.success) {
+      const amount = result.data?.creditAmount
+      const description = result.data?.description
+
+      CreditAPrisonerService.updateCreditForm(req.session as SessionData, {
+        amount,
+        description,
+      })
+
+      try {
+        const transactionReq = CreditAPrisonerService.createTransactionRequest(req.session.creditForm)
+        await this.services.prisonerFinanceService.postTransaction(transactionReq)
+        res.redirect('./credit-confirmation')
+      } catch (e) {
+        next(e)
+      }
+    } else {
+      const allErrors = z.flattenError(result.error).fieldErrors
+      const templateErrors = Object.fromEntries(
+        Object.entries(allErrors).map(([field, errors]) => [field, errors?.[0]]),
+      )
+
+      res.render('pages/creditAPrisoner/creditAmount/creditAmount.njk', {
+        errorMap: {
+          creditAmount: templateErrors.creditAmount || null,
+          description: templateErrors.description || null,
+        },
+        creditAmount: req.body.creditAmount,
+        description: req.body.description,
+      })
+    }
+  }
+
+  public getCreditConfirmation = (req: Request, res: Response, next: NextFunction) => {
+    CreditAPrisonerService.clearCreditForm(req.session as SessionData)
+    res.status(404).send()
   }
 }

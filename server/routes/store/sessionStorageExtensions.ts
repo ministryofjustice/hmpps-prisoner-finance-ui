@@ -1,4 +1,4 @@
-import CreditAPrisonerForm from '../../classes/creditAPrisonerForm'
+import CreditAPrisonerForm from '../../interfaces/CreditAPrisonerForm'
 
 // Express-session does not have type inference, so this extends the object for our form data
 declare module 'express-session' {

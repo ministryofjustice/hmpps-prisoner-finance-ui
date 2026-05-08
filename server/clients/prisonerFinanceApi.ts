@@ -8,10 +8,22 @@ import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceRespon
 import { datePickerToISODate } from '../utils/utils'
 import { Page } from '../interfaces/Pageable'
 import AccountResponse from '../interfaces/AccountResponse'
+import TransactionRequest from '../interfaces/TransactionRequest'
+import CreatedTransactionResponse from '../interfaces/CreatedTransactionResponse'
 
 export default class PrisonerFinanceApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
     super('Prisoner Finance API', config.apis.prisonerFinanceApi, logger, authenticationClient)
+  }
+
+  async postTransaction(transactionRequest: TransactionRequest): Promise<CreatedTransactionResponse> {
+    return this.post(
+      {
+        path: `/transactions`,
+        data: transactionRequest as unknown as Record<string, unknown>,
+      },
+      asSystem(),
+    )
   }
 
   async getPrisonerTransactionsByPrisonNumber({

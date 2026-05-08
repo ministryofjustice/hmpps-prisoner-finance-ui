@@ -1,69 +1,111 @@
 import { SessionData } from 'express-session'
 import CreditAPrisonerService from './creditAPrisonerService'
-import CreditAPrisonerForm from '../classes/creditAPrisonerForm'
+import CreditAPrisonerForm from '../interfaces/CreditAPrisonerForm'
 
 describe('creditAPrisonerService', () => {
-  describe('.createCreditForm', () => {
+  describe('.createCreditFormIfRequired', () => {
     it('creates credit form on session data if not present', () => {
       const session = {} as SessionData
-      CreditAPrisonerService.createCreditForm(session)
-      expect(session.creditForm).toBeInstanceOf(CreditAPrisonerForm)
+      CreditAPrisonerService.createCreditFormIfRequired(session, '12345')
       expect(session.creditForm).toMatchObject({
-        creditSubAccountId: undefined,
-        debitSubAccountId: undefined,
-        amount: undefined,
-        description: undefined,
+        prisonerAccountReference: '12345',
       })
     })
 
-    it('doesnt overwrite existing creditForm data', () => {
-      const existingCreditForm = new CreditAPrisonerForm()
+    it('doesnt overwrite existing creditForm data for same prisoner', () => {
+      const existingCreditForm: CreditAPrisonerForm = {}
       existingCreditForm.creditSubAccountId = 'TEST'
       existingCreditForm.debitSubAccountId = 'TEST2'
-      existingCreditForm.amount = 100
+      existingCreditForm.amount = '100'
       existingCreditForm.description = 'TEST3'
+      existingCreditForm.prisonerAccountReference = '12345'
       const session = { creditForm: existingCreditForm } as SessionData
-      CreditAPrisonerService.createCreditForm(session)
+      CreditAPrisonerService.createCreditFormIfRequired(session, '12345')
       expect(session.creditForm).toMatchObject({
+        prisonerAccountReference: '12345',
         creditSubAccountId: 'TEST',
         debitSubAccountId: 'TEST2',
-        amount: 100,
+        amount: '100',
         description: 'TEST3',
+      })
+    })
+    it('does overwrite for a new prisoner', () => {
+      const existingCreditForm: CreditAPrisonerForm = {}
+      existingCreditForm.creditSubAccountId = 'TEST'
+      existingCreditForm.debitSubAccountId = 'TEST2'
+      existingCreditForm.amount = '100'
+      existingCreditForm.description = 'TEST3'
+      existingCreditForm.prisonerAccountReference = '12345'
+      const session = { creditForm: existingCreditForm } as SessionData
+      CreditAPrisonerService.createCreditFormIfRequired(session, '78910')
+      expect(session.creditForm).toEqual({
+        prisonerAccountReference: '78910',
       })
     })
   })
   describe('.updateCreditForm', () => {
     it('should update fields without overwriting others', () => {
-      const existingCreditForm = new CreditAPrisonerForm()
+      const existingCreditForm: CreditAPrisonerForm = {}
       existingCreditForm.creditSubAccountId = 'TEST'
       existingCreditForm.debitSubAccountId = 'TEST2'
-      existingCreditForm.amount = 100
+      existingCreditForm.amount = '100'
       existingCreditForm.description = undefined
       const session = { creditForm: existingCreditForm } as SessionData
-      CreditAPrisonerService.updateCreditForm(session, { description: 'new description', amount: 200 })
+      CreditAPrisonerService.updateCreditForm(session, { description: 'new description', amount: '200' })
       expect(session.creditForm).toMatchObject({
         creditSubAccountId: 'TEST',
         debitSubAccountId: 'TEST2',
-        amount: 200,
+        amount: '200',
         description: 'new description',
       })
     })
   })
   describe('.clearCreditForm', () => {
     it('should reset a credit form to a blank copy', () => {
-      const existingCreditForm = new CreditAPrisonerForm()
+      const existingCreditForm: CreditAPrisonerForm = {}
       existingCreditForm.creditSubAccountId = 'TEST'
       existingCreditForm.debitSubAccountId = 'TEST2'
-      existingCreditForm.amount = 100
+      existingCreditForm.amount = '100.00'
       existingCreditForm.description = 'description'
       const session = { creditForm: existingCreditForm } as SessionData
       CreditAPrisonerService.clearCreditForm(session)
-      expect(session.creditForm).toMatchObject({
-        creditSubAccountId: undefined,
-        debitSubAccountId: undefined,
-        amount: undefined,
-        description: undefined,
-      })
+      expect(session.creditForm).toEqual({})
+    })
+  })
+
+  describe('createTransactionRequest', () => {
+    test('should create a TransactionRequest when all data is present', () => {
+      const creditAPrisonerForm: CreditAPrisonerForm = {}
+      creditAPrisonerForm.amount = '10.00'
+      creditAPrisonerForm.creditSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+      creditAPrisonerForm.debitSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afXX'
+      creditAPrisonerForm.description = 'test'
+
+      const transactionReq = CreditAPrisonerService.createTransactionRequest(creditAPrisonerForm)
+
+      expect(transactionReq.amount).toBe(1000)
+      expect(transactionReq.creditSubAccountId).toBe(creditAPrisonerForm.creditSubAccountId)
+      expect(transactionReq.debitSubAccountId).toBe(creditAPrisonerForm.debitSubAccountId)
+      expect(transactionReq.description).toBe(creditAPrisonerForm.description)
+    })
+
+    describe('CreditAPrisonerForm validation', () => {
+      test.each([['amount'], ['creditSubAccountId'], ['debitSubAccountId'], ['description']])(
+        'should throw an error when %s is missing',
+        field => {
+          const creditAPrisonerForm: CreditAPrisonerForm = {}
+          creditAPrisonerForm.amount = '10'
+          creditAPrisonerForm.creditSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+          creditAPrisonerForm.debitSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afXX'
+          creditAPrisonerForm.description = 'test'
+
+          delete creditAPrisonerForm[field as keyof CreditAPrisonerForm]
+
+          expect(() => {
+            CreditAPrisonerService.createTransactionRequest(creditAPrisonerForm)
+          }).toThrow()
+        },
+      )
     })
   })
 })

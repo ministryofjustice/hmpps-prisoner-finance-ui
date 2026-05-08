@@ -1,12 +1,16 @@
+import { APIRequestContext } from '@playwright/test'
 import { stubFor } from './wiremock'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
 import AccountResponse from '../../server/interfaces/AccountResponse'
 import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBalanceResponse'
 import { Page } from '../../server/interfaces/Pageable'
+import CreatedTransactionResponse from '../../server/interfaces/CreatedTransactionResponse'
+import TransactionRequest from '../../server/interfaces/TransactionRequest'
 
 // this is the path prefix set in feature.env PRISONER_FINANCE_API_URL
 const API_PREFIX = '/prisoner-finance-api'
+const WIREMOCK_URL = 'http://localhost:9091'
 
 export default {
   stubPing: () =>
@@ -185,4 +189,63 @@ export default {
         jsonBody: payload,
       },
     }),
+
+  stubPostTransaction: (requestPayload: TransactionRequest, responsePayload: CreatedTransactionResponse) => {
+    return stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${API_PREFIX}/transactions`,
+        bodyPatterns: [
+          {
+            equalToJson: JSON.stringify(requestPayload),
+            ignoreArrayOrder: true,
+            ignoreExtraElements: false,
+          },
+        ],
+      },
+      response: {
+        status: 201,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: responsePayload,
+      },
+    })
+  },
+
+  stubPostTransactionReturnError: (requestPayload: TransactionRequest) => {
+    return stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${API_PREFIX}/transactions`,
+        bodyPatterns: [
+          {
+            equalToJson: JSON.stringify(requestPayload),
+            ignoreArrayOrder: true,
+            ignoreExtraElements: false,
+          },
+        ],
+      },
+      response: {
+        status: 500,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 500,
+          errorCode: null,
+          userMessage: 'Internal Server Error',
+          developerMessage: null,
+          moreInfo: null,
+        },
+      },
+    })
+  },
+
+  getWiremockPostTransactionRequest: async (request: APIRequestContext) => {
+    const wireMockResponse = await request.post(`${WIREMOCK_URL}/__admin/requests/find`, {
+      data: {
+        method: 'POST',
+        urlPattern: `${API_PREFIX}/transactions`,
+      },
+    })
+
+    return wireMockResponse
+  },
 }

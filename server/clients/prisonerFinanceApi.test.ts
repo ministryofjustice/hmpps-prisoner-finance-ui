@@ -3,6 +3,8 @@ import PrisonerFinanceApiClient from './prisonerFinanceApi'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
 import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
+import CreatedTransactionResponse from '../interfaces/CreatedTransactionResponse'
+import TransactionRequest from '../interfaces/TransactionRequest'
 
 describe('PrisonerFinanceSyncApiClient', () => {
   let client: PrisonerFinanceApiClient
@@ -211,6 +213,42 @@ describe('PrisonerFinanceSyncApiClient', () => {
       expect(getSpy).toHaveBeenCalledWith(
         {
           path: `/prisoners/${prisonNumber}/money/balance/${subAccountRef}`,
+        },
+        {
+          tokenType: 'SYSTEM_TOKEN',
+          user: {},
+        },
+      )
+    })
+  })
+
+  describe('postTransaction', () => {
+    test('Should call the api with a transaction', async () => {
+      const expectedResponse: CreatedTransactionResponse = {
+        reference: 'test',
+        description: 'test',
+        timestamp: '',
+        amount: 10,
+        entrySequence: 1,
+        postings: [],
+      }
+
+      const mockReq: TransactionRequest = {
+        creditSubAccountId: 'abc',
+        debitSubAccountId: 'cdg',
+        amount: 10,
+        description: 'test',
+      }
+
+      const getSpy = jest.spyOn(client, 'post').mockResolvedValue(expectedResponse)
+
+      const response = await client.postTransaction(mockReq)
+
+      expect(response).toEqual(expectedResponse)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/transactions`,
+          data: mockReq,
         },
         {
           tokenType: 'SYSTEM_TOKEN',

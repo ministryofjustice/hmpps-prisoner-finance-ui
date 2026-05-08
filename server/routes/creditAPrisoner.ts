@@ -50,5 +50,37 @@ export default function routes(services: Services): Router {
       creditAPrisonerController.postCreditFrom,
     )
 
+  creditAPrisonerRouter
+    .route('/credit-amount')
+    .get(
+      prisonerPermissionsGuard(services.prisonPermissionsService, {
+        requestDependentOn: [PrisonerMoneyPermission.read],
+        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
+      }),
+
+      getPrisonerData(services),
+      creditAPrisonerController.getCreditAmount,
+    )
+    .post(
+      prisonerPermissionsGuard(services.prisonPermissionsService, {
+        requestDependentOn: [PrisonerMoneyPermission.read],
+        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
+      }),
+
+      getPrisonerData(services),
+      creditAPrisonerController.postCreditAmount,
+    )
+
+  creditAPrisonerRouter.get(
+    '/credit-confirmation',
+    prisonerPermissionsGuard(services.prisonPermissionsService, {
+      requestDependentOn: [PrisonerMoneyPermission.read],
+      getPrisonerNumberFunction: req => req.params.prisonNumber as string,
+    }),
+
+    getPrisonerData(services),
+    creditAPrisonerController.getCreditConfirmation,
+  )
+
   return creditAPrisonerRouter
 }

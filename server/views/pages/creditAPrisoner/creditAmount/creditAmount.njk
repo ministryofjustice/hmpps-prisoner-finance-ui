@@ -1,0 +1,86 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
+
+{% set pageTitle = applicationName + " - Profile" %}
+{% set mainClasses = "govuk-body" %}
+
+{% block beforeContent %}
+
+  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+
+  {{ prisonerInformationHeader({
+      prisoner:prisoner
+  }) }}
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="credit-from-page govuk-grid-row">
+
+  <form method="POST" action="./credit-amount" data-testid='select-credit-amount'>
+
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+
+{% call govukFieldset({
+  legend: {
+    text: "Credit amount",
+    classes: "govuk-fieldset__legend--l",
+    isPageHeading: true
+  }
+}) %}
+
+{{ govukInput({
+    label: {
+      text: "Credit amount"
+    },
+    id: "creditAmount",
+    name: "creditAmount",
+    prefix: {
+        text: "£"
+    }, 
+    classes: "govuk-input--width-10",
+    attributes: {
+        "data-testid" : "amount-field"
+    }, 
+    errorMessage: { text: errorMap.creditAmount } if errorMap.creditAmount else null, 
+    value: creditAmount
+  }) }}
+
+{{ govukInput({
+    label: {
+      text: "Description"
+    },
+    id: "description",
+    name: "description",
+    attributes: {
+        "data-testid" : "description-field"
+    }, 
+    errorMessage: { text: errorMap.description } if errorMap.description else null, 
+    value: description
+  }) }}
+
+
+
+    {% endcall %}
+
+    {{ govukButton({
+      text: "Done",
+      type: "submit",
+       attributes:{
+            "data-testid" : "done-button"
+            }
+    }) }}
+
+  </form>
+</div>
+
+{% endblock %}

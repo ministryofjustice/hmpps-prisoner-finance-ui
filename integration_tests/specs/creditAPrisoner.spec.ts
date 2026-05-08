@@ -5,6 +5,7 @@ import CreditToPage from '../pages/creditAPrisoner/creditToPage'
 import { createRedisClient, RedisClient } from '../../server/data/redisClient'
 import CreditFromPage from '../pages/creditAPrisoner/creditFromPage'
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
+import CreditAmountPage from '../pages/creditAPrisoner/creditAmountPage'
 
 test.describe('Credit A Prisoner Pages', () => {
   const prisonNumber = 'ABC123XZ'
@@ -294,6 +295,356 @@ test.describe('Credit A Prisoner Pages', () => {
       await CreditToPage.verifyOnPage(page)
 
       expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+    })
+  })
+  test.describe('Credit Amount Page', () => {
+    test.beforeEach(async ({ page }) => {
+      await resetStubs()
+      await login(page)
+      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonerFinanceApi.stubGetAccountByReference(prisonNumber, {
+        id: 'TESTUUID',
+        reference: prisonNumber,
+        createdAt: '',
+        createdBy: '',
+        type: 'PRISONER',
+        subAccounts: [
+          {
+            id: 'TESTSUBUUID1',
+            reference: 'Spends',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID2',
+            reference: 'Savings',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID3',
+            reference: 'Cash',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+        ],
+      })
+      await prisonerFinanceApi.stubGetAccountByReference('LEI', {
+        id: 'TESTUUID',
+        reference: 'LEI',
+        createdAt: '',
+        createdBy: '',
+        type: 'PRISON',
+        subAccounts: [
+          {
+            id: 'TESTSUBUUID1',
+            reference: '2001:CANT',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID2',
+            reference: '2002:WONT',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID3',
+            reference: '2003:SHANT',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+        ],
+      })
+    })
+    test('should render the credit amount and description fields, and a done button', async ({ page }) => {
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page)
+
+      expect(creditAmountPage.amountField).toBeVisible()
+      expect(creditAmountPage.descriptionField).toBeVisible()
+      expect(creditAmountPage.doneButton).toBeVisible()
+    })
+    test('allows form completion if fields are correctly completed, and clears credit form session', async ({
+      page,
+      context,
+      request,
+    }) => {
+      const cookies = await context.cookies()
+      const unsignedCookie = unsignCookie(cookies[0].value)
+
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page)
+
+      const reqPayload = {
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+        amount: 10010,
+        description: 'test description',
+      }
+
+      await prisonerFinanceApi.stubPostTransaction(reqPayload, {
+        reference: 'TEXT',
+        description: 'test description',
+        timestamp: '2026-05-05T09:40:05.531Z',
+        amount: 10010,
+        entrySequence: 1,
+        postings: [],
+      })
+
+      let response = await redisClient.get(unsignedCookie as string)
+      let parsedData = JSON.parse(response as string)
+
+      // refs are coming from complete and move on calls
+      expect(parsedData.creditForm).toMatchObject({
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+      })
+
+      await amountField.fill('100.10')
+      await descriptionField.fill('test description')
+      await doneButton.click()
+
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-confirmation`)
+
+      response = await redisClient.get(unsignedCookie as string)
+      parsedData = JSON.parse(response as string)
+
+      expect(parsedData.creditForm).toEqual({})
+
+      const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request)
+      expect(wireMockResponse.status()).toBe(200)
+      const data = await wireMockResponse.json()
+      expect(data.requests.length).toBe(1)
+      expect(JSON.parse(data.requests[0].body)).toEqual(reqPayload)
+    })
+    test('Should redirect to error page if the session data is malformed', async ({ page, context, request }) => {
+      const cookies = await context.cookies()
+      const unsignedCookie = unsignCookie(cookies[0].value)
+
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page)
+
+      const reqPayload = {
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+        amount: 10010,
+        description: 'test description',
+      }
+
+      await prisonerFinanceApi.stubPostTransaction(reqPayload, {
+        reference: 'TEXT',
+        description: 'test description',
+        timestamp: '2026-05-05T09:40:05.531Z',
+        amount: 10010,
+        entrySequence: 1,
+        postings: [],
+      })
+
+      // overriding cookie with malformed data
+      const response = await redisClient.get(unsignedCookie as string)
+      const parsedData = JSON.parse(response as string)
+      parsedData.creditForm = {}
+      await redisClient.set(unsignedCookie as string, JSON.stringify(parsedData))
+
+      await amountField.fill('100.10')
+      await descriptionField.fill('test description')
+      const responsePromise = page.waitForResponse(btnResponse => btnResponse.status() === 500)
+
+      await doneButton.click()
+
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
+      expect((await responsePromise).status()).toBe(500)
+
+      const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request)
+      expect(wireMockResponse.status()).toBe(200)
+      const data = await wireMockResponse.json()
+      expect(data.requests.length).toBe(0)
+    })
+    test('Should redirect to error page if post transaction returns an error', async ({ page, request }) => {
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page)
+
+      const reqPayload = {
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+        amount: 10010,
+        description: 'test description',
+      }
+
+      await prisonerFinanceApi.stubPostTransactionReturnError(reqPayload)
+
+      await amountField.fill('100.10')
+      await descriptionField.fill('test description')
+      const responsePromise = page.waitForResponse(btnResponse => btnResponse.status() === 500)
+
+      await doneButton.click()
+
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
+      expect((await responsePromise).status()).toBe(500)
+
+      const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request)
+      expect(wireMockResponse.status()).toBe(200)
+      const data = await wireMockResponse.json()
+      expect(data.requests.length).toBe(1)
+      expect(JSON.parse(data.requests[0].body)).toEqual(reqPayload)
+    })
+    test('does not allow form completion if amount field is incorrectly completed, rendering an amount error instead. Should restore valid description', async ({
+      page,
+    }) => {
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const { amountField, descriptionField, doneButton, amountErrorMessage } =
+        await CreditAmountPage.verifyOnPage(page)
+
+      await amountField.fill('banana')
+      await descriptionField.fill('test description')
+      expect(amountErrorMessage).not.toBeVisible()
+      await doneButton.click()
+
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
+
+      expect(amountErrorMessage).toBeVisible()
+
+      expect(await descriptionField.inputValue()).toContain('test description')
+    })
+    test('does not allow form completion if description field is incorrectly completed, rendering an description error instead. Restores valid amount.', async ({
+      page,
+    }) => {
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const { amountField, descriptionField, doneButton, descriptionErrorMessage } =
+        await CreditAmountPage.verifyOnPage(page)
+
+      await amountField.fill('100')
+      await descriptionField.fill('')
+      expect(descriptionErrorMessage).not.toBeVisible()
+      await doneButton.click()
+
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
+
+      expect(descriptionErrorMessage).toBeVisible()
+      expect(await amountField.inputValue()).toContain('100')
+    })
+    test('does not allow form completion if description and amount field are incorrectly completed, rendering errors for both.', async ({
+      page,
+    }) => {
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const { amountField, descriptionField, doneButton, amountErrorMessage, descriptionErrorMessage } =
+        await CreditAmountPage.verifyOnPage(page)
+
+      await amountField.fill('banana')
+      await descriptionField.fill('')
+      expect(amountErrorMessage).not.toBeVisible()
+      expect(descriptionErrorMessage).not.toBeVisible()
+
+      await doneButton.click()
+
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
+
+      expect(amountErrorMessage).toBeVisible()
+      expect(descriptionErrorMessage).toBeVisible()
+      expect(await descriptionField.inputValue()).toContain('')
+      expect(await amountField.inputValue()).toContain('banana')
+    })
+    test('should start a fresh form if the user navigates to a new prisoner account after partial completion', async ({
+      page,
+      context,
+    }) => {
+      const cookies = await context.cookies()
+      const unsignedCookie = unsignCookie(cookies[0].value)
+
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+
+      const response = await redisClient.get(unsignedCookie as string)
+      const parsedData = JSON.parse(response as string)
+
+      // refs are coming from complete and move on calls
+      expect(parsedData.creditForm).toEqual({
+        prisonerAccountReference: prisonNumber,
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+      })
+
+      const newPrisonNumber = 'ZZZZ123'
+
+      await prisonerSearchApi.stubGetPrisoner(newPrisonNumber)
+      await prisonerFinanceApi.stubGetAccountByReference(newPrisonNumber, {
+        id: 'TESTUUID',
+        reference: newPrisonNumber,
+        createdAt: '',
+        createdBy: '',
+        type: 'PRISONER',
+        subAccounts: [
+          {
+            id: 'TESTSUBUUID1',
+            reference: 'Spends',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID2',
+            reference: 'Savings',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID3',
+            reference: 'Cash',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+        ],
+      })
+
+      await page.goto(`/prisoner/${newPrisonNumber}/money/credit-a-prisoner/credit-to`)
+
+      const creditToPage = await CreditToPage.verifyOnPage(page)
+
+      const newResponse = await redisClient.get(unsignedCookie as string)
+      const newData = JSON.parse(newResponse as string)
+
+      expect(newData.creditForm).toEqual({
+        prisonerAccountReference: newPrisonNumber,
+      })
+
+      const { radioButtons } = creditToPage
+
+      expect(await radioButtons.count()).toBe(3)
+
+      expect(radioButtons.nth(0)).not.toBeChecked()
+      expect(radioButtons.nth(1)).not.toBeChecked()
+      expect(radioButtons.nth(2)).not.toBeChecked()
     })
   })
 })
