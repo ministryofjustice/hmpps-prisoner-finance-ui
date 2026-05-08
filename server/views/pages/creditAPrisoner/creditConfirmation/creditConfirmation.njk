@@ -30,13 +30,16 @@
     <div class="govuk-grid-column-two-thirds">
       {{ govukPanel({
         titleText: "Credit processed",
-        html: "Your transaction number<br><strong>"+transactionNumber+"</strong>"
+        html: "Your transaction number<br><strong>"+transactionNumber+"</strong>",
+        attributes: {
+          "data-testid": "confirmation-panel"
+        }
       }) }}
 
       <h2 class="govuk-heading-m">What happens next</h2>
       <p class="govuk-body">
         The credit has been processed. You can see the prisoners recent transactions on their
-        <a href="/prisoner/{{prisonNumber}}" class="govuk-link">financial profile page.</a>
+        <a href="/prisoner/{{prisonNumber}}" class="govuk-link" data-testid="recent-txns-link">financial profile page.</a>
       </p>
     </div>
   </div>
