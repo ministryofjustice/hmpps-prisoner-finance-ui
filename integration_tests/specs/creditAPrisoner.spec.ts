@@ -396,6 +396,9 @@ test.describe('Credit A Prisoner Pages', () => {
       }
 
       await prisonerFinanceApi.stubPostTransaction(reqPayload, {
+        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        createdBy: 'test',
+        createdAt: '2026-05-08T11:03:15.786Z',
         reference: 'TEXT',
         description: 'test description',
         timestamp: '2026-05-05T09:40:05.531Z',
@@ -448,6 +451,9 @@ test.describe('Credit A Prisoner Pages', () => {
       }
 
       await prisonerFinanceApi.stubPostTransaction(reqPayload, {
+        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        createdBy: 'test',
+        createdAt: '2026-05-08T11:03:15.786Z',
         reference: 'TEXT',
         description: 'test description',
         timestamp: '2026-05-05T09:40:05.531Z',

@@ -128,8 +128,8 @@ export default class CreditAPrisonerController {
 
       try {
         const transactionReq = CreditAPrisonerService.createTransactionRequest(req.session.creditForm)
-        await this.services.prisonerFinanceService.postTransaction(transactionReq)
-        res.redirect('./credit-confirmation')
+        const createdTransactionResponse = await this.services.prisonerFinanceService.postTransaction(transactionReq)
+        res.redirect(`./credit-confirmation?transactionNumber=${createdTransactionResponse.id}`)
       } catch (e) {
         next(e)
       }
@@ -152,6 +152,10 @@ export default class CreditAPrisonerController {
 
   public getCreditConfirmation = (req: Request, res: Response, next: NextFunction) => {
     CreditAPrisonerService.clearCreditForm(req.session as SessionData)
-    res.status(404).send()
+
+    res.render('pages/creditAPrisoner/creditConfirmation/creditConfirmation.njk', {
+      transactionNumber: req.query.transactionNumber,
+      prisonNumber: req.params.prisonNumber,
+    })
   }
 }

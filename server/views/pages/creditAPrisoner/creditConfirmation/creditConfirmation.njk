@@ -1,0 +1,44 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% set mainClasses = "govuk-main-wrapper--l" %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+
+{% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
+
+{% set pageTitle = applicationName + " - Profile" %}
+{% set mainClasses = "govuk-body" %}
+
+{% block beforeContent %}
+
+  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+
+  {{ prisonerInformationHeader({
+      prisoner:prisoner
+  }) }}
+
+
+{% endblock %}
+
+{% block content %}
+
+ <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {{ govukPanel({
+        titleText: "Credit processed",
+        html: "Your transaction number<br><strong>"+transactionNumber+"</strong>"
+      }) }}
+
+      <h2 class="govuk-heading-m">What happens next</h2>
+      <p class="govuk-body">
+        The credit has been processed. You can see the prisoners recent transactions on their
+        <a href="/prisoner/{{prisonNumber}}" class="govuk-link">financial profile page.</a>
+      </p>
+    </div>
+  </div>
+
+{% endblock %}
