@@ -225,6 +225,9 @@ describe('PrisonerFinanceSyncApiClient', () => {
   describe('postTransaction', () => {
     test('Should call the api with a transaction', async () => {
       const expectedResponse: CreatedTransactionResponse = {
+        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        createdBy: 'test',
+        createdAt: '2026-05-08T11:03:15.786Z',
         reference: 'test',
         description: 'test',
         timestamp: '',

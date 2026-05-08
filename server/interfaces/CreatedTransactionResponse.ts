@@ -1,4 +1,7 @@
 export default interface CreatedTransactionResponse {
+  id: string
+  createdBy: string
+  createdAt: string
   reference: string
   description: string
   timestamp: string

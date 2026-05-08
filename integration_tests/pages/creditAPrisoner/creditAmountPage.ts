@@ -29,4 +29,11 @@ export default class CreditAmountPage extends AbstractPage {
     await expect(creditAmountPage.heading).toBeVisible()
     return creditAmountPage
   }
+
+  static async completeAndMoveOn(page: Page): Promise<void> {
+    const { amountField, descriptionField, doneButton } = await this.verifyOnPage(page)
+    await amountField.fill('100.10')
+    await descriptionField.fill('test description')
+    await doneButton.click()
+  }
 }

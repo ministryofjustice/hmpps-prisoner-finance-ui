@@ -6,6 +6,7 @@ import { createRedisClient, RedisClient } from '../../server/data/redisClient'
 import CreditFromPage from '../pages/creditAPrisoner/creditFromPage'
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import CreditAmountPage from '../pages/creditAPrisoner/creditAmountPage'
+import CreditConfirmationPage from '../pages/creditAPrisoner/creditConfirmationPage'
 
 test.describe('Credit A Prisoner Pages', () => {
   const prisonNumber = 'ABC123XZ'
@@ -396,6 +397,9 @@ test.describe('Credit A Prisoner Pages', () => {
       }
 
       await prisonerFinanceApi.stubPostTransaction(reqPayload, {
+        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        createdBy: 'test',
+        createdAt: '2026-05-08T11:03:15.786Z',
         reference: 'TEXT',
         description: 'test description',
         timestamp: '2026-05-05T09:40:05.531Z',
@@ -448,6 +452,9 @@ test.describe('Credit A Prisoner Pages', () => {
       }
 
       await prisonerFinanceApi.stubPostTransaction(reqPayload, {
+        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
+        createdBy: 'test',
+        createdAt: '2026-05-08T11:03:15.786Z',
         reference: 'TEXT',
         description: 'test description',
         timestamp: '2026-05-05T09:40:05.531Z',
@@ -645,6 +652,105 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(radioButtons.nth(0)).not.toBeChecked()
       expect(radioButtons.nth(1)).not.toBeChecked()
       expect(radioButtons.nth(2)).not.toBeChecked()
+    })
+  })
+  test.describe('Credit confirmation page', () => {
+    const transactionId = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+    test.beforeEach(async ({ page }) => {
+      await resetStubs()
+      await login(page)
+      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonerFinanceApi.stubGetAccountByReference(prisonNumber, {
+        id: 'TESTUUID',
+        reference: prisonNumber,
+        createdAt: '',
+        createdBy: '',
+        type: 'PRISONER',
+        subAccounts: [
+          {
+            id: 'TESTSUBUUID1',
+            reference: 'Spends',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID2',
+            reference: 'Savings',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID3',
+            reference: 'Cash',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+        ],
+      })
+      await prisonerFinanceApi.stubGetAccountByReference('LEI', {
+        id: 'TESTUUID',
+        reference: 'LEI',
+        createdAt: '',
+        createdBy: '',
+        type: 'PRISON',
+        subAccounts: [
+          {
+            id: 'TESTSUBUUID1',
+            reference: '2001:CANT',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID2',
+            reference: '2002:WONT',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+          {
+            id: 'TESTSUBUUID3',
+            reference: '2003:SHANT',
+            createdAt: '',
+            createdBy: '',
+            parentAccountId: 'TESTUUID',
+          },
+        ],
+      })
+      const reqPayload = {
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+        amount: 10010,
+        description: 'test description',
+      }
+
+      await prisonerFinanceApi.stubPostTransaction(reqPayload, {
+        id: transactionId,
+        createdBy: 'test',
+        createdAt: '2026-05-08T11:03:15.786Z',
+        reference: 'TEXT',
+        description: 'test description',
+        timestamp: '2026-05-05T09:40:05.531Z',
+        amount: 10010,
+        entrySequence: 1,
+        postings: [],
+      })
+    })
+    test('should appear at end of flow, showing transaction id link to prisoner transaction page', async ({ page }) => {
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await CreditToPage.completeAndMoveOn(page)
+      await CreditFromPage.completeAndMoveOn(page)
+      await CreditAmountPage.completeAndMoveOn(page)
+
+      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-confirmation`)
+
+      const creditConfirmationPage = await CreditConfirmationPage.verifyOnPage(page)
+
+      expect(await creditConfirmationPage.confirmationPanel.textContent()).toContain(transactionId)
+      expect(await creditConfirmationPage.recentTxnsLink.getAttribute('href')).toBe(`/prisoner/${prisonNumber}`)
     })
   })
 })
