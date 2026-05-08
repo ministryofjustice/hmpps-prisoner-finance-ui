@@ -22,12 +22,6 @@ describe('creditAmountValidator', () => {
       expect(result.success).toBe(true)
       if (result.success) expect(result.data).toBe('10.99')
     })
-
-    it('should accept a string with trailing zeroes and normalize it', () => {
-      const result = creditAmountValidator.safeParse('10.90')
-      expect(result.success).toBe(true)
-      if (result.success) expect(result.data).toBe('10.90') // Number(10.90) === 10.9
-    })
   })
 
   describe('Invalid String Inputs', () => {

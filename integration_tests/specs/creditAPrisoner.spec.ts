@@ -587,7 +587,8 @@ test.describe('Credit A Prisoner Pages', () => {
       const parsedData = JSON.parse(response as string)
 
       // refs are coming from complete and move on calls
-      expect(parsedData.creditForm).toMatchObject({
+      expect(parsedData.creditForm).toEqual({
+        prisonerAccountReference: prisonNumber,
         creditSubAccountId: 'TESTSUBUUID1',
         debitSubAccountId: 'TESTSUBUUID1',
       })
@@ -629,6 +630,13 @@ test.describe('Credit A Prisoner Pages', () => {
       await page.goto(`/prisoner/${newPrisonNumber}/money/credit-a-prisoner/credit-to`)
 
       const creditToPage = await CreditToPage.verifyOnPage(page)
+
+      const newResponse = await redisClient.get(unsignedCookie as string)
+      const newData = JSON.parse(newResponse as string)
+
+      expect(newData.creditForm).toEqual({
+        prisonerAccountReference: newPrisonNumber,
+      })
 
       const { radioButtons } = creditToPage
 

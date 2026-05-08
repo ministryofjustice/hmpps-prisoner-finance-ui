@@ -3,7 +3,7 @@ import CreditAPrisonerService from './creditAPrisonerService'
 import CreditAPrisonerForm from '../interfaces/CreditAPrisonerForm'
 
 describe('creditAPrisonerService', () => {
-  describe('.createCreditForm', () => {
+  describe('.createCreditFormIfRequired', () => {
     it('creates credit form on session data if not present', () => {
       const session = {} as SessionData
       CreditAPrisonerService.createCreditFormIfRequired(session, '12345')
@@ -27,6 +27,19 @@ describe('creditAPrisonerService', () => {
         debitSubAccountId: 'TEST2',
         amount: '100',
         description: 'TEST3',
+      })
+    })
+    it('does overwrite for a new prisoner', () => {
+      const existingCreditForm: CreditAPrisonerForm = {}
+      existingCreditForm.creditSubAccountId = 'TEST'
+      existingCreditForm.debitSubAccountId = 'TEST2'
+      existingCreditForm.amount = '100'
+      existingCreditForm.description = 'TEST3'
+      existingCreditForm.prisonerAccountReference = '12345'
+      const session = { creditForm: existingCreditForm } as SessionData
+      CreditAPrisonerService.createCreditFormIfRequired(session, '78910')
+      expect(session.creditForm).toEqual({
+        prisonerAccountReference: '78910',
       })
     })
   })
