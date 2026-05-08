@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import { SessionData } from 'express-session'
+import { toMinor } from '@themainstack/money-utils'
 import CreditAPrisonerForm from '../interfaces/CreditAPrisonerForm'
 import TransactionRequest from '../interfaces/TransactionRequest'
 
@@ -29,7 +30,7 @@ export default class CreditAPrisonerService {
     return {
       creditSubAccountId: creditAPrisonerForm.creditSubAccountId,
       debitSubAccountId: creditAPrisonerForm.debitSubAccountId,
-      amount: creditAPrisonerForm.amount,
+      amount: toMinor(creditAPrisonerForm.amount),
       description: creditAPrisonerForm.description,
     }
   }

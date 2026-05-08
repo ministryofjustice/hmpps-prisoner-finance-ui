@@ -65,7 +65,7 @@ describe('creditAPrisonerService', () => {
       const existingCreditForm: CreditAPrisonerForm = {}
       existingCreditForm.creditSubAccountId = 'TEST'
       existingCreditForm.debitSubAccountId = 'TEST2'
-      existingCreditForm.amount = '100'
+      existingCreditForm.amount = '100.00'
       existingCreditForm.description = 'description'
       const session = { creditForm: existingCreditForm } as SessionData
       CreditAPrisonerService.clearCreditForm(session)
@@ -76,14 +76,14 @@ describe('creditAPrisonerService', () => {
   describe('createTransactionRequest', () => {
     test('should create a TransactionRequest when all data is present', () => {
       const creditAPrisonerForm: CreditAPrisonerForm = {}
-      creditAPrisonerForm.amount = '10'
+      creditAPrisonerForm.amount = '10.00'
       creditAPrisonerForm.creditSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
       creditAPrisonerForm.debitSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afXX'
       creditAPrisonerForm.description = 'test'
 
       const transactionReq = CreditAPrisonerService.createTransactionRequest(creditAPrisonerForm)
 
-      expect(transactionReq.amount).toBe(creditAPrisonerForm.amount)
+      expect(transactionReq.amount).toBe(1000)
       expect(transactionReq.creditSubAccountId).toBe(creditAPrisonerForm.creditSubAccountId)
       expect(transactionReq.debitSubAccountId).toBe(creditAPrisonerForm.debitSubAccountId)
       expect(transactionReq.description).toBe(creditAPrisonerForm.description)

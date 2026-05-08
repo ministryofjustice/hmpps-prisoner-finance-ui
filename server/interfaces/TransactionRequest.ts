@@ -1,6 +1,6 @@
 export default interface TransactionRequest {
   creditSubAccountId: string
   debitSubAccountId: string
-  amount: string
+  amount: number
   description: string
 }

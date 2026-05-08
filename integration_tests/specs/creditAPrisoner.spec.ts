@@ -391,7 +391,7 @@ test.describe('Credit A Prisoner Pages', () => {
       const reqPayload = {
         creditSubAccountId: 'TESTSUBUUID1',
         debitSubAccountId: 'TESTSUBUUID1',
-        amount: '100.10',
+        amount: 10010,
         description: 'test description',
       }
 
@@ -399,7 +399,7 @@ test.describe('Credit A Prisoner Pages', () => {
         reference: 'TEXT',
         description: 'test description',
         timestamp: '2026-05-05T09:40:05.531Z',
-        amount: '100.10',
+        amount: 10010,
         entrySequence: 1,
         postings: [],
       })
@@ -443,7 +443,7 @@ test.describe('Credit A Prisoner Pages', () => {
       const reqPayload = {
         creditSubAccountId: 'TESTSUBUUID1',
         debitSubAccountId: 'TESTSUBUUID1',
-        amount: '100.10',
+        amount: 10010,
         description: 'test description',
       }
 
@@ -451,7 +451,7 @@ test.describe('Credit A Prisoner Pages', () => {
         reference: 'TEXT',
         description: 'test description',
         timestamp: '2026-05-05T09:40:05.531Z',
-        amount: '100.10',
+        amount: 10010,
         entrySequence: 1,
         postings: [],
       })
@@ -486,7 +486,7 @@ test.describe('Credit A Prisoner Pages', () => {
       const reqPayload = {
         creditSubAccountId: 'TESTSUBUUID1',
         debitSubAccountId: 'TESTSUBUUID1',
-        amount: '100.10',
+        amount: 10010,
         description: 'test description',
       }
 

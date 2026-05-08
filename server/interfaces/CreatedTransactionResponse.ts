@@ -2,7 +2,7 @@ export default interface CreatedTransactionResponse {
   reference: string
   description: string
   timestamp: string
-  amount: string
+  amount: number
   entrySequence: number
   postings: CreatedTransactionPostingResponse[]
 }

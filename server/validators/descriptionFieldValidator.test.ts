@@ -24,12 +24,12 @@ describe('descriptionFieldValidator', () => {
     })
 
     it('should reject a string that exceeds the maximum length', () => {
-      const tooLongString = 'a'.repeat(501)
+      const tooLongString = 'a'.repeat(256)
       const result = descriptionFieldValidator.safeParse(tooLongString)
 
       expect(result.success).toBe(false)
       if (!result.success) {
-        expect(result.error.issues[0].message).toBe('Description cannot exceed 500 characters.')
+        expect(result.error.issues[0].message).toBe('Description cannot exceed 255 characters.')
       }
     })
   })

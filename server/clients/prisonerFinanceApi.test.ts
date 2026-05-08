@@ -228,7 +228,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         reference: 'test',
         description: 'test',
         timestamp: '',
-        amount: '10',
+        amount: 10,
         entrySequence: 1,
         postings: [],
       }
@@ -236,7 +236,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
       const mockReq: TransactionRequest = {
         creditSubAccountId: 'abc',
         debitSubAccountId: 'cdg',
-        amount: '10',
+        amount: 10,
         description: 'test',
       }
 
