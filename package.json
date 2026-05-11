@@ -59,7 +59,7 @@
     "passport-oauth2": "^1.8.0",
     "redis": "^5.12.1",
     "superagent": "^10.3.0",
-    "zod": "4.4.2"
+    "zod": "4.4.3"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.11.3",
@@ -107,7 +107,7 @@
   },
   "overrides": {
     "@aws-sdk/xml-builder": {
-      "fast-xml-parser": "^5.5.9"
+      "fast-xml-parser": "^5.7.2"
     }
   }
 }
