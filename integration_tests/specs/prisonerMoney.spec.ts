@@ -23,6 +23,7 @@ test.describe('Prisoner Money', () => {
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
+      runningBalance: 0,
     },
     {
       date: '2026-03-10T10:47:28.094Z',
@@ -31,6 +32,7 @@ test.describe('Prisoner Money', () => {
       debit: 0,
       location: 'MDI',
       accountType: 'SAVINGS',
+      runningBalance: 20,
     },
     {
       date: '2026-03-10T10:46:28.094Z',
@@ -39,6 +41,7 @@ test.describe('Prisoner Money', () => {
       debit: 10,
       location: '',
       accountType: 'CASH',
+      runningBalance: 10,
     },
     {
       date: '2026-03-10T10:45:28.194Z',
@@ -47,6 +50,7 @@ test.describe('Prisoner Money', () => {
       debit: 0,
       location: 'XXX',
       accountType: 'SAVINGS',
+      runningBalance: undefined,
     },
   ]
 
@@ -139,7 +143,7 @@ test.describe('Prisoner Money', () => {
       expect(prisonerMoneyPage.heading).toBeVisible()
       expect(prisonerMoneyPage.heading).toContainText(pageHeading)
       expect(prisonerMoneyPage.tableTransactions).toBeVisible()
-      expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
+      expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(7)
 
       const rows = prisonerMoneyPage.tableTransactions.locator('tbody tr')
 
@@ -153,6 +157,7 @@ test.describe('Prisoner Money', () => {
       await expect(cells.nth(3)).toHaveText('£0.10')
       await expect(cells.nth(4)).toHaveText('Private cash')
       await expect(cells.nth(5)).toHaveText('Leeds (HMP)')
+      await expect(cells.nth(6)).toHaveText('£0.00')
 
       // Row 2
       cells = rows.nth(1).locator('td')
@@ -162,6 +167,7 @@ test.describe('Prisoner Money', () => {
       await expect(cells.nth(3)).toHaveText('£0.00')
       await expect(cells.nth(4)).toHaveText('Savings')
       await expect(cells.nth(5)).toHaveText('Moorland (HMP & YOI)')
+      await expect(cells.nth(6)).toHaveText('£0.20')
 
       // Row 3
       cells = rows.nth(2).locator('td')
@@ -171,6 +177,7 @@ test.describe('Prisoner Money', () => {
       await expect(cells.nth(3)).toHaveText('£0.10')
       await expect(cells.nth(4)).toHaveText('Private cash')
       await expect(cells.nth(5)).toHaveText('')
+      await expect(cells.nth(6)).toHaveText('£0.10')
 
       // Row 4
       cells = rows.nth(3).locator('td')
@@ -180,6 +187,7 @@ test.describe('Prisoner Money', () => {
       await expect(cells.nth(3)).toHaveText('£0.00')
       await expect(cells.nth(4)).toHaveText('Savings')
       await expect(cells.nth(5)).toHaveText('XXX')
+      await expect(cells.nth(6)).toHaveText('-')
     })
 
     test(`${pageName} - Should display the balance cards with the total amounts`, async ({ page }) => {

@@ -59,6 +59,49 @@ describe('AuditHistoryService', () => {
         credit,
       })
     })
+
+    it('should return running balance from API response', async () => {
+      const mockedResponse = {
+        date: '',
+        description: '',
+        credit: 0,
+        debit: 0,
+        location: '',
+        accountType: '',
+        runningBalance: 100,
+      }
+
+      const pageTransactionsResponse: Page<PrisonerTransactionResponse> = {
+        content: [mockedResponse],
+        totalElements: 0,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      apiClient.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(pageTransactionsResponse)
+
+      const prisonNumber = 'A1234BC'
+      const subAccountReference = 'ABC'
+      const startDate = '10/10/2010'
+      const endDate = '10/10/2020'
+      const page = '1'
+      const debit = 'true'
+      const credit = 'false'
+
+      const result = await service.getPrisonerTransactionsByPrisonNumber({
+        prisonNumber,
+        subAccountReference,
+        page,
+        startDate,
+        endDate,
+        debit,
+        credit,
+      })
+
+      expect(result.content[0].runningBalance).toBe(100)
+    })
   })
 
   describe('getAccountBalance', () => {

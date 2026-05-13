@@ -171,7 +171,8 @@
           { text: row.credit | penceToPound},
           { text: row.debit | penceToPound},
           { text: row.accountType | formatPrisonerAccountType },
-          { text: row.location | convertPrisonIdToName(prisonNames)}
+          { text: row.location | convertPrisonIdToName(prisonNames)},
+          { text: (row.runningBalance | penceToPound) if (row.runningBalance is defined and row.runningBalance !== null) else '-' }
         ] %}
         {% set tableRows = (tableRows.push(rowData), tableRows) %}
       {% endfor %}
@@ -194,7 +195,8 @@
             { text: "Credit" },
             { text: "Debit" },
             { text: "Account" },
-            { text: "Location" }
+            { text: "Location" },
+            { text: "Balance"}
           ],
           rows: tableRows
         }) }}

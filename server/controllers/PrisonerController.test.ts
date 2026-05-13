@@ -50,7 +50,7 @@ describe('PrisonerController', () => {
     jest.resetAllMocks()
   })
   describe('getTransactions', () => {
-    it('Should  call getTransactionPage', async () => {
+    it('Should call getTransactionPage', async () => {
       const startDate = '10/10/2010'
       const endDate = '10/10/2020'
       const debit = 'false'
@@ -73,6 +73,7 @@ describe('PrisonerController', () => {
           debit: 10,
           location: 'LEI',
           accountType: 'CASH',
+          runningBalance: 100,
         },
       ]
 
@@ -160,6 +161,7 @@ describe('PrisonerController', () => {
           debit: 10,
           location: 'LEI',
           accountType: 'CASH',
+          runningBalance: 200,
         },
       ]
 
@@ -216,6 +218,7 @@ describe('PrisonerController', () => {
           debit: 10,
           location: 'LEI',
           accountType: 'CASH',
+          runningBalance: 300,
         }
       })
 

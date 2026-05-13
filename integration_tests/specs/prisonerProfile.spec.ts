@@ -20,6 +20,7 @@ test.describe('Prisoner Profile', () => {
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
+      runningBalance: 0,
     },
     {
       date: '2026-03-11T10:47:28.094Z',
@@ -28,6 +29,7 @@ test.describe('Prisoner Profile', () => {
       debit: 0,
       location: 'MDI',
       accountType: 'SAVINGS',
+      runningBalance: 20,
     },
     {
       date: '2026-03-10T10:46:28.094Z',
@@ -36,6 +38,7 @@ test.describe('Prisoner Profile', () => {
       debit: 10,
       location: '',
       accountType: 'CASH',
+      runningBalance: 10,
     },
     {
       date: '2026-03-10T10:45:28.194Z',
@@ -44,6 +47,7 @@ test.describe('Prisoner Profile', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
+      runningBalance: 20,
     },
     {
       date: '2026-03-10T10:44:28.194Z',
@@ -52,6 +56,7 @@ test.describe('Prisoner Profile', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
+      runningBalance: 30,
     },
     {
       date: '2026-03-10T10:43:28.194Z',
@@ -60,6 +65,7 @@ test.describe('Prisoner Profile', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
+      runningBalance: 20,
     },
   ]
 
@@ -110,7 +116,7 @@ test.describe('Prisoner Profile', () => {
     expect(prisonerProfilePage.heading).toBeVisible()
     expect(prisonerProfilePage.heading).toContainText('Finances')
     expect(prisonerProfilePage.tableTransactions).toBeVisible()
-    expect(prisonerProfilePage.tableTransactions.locator('thead tr th')).toHaveCount(5)
+    expect(prisonerProfilePage.tableTransactions.locator('thead tr th')).toHaveCount(6)
 
     const rows = prisonerProfilePage.tableTransactions.locator('tbody tr')
 
@@ -122,6 +128,7 @@ test.describe('Prisoner Profile', () => {
     expect(cells.nth(2)).toHaveText('Private cash')
     expect(cells.nth(3)).toHaveText('£0.00')
     expect(cells.nth(4)).toHaveText('£0.10')
+    expect(cells.nth(5)).toHaveText('£0.00')
   })
 
   test("Should display prisoner's profile header", async ({ page }) => {
