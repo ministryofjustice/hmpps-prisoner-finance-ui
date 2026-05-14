@@ -186,7 +186,7 @@ describe('prisoner profile page', () => {
   it('should render the transactions table with 5 rows', () => {
     const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
 
-    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(6)
+    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(5)
     expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(5)
   })
 
@@ -249,13 +249,13 @@ describe('prisoner profile page', () => {
 
     const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
 
-    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(6)
+    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(5)
     expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(5)
 
     const lastTransactionRunningBalance = $('table[data-testid="prisoner-transactions-table"] tbody tr')
       .last()
       .find('td')
-      .eq(5)
+      .eq(4)
       .text()
       .trim()
 

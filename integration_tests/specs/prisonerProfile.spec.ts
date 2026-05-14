@@ -116,19 +116,33 @@ test.describe('Prisoner Profile', () => {
     expect(prisonerProfilePage.heading).toBeVisible()
     expect(prisonerProfilePage.heading).toContainText('Finances')
     expect(prisonerProfilePage.tableTransactions).toBeVisible()
-    expect(prisonerProfilePage.tableTransactions.locator('thead tr th')).toHaveCount(6)
+    expect(prisonerProfilePage.tableTransactions.locator('thead tr th')).toHaveCount(5)
+
+    const headers = await prisonerProfilePage.tableTransactions.locator('thead th')
+
+    expect(headers.nth(0)).toHaveText('Date')
+    expect(headers.nth(1)).toHaveText('Transaction description')
+    expect(headers.nth(2)).toHaveText('Account')
+    expect(headers.nth(3)).toHaveText('Amount')
+    expect(headers.nth(4)).toHaveText('Balance')
 
     const rows = prisonerProfilePage.tableTransactions.locator('tbody tr')
 
     expect(rows).toHaveCount(5)
 
-    const cells = rows.first().locator('td')
-    expect(cells.nth(0)).toHaveText('10/03/2026\n10:48')
-    expect(cells.nth(1)).toHaveText(transactionPayload[0].description)
-    expect(cells.nth(2)).toHaveText('Private cash')
-    expect(cells.nth(3)).toHaveText('£0.00')
-    expect(cells.nth(4)).toHaveText('£0.10')
-    expect(cells.nth(5)).toHaveText('£0.00')
+    const cellsFirstRow = rows.first().locator('td')
+    expect(cellsFirstRow.nth(0)).toHaveText('10/03/2026\n10:48')
+    expect(cellsFirstRow.nth(1)).toHaveText(transactionPayload[0].description)
+    expect(cellsFirstRow.nth(2)).toHaveText('Private cash')
+    expect(cellsFirstRow.nth(3)).toHaveText('-0.10')
+    expect(cellsFirstRow.nth(4)).toHaveText('0.00')
+
+    const cellsSecondRow = rows.nth(1).locator('td')
+    expect(cellsSecondRow.nth(0)).toHaveText('11/03/2026\n10:47')
+    expect(cellsSecondRow.nth(1)).toHaveText(transactionPayload[1].description)
+    expect(cellsSecondRow.nth(2)).toHaveText('Savings')
+    expect(cellsSecondRow.nth(3)).toHaveText('0.20')
+    expect(cellsSecondRow.nth(4)).toHaveText('0.20')
   })
 
   test("Should display prisoner's profile header", async ({ page }) => {
@@ -146,15 +160,15 @@ test.describe('Prisoner Profile', () => {
     const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
     const spendsCard = prisonerProfilePage.balanceCards.locator('[data-testid="spends-card"]')
     expect(spendsCard.locator('[data-testid="spends-card_header"]')).toContainText('Spends')
-    expect(spendsCard.locator('[data-testid="spends-card_amount"]')).toContainText('£12.34')
+    expect(spendsCard.locator('[data-testid="spends-card_amount"]')).toContainText('12.34')
 
     const privateCashCard = prisonerProfilePage.balanceCards.locator('[data-testid="private-cash-card"]')
     expect(privateCashCard.locator('[data-testid="private-cash-card_header"]')).toContainText('Private cash')
-    expect(privateCashCard.locator('[data-testid="private-cash-card_amount"]')).toContainText('£34.56')
+    expect(privateCashCard.locator('[data-testid="private-cash-card_amount"]')).toContainText('34.56')
 
     const savingsCard = prisonerProfilePage.balanceCards.locator('[data-testid="savings-card"]')
     expect(savingsCard.locator('[data-testid="savings-card_header"]')).toContainText('Savings')
-    expect(savingsCard.locator('[data-testid="savings-card_amount"]')).toContainText('£0.00')
+    expect(savingsCard.locator('[data-testid="savings-card_amount"]')).toContainText('0.00')
   })
 
   test('Should contain a link to the expanded transactions link', async ({ page }) => {
@@ -288,7 +302,7 @@ test.describe('Prisoner Profile', () => {
         const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
 
         const errorCard = prisonerProfilePage.balanceCards.locator(`[data-testid="${testId}"]`)
-        await expect(errorCard.locator('.hmpps-balance-card__amount')).toContainText('£0.00')
+        await expect(errorCard.locator('.hmpps-balance-card__amount')).toContainText('0.00')
       })
     }
   })

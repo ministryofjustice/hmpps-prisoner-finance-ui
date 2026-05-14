@@ -153,38 +153,38 @@ test.describe('Prisoner Money', () => {
       let cells = rows.nth(0).locator('td')
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:48')
       await expect(cells.nth(1)).toHaveText('test')
-      await expect(cells.nth(2)).toHaveText('£0.00')
-      await expect(cells.nth(3)).toHaveText('£0.10')
+      await expect(cells.nth(2)).toHaveText('0.00')
+      await expect(cells.nth(3)).toHaveText('0.10')
       await expect(cells.nth(4)).toHaveText('Private cash')
       await expect(cells.nth(5)).toHaveText('Leeds (HMP)')
-      await expect(cells.nth(6)).toHaveText('£0.00')
+      await expect(cells.nth(6)).toHaveText('0.00')
 
       // Row 2
       cells = rows.nth(1).locator('td')
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:47')
       await expect(cells.nth(1)).toHaveText('')
-      await expect(cells.nth(2)).toHaveText('£0.20')
-      await expect(cells.nth(3)).toHaveText('£0.00')
+      await expect(cells.nth(2)).toHaveText('0.20')
+      await expect(cells.nth(3)).toHaveText('0.00')
       await expect(cells.nth(4)).toHaveText('Savings')
       await expect(cells.nth(5)).toHaveText('Moorland (HMP & YOI)')
-      await expect(cells.nth(6)).toHaveText('£0.20')
+      await expect(cells.nth(6)).toHaveText('0.20')
 
       // Row 3
       cells = rows.nth(2).locator('td')
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:46')
       await expect(cells.nth(1)).toHaveText('Cash to Savings Transfer')
-      await expect(cells.nth(2)).toHaveText('£0.00')
-      await expect(cells.nth(3)).toHaveText('£0.10')
+      await expect(cells.nth(2)).toHaveText('0.00')
+      await expect(cells.nth(3)).toHaveText('0.10')
       await expect(cells.nth(4)).toHaveText('Private cash')
       await expect(cells.nth(5)).toHaveText('')
-      await expect(cells.nth(6)).toHaveText('£0.10')
+      await expect(cells.nth(6)).toHaveText('0.10')
 
       // Row 4
       cells = rows.nth(3).locator('td')
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:45')
       await expect(cells.nth(1)).toHaveText('Transaction in secret prison')
-      await expect(cells.nth(2)).toHaveText('£0.10')
-      await expect(cells.nth(3)).toHaveText('£0.00')
+      await expect(cells.nth(2)).toHaveText('0.10')
+      await expect(cells.nth(3)).toHaveText('0.00')
       await expect(cells.nth(4)).toHaveText('Savings')
       await expect(cells.nth(5)).toHaveText('XXX')
       await expect(cells.nth(6)).toHaveText('-')
@@ -202,13 +202,13 @@ test.describe('Prisoner Money', () => {
       expect(prisonerMoneyPage.totalBalanceCard).toBeVisible()
 
       expect(prisonerMoneyPage.currentBalanceCard.locator('h2')).toContainText('Current balance')
-      expect(prisonerMoneyPage.currentBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
+      expect(prisonerMoneyPage.currentBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('12.34')
 
       expect(prisonerMoneyPage.holdBalanceCard.locator('h2')).toContainText('Hold balance')
-      expect(prisonerMoneyPage.holdBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£0.00')
+      expect(prisonerMoneyPage.holdBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('0.00')
 
       expect(prisonerMoneyPage.totalBalanceCard.locator('h2')).toContainText('Total balance')
-      expect(prisonerMoneyPage.totalBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
+      expect(prisonerMoneyPage.totalBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('12.34')
     })
 
     test(`${pageName} - Backlink should render and return to profile page`, async ({ page }) => {

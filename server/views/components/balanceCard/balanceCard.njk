@@ -10,7 +10,7 @@
       </h3>
       {% endif %}
 
-      <p class="govuk-body hmpps-balance-card__amount" data-testid="{{ params.testId }}_amount">{{ params.amount | penceToPound }}</p>
+      <p class="govuk-body hmpps-balance-card__amount" data-testid="{{ params.testId }}_amount">{{ '£' + params.amount | penceToPound }}</p>
 
       {% if params.balanceCardLink %}
         <hr class="govuk-section-break govuk-section-break--visible">

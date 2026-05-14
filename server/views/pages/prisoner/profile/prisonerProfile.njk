@@ -71,8 +71,7 @@
             { text: row.date | formatDateForView },
             { text: row.description },
             { text: row.accountType | formatPrisonerAccountType },
-            { text: (row.credit | penceToPound) },
-            { text: (row.debit | penceToPound) },
+            { text: ('-' + row.debit if row.credit === 0 else row.credit) | penceToPound },
             { text: (row.runningBalance | penceToPound) if (row.runningBalance is defined and row.runningBalance !== null) else '-' }
           ] %}
           {% set tableRows = (tableRows.push(rowData), tableRows) %}
@@ -91,8 +90,7 @@
                     { text: "Date" },
                     { text: "Transaction description" },
                     { text: "Account" },
-                    { text: "Credit" },
-                    { text: "Debit" },
+                    { text: "Amount" },
                     { text: "Balance" }
                   ],
                   rows: tableRows
