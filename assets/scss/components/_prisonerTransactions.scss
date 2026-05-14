@@ -25,7 +25,11 @@
       background-color: govuk-shade(govuk-colour('blue'), 20%);
     }
 
-    &, &:link, &:visited, &:active, &:hover {
+    &,
+    &:link,
+    &:visited,
+    &:active,
+    &:hover {
       color: govuk-colour('white');
     }
   }
@@ -49,5 +53,9 @@
 
   .moj-filter-layout__filter--small {
     max-width: 340px;
+  }
+
+  .credit-amount {
+    font-weight: bolder;
   }
 }

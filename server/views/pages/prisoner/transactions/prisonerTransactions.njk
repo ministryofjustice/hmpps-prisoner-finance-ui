@@ -168,8 +168,7 @@
         {% set rowData = [
           { text: row.date | formatDateForView },
           { text: row.description },
-          { text: row.credit | penceToPound},
-          { text: row.debit | penceToPound},
+          { html: '<span class="credit-amount">' ~ (row.credit | penceToPound) ~ '</span>' if row.credit > 0 else '<span> -' ~ (row.debit | penceToPound) ~ '</span>'},
           { text: row.accountType | formatPrisonerAccountType },
           { text: row.location | convertPrisonIdToName(prisonNames)},
           { text: (row.runningBalance | penceToPound) if (row.runningBalance is defined and row.runningBalance !== null) else '-' }
@@ -192,8 +191,7 @@
           head: [
             { text: "Date" },
             { text: "Transaction description" },
-            { text: "Credit" },
-            { text: "Debit" },
+            { text: "Amount" },
             { text: "Account" },
             { text: "Location" },
             { text: "Balance"}

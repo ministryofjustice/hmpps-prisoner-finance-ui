@@ -139,7 +139,7 @@ describe('prisoner transactions page', () => {
 
     const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
 
-    expect(transactionsTable.find('thead tr th').length).toBe(7)
+    expect(transactionsTable.find('thead tr th').length).toBe(6)
     expect(transactionsTable.find('tbody tr').length).toBe(payload.length)
 
     expect($('[data-testid="view-prisoner-current-balance-card_header"]').text().trim()).toBe('Current balance')
@@ -193,13 +193,13 @@ describe('prisoner transactions page', () => {
 
     const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
 
-    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(7)
+    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(6)
     expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(4)
 
     const lastTransactionRunningBalance = $('table[data-testid="prisoner-transactions-table"] tbody tr')
       .last()
       .find('td')
-      .eq(6)
+      .eq(5)
       .text()
       .trim()
 

@@ -113,36 +113,35 @@ test.describe('Prisoner Profile', () => {
     await page.goto(`/prisoner/${prisonNumber}`)
 
     const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
-    expect(prisonerProfilePage.heading).toBeVisible()
-    expect(prisonerProfilePage.heading).toContainText('Finances')
-    expect(prisonerProfilePage.tableTransactions).toBeVisible()
-    expect(prisonerProfilePage.tableTransactions.locator('thead tr th')).toHaveCount(5)
+    await expect(prisonerProfilePage.heading).toBeVisible()
+    await expect(prisonerProfilePage.heading).toContainText('Finances')
+    await expect(prisonerProfilePage.tableTransactions).toBeVisible()
+    await expect(prisonerProfilePage.tableTransactions.locator('thead tr th')).toHaveCount(5)
 
     const headers = await prisonerProfilePage.tableTransactions.locator('thead th')
-
-    expect(headers.nth(0)).toHaveText('Date')
-    expect(headers.nth(1)).toHaveText('Transaction description')
-    expect(headers.nth(2)).toHaveText('Account')
-    expect(headers.nth(3)).toHaveText('Amount')
-    expect(headers.nth(4)).toHaveText('Balance')
+    await expect(headers.nth(0)).toHaveText('Date')
+    await expect(headers.nth(1)).toHaveText('Transaction description')
+    await expect(headers.nth(2)).toHaveText('Account')
+    await expect(headers.nth(3)).toHaveText('Amount')
+    await expect(headers.nth(4)).toHaveText('Balance')
 
     const rows = prisonerProfilePage.tableTransactions.locator('tbody tr')
-
-    expect(rows).toHaveCount(5)
+    await expect(rows).toHaveCount(5)
 
     const cellsFirstRow = rows.first().locator('td')
-    expect(cellsFirstRow.nth(0)).toHaveText('10/03/2026\n10:48')
-    expect(cellsFirstRow.nth(1)).toHaveText(transactionPayload[0].description)
-    expect(cellsFirstRow.nth(2)).toHaveText('Private cash')
-    expect(cellsFirstRow.nth(3)).toHaveText('-0.10')
-    expect(cellsFirstRow.nth(4)).toHaveText('0.00')
+    await expect(cellsFirstRow.nth(0)).toHaveText('10/03/2026\n10:48')
+    await expect(cellsFirstRow.nth(1)).toHaveText(transactionPayload[0].description)
+    await expect(cellsFirstRow.nth(2)).toHaveText('Private cash')
+    await expect(cellsFirstRow.nth(3)).toHaveText('-0.10')
+    await expect(cellsFirstRow.nth(4)).toHaveText('0.00')
 
     const cellsSecondRow = rows.nth(1).locator('td')
-    expect(cellsSecondRow.nth(0)).toHaveText('11/03/2026\n10:47')
-    expect(cellsSecondRow.nth(1)).toHaveText(transactionPayload[1].description)
-    expect(cellsSecondRow.nth(2)).toHaveText('Savings')
-    expect(cellsSecondRow.nth(3)).toHaveText('0.20')
-    expect(cellsSecondRow.nth(4)).toHaveText('0.20')
+    await expect(cellsSecondRow.nth(0)).toHaveText('11/03/2026\n10:47')
+    await expect(cellsSecondRow.nth(1)).toHaveText(transactionPayload[1].description)
+    await expect(cellsSecondRow.nth(2)).toHaveText('Savings')
+    await expect(cellsSecondRow.nth(3)).toHaveText('0.20')
+    await expect(cellsSecondRow.nth(3)).toHaveCSS('font-weight', '400')
+    await expect(cellsSecondRow.nth(4)).toHaveText('0.20')
   })
 
   test("Should display prisoner's profile header", async ({ page }) => {
@@ -159,16 +158,16 @@ test.describe('Prisoner Profile', () => {
 
     const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
     const spendsCard = prisonerProfilePage.balanceCards.locator('[data-testid="spends-card"]')
-    expect(spendsCard.locator('[data-testid="spends-card_header"]')).toContainText('Spends')
-    expect(spendsCard.locator('[data-testid="spends-card_amount"]')).toContainText('12.34')
+    await expect(spendsCard.locator('[data-testid="spends-card_header"]')).toContainText('Spends')
+    await expect(spendsCard.locator('[data-testid="spends-card_amount"]')).toContainText('12.34')
 
     const privateCashCard = prisonerProfilePage.balanceCards.locator('[data-testid="private-cash-card"]')
-    expect(privateCashCard.locator('[data-testid="private-cash-card_header"]')).toContainText('Private cash')
-    expect(privateCashCard.locator('[data-testid="private-cash-card_amount"]')).toContainText('34.56')
+    await expect(privateCashCard.locator('[data-testid="private-cash-card_header"]')).toContainText('Private cash')
+    await expect(privateCashCard.locator('[data-testid="private-cash-card_amount"]')).toContainText('34.56')
 
     const savingsCard = prisonerProfilePage.balanceCards.locator('[data-testid="savings-card"]')
-    expect(savingsCard.locator('[data-testid="savings-card_header"]')).toContainText('Savings')
-    expect(savingsCard.locator('[data-testid="savings-card_amount"]')).toContainText('0.00')
+    await expect(savingsCard.locator('[data-testid="savings-card_header"]')).toContainText('Savings')
+    await expect(savingsCard.locator('[data-testid="savings-card_amount"]')).toContainText('0.00')
   })
 
   test('Should contain a link to the expanded transactions link', async ({ page }) => {
@@ -177,9 +176,9 @@ test.describe('Prisoner Profile', () => {
 
     const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
     const { transactionsLink } = prisonerProfilePage
-    expect(transactionsLink).toBeVisible()
-    expect(transactionsLink).toHaveAttribute('href', `/prisoner/${prisonNumber}/money`)
-    expect(transactionsLink).toContainText('View all transactions')
+    await expect(transactionsLink).toBeVisible()
+    await expect(transactionsLink).toHaveAttribute('href', `/prisoner/${prisonNumber}/money`)
+    await expect(transactionsLink).toContainText('View all transactions')
   })
 
   test('Backlink should render and return to index', async ({ page }) => {
@@ -187,7 +186,7 @@ test.describe('Prisoner Profile', () => {
     await page.goto(`/prisoner/${prisonNumber}`)
 
     const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
-    expect(prisonerProfilePage.backButton).toBeVisible()
+    await expect(prisonerProfilePage.backButton).toBeVisible()
     await prisonerProfilePage.backButton.click()
 
     expect(new URL(page.url()).pathname).toBe('/')
@@ -198,25 +197,25 @@ test.describe('Prisoner Profile', () => {
     await page.goto(`/prisoner/${prisonNumber}`)
     const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
 
-    expect(prisonerProfilePage.actionMenuBlock).toBeVisible()
+    await expect(prisonerProfilePage.actionMenuBlock).toBeVisible()
 
-    expect(page.locator('[data-testid="credit-menu"]')).toBeVisible()
-    expect(page.locator('[data-testid="credit-menu"]')).toContainText('Credit account')
+    await expect(page.locator('[data-testid="credit-menu"]')).toBeVisible()
+    await expect(page.locator('[data-testid="credit-menu"]')).toContainText('Credit account')
 
-    expect(page.locator('[data-testid="debit-menu"]')).toBeVisible()
-    expect(page.locator('[data-testid="debit-menu"]')).toContainText('Debit account')
+    await expect(page.locator('[data-testid="debit-menu"]')).toBeVisible()
+    await expect(page.locator('[data-testid="debit-menu"]')).toContainText('Debit account')
 
-    expect(page.locator('[data-testid="subaccount-menu"]')).toBeVisible()
-    expect(page.locator('[data-testid="subaccount-menu"]')).toContainText('Sub account transfer')
+    await expect(page.locator('[data-testid="subaccount-menu"]')).toBeVisible()
+    await expect(page.locator('[data-testid="subaccount-menu"]')).toContainText('Sub account transfer')
 
-    expect(page.locator('[data-testid="adjudications-menu"]')).toBeVisible()
-    expect(page.locator('[data-testid="adjudications-menu"]')).toContainText('Adjudications')
+    await expect(page.locator('[data-testid="adjudications-menu"]')).toBeVisible()
+    await expect(page.locator('[data-testid="adjudications-menu"]')).toContainText('Adjudications')
 
-    expect(page.locator('[data-testid="export-menu"]')).toBeVisible()
-    expect(page.locator('[data-testid="export-menu"]')).toContainText('Export statement')
+    await expect(page.locator('[data-testid="export-menu"]')).toBeVisible()
+    await expect(page.locator('[data-testid="export-menu"]')).toContainText('Export statement')
 
-    expect(page.locator('[data-testid="close-menu"]')).toBeVisible()
-    expect(page.locator('[data-testid="close-menu"]')).toContainText('Close account')
+    await expect(page.locator('[data-testid="close-menu"]')).toBeVisible()
+    await expect(page.locator('[data-testid="close-menu"]')).toContainText('Close account')
   })
 
   describe('Sub accounts', async () => {
@@ -255,11 +254,11 @@ test.describe('Prisoner Profile', () => {
         const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
 
         const balanceCardLink = prisonerProfilePage.balanceCards.locator(`[data-testid="${testId}_balance-card-link"]`)
+        await expect(balanceCardLink).toBeVisible()
 
-        expect(balanceCardLink).toBeVisible()
         const balanceCardHref = await balanceCardLink.getAttribute('href')
         expect(balanceCardHref).toBe(href)
-        expect(balanceCardLink).toContainText(name, { ignoreCase: true })
+        await expect(balanceCardLink).toContainText(name, { ignoreCase: true })
 
         // stubs for transaction page
         await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, subAccountRef)
@@ -331,8 +330,8 @@ test.describe('Prisoner Profile', () => {
     const response = await page.goto(`/prisoner/${prisonNumber}`)
 
     expect(response?.status()).toBe(500)
-    expect(page.locator('[data-testid="error-page-message"]')).toContainText('Internal Server Error')
-    expect(page.locator('[data-testid="error-page-status"]')).toContainText('500')
+    await expect(page.locator('[data-testid="error-page-message"]')).toContainText('Internal Server Error')
+    await expect(page.locator('[data-testid="error-page-status"]')).toContainText('500')
   })
 
   test('Should redirect to sign-out when prisoner is outside user caseload', async ({ page }) => {
@@ -365,11 +364,10 @@ test.describe('Prisoner Profile', () => {
     await page.goto(`/prisoner/${prisonNumber}`)
 
     const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
-
     expect(prisonerProfilePage.tableTransactions).not.toBeVisible()
 
     const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
-    expect(noTransactionsMessage).toBeVisible()
-    expect(noTransactionsMessage).toHaveText('No transactions to show')
+    await expect(noTransactionsMessage).toBeVisible()
+    await expect(noTransactionsMessage).toHaveText('No transactions to show')
   })
 })
