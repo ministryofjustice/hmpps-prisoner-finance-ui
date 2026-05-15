@@ -149,9 +149,9 @@ test.describe('Prisoner Money', () => {
       await expect(headers.nth(0)).toHaveText('Date')
       await expect(headers.nth(1)).toHaveText('Transaction description')
       await expect(headers.nth(2)).toHaveText('Amount')
-      await expect(headers.nth(3)).toHaveText('Account')
-      await expect(headers.nth(4)).toHaveText('Location')
-      await expect(headers.nth(5)).toHaveText('Balance')
+      await expect(headers.nth(3)).toHaveText('Balance')
+      await expect(headers.nth(4)).toHaveText('Account')
+      await expect(headers.nth(5)).toHaveText('Location')
 
       const rows = prisonerMoneyPage.tableTransactions.locator('tbody tr')
       await expect(rows).toHaveCount(transactionPayload.length)
@@ -161,9 +161,9 @@ test.describe('Prisoner Money', () => {
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:48')
       await expect(cells.nth(1)).toHaveText('test')
       await expect(cells.nth(2)).toHaveText('-0.10')
-      await expect(cells.nth(3)).toHaveText('Private cash')
-      await expect(cells.nth(4)).toHaveText('Leeds (HMP)')
-      await expect(cells.nth(5)).toHaveText('0.00')
+      await expect(cells.nth(3)).toHaveText('0.00')
+      await expect(cells.nth(4)).toHaveText('Private cash')
+      await expect(cells.nth(5)).toHaveText('Leeds (HMP)')
 
       // Row 2
       cells = rows.nth(1).locator('td')
@@ -171,18 +171,18 @@ test.describe('Prisoner Money', () => {
       await expect(cells.nth(1)).toHaveText('')
       await expect(cells.nth(2)).toHaveText('0.20')
       await expect(cells.nth(2)).toHaveCSS('font-weight', '400')
-      await expect(cells.nth(3)).toHaveText('Savings')
-      await expect(cells.nth(4)).toHaveText('Moorland (HMP & YOI)')
-      await expect(cells.nth(5)).toHaveText('0.20')
+      await expect(cells.nth(3)).toHaveText('0.20')
+      await expect(cells.nth(4)).toHaveText('Savings')
+      await expect(cells.nth(5)).toHaveText('Moorland (HMP & YOI)')
 
       // Row 3
       cells = rows.nth(2).locator('td')
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:46')
       await expect(cells.nth(1)).toHaveText('Cash to Savings Transfer')
       await expect(cells.nth(2)).toHaveText('-0.10')
-      await expect(cells.nth(3)).toHaveText('Private cash')
-      await expect(cells.nth(4)).toHaveText('')
-      await expect(cells.nth(5)).toHaveText('0.10')
+      await expect(cells.nth(3)).toHaveText('0.10')
+      await expect(cells.nth(4)).toHaveText('Private cash')
+      await expect(cells.nth(5)).toHaveText('')
 
       // Row 4
       cells = rows.nth(3).locator('td')
@@ -190,9 +190,9 @@ test.describe('Prisoner Money', () => {
       await expect(cells.nth(1)).toHaveText('Transaction in secret prison')
       await expect(cells.nth(2)).toHaveText('0.10')
       await expect(cells.nth(2)).toHaveCSS('font-weight', '400')
-      await expect(cells.nth(3)).toHaveText('Savings')
-      await expect(cells.nth(4)).toHaveText('XXX')
-      await expect(cells.nth(5)).toHaveText('-')
+      await expect(cells.nth(3)).toHaveText('-')
+      await expect(cells.nth(4)).toHaveText('Savings')
+      await expect(cells.nth(5)).toHaveText('XXX')
     })
 
     test(`${pageName} - Should display the balance cards with the total amounts`, async ({ page }) => {

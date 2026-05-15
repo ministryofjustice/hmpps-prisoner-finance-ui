@@ -199,7 +199,7 @@ describe('prisoner transactions page', () => {
     const lastTransactionRunningBalance = $('table[data-testid="prisoner-transactions-table"] tbody tr')
       .last()
       .find('td')
-      .eq(5)
+      .eq(3)
       .text()
       .trim()
 

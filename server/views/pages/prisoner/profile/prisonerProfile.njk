@@ -72,9 +72,9 @@
             {% set rowData = [
               { text: row.date | formatDateForView },
               { text: row.description },
-              { text: row.accountType | formatPrisonerAccountType },
               { html: '<span class="credit-amount">' ~ (row.credit | penceToPound) ~ '</span>' if row.credit > 0 else '<span> -' ~ (row.debit | penceToPound) ~ '</span>'},
-              { text: row.runningBalance | penceToPound if row.runningBalance != null else '-' }
+              { text: row.runningBalance | penceToPound if row.runningBalance != null else '-' },
+              { text: row.accountType | formatPrisonerAccountType }
               ] %}
             {% set tableRows = (tableRows.push(rowData), tableRows) %}
         {% endfor %}
@@ -91,9 +91,9 @@
                     head: [
                       { text: "Date" },
                       { text: "Transaction description" },
-                      { text: "Account" },
                       { text: "Amount" },
-                      { text: "Balance" }
+                      { text: "Balance" },
+                      { text: "Account" }
                     ],
                     rows: tableRows
                   }) }}

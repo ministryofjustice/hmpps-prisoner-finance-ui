@@ -169,9 +169,9 @@
           { text: row.date | formatDateForView },
           { text: row.description },
           { html: '<span class="credit-amount">' ~ (row.credit | penceToPound) ~ '</span>' if row.credit > 0 else '<span> -' ~ (row.debit | penceToPound) ~ '</span>'},
+          { text: (row.runningBalance | penceToPound) if (row.runningBalance is defined and row.runningBalance !== null) else '-' },
           { text: row.accountType | formatPrisonerAccountType },
-          { text: row.location | convertPrisonIdToName(prisonNames)},
-          { text: (row.runningBalance | penceToPound) if (row.runningBalance is defined and row.runningBalance !== null) else '-' }
+          { text: row.location | convertPrisonIdToName(prisonNames)}
         ] %}
         {% set tableRows = (tableRows.push(rowData), tableRows) %}
       {% endfor %}
@@ -192,9 +192,9 @@
             { text: "Date" },
             { text: "Transaction description" },
             { text: "Amount" },
+            { text: "Balance"},
             { text: "Account" },
-            { text: "Location" },
-            { text: "Balance"}
+            { text: "Location" }
           ],
           rows: tableRows
         }) }}
