@@ -242,7 +242,7 @@ describe('prisoner profile page', () => {
     expect(closeMenu.text()).toBe('Close account')
   })
 
-  it('should render dash if running balance is null or undefined', () => {
+  it('should render dash if running balance is undefined', () => {
     const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', paramsWithoutLastRunningBalance)
 
     $ = cheerio.load(html)

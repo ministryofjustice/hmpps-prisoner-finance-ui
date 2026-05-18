@@ -186,7 +186,7 @@ describe('prisoner transactions page', () => {
     expect(noTransactionsMessage.text()).toContain('No transactions to show')
   })
 
-  it('should render dash if running balance is null or undefined', () => {
+  it('should render dash if running balance is undefined', () => {
     const html = njkEnv.render('pages/prisoner/transactions/prisonerTransactions.njk', paramsWithoutLastRunningBalance)
 
     $ = cheerio.load(html)

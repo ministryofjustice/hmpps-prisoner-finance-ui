@@ -571,7 +571,7 @@ test.describe('Prisoner Money', () => {
             checkMessages.push(expect(errorComponent).not.toBeVisible())
           }
         }
-        Promise.all(checkMessages)
+        await Promise.all(checkMessages)
 
         const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
         await expect(noTransactionsMessage).toBeVisible()
