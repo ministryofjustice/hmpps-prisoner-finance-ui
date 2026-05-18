@@ -159,15 +159,15 @@ test.describe('Prisoner Profile', () => {
     const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
     const spendsCard = prisonerProfilePage.balanceCards.locator('[data-testid="spends-card"]')
     await expect(spendsCard.locator('[data-testid="spends-card_header"]')).toContainText('Spends')
-    await expect(spendsCard.locator('[data-testid="spends-card_amount"]')).toContainText('12.34')
+    await expect(spendsCard.locator('[data-testid="spends-card_amount"]')).toContainText('£12.34')
 
     const privateCashCard = prisonerProfilePage.balanceCards.locator('[data-testid="private-cash-card"]')
     await expect(privateCashCard.locator('[data-testid="private-cash-card_header"]')).toContainText('Private cash')
-    await expect(privateCashCard.locator('[data-testid="private-cash-card_amount"]')).toContainText('34.56')
+    await expect(privateCashCard.locator('[data-testid="private-cash-card_amount"]')).toContainText('£34.56')
 
     const savingsCard = prisonerProfilePage.balanceCards.locator('[data-testid="savings-card"]')
     await expect(savingsCard.locator('[data-testid="savings-card_header"]')).toContainText('Savings')
-    await expect(savingsCard.locator('[data-testid="savings-card_amount"]')).toContainText('0.00')
+    await expect(savingsCard.locator('[data-testid="savings-card_amount"]')).toContainText('£0.00')
   })
 
   test('Should contain a link to the expanded transactions link', async ({ page }) => {
