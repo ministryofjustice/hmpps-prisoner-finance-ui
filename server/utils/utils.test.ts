@@ -12,12 +12,12 @@ import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
 
 describe('penceToPound', () => {
   it.each([
-    { input: 0, expected: '£0.00' },
-    { input: 1, expected: '£0.01' },
-    { input: 10, expected: '£0.10' },
-    { input: 99, expected: '£0.99' },
-    { input: 123456, expected: '£1234.56' },
-    { input: -250, expected: '£-2.50' },
+    { input: 0, expected: '0.00' },
+    { input: 1, expected: '0.01' },
+    { input: 10, expected: '0.10' },
+    { input: 99, expected: '0.99' },
+    { input: 123456, expected: '1234.56' },
+    { input: -250, expected: '-2.50' },
     { input: null, expected: 'NaN' },
     { input: NaN, expected: 'NaN' },
   ])('converts $input pence to $expected', ({ input, expected }) => {

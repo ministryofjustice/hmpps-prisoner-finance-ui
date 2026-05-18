@@ -2,6 +2,7 @@
 
 {% from "components/balanceCard/balanceCard.njk" import balanceCard %}
 {% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
+{% from "components/transactionAmount/transactionAmount.njk" import transactionAmount %}
 {% from "govuk/components/table/macro.njk" import govukTable %}
 {% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
@@ -10,7 +11,6 @@
 {% from "moj/components/filter/macro.njk" import mojFilter %}
 {% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
 {% from "moj/components/pagination/macro.njk" import mojPagination %}
-{% from "govuk/components/pagination/macro.njk" import govukPagination %}
 
 {% set pageTitle = applicationName + " - Finance" %}
 {% set mainClasses = "govuk-body" %}
@@ -168,8 +168,8 @@
         {% set rowData = [
           { text: row.date | formatDateForView },
           { text: row.description },
-          { text: row.credit | penceToPound},
-          { text: row.debit | penceToPound},
+          { html: transactionAmount(row)},
+          { text: (row.runningBalance | penceToPound) if (row.runningBalance is defined) else '-' },
           { text: row.accountType | formatPrisonerAccountType },
           { text: row.location | convertPrisonIdToName(prisonNames)}
         ] %}
@@ -186,13 +186,14 @@
           attributes: {
             "data-testid": "prisoner-transactions-table"
           },
+          classes: "transaction-table",
           caption: "",
           captionClasses: "govuk-table__caption--m",
           head: [
             { text: "Date" },
             { text: "Transaction description" },
-            { text: "Credit" },
-            { text: "Debit" },
+            { text: "Amount" },
+            { text: "Balance"},
             { text: "Account" },
             { text: "Location" }
           ],

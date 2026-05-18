@@ -28,7 +28,7 @@ export const penceToPound = (pence: number): string => {
 
   const pennies = remainder.toString().padStart(2, '0')
 
-  return `£${sign}${pounds}.${pennies}`
+  return `${sign}${pounds}.${pennies}`
 }
 
 export const formatDateForView = (utcString: string): string => {

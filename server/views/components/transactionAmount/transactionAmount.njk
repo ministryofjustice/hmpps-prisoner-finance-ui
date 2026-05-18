@@ -1,0 +1,9 @@
+
+
+{% macro transactionAmount(row) %}
+  {% if row.credit > 0 %}
+    <span class="credit-amount">{{ row.credit | penceToPound }}</span>
+  {% else %}
+    <span> -{{ row.debit | penceToPound }}</span>
+  {% endif %}
+{% endmacro %}

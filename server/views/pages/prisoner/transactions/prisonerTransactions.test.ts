@@ -13,6 +13,7 @@ describe('prisoner transactions page', () => {
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
+      runningBalance: 0,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -21,6 +22,7 @@ describe('prisoner transactions page', () => {
       debit: 0,
       location: 'MDI',
       accountType: 'SAVINGS',
+      runningBalance: 20,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -29,6 +31,7 @@ describe('prisoner transactions page', () => {
       debit: 10,
       location: '',
       accountType: 'CASH',
+      runningBalance: 10,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -37,6 +40,46 @@ describe('prisoner transactions page', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
+      runningBalance: 20,
+    },
+  ]
+
+  const payloadWithoutLastRunningBalance: Array<PrisonerTransactionResponse> = [
+    {
+      date: '2026-03-10T10:43:28.094Z',
+      description: '',
+      credit: 0,
+      debit: 10,
+      location: 'LEI',
+      accountType: 'CASH',
+      runningBalance: 0,
+    },
+    {
+      date: '2026-03-10T10:43:28.094Z',
+      description: '',
+      credit: 20,
+      debit: 0,
+      location: 'MDI',
+      accountType: 'SAVINGS',
+      runningBalance: 20,
+    },
+    {
+      date: '2026-03-10T10:43:28.094Z',
+      description: 'Cash to Savings Transfer',
+      credit: 0,
+      debit: 10,
+      location: '',
+      accountType: 'CASH',
+      runningBalance: 10,
+    },
+    {
+      date: '2026-03-10T10:43:28.094Z',
+      description: 'Cash to Savings Transfer',
+      credit: 10,
+      debit: 0,
+      location: '',
+      accountType: 'SAVINGS',
+      runningBalance: undefined,
     },
   ]
 
@@ -47,6 +90,16 @@ describe('prisoner transactions page', () => {
     prisonNumber,
     applicationName: 'Hmpps Prisoner Finance Ui',
     transactions: payload,
+    prisoner: { firstName: 'BOB', lastName: 'Taylor' },
+    currentBalance: 1000,
+    holdBalance: 0,
+    prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
+  }
+
+  const paramsWithoutLastRunningBalance = {
+    prisonNumber,
+    applicationName: 'Hmpps Prisoner Finance Ui',
+    transactions: payloadWithoutLastRunningBalance,
     prisoner: { firstName: 'BOB', lastName: 'Taylor' },
     currentBalance: 1000,
     holdBalance: 0,
@@ -131,5 +184,25 @@ describe('prisoner transactions page', () => {
     expect(cheerioPage('table[data-testid="prisoner-transactions-table"]').length).toBe(0)
     expect(noTransactionsMessage.length).toBe(1)
     expect(noTransactionsMessage.text()).toContain('No transactions to show')
+  })
+
+  it('should render dash if running balance is undefined', () => {
+    const html = njkEnv.render('pages/prisoner/transactions/prisonerTransactions.njk', paramsWithoutLastRunningBalance)
+
+    $ = cheerio.load(html)
+
+    const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
+
+    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(6)
+    expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(4)
+
+    const lastTransactionRunningBalance = $('table[data-testid="prisoner-transactions-table"] tbody tr')
+      .last()
+      .find('td')
+      .eq(3)
+      .text()
+      .trim()
+
+    expect(lastTransactionRunningBalance).toBe('-')
   })
 })

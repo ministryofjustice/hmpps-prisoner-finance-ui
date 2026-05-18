@@ -13,6 +13,7 @@ describe('prisoner profile page', () => {
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
+      runningBalance: 0,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -21,6 +22,7 @@ describe('prisoner profile page', () => {
       debit: 0,
       location: 'MDI',
       accountType: 'SAVINGS',
+      runningBalance: 20,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -29,6 +31,7 @@ describe('prisoner profile page', () => {
       debit: 10,
       location: '',
       accountType: 'CASH',
+      runningBalance: 10,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -37,6 +40,7 @@ describe('prisoner profile page', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
+      runningBalance: 20,
     },
     {
       date: '2026-03-10T10:41:28.094Z',
@@ -45,6 +49,55 @@ describe('prisoner profile page', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
+      runningBalance: 30,
+    },
+  ]
+
+  const payloadWithoutLastRunningBalance: Array<PrisonerTransactionResponse> = [
+    {
+      date: '2026-03-10T10:43:28.094Z',
+      description: '',
+      credit: 0,
+      debit: 10,
+      location: 'LEI',
+      accountType: 'CASH',
+      runningBalance: 99,
+    },
+    {
+      date: '2026-03-10T10:43:28.094Z',
+      description: '',
+      credit: 20,
+      debit: 0,
+      location: 'MDI',
+      accountType: 'SAVINGS',
+      runningBalance: 20,
+    },
+    {
+      date: '2026-03-10T10:43:28.094Z',
+      description: 'Cash to Savings Transfer',
+      credit: 0,
+      debit: 10,
+      location: '',
+      accountType: 'CASH',
+      runningBalance: 10,
+    },
+    {
+      date: '2026-03-10T10:43:28.094Z',
+      description: 'Cash to Savings Transfer',
+      credit: 10,
+      debit: 0,
+      location: '',
+      accountType: 'SAVINGS',
+      runningBalance: 20,
+    },
+    {
+      date: '2026-03-10T10:41:28.094Z',
+      description: 'Cash to Savings Transfer',
+      credit: 10,
+      debit: 0,
+      location: '',
+      accountType: 'SAVINGS',
+      runningBalance: undefined,
     },
   ]
 
@@ -54,6 +107,31 @@ describe('prisoner profile page', () => {
   const params = {
     applicationName: 'Hmpps Prisoner Finance Ui',
     transactions: payload,
+    subAccountBalances: {
+      spends: { amount: 1234 },
+      privateCash: { amount: 3456 },
+      savings: { amount: 0 },
+    },
+    prisoner: {
+      firstName: 'John',
+      lastName: 'Smith',
+      prisonerNumber: 'AB123456',
+      cellLocation: 'RECP',
+      csra: 'Standard',
+      category: 'C',
+      currentIncentive: {
+        level: {
+          code: 'STD',
+          description: 'Standard',
+        },
+      },
+    },
+    prisonNumber: 'AB123456',
+  }
+
+  const paramsWithoutLastRunningBalance = {
+    applicationName: 'Hmpps Prisoner Finance Ui',
+    transactions: payloadWithoutLastRunningBalance,
     subAccountBalances: {
       spends: { amount: 1234 },
       privateCash: { amount: 3456 },
@@ -105,14 +183,14 @@ describe('prisoner profile page', () => {
     expect(summaryContainer.find('.govuk-table').length).not.toBe(0)
   })
 
-  it('Should render the transactions table with 5 rows', () => {
+  it('should render the transactions table with 5 rows', () => {
     const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
 
     expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(5)
     expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(5)
   })
 
-  it('Should render a balance card for Spends, Private cash, Savings', () => {
+  it('should render a balance card for Spends, Private cash, Savings', () => {
     const balanceCards = $('.hmpps-balance-cards')
     expect(balanceCards.length).not.toBe(0)
 
@@ -131,7 +209,7 @@ describe('prisoner profile page', () => {
     expect(savingsCard.find('[data-testid="savings-card_amount"]').text()).toEqual('£0.00')
   })
 
-  it('Should render no transactions', () => {
+  it('should render no transactions', () => {
     const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
       ...params,
       transactions: [],
@@ -143,7 +221,7 @@ describe('prisoner profile page', () => {
     expect(noTransactionsMessage.text()).toContain('No transactions to show')
   })
 
-  it('Should render the actions menu', () => {
+  it('should render the actions menu', () => {
     const creditMenu = $('[data-testid="credit-menu"]')
     expect(creditMenu.text()).toBe('Credit account')
     expect(creditMenu.attr('href')).toBe('/prisoner/AB123456/money/credit-a-prisoner/credit-to')
@@ -162,5 +240,25 @@ describe('prisoner profile page', () => {
 
     const closeMenu = $('[data-testid="close-menu"]')
     expect(closeMenu.text()).toBe('Close account')
+  })
+
+  it('should render dash if running balance is undefined', () => {
+    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', paramsWithoutLastRunningBalance)
+
+    $ = cheerio.load(html)
+
+    const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
+
+    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(5)
+    expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(5)
+
+    const lastTransactionRunningBalance = $('table[data-testid="prisoner-transactions-table"] tbody tr')
+      .last()
+      .find('td')
+      .eq(3)
+      .text()
+      .trim()
+
+    expect(lastTransactionRunningBalance).toBe('-')
   })
 })

@@ -18,6 +18,7 @@ $govuk-page-width: $moj-page-width;
 @import './components/actionBlock';
 @import './components/profile-banner';
 @import './components/prisonerTransactions';
+@import './components/transaction-table';
 
 
 @import './overrides/local';

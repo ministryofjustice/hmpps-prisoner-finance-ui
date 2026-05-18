@@ -23,6 +23,7 @@ test.describe('Prisoner Money', () => {
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
+      runningBalance: 0,
     },
     {
       date: '2026-03-10T10:47:28.094Z',
@@ -31,6 +32,7 @@ test.describe('Prisoner Money', () => {
       debit: 0,
       location: 'MDI',
       accountType: 'SAVINGS',
+      runningBalance: 20,
     },
     {
       date: '2026-03-10T10:46:28.094Z',
@@ -39,6 +41,7 @@ test.describe('Prisoner Money', () => {
       debit: 10,
       location: '',
       accountType: 'CASH',
+      runningBalance: 10,
     },
     {
       date: '2026-03-10T10:45:28.194Z',
@@ -47,6 +50,7 @@ test.describe('Prisoner Money', () => {
       debit: 0,
       location: 'XXX',
       accountType: 'SAVINGS',
+      runningBalance: undefined,
     },
   ]
 
@@ -136,21 +140,28 @@ test.describe('Prisoner Money', () => {
       await page.goto(url)
 
       const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
-      expect(prisonerMoneyPage.heading).toBeVisible()
-      expect(prisonerMoneyPage.heading).toContainText(pageHeading)
-      expect(prisonerMoneyPage.tableTransactions).toBeVisible()
-      expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
+      await expect(prisonerMoneyPage.heading).toBeVisible()
+      await expect(prisonerMoneyPage.heading).toContainText(pageHeading)
+      await expect(prisonerMoneyPage.tableTransactions).toBeVisible()
+      await expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
+
+      const headers = await prisonerMoneyPage.tableTransactions.locator('thead th')
+      await expect(headers.nth(0)).toHaveText('Date')
+      await expect(headers.nth(1)).toHaveText('Transaction description')
+      await expect(headers.nth(2)).toHaveText('Amount')
+      await expect(headers.nth(3)).toHaveText('Balance')
+      await expect(headers.nth(4)).toHaveText('Account')
+      await expect(headers.nth(5)).toHaveText('Location')
 
       const rows = prisonerMoneyPage.tableTransactions.locator('tbody tr')
-
-      expect(rows).toHaveCount(transactionPayload.length)
+      await expect(rows).toHaveCount(transactionPayload.length)
 
       // Row 1
       let cells = rows.nth(0).locator('td')
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:48')
       await expect(cells.nth(1)).toHaveText('test')
-      await expect(cells.nth(2)).toHaveText('£0.00')
-      await expect(cells.nth(3)).toHaveText('£0.10')
+      await expect(cells.nth(2)).toHaveText('-0.10')
+      await expect(cells.nth(3)).toHaveText('0.00')
       await expect(cells.nth(4)).toHaveText('Private cash')
       await expect(cells.nth(5)).toHaveText('Leeds (HMP)')
 
@@ -158,8 +169,9 @@ test.describe('Prisoner Money', () => {
       cells = rows.nth(1).locator('td')
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:47')
       await expect(cells.nth(1)).toHaveText('')
-      await expect(cells.nth(2)).toHaveText('£0.20')
-      await expect(cells.nth(3)).toHaveText('£0.00')
+      await expect(cells.nth(2)).toHaveText('0.20')
+      await expect(cells.nth(2)).toHaveCSS('font-weight', '400')
+      await expect(cells.nth(3)).toHaveText('0.20')
       await expect(cells.nth(4)).toHaveText('Savings')
       await expect(cells.nth(5)).toHaveText('Moorland (HMP & YOI)')
 
@@ -167,8 +179,8 @@ test.describe('Prisoner Money', () => {
       cells = rows.nth(2).locator('td')
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:46')
       await expect(cells.nth(1)).toHaveText('Cash to Savings Transfer')
-      await expect(cells.nth(2)).toHaveText('£0.00')
-      await expect(cells.nth(3)).toHaveText('£0.10')
+      await expect(cells.nth(2)).toHaveText('-0.10')
+      await expect(cells.nth(3)).toHaveText('0.10')
       await expect(cells.nth(4)).toHaveText('Private cash')
       await expect(cells.nth(5)).toHaveText('')
 
@@ -176,8 +188,9 @@ test.describe('Prisoner Money', () => {
       cells = rows.nth(3).locator('td')
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:45')
       await expect(cells.nth(1)).toHaveText('Transaction in secret prison')
-      await expect(cells.nth(2)).toHaveText('£0.10')
-      await expect(cells.nth(3)).toHaveText('£0.00')
+      await expect(cells.nth(2)).toHaveText('0.10')
+      await expect(cells.nth(2)).toHaveCSS('font-weight', '400')
+      await expect(cells.nth(3)).toHaveText('-')
       await expect(cells.nth(4)).toHaveText('Savings')
       await expect(cells.nth(5)).toHaveText('XXX')
     })
@@ -185,22 +198,19 @@ test.describe('Prisoner Money', () => {
     test(`${pageName} - Should display the balance cards with the total amounts`, async ({ page }) => {
       await baseStubs(subAccountReference)
       await page.goto(url)
+
       const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
+      await expect(prisonerMoneyPage.currentBalanceCard).toBeVisible()
+      await expect(prisonerMoneyPage.holdBalanceCard).toBeVisible()
+      await expect(prisonerMoneyPage.totalBalanceCard).toBeVisible()
+      await expect(prisonerMoneyPage.currentBalanceCard.locator('h2')).toContainText('Current balance')
+      await expect(prisonerMoneyPage.currentBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
 
-      expect(prisonerMoneyPage.currentBalanceCard).toBeVisible()
+      await expect(prisonerMoneyPage.holdBalanceCard.locator('h2')).toContainText('Hold balance')
+      await expect(prisonerMoneyPage.holdBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£0.00')
 
-      expect(prisonerMoneyPage.holdBalanceCard).toBeVisible()
-
-      expect(prisonerMoneyPage.totalBalanceCard).toBeVisible()
-
-      expect(prisonerMoneyPage.currentBalanceCard.locator('h2')).toContainText('Current balance')
-      expect(prisonerMoneyPage.currentBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
-
-      expect(prisonerMoneyPage.holdBalanceCard.locator('h2')).toContainText('Hold balance')
-      expect(prisonerMoneyPage.holdBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£0.00')
-
-      expect(prisonerMoneyPage.totalBalanceCard.locator('h2')).toContainText('Total balance')
-      expect(prisonerMoneyPage.totalBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
+      await expect(prisonerMoneyPage.totalBalanceCard.locator('h2')).toContainText('Total balance')
+      await expect(prisonerMoneyPage.totalBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
     })
 
     test(`${pageName} - Backlink should render and return to profile page`, async ({ page }) => {
@@ -209,8 +219,7 @@ test.describe('Prisoner Money', () => {
       await page.goto(url)
 
       const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
-
-      expect(prisonerMoneyPage.backButton).toBeVisible()
+      await expect(prisonerMoneyPage.backButton).toBeVisible()
 
       // stubs for profile page
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
@@ -236,8 +245,8 @@ test.describe('Prisoner Money', () => {
       const response = await page.goto(url)
 
       expect(response?.status()).toBe(404)
-      expect(page.locator('[data-testid="error-page-message"]')).toContainText('Account not found')
-      expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
+      await expect(page.locator('[data-testid="error-page-message"]')).toContainText('Account not found')
+      await expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
     })
 
     test(`${pageName} - should handle page out of bound and redirect to a 404`, async ({ page }) => {
@@ -251,10 +260,9 @@ test.describe('Prisoner Money', () => {
       await prisonRegisterApi.stubGetPrisonNames()
 
       const response = await page.goto(`${url}?page=999`)
-
       expect(response?.status()).toBe(404)
-      expect(page.locator('[data-testid="error-page-message"]')).toContainText('Page requested is out of range')
-      expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
+      await expect(page.locator('[data-testid="error-page-message"]')).toContainText('Page requested is out of range')
+      await expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
     })
 
     test(`${pageName} - Should handle 500 and render error`, async ({ page }) => {
@@ -264,10 +272,9 @@ test.describe('Prisoner Money', () => {
       await prisonRegisterApi.stubGetPrisonNames()
 
       const response = await page.goto(url)
-
       expect(response?.status()).toBe(500)
-      expect(page.locator('[data-testid="error-page-message"]')).toContainText('Internal Server Error')
-      expect(page.locator('[data-testid="error-page-status"]')).toContainText('500')
+      await expect(page.locator('[data-testid="error-page-message"]')).toContainText('Internal Server Error')
+      await expect(page.locator('[data-testid="error-page-status"]')).toContainText('500')
     })
 
     test(`${pageName} - Should redirect to sign-out when prisoner is outside user caseload`, async ({ page }) => {
@@ -291,15 +298,15 @@ test.describe('Prisoner Money', () => {
     test(`${pageName} - Should display prisoner information header`, async ({ page }) => {
       await baseStubs(subAccountReference)
       await page.goto(url)
-      const { prisonerInformationHeader } = await PrisonerMoneyPage.verifyOnPage(page)
 
-      expect(prisonerInformationHeader).toBeVisible()
-      expect(page.locator('[data-testid="prisonerName"]')).toContainText('Smith, John')
-      expect(page.locator('[data-testid="prisonerNumber"]')).toContainText(prisonNumber)
-      expect(page.locator('[data-testid="cell-location"]')).toContainText('RECP')
-      expect(page.locator('[data-testid="category"]')).toContainText('C')
-      expect(page.locator('[data-testid="csra"]')).toContainText('Standard')
-      expect(page.locator('[data-testid="incentive-level"]')).toContainText('Enhanced')
+      const { prisonerInformationHeader } = await PrisonerMoneyPage.verifyOnPage(page)
+      await expect(prisonerInformationHeader).toBeVisible()
+      await expect(page.locator('[data-testid="prisonerName"]')).toContainText('Smith, John')
+      await expect(page.locator('[data-testid="prisonerNumber"]')).toContainText(prisonNumber)
+      await expect(page.locator('[data-testid="cell-location"]')).toContainText('RECP')
+      await expect(page.locator('[data-testid="category"]')).toContainText('C')
+      await expect(page.locator('[data-testid="csra"]')).toContainText('Standard')
+      await expect(page.locator('[data-testid="incentive-level"]')).toContainText('Enhanced')
     })
 
     test(`${pageName} - should display the prisoner information tab`, async ({ page }) => {
@@ -326,11 +333,11 @@ test.describe('Prisoner Money', () => {
       await page.goto(url)
 
       const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
-      expect(prisonerMoneyPage.tableTransactions).not.toBeVisible()
+      await expect(prisonerMoneyPage.tableTransactions).not.toBeVisible()
 
       const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
-      expect(noTransactionsMessage).toBeVisible()
-      expect(noTransactionsMessage).toHaveText('No transactions to show')
+      await expect(noTransactionsMessage).toBeVisible()
+      await expect(noTransactionsMessage).toHaveText('No transactions to show')
     })
 
     test(`${pageName} - should display the filter`, async ({ page }) => {
@@ -564,13 +571,13 @@ test.describe('Prisoner Money', () => {
             checkMessages.push(expect(errorComponent).not.toBeVisible())
           }
         }
-        Promise.all(checkMessages)
+        await Promise.all(checkMessages)
 
         const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
-        expect(noTransactionsMessage).toBeVisible()
-        expect(noTransactionsMessage).toHaveText("Please fix the filter's errors to view transactions")
+        await expect(noTransactionsMessage).toBeVisible()
+        await expect(noTransactionsMessage).toHaveText("Please fix the filter's errors to view transactions")
 
-        expect(page).toHaveURL(expectedUrl)
+        await expect(page).toHaveURL(expectedUrl)
       })
     }
 
@@ -583,8 +590,8 @@ test.describe('Prisoner Money', () => {
       const endDateFilter = page.locator('input[id="endDate"]')
       const applyFilterButton = page.locator('[data-test-id="submit-button"]')
 
-      expect(startDateFilter).toBeVisible()
-      expect(endDateFilter).toBeVisible()
+      await expect(startDateFilter).toBeVisible()
+      await expect(endDateFilter).toBeVisible()
 
       const startDateVal = '10/10/2010'
       const endDateVal = '10/12/2010'
@@ -627,10 +634,10 @@ test.describe('Prisoner Money', () => {
 
       const applyFilterButton = page.locator('[data-test-id="submit-button"]')
 
-      expect(prisonerMoneyPage.startDateFilter).toBeVisible()
-      expect(prisonerMoneyPage.endDateFilter).toBeVisible()
-      expect(prisonerMoneyPage.creditFilter).toBeVisible()
-      expect(prisonerMoneyPage.debitFilter).toBeVisible()
+      await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
+      await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
+      await expect(prisonerMoneyPage.creditFilter).toBeVisible()
+      await expect(prisonerMoneyPage.debitFilter).toBeVisible()
 
       const startDateVal = '10/10/2010'
       const endDateVal = '10/12/2010'
@@ -658,12 +665,12 @@ test.describe('Prisoner Money', () => {
 
       await clearFilters.click()
 
-      expect(page).toHaveURL(`${url}?#filterForm`)
+      await expect(page).toHaveURL(`${url}?#filterForm`)
 
       expect(await prisonerMoneyPage.startDateFilter.textContent()).toHaveLength(0)
       expect(await prisonerMoneyPage.endDateFilter.textContent()).toHaveLength(0)
-      expect(prisonerMoneyPage.creditFilter).not.toBeChecked()
-      expect(prisonerMoneyPage.debitFilter).not.toBeChecked()
+      await expect(prisonerMoneyPage.creditFilter).not.toBeChecked()
+      await expect(prisonerMoneyPage.debitFilter).not.toBeChecked()
     })
 
     test(`${pageName} - Should render pagination component and allow progression`, async ({ page }) => {
@@ -700,7 +707,6 @@ test.describe('Prisoner Money', () => {
       await page.goto(`${url}/${buildQueriesForPage(10)}`)
 
       const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page)
-
       await expect(topPagination).toBeVisible()
       await expect(bottomPagination).toBeVisible()
 
