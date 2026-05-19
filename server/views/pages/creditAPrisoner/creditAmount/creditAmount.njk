@@ -29,16 +29,15 @@
 
   <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
+  {% call govukFieldset({
+    legend: {
+      text: "Credit amount",
+      classes: "govuk-fieldset__legend--l",
+      isPageHeading: true
+    }
+  }) %}
 
-{% call govukFieldset({
-  legend: {
-    text: "Credit amount",
-    classes: "govuk-fieldset__legend--l",
-    isPageHeading: true
-  }
-}) %}
-
-{{ govukInput({
+  {{ govukInput({
     label: {
       text: "Credit amount"
     },
@@ -46,16 +45,16 @@
     name: "creditAmount",
     prefix: {
         text: "£"
-    }, 
+    },
     classes: "govuk-input--width-10",
     attributes: {
         "data-testid" : "amount-field"
-    }, 
-    errorMessage: { text: errorMap.creditAmount } if errorMap.creditAmount else null, 
+    },
+    errorMessage: { text: errorMap.creditAmount } if errorMap.creditAmount else null,
     value: creditAmount
   }) }}
 
-{{ govukInput({
+  {{ govukInput({
     label: {
       text: "Description"
     },
@@ -63,22 +62,21 @@
     name: "description",
     attributes: {
         "data-testid" : "description-field"
-    }, 
-    errorMessage: { text: errorMap.description } if errorMap.description else null, 
+    },
+    errorMessage: { text: errorMap.description } if errorMap.description else null,
     value: description
   }) }}
 
+  {% endcall %}
 
-
-    {% endcall %}
-
-    {{ govukButton({
-      text: "Done",
-      type: "submit",
-       attributes:{
-            "data-testid" : "done-button"
-            }
-    }) }}
+  {{ govukButton({
+    text: "Done",
+    type: "submit",
+    attributes:{
+          "data-testid" : "done-button"
+          },
+    preventDoubleClick: true
+  }) }}
 
   </form>
 </div>
