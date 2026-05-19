@@ -72,7 +72,7 @@
             { text: row.date | formatDateForView },
             { text: row.description },
             { html: transactionAmount(row)},
-            { text: row.runningBalance | penceToPound if row.runningBalance is defined else '-' },
+            { text: row.runningBalance | penceToPound if row.runningBalance !== null else '-' },
             { text: row.accountType | formatPrisonerAccountType }
             ] %}
           {% set tableRows = (tableRows.push(rowData), tableRows) %}

@@ -79,7 +79,7 @@ describe('prisoner transactions page', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
-      runningBalance: undefined,
+      runningBalance: null,
     },
   ]
 
@@ -186,7 +186,7 @@ describe('prisoner transactions page', () => {
     expect(noTransactionsMessage.text()).toContain('No transactions to show')
   })
 
-  it('should render dash if running balance is undefined', () => {
+  it('should render dash if running balance is null', () => {
     const html = njkEnv.render('pages/prisoner/transactions/prisonerTransactions.njk', paramsWithoutLastRunningBalance)
 
     $ = cheerio.load(html)
