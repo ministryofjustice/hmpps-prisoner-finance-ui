@@ -5,5 +5,5 @@ export interface PrisonerTransactionResponse {
   debit: number
   location: string
   accountType: string
-  runningBalance: number | undefined
+  runningBalance: number | null
 }

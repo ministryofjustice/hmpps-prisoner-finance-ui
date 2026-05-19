@@ -50,7 +50,7 @@ test.describe('Prisoner Money', () => {
       debit: 0,
       location: 'XXX',
       accountType: 'SAVINGS',
-      runningBalance: undefined,
+      runningBalance: null,
     },
   ]
 
