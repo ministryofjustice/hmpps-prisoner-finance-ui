@@ -8,7 +8,7 @@
 
 <h1 id="prisonerFinanceHeading">Prisoner Finance</h1>
 
-<div class="card-group govuk-grid-row" id="prisonerFinanceCard">
+<div class="card-group govuk-grid-row" id="prisonerFinanceCards">
   <div class="govuk-grid-column-one-third card-group__item">
     {{ card({
       "href": "/prisoner/A9971EC",
@@ -16,6 +16,15 @@
       "heading": "View prisoner finances",
       "description": "View transactions and balances for a prisoner's accounts.",
       "data-qa": "view-prisoner-finance-card"
+    }) }}
+  </div>
+   <div class="govuk-grid-column-one-third card-group__item">
+    {{ card({
+      "href": "/grant-bonus-to-prisoners",
+      "clickable": "true",
+      "heading": "Grant a bonus to prisoners",
+      "description": "Batch process a bonus grant to all prisoners in your caseload.",
+      "data-qa": "grant-a-bonus-card"
     }) }}
   </div>
 </div>
