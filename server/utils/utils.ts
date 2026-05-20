@@ -86,3 +86,31 @@ export const formatPrisonerAccountType = (accountType: string): string => {
       return accountType
   }
 }
+
+interface RadioButtonOption {
+  value: string
+  text: string
+  attributes: {
+    'data-testid'?: string
+  }
+}
+
+export const mapItemsForRadioButtons = <T extends object>({
+  input,
+  valueKey,
+  textKey,
+  dataTestId,
+}: {
+  input: T[]
+  valueKey: keyof T
+  textKey: keyof T
+  dataTestId: string
+}): RadioButtonOption[] => {
+  return input.map(item => ({
+    value: String(item[valueKey]),
+    text: String(item[textKey]),
+    attributes: {
+      'data-testid': dataTestId,
+    },
+  }))
+}

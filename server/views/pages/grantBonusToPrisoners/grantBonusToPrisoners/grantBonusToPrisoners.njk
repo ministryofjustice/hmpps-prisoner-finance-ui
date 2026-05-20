@@ -1,0 +1,64 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+
+{% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
+
+{% set pageTitle = applicationName + " - Profile" %}
+{% set mainClasses = "govuk-body" %}
+
+{% block beforeContent %}
+
+  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+
+  {{ prisonerInformationHeader({
+      prisoner:prisoner
+  }) }}
+
+
+{% endblock %}
+
+{% block content %}
+
+<div class="grant-bonus-to-prisoners-page govuk-grid-row">
+
+  <form method="POST" action="./grant-bonus-to-prisoners" data-testid='select-caseload-form'>
+
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+
+{% call govukFieldset({
+  legend: {
+    text: "Grant bonus to prisoners",
+    classes: "govuk-fieldset__legend--l",
+    isPageHeading: true
+  }
+}) %}
+
+    {{ govukRadios({
+      name: "Bonus to",
+      fieldset: {
+      },
+      value: selectedCaseload,
+      items: caseloads,
+      errorMessage: { text: errorMap.errorText } if errorMap.errorText else null
+    }) }}
+
+
+
+    {% endcall %}
+
+    {{ govukButton({
+      text: "Continue",
+      type: "submit",
+       attributes:{
+            "data-testid" : "continue-button"
+            }
+    }) }}
+
+  </form>
+</div>
+
+{% endblock %}

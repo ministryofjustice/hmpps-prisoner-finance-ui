@@ -7,6 +7,7 @@ import {
   convertPrisonIdToName,
   datePickerToISODate,
   formatPrisonerAccountType,
+  mapItemsForRadioButtons,
 } from './utils'
 import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
 
@@ -125,5 +126,25 @@ describe('formatPrisonerAccountType', () => {
     ['Savings', 'SAVINGS', 'Savings'],
   ])('%s formatPrisonerAccountType(%s, %s)', (_: string, input: string, expected: string) => {
     expect(formatPrisonerAccountType(input)).toEqual(expected)
+  })
+})
+
+describe('mapItemsForRadioButtons', () => {
+  it('should map the value, text, and data-testid fields correctly', () => {
+    const input = [
+      {
+        fieldA: 'hello',
+        fieldB: 'also here',
+        fieldC: 'oioi',
+        fieldD: 'ignore me',
+      },
+    ]
+
+    const output = mapItemsForRadioButtons({ input, valueKey: 'fieldA', textKey: 'fieldB', dataTestId: 'oioi' })
+
+    const outputItem = output[0]
+    expect(outputItem.value).toBe('hello')
+    expect(outputItem.text).toBe('also here')
+    expect(outputItem.attributes['data-testid']).toBe('oioi')
   })
 })
