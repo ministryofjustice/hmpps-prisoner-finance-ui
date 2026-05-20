@@ -4,12 +4,15 @@ import AbstractPage from './abstractPage'
 export default class IndexPage extends AbstractPage {
   readonly heading: Locator
 
-  readonly card: Locator
+  readonly viewPrisonerFinanceCard: Locator
+
+  readonly grantBonusToPrisonersCard: Locator
 
   private constructor(page: Page) {
     super(page)
     this.heading = page.locator('#prisonerFinanceHeading')
-    this.card = page.locator('#prisonerFinanceCard')
+    this.viewPrisonerFinanceCard = page.locator('[data-qa="view-prisoner-finance-card"]')
+    this.grantBonusToPrisonersCard = page.locator('[data-qa="grant-a-bonus-card"]')
   }
 
   static async verifyOnPage(page: Page): Promise<IndexPage> {

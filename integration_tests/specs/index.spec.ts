@@ -4,17 +4,19 @@ import { login } from '../testUtils'
 import IndexPage from '../pages/indexPage'
 
 test.describe('Index Page', () => {
-  test('Should display prisoner finance title and card', async ({ page }) => {
+  test('Should display prisoner finance title and view prisoner finances card', async ({ page }) => {
     await login(page)
 
     const index = await IndexPage.verifyOnPage(page)
     expect(index.heading).toBeVisible()
     expect(index.heading).toContainText('Prisoner Finance')
 
-    expect(index.card).toBeVisible()
-    expect(index.card.locator('h2')).toContainText('View prisoner finances')
-    expect(index.card.locator('p')).toContainText("View transactions and balances for a prisoner's accounts.")
-    expect(index.card.locator('a')).toHaveAttribute('href', '/prisoner/A9971EC')
+    expect(index.viewPrisonerFinanceCard).toBeVisible()
+    expect(index.viewPrisonerFinanceCard.locator('h2')).toContainText('View prisoner finances')
+    expect(index.viewPrisonerFinanceCard.locator('p')).toContainText(
+      "View transactions and balances for a prisoner's accounts.",
+    )
+    expect(index.viewPrisonerFinanceCard.locator('a')).toHaveAttribute('href', '/prisoner/A9971EC')
   })
 
   test('Should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
@@ -27,5 +29,18 @@ test.describe('Index Page', () => {
       .analyze()
 
     expect(accessibilityScanResults.violations).toEqual([])
+  })
+
+  test('Should display grant bonus to prisoner card', async ({ page }) => {
+    await login(page)
+
+    const index = await IndexPage.verifyOnPage(page)
+
+    expect(index.grantBonusToPrisonersCard).toBeVisible()
+    expect(index.grantBonusToPrisonersCard.locator('h2')).toContainText('Grant a bonus to prisoners')
+    expect(index.grantBonusToPrisonersCard.locator('p')).toContainText(
+      'Batch process a bonus grant to all prisoners in your caseload.',
+    )
+    expect(index.grantBonusToPrisonersCard.locator('a')).toHaveAttribute('href', '/grant-bonus-to-prisoners')
   })
 })
