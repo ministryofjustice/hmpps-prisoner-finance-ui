@@ -19,6 +19,7 @@ import logger from '../../logger'
 import PrisonerFinanceApiClient from '../clients/prisonerFinanceApi'
 import PrisonerSearchApiClient from '../clients/prisonerSearchApiClient'
 import PrisonRegisterApiClient from '../clients/prisonRegisterApiClient'
+import PrisonApiClient from '../clients/prisonApiClient'
 
 export const dataAccess = () => {
   const hmppsAuthClient = new AuthenticationClient(
@@ -35,6 +36,7 @@ export const dataAccess = () => {
     prisonerFinanceApiClient: new PrisonerFinanceApiClient(hmppsAuthClient),
     prisonerSearchApiClient: new PrisonerSearchApiClient(hmppsAuthClient),
     prisonRegisterApiClient: new PrisonRegisterApiClient(hmppsAuthClient),
+    prisonApiClient: new PrisonApiClient(hmppsAuthClient),
   }
 }
 
