@@ -13,7 +13,7 @@ export default function routes(services: Services): Router {
     .route('/credit-to')
     .get(
       prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read],
+        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
         getPrisonerNumberFunction: req => req.params.prisonNumber as string,
       }),
 
@@ -22,7 +22,7 @@ export default function routes(services: Services): Router {
     )
     .post(
       prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read],
+        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
         getPrisonerNumberFunction: req => req.params.prisonNumber as string,
       }),
       getPrisonerData(services),
@@ -33,7 +33,7 @@ export default function routes(services: Services): Router {
     .route('/credit-from')
     .get(
       prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read],
+        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
         getPrisonerNumberFunction: req => req.params.prisonNumber as string,
       }),
 
@@ -42,7 +42,7 @@ export default function routes(services: Services): Router {
     )
     .post(
       prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read],
+        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
         getPrisonerNumberFunction: req => req.params.prisonNumber as string,
       }),
 
@@ -54,7 +54,7 @@ export default function routes(services: Services): Router {
     .route('/credit-amount')
     .get(
       prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read],
+        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
         getPrisonerNumberFunction: req => req.params.prisonNumber as string,
       }),
 
@@ -63,7 +63,7 @@ export default function routes(services: Services): Router {
     )
     .post(
       prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read],
+        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
         getPrisonerNumberFunction: req => req.params.prisonNumber as string,
       }),
 
@@ -74,7 +74,7 @@ export default function routes(services: Services): Router {
   creditAPrisonerRouter.get(
     '/credit-confirmation',
     prisonerPermissionsGuard(services.prisonPermissionsService, {
-      requestDependentOn: [PrisonerMoneyPermission.read],
+      requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
       getPrisonerNumberFunction: req => req.params.prisonNumber as string,
     }),
 

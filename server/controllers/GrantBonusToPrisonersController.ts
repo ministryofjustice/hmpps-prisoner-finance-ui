@@ -8,8 +8,8 @@ import GrantBonusToPrisonersService from '../services/GrantBonusToPrisonersServi
 export default class GrantBonusToPrisonersController {
   constructor(private readonly services: Services) {}
 
-  public getCreditTo = async (req: Request, res: Response, next: NextFunction) => {
-    await this.services.auditService.logPageView(AuditPage.CREDIT_TO, {
+  public grantBonusToPrisonersSelectCaseload = async (req: Request, res: Response, next: NextFunction) => {
+    await this.services.auditService.logPageView(AuditPage.GRANT_BONUS_CASELOAD, {
       who: res.locals.user.username,
       correlationId: req.id,
     })
@@ -24,7 +24,7 @@ export default class GrantBonusToPrisonersController {
       GrantBonusToPrisonersService.createGrantBonusFormIfRequired(req.session as SessionData)
 
       res.render('pages/grantBonusToPrisoners/grantBonusToPrisoners/grantBonusToPrisoners.njk', {
-        caseloadSelected: req.session.grantBonusForm.creditSubAccountId,
+        caseloadSelected: req.session.grantBonusForm.caseloadId,
         caseloads: mapItemsForRadioButtons({
           input: caseloads,
           valueKey: 'caseLoadId',
@@ -34,6 +34,15 @@ export default class GrantBonusToPrisonersController {
       })
     } catch (e) {
       next(e)
+    }
+  }
+
+  public grantBonusToPrisonersAmount = async (req: Request, res: Response, next: NextFunction) => {
+    if (req.body.grantBonusForm) {
+      GrantBonusToPrisonersService.updateGrantBonusForm(req.session as SessionData, { caseloadId: req.body.caseLoadId })
+      res.redirect('./grant-bonus-to-prisoners/amount')
+    } else {
+      throw Error('Not implemented')
     }
   }
 }

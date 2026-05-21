@@ -33,12 +33,18 @@
   legend: {
     text: "Grant bonus to prisoners",
     classes: "govuk-fieldset__legend--l",
-    isPageHeading: true
+    isPageHeading: false,
+    attributes: {
+      "data-testid" : "form-heading"
+    }
   }
 }) %}
 
     {{ govukRadios({
       name: "Bonus to",
+      attributes: {
+        "data-testid" : "radio-title"
+      },
       fieldset: {
       },
       value: selectedCaseload,
