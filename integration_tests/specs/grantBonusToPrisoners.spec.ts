@@ -27,16 +27,15 @@ test.describe('Grant Bonus To prisoners', () => {
     test('Should show the list of caseloads for the user', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      const radios = page.locator('[data-testid="caseload-radio"]')
-
-      const header = page.locator('[data-testid="form-heading"]')
-      const radiosTitle = page.locator('[data-testid="radio-title"]')
+      const header = page.getByText('Grant bonus to prisoners')
+      const radiosTitle = page.locator('[data-testid="radio-group-heading"]')
+      const radios = page.getByRole('radio')
       const continueButton = page.locator('[data-testid="continue-button"]')
 
+      await expect(header).toBeVisible()
+      await expect(radiosTitle).toBeVisible()
       expect(await radios.count()).toBe(3)
-      expect(header).toBeVisible()
-      expect(radiosTitle).toBeVisible()
-      expect(continueButton).toBeVisible()
+      await expect(continueButton).toBeVisible()
     })
 
     test('Should navigate to next page and save form response', async ({ page, context }) => {
@@ -44,14 +43,14 @@ test.describe('Grant Bonus To prisoners', () => {
       const cookies = await context.cookies()
       const unsignedCookie = unsignCookie(cookies[0].value)
 
-      const radios = page.locator('[data-qa="caseload-radio"]')
+      const radios = page.getByRole('radio')
 
       await radios.first().click()
 
       const continueButton = page.locator('[data-testid="continue-button"]')
       await continueButton.click()
 
-      await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 1 })
+      await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
 
       const response = await redisClient.get(unsignedCookie as string)
       const parsedData = JSON.parse(response as string)

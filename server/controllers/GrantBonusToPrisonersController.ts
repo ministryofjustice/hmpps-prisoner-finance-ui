@@ -38,8 +38,8 @@ export default class GrantBonusToPrisonersController {
   }
 
   public grantBonusToPrisonersAmount = async (req: Request, res: Response, next: NextFunction) => {
-    if (req.body.grantBonusForm) {
-      GrantBonusToPrisonersService.updateGrantBonusForm(req.session as SessionData, { caseloadId: req.body.caseLoadId })
+    if (req.body.caseloadId) {
+      GrantBonusToPrisonersService.updateGrantBonusForm(req.session as SessionData, { caseloadId: req.body.caseloadId })
       res.redirect('./grant-bonus-to-prisoners/amount')
     } else {
       throw Error('Not implemented')

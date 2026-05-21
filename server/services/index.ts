@@ -8,7 +8,6 @@ import logger from '../../logger'
 import PrisonerSearchService from './prisonerSearchService'
 import PrisonRegisterService from './prisonRegisterService'
 import PrisonApiService from './prisonApiService'
-import PrisonApiClient from '../clients/prisonApiClient'
 
 export const services = () => {
   const {

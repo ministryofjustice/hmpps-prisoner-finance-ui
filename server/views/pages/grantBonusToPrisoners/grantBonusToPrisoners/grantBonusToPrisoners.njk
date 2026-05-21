@@ -6,7 +6,7 @@
 
 {% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
 
-{% set pageTitle = applicationName + " - Profile" %}
+{% set pageTitle = applicationName + " - Grant bonus to prisoners" %}
 {% set mainClasses = "govuk-body" %}
 
 {% block beforeContent %}
@@ -33,18 +33,14 @@
   legend: {
     text: "Grant bonus to prisoners",
     classes: "govuk-fieldset__legend--l",
-    isPageHeading: false,
-    attributes: {
-      "data-testid" : "form-heading"
-    }
+    isPageHeading: false
   }
 }) %}
 
+
+    <h2 class="govuk-heading-m" data-testid="radio-group-heading">Bonus To</h2>
     {{ govukRadios({
-      name: "Bonus to",
-      attributes: {
-        "data-testid" : "radio-title"
-      },
+      name: "caseloadId",
       fieldset: {
       },
       value: selectedCaseload,
