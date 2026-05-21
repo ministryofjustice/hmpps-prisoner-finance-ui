@@ -56,5 +56,17 @@ test.describe('Grant Bonus To prisoners', () => {
       const parsedData = JSON.parse(response as string)
       expect(parsedData.grantBonusForm).toMatchObject({ caseloadId: 'MDI' })
     })
+
+    test('Should show an error if a caseload has not been selected', async ({ page }) => {
+      await page.goto('/grant-bonus-to-prisoners')
+
+      const continueButton = page.locator('[data-testid="continue-button"]')
+      await continueButton.click()
+
+      await page.waitForURL('/grant-bonus-to-prisoners', { timeout: 1 })
+
+      const errorText = page.getByText('You must select a caseload before continuing.')
+      expect(errorText).toBeVisible()
+    })
   })
 })
