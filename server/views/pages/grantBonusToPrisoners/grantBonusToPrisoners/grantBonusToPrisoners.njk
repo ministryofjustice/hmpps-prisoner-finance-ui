@@ -3,57 +3,25 @@
 {% from "govuk/components/radios/macro.njk" import govukRadios %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "components/forms/radiosSelectionForm.njk" import radiosSelectionForm %}
+
 
 {% set pageTitle = applicationName + " - Grant bonus to prisoners" %}
 {% set mainClasses = "govuk-body" %}
 
-{% block beforeContent %}
-
-  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
-
-{% endblock %}
+<a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
 
 {% block content %}
-
-<div class="grant-bonus-to-prisoners-page govuk-grid-row">
-
-  <form method="POST" action="./grant-bonus-to-prisoners" data-testid='select-caseload-form'>
-
-  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-
-
-{% call govukFieldset({
-  legend: {
-    text: "Grant bonus to prisoners",
-    classes: "govuk-fieldset__legend--l",
-    isPageHeading: false
-  }
-}) %}
-
-
-    <h2 class="govuk-heading-m" data-testid="radio-group-heading">Bonus To</h2>
-    {{ govukRadios({
-      name: "caseloadId",
-      fieldset: {
-      },
-      value: selectedCaseload,
-      items: caseloads,
-      errorMessage: { text: errorMap.errorText } if errorMap.errorText else null
-    }) }}
-
-
-
-    {% endcall %}
-
-    {{ govukButton({
-      text: "Continue",
-      type: "submit",
-       attributes:{
-            "data-testid" : "continue-button"
-            }
-    }) }}
-
-  </form>
-</div>
-
+{{
+  radiosSelectionForm({
+    action: "./grant-bonus-to-prisoners",
+    csrfToken: csrfToken,
+    headingText: "Grant bonus to prisoners",
+    subHeading: "Bonus To",
+    radiosId: "caseloadId",
+    radiosValue: selectedCaseload,
+    radiosItems: caseloads,
+    errorMap: errorMap
+  })
+}}
 {% endblock %}

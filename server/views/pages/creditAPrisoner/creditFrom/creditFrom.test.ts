@@ -69,7 +69,7 @@ describe('Credit A Prisoner - Credit From Page', () => {
   })
 
   test('Renders the clickable radio buttons and continue button', () => {
-    const formCollection = $("[data-testid='select-credit-from-account']")
+    const formCollection = $("[data-testid='select-radios-form']")
     expect(formCollection.length).toBe(1)
 
     const radioButtons = $("[data-testid='prison-account-radio']")
