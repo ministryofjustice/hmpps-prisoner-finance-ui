@@ -7,6 +7,7 @@ import config from '../config'
 import logger from '../../logger'
 import PrisonerSearchService from './prisonerSearchService'
 import PrisonRegisterService from './prisonRegisterService'
+import PrisonApiService from './prisonApiService'
 
 export const services = () => {
   const {
@@ -16,6 +17,7 @@ export const services = () => {
     prisonerFinanceApiClient,
     prisonerSearchApiClient,
     prisonRegisterApiClient,
+    prisonApiClient,
     telemetryClient,
   } = dataAccess()
 
@@ -32,6 +34,7 @@ export const services = () => {
     prisonerFinanceService: new PrisonerFinanceService(prisonerFinanceApiClient),
     prisonerSearchService: new PrisonerSearchService(prisonerSearchApiClient),
     prisonRegisterService: new PrisonRegisterService(prisonRegisterApiClient),
+    prisonApiService: new PrisonApiService(prisonApiClient),
     prisonPermissionsService,
   }
 }

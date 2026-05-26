@@ -5,6 +5,8 @@
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 
 {% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
+{% from "components/forms/radiosSelectionForm.njk" import radiosSelectionForm %}
+
 
 {% set pageTitle = applicationName + " - Profile" %}
 {% set mainClasses = "govuk-body" %}
@@ -17,48 +19,19 @@
       prisoner:prisoner
   }) }}
 
-
 {% endblock %}
 
 {% block content %}
-
-<div class="credit-from-page govuk-grid-row">
-
-  <form method="POST" action="./credit-from" data-testid='select-credit-from-account'>
-
-  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-
-
-{% call govukFieldset({
-  legend: {
-    text: "Credit from",
-    classes: "govuk-fieldset__legend--l",
-    isPageHeading: true
-  }
-}) %}
-
-    {{ govukRadios({
-      name: "creditFrom",
-      fieldset: {
-      },
-      value: debitSubAccountId,
-      items: items ,
-      errorMessage: { text: errorMap.errorText } if errorMap.errorText else null
-    }) }}
-
-
-
-    {% endcall %}
-
-    {{ govukButton({
-      text: "Continue",
-      type: "submit",
-       attributes:{
-            "data-testid" : "continue-button"
-            }
-    }) }}
-
-  </form>
-</div>
-
+{{
+  radiosSelectionForm({
+    action: "./credit-from",
+    csrfToken: csrfToken,
+    headingText: "Credit from",
+    subHeading: null,
+    radiosId: "creditFrom",
+    radiosValue: debitSubAccountId,
+    radiosItems: items,
+    errorMap: errorMap
+  })
+}}
 {% endblock %}

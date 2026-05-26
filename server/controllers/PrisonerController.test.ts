@@ -10,6 +10,7 @@ import { AccountBalanceResponse } from '../interfaces/AccountBalanceResponse'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 import { Page } from '../interfaces/Pageable'
 import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
+import PrisonApiService from '../services/prisonApiService'
 
 jest.mock('../applicationInfo')
 jest.mock('../services/auditService')
@@ -25,6 +26,7 @@ describe('PrisonerController', () => {
   const prisonerSearchService = {} as unknown as jest.Mocked<PrisonerSearchService>
   const prisonRegisterService = {} as unknown as jest.Mocked<PrisonRegisterService>
   const prisonPermissionsService = {} as unknown as jest.Mocked<PermissionsService>
+  const prisonApiService = {} as unknown as jest.Mocked<PrisonApiService>
 
   const prisonerController: PrisonerController = new PrisonerController({
     applicationInfo,
@@ -33,6 +35,7 @@ describe('PrisonerController', () => {
     prisonerSearchService,
     prisonRegisterService,
     prisonPermissionsService,
+    prisonApiService,
   })
 
   const mockRes: Response = {

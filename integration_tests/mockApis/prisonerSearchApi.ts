@@ -57,7 +57,7 @@ export default {
           prisonerNumber: prisonNumber,
           firstName: 'BOB',
           lastName: 'TAYLOR',
-          prisonId: 'LEI',
+          prisonId: 'ALCATRAZ',
           status: 'ACTIVE IN',
           cellLocation: 'RECP',
         },

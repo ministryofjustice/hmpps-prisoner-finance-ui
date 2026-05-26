@@ -4,6 +4,7 @@ import type { Services } from '../services'
 import { AuditPage } from '../services/auditService'
 
 import prisonerRouter from './prisoner'
+import grantBonusRouter from './grantBonusToPrisoners'
 
 export default function routes(services: Services): Router {
   const router = Router()
@@ -14,6 +15,8 @@ export default function routes(services: Services): Router {
   })
 
   router.use('/prisoner', prisonerRouter(services))
+
+  router.use('/grant-bonus-to-prisoners', grantBonusRouter(services))
 
   return router
 }

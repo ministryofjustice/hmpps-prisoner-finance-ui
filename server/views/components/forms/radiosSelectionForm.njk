@@ -1,0 +1,51 @@
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+
+
+{% macro radiosSelectionForm(params) %}
+    <div class="govuk-grid-row">
+
+    <form method="POST" action="{{params.action}}" data-testid='select-radios-form'>
+
+    <input type="hidden" name="_csrf" value="{{ params.csrfToken }}">
+
+
+    {% call govukFieldset({
+    legend: {
+        text: params.headingText,
+        classes: "govuk-fieldset__legend--l",
+        isPageHeading: true
+    }
+    }) %}
+
+        {% if params.subHeading %}
+            <h2 class="govuk-heading-m" data-testid="radio-group-heading">{{params.subHeading}}</h2>
+        {% endif%}
+
+        {{ govukRadios({
+        name: params.radiosId,
+        fieldset: {
+        },
+        value: params.radiosValue,
+        items: params.radiosItems,
+        errorMessage: { text: params.errorMap.errorText } if params.errorMap.errorText else null
+        }) }}
+
+
+
+        {% endcall %}
+
+        {{ govukButton({
+        text: "Continue",
+        type: "submit",
+        attributes:{
+                "data-testid" : "continue-button"
+                }
+        }) }}
+
+    </form>
+    </div>
+
+
+{% endmacro %}

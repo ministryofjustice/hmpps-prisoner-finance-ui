@@ -7,20 +7,13 @@ import { AuditPage } from '../services/auditService'
 import AccountResponse from '../interfaces/AccountResponse'
 import creditAmountValidator from '../validators/creditAmountValidator'
 import descriptionFieldValidator from '../validators/descriptionFieldValidator'
+import { mapItemsForRadioButtons } from '../utils/utils'
 
 export default class CreditAPrisonerController {
   constructor(private readonly services: Services) {}
 
   private mapSubAccountsToRadioContents = (subAccounts: AccountResponse['subAccounts'], dataTestId: string) => {
-    return subAccounts.map(({ id, reference }) => {
-      return {
-        value: id,
-        text: reference,
-        attributes: {
-          'data-testid': dataTestId,
-        },
-      }
-    })
+    return mapItemsForRadioButtons({ input: subAccounts, valueKey: 'id', textKey: 'reference', dataTestId })
   }
 
   public getCreditTo = async (req: Request, res: Response, next: NextFunction) => {

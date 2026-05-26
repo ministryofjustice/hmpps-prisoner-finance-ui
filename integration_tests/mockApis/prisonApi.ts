@@ -30,6 +30,16 @@ export default {
             description: 'Moorland (HMP & YOI)',
             currentlyActive: true,
           },
+          {
+            caseLoadId: 'LPI',
+            description: 'Liverpool',
+            currentlyActive: false,
+          },
+          {
+            caseLoadId: 'LEI',
+            description: 'Leeds',
+            currentlyActive: false,
+          },
         ],
       },
     })

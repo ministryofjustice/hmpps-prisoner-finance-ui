@@ -1,0 +1,27 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "components/forms/radiosSelectionForm.njk" import radiosSelectionForm %}
+
+
+{% set pageTitle = applicationName + " - Grant bonus to prisoners" %}
+{% set mainClasses = "govuk-body" %}
+
+<a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+
+{% block content %}
+{{
+  radiosSelectionForm({
+    action: "./grant-bonus-to-prisoners",
+    csrfToken: csrfToken,
+    headingText: "Grant bonus to prisoners",
+    subHeading: "Bonus To",
+    radiosId: "caseloadId",
+    radiosValue: selectedCaseload,
+    radiosItems: caseloads,
+    errorMap: errorMap
+  })
+}}
+{% endblock %}

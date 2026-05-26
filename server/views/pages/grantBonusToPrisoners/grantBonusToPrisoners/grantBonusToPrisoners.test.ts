@@ -2,53 +2,47 @@ import * as cheerio from 'cheerio'
 import { expect } from '@playwright/test'
 import nunjucks from 'nunjucks'
 import { setUpNunJucksFilters } from '../../../../utils/nunjucksSetup'
+import { mapItemsForRadioButtons } from '../../../../utils/utils'
+import ActiveCaseloadResponse from '../../../../interfaces/ActiveCaseloadResponse'
 
 describe('Credit A Prisoner - Credit To Page', () => {
   let $: cheerio.CheerioAPI
   let njkEnv: nunjucks.Environment
 
-  const subAccounts = [
+  const caseloads: ActiveCaseloadResponse[] = [
     {
-      value: 'spends',
-      text: 'Spends',
-      attributes: {
-        'data-testid': 'sub-account-radio',
-      },
+      caseLoadId: 'MDI',
+      description: 'Moorland Closed (HMP & YOI)',
+      type: 'INST',
+      caseloadFunction: 'GENERAL',
+      currentlyActive: false,
     },
     {
-      value: 'savings',
-      text: 'Savings',
-      attributes: {
-        'data-testid': 'sub-account-radio',
-      },
+      caseLoadId: 'LEI',
+      description: 'Leeds Prison (LEI)',
+      type: 'INST',
+      caseloadFunction: 'GENERAL',
+      currentlyActive: false,
     },
     {
-      value: 'privatecash',
-      text: 'Private cash',
-      attributes: {
-        'data-testid': 'sub-account-radio',
-      },
+      caseLoadId: 'LPI',
+      description: 'Liverpool Prison (LPI)',
+      type: 'INST',
+      caseloadFunction: 'GENERAL',
+      currentlyActive: false,
     },
   ]
 
+  const mappedCaseloads = mapItemsForRadioButtons({
+    input: caseloads,
+    valueKey: 'caseLoadId',
+    textKey: 'description',
+    dataTestId: 'caseload-radio',
+  })
+
   const params = {
     applicationName: 'Hmpps Prisoner Finance Ui',
-    prisoner: {
-      firstName: 'John',
-      lastName: 'Smith',
-      prisonerNumber: 'AB123456',
-      cellLocation: 'RECP',
-      csra: 'Standard',
-      category: 'C',
-      currentIncentive: {
-        level: {
-          code: 'STD',
-          description: 'Standard',
-        },
-      },
-    },
-    prisonNumber: 'AB123456',
-    subAccounts,
+    caseloads: mappedCaseloads,
   }
 
   beforeAll(() => {
@@ -63,7 +57,7 @@ describe('Credit A Prisoner - Credit To Page', () => {
 
     setUpNunJucksFilters(njkEnv)
 
-    const html = njkEnv.render('pages/creditAPrisoner/creditTo/creditTo.njk', params)
+    const html = njkEnv.render('pages/grantBonusToPrisoners/grantBonusToPrisoners/grantBonusToPrisoners.njk', params)
 
     $ = cheerio.load(html)
   })
@@ -72,7 +66,7 @@ describe('Credit A Prisoner - Credit To Page', () => {
     const formCollection = $("[data-testid='select-radios-form']")
     expect(formCollection.length).toBe(1)
 
-    const radioButtons = $("[data-testid='sub-account-radio']")
+    const radioButtons = $("[data-testid='caseload-radio']")
     expect(radioButtons.length).toBe(3)
 
     const continueButton = $("[data-testid='continue-button']")
