@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { createRedisClient, RedisClient } from '../../server/data/redisClient'
 import { login, resetStubs, unsignCookie } from '../testUtils'
+import GrantBonusCaseloadPage from '../pages/grantBonusToPrisoners/grantBonusCaseloadPage'
 
 test.describe('Grant Bonus To prisoners', () => {
   let redisClient: RedisClient
@@ -27,15 +28,11 @@ test.describe('Grant Bonus To prisoners', () => {
     test('Should show the list of caseloads for the user', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      const header = page.getByText('Grant bonus to prisoners')
-      const radiosTitle = page.locator('[data-testid="radio-group-heading"]')
-      const radios = page.getByRole('radio')
-      const continueButton = page.locator('[data-testid="continue-button"]')
-
-      await expect(header).toBeVisible()
-      await expect(radiosTitle).toBeVisible()
-      expect(await radios.count()).toBe(3)
-      await expect(continueButton).toBeVisible()
+      const grantBonusPage = await GrantBonusCaseloadPage.verifyOnPage(page)
+      await expect(grantBonusPage.heading).toBeVisible()
+      await expect(grantBonusPage.radiosTitle).toBeVisible()
+      expect(await grantBonusPage.radios.count()).toBe(3)
+      await expect(grantBonusPage.continueButton).toBeVisible()
     })
 
     test('Should navigate to next page and save form response', async ({ page, context }) => {
@@ -43,12 +40,11 @@ test.describe('Grant Bonus To prisoners', () => {
       const cookies = await context.cookies()
       const unsignedCookie = unsignCookie(cookies[0].value)
 
-      const radios = page.getByRole('radio')
+      const grantBonusPage = await GrantBonusCaseloadPage.verifyOnPage(page)
 
-      await radios.first().click()
+      await grantBonusPage.radios.first().click()
 
-      const continueButton = page.locator('[data-testid="continue-button"]')
-      await continueButton.click()
+      await grantBonusPage.continueButton.click()
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
 
@@ -60,8 +56,9 @@ test.describe('Grant Bonus To prisoners', () => {
     test('Should show an error if a caseload has not been selected', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      const continueButton = page.locator('[data-testid="continue-button"]')
-      await continueButton.click()
+      const grantBonusPage = await GrantBonusCaseloadPage.verifyOnPage(page)
+
+      await grantBonusPage.continueButton.click()
 
       await page.waitForURL('/grant-bonus-to-prisoners', { timeout: 1 })
 
