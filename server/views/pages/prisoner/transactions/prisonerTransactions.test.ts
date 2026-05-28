@@ -13,7 +13,8 @@ describe('prisoner transactions page', () => {
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
-      runningBalance: 0,
+      subAccountBalance: 0,
+      accountBalance: 10,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -22,7 +23,8 @@ describe('prisoner transactions page', () => {
       debit: 0,
       location: 'MDI',
       accountType: 'SAVINGS',
-      runningBalance: 20,
+      subAccountBalance: 20,
+      accountBalance: 17,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -31,7 +33,8 @@ describe('prisoner transactions page', () => {
       debit: 10,
       location: '',
       accountType: 'CASH',
-      runningBalance: 10,
+      subAccountBalance: 10,
+      accountBalance: 19,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -40,7 +43,8 @@ describe('prisoner transactions page', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
-      runningBalance: 20,
+      subAccountBalance: 20,
+      accountBalance: 40,
     },
   ]
 
@@ -52,7 +56,8 @@ describe('prisoner transactions page', () => {
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
-      runningBalance: 0,
+      subAccountBalance: 0,
+      accountBalance: 40,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -61,7 +66,8 @@ describe('prisoner transactions page', () => {
       debit: 0,
       location: 'MDI',
       accountType: 'SAVINGS',
-      runningBalance: 20,
+      subAccountBalance: 20,
+      accountBalance: 33,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -70,7 +76,8 @@ describe('prisoner transactions page', () => {
       debit: 10,
       location: '',
       accountType: 'CASH',
-      runningBalance: 10,
+      subAccountBalance: 10,
+      accountBalance: 23,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -79,7 +86,8 @@ describe('prisoner transactions page', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
-      runningBalance: null,
+      subAccountBalance: null,
+      accountBalance: null,
     },
   ]
 
@@ -104,6 +112,7 @@ describe('prisoner transactions page', () => {
     currentBalance: 1000,
     holdBalance: 0,
     prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
+    displayTotalBalance: false,
   }
 
   beforeAll(() => {

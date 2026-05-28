@@ -33,7 +33,8 @@ describe('PrisonerFinanceSyncApiClient', () => {
           debit: 0,
           location: 'LEI',
           accountType: 'PRISONER',
-          runningBalance: 0,
+          subAccountBalance: 0,
+          accountBalance: 0,
         },
       ]
 
@@ -78,7 +79,8 @@ describe('PrisonerFinanceSyncApiClient', () => {
           debit: 0,
           location: 'LEI',
           accountType: 'PRISONER',
-          runningBalance: 0,
+          subAccountBalance: 0,
+          accountBalance: 0,
         },
       ]
 
@@ -141,7 +143,8 @@ describe('PrisonerFinanceSyncApiClient', () => {
           debit: 0,
           location: 'LEI',
           accountType: 'PRISONER',
-          runningBalance: 0,
+          subAccountBalance: 0,
+          accountBalance: 0,
         },
       ]
 
