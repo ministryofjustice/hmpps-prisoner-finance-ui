@@ -23,7 +23,8 @@ test.describe('Prisoner Money', () => {
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
-      runningBalance: 0,
+      subAccountBalance: 0,
+      accountBalance: 30,
     },
     {
       date: '2026-03-10T10:47:28.094Z',
@@ -32,7 +33,8 @@ test.describe('Prisoner Money', () => {
       debit: 0,
       location: 'MDI',
       accountType: 'SAVINGS',
-      runningBalance: 20,
+      subAccountBalance: 20,
+      accountBalance: 30,
     },
     {
       date: '2026-03-10T10:46:28.094Z',
@@ -41,7 +43,8 @@ test.describe('Prisoner Money', () => {
       debit: 10,
       location: '',
       accountType: 'CASH',
-      runningBalance: 10,
+      subAccountBalance: 10,
+      accountBalance: 10,
     },
     {
       date: '2026-03-10T10:45:28.194Z',
@@ -50,7 +53,8 @@ test.describe('Prisoner Money', () => {
       debit: 0,
       location: 'XXX',
       accountType: 'SAVINGS',
-      runningBalance: null,
+      subAccountBalance: null,
+      accountBalance: null,
     },
   ]
 
@@ -114,27 +118,31 @@ test.describe('Prisoner Money', () => {
       pageName: 'All Transactions page',
       pageHeading: 'Transactions for all sub accounts',
       subAccountReference: '',
+      expectedRunningBalances: ['0.30', '0.30', '0.10', '-'],
     },
     {
       url: `/prisoner/${prisonNumber}/money/private-cash`,
       pageName: 'Private Cash page',
       pageHeading: 'Private cash transactions',
       subAccountReference: 'CASH',
+      expectedRunningBalances: ['0.00', '0.20', '0.10', '-'],
     },
     {
       url: `/prisoner/${prisonNumber}/money/savings`,
       pageName: 'Savings page',
       pageHeading: 'Savings transactions',
       subAccountReference: 'SAVINGS',
+      expectedRunningBalances: ['0.00', '0.20', '0.10', '-'],
     },
     {
       url: `/prisoner/${prisonNumber}/money/spends`,
       pageName: 'Spends page',
       pageHeading: 'Spends transactions',
       subAccountReference: 'SPENDS',
+      expectedRunningBalances: ['0.00', '0.20', '0.10', '-'],
     },
   ]
-  for (const { url, pageName, pageHeading, subAccountReference } of transactionPage) {
+  for (const { url, pageName, pageHeading, subAccountReference, expectedRunningBalances } of transactionPage) {
     test(`${pageName} - Should display Header and Transactions table`, async ({ page }) => {
       await baseStubs(subAccountReference)
       await page.goto(url)
@@ -161,7 +169,7 @@ test.describe('Prisoner Money', () => {
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:48')
       await expect(cells.nth(1)).toHaveText('test')
       await expect(cells.nth(2)).toHaveText('-0.10')
-      await expect(cells.nth(3)).toHaveText('0.00')
+      await expect(cells.nth(3)).toHaveText(expectedRunningBalances[0])
       await expect(cells.nth(4)).toHaveText('Private cash')
       await expect(cells.nth(5)).toHaveText('Leeds (HMP)')
 
@@ -171,7 +179,7 @@ test.describe('Prisoner Money', () => {
       await expect(cells.nth(1)).toHaveText('')
       await expect(cells.nth(2)).toHaveText('0.20')
       await expect(cells.nth(2)).toHaveCSS('font-weight', '400')
-      await expect(cells.nth(3)).toHaveText('0.20')
+      await expect(cells.nth(3)).toHaveText(expectedRunningBalances[1])
       await expect(cells.nth(4)).toHaveText('Savings')
       await expect(cells.nth(5)).toHaveText('Moorland (HMP & YOI)')
 
@@ -180,7 +188,7 @@ test.describe('Prisoner Money', () => {
       await expect(cells.nth(0)).toHaveText('10/03/2026\n10:46')
       await expect(cells.nth(1)).toHaveText('Cash to Savings Transfer')
       await expect(cells.nth(2)).toHaveText('-0.10')
-      await expect(cells.nth(3)).toHaveText('0.10')
+      await expect(cells.nth(3)).toHaveText(expectedRunningBalances[2])
       await expect(cells.nth(4)).toHaveText('Private cash')
       await expect(cells.nth(5)).toHaveText('')
 
@@ -190,7 +198,7 @@ test.describe('Prisoner Money', () => {
       await expect(cells.nth(1)).toHaveText('Transaction in secret prison')
       await expect(cells.nth(2)).toHaveText('0.10')
       await expect(cells.nth(2)).toHaveCSS('font-weight', '400')
-      await expect(cells.nth(3)).toHaveText('-')
+      await expect(cells.nth(3)).toHaveText(expectedRunningBalances[3])
       await expect(cells.nth(4)).toHaveText('Savings')
       await expect(cells.nth(5)).toHaveText('XXX')
     })

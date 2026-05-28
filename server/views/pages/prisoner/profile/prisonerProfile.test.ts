@@ -13,7 +13,8 @@ describe('prisoner profile page', () => {
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
-      runningBalance: 0,
+      subAccountBalance: 0,
+      accountBalance: 10,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -22,7 +23,8 @@ describe('prisoner profile page', () => {
       debit: 0,
       location: 'MDI',
       accountType: 'SAVINGS',
-      runningBalance: 20,
+      subAccountBalance: 20,
+      accountBalance: 11,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -31,7 +33,8 @@ describe('prisoner profile page', () => {
       debit: 10,
       location: '',
       accountType: 'CASH',
-      runningBalance: 10,
+      subAccountBalance: 10,
+      accountBalance: 40,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -40,7 +43,8 @@ describe('prisoner profile page', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
-      runningBalance: 20,
+      subAccountBalance: 20,
+      accountBalance: 30,
     },
     {
       date: '2026-03-10T10:41:28.094Z',
@@ -49,7 +53,8 @@ describe('prisoner profile page', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
-      runningBalance: 30,
+      subAccountBalance: 30,
+      accountBalance: 33,
     },
   ]
 
@@ -61,7 +66,8 @@ describe('prisoner profile page', () => {
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
-      runningBalance: 99,
+      subAccountBalance: 99,
+      accountBalance: 10,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -70,7 +76,8 @@ describe('prisoner profile page', () => {
       debit: 0,
       location: 'MDI',
       accountType: 'SAVINGS',
-      runningBalance: 20,
+      subAccountBalance: 20,
+      accountBalance: 15,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -79,7 +86,8 @@ describe('prisoner profile page', () => {
       debit: 10,
       location: '',
       accountType: 'CASH',
-      runningBalance: 10,
+      subAccountBalance: 10,
+      accountBalance: 16,
     },
     {
       date: '2026-03-10T10:43:28.094Z',
@@ -88,7 +96,8 @@ describe('prisoner profile page', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
-      runningBalance: 20,
+      subAccountBalance: 20,
+      accountBalance: 17,
     },
     {
       date: '2026-03-10T10:41:28.094Z',
@@ -97,7 +106,8 @@ describe('prisoner profile page', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
-      runningBalance: null,
+      subAccountBalance: null,
+      accountBalance: null,
     },
   ]
 

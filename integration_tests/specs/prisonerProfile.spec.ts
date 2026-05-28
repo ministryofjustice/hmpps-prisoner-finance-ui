@@ -20,7 +20,8 @@ test.describe('Prisoner Profile', () => {
       debit: 10,
       location: 'LEI',
       accountType: 'CASH',
-      runningBalance: 0,
+      subAccountBalance: 0,
+      accountBalance: 11,
     },
     {
       date: '2026-03-11T10:47:28.094Z',
@@ -29,7 +30,8 @@ test.describe('Prisoner Profile', () => {
       debit: 0,
       location: 'MDI',
       accountType: 'SAVINGS',
-      runningBalance: 20,
+      subAccountBalance: 20,
+      accountBalance: 1000,
     },
     {
       date: '2026-03-10T10:46:28.094Z',
@@ -38,7 +40,8 @@ test.describe('Prisoner Profile', () => {
       debit: 10,
       location: '',
       accountType: 'CASH',
-      runningBalance: 10,
+      subAccountBalance: 10,
+      accountBalance: 40,
     },
     {
       date: '2026-03-10T10:45:28.194Z',
@@ -47,7 +50,8 @@ test.describe('Prisoner Profile', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
-      runningBalance: 20,
+      subAccountBalance: 20,
+      accountBalance: 50,
     },
     {
       date: '2026-03-10T10:44:28.194Z',
@@ -56,7 +60,8 @@ test.describe('Prisoner Profile', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
-      runningBalance: 30,
+      subAccountBalance: 30,
+      accountBalance: 30,
     },
     {
       date: '2026-03-10T10:43:28.194Z',
@@ -65,7 +70,8 @@ test.describe('Prisoner Profile', () => {
       debit: 0,
       location: '',
       accountType: 'SAVINGS',
-      runningBalance: 20,
+      subAccountBalance: 20,
+      accountBalance: 20,
     },
   ]
 
@@ -132,7 +138,7 @@ test.describe('Prisoner Profile', () => {
     await expect(cellsFirstRow.nth(0)).toHaveText('10/03/2026\n10:48')
     await expect(cellsFirstRow.nth(1)).toHaveText(transactionPayload[0].description)
     await expect(cellsFirstRow.nth(2)).toHaveText('-0.10')
-    await expect(cellsFirstRow.nth(3)).toHaveText('0.00')
+    await expect(cellsFirstRow.nth(3)).toHaveText('0.11')
     await expect(cellsFirstRow.nth(4)).toHaveText('Private cash')
 
     const cellsSecondRow = rows.nth(1).locator('td')
@@ -140,7 +146,7 @@ test.describe('Prisoner Profile', () => {
     await expect(cellsSecondRow.nth(1)).toHaveText(transactionPayload[1].description)
     await expect(cellsSecondRow.nth(2)).toHaveText('0.20')
     await expect(cellsSecondRow.nth(2)).toHaveCSS('font-weight', '400')
-    await expect(cellsSecondRow.nth(3)).toHaveText('0.20')
+    await expect(cellsSecondRow.nth(3)).toHaveText('10.00')
     await expect(cellsSecondRow.nth(4)).toHaveText('Savings')
   })
 

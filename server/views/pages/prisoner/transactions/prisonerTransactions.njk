@@ -165,11 +165,16 @@
       {% set tableRows = [] %}
 
       {% for row in transactions %}
+        {% set balance =  row.subAccountBalance  %}
+        {% if displayTotalBalance %}
+          {% set balance =  row.accountBalance  %}
+        {% endif %}
+
         {% set rowData = [
           { text: row.date | formatDateForView },
           { text: row.description },
           { html: transactionAmount(row)},
-          { text: (row.runningBalance | penceToPound) if row.runningBalance !== null else '-' },
+          { text: (balance | penceToPound) if balance !== null else '-' },
           { text: row.accountType | formatPrisonerAccountType },
           { text: row.location | convertPrisonIdToName(prisonNames)}
         ] %}

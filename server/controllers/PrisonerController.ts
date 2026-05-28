@@ -67,6 +67,7 @@ class PrisonerController {
         },
         hasValidationErrors: !parsedQueries.success,
         ...zodErrors,
+        displayTotalBalance: !subAccount,
       })
     } catch (error) {
       if (error.responseStatus === 400 && error.data?.userMessage?.includes('Page requested is out of range')) {
