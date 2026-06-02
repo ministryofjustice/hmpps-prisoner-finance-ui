@@ -1,0 +1,73 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
+{% from "govuk/components/input/macro.njk" import govukInput %}
+
+{% set pageTitle = applicationName + " - Grant bonus to prisoners" %}
+{% set mainClasses = "govuk-body" %}
+
+{% block beforeContent %}
+
+  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+
+{% endblock %}
+
+{% block content %}
+
+<div class="grant-bonus-to-prisoners-amount-page govuk-grid-row">
+
+  <form method="POST" action="./amount" data-testid='select-amount'>
+
+  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+  {% call govukFieldset({
+    legend: {
+      text: "Grant bonus to prisoners",
+      classes: "govuk-fieldset__legend--l",
+      isPageHeading: true
+    }
+  }) %}
+
+  {{ govukInput({
+    label: {
+      text: "amount"
+    },
+    id: "bonusAmount",
+    name: "bonusAmount",
+    prefix: {
+        text: "£"
+    },
+    classes: "govuk-input--width-10",
+    attributes: {
+        "data-testid" : "amount-input"
+    }
+  }) }}
+
+  {{ govukInput({
+    label: {
+      text: "Description"
+    },
+    id: "description",
+    name: "description",
+    attributes: {
+        "data-testid" : "description-input"
+    }
+  }) }}
+
+  {% endcall %}
+
+  {{ govukButton({
+    text: "Done",
+    type: "submit",
+    attributes:{
+          "data-testid" : "done-button"
+          },
+    preventDoubleClick: true
+  }) }}
+
+  </form>
+</div>
+
+{% endblock %}

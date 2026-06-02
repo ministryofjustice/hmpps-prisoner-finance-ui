@@ -1,6 +1,8 @@
 import { expect, test } from '@playwright/test'
 import { createRedisClient, RedisClient } from '../../server/data/redisClient'
 import { login, resetStubs, unsignCookie } from '../testUtils'
+import GrantBonusToPrisonersPage from '../pages/grantBonusToPrisoners/grantBonusToPrisonersPage'
+import AmountPage from '../pages/grantBonusToPrisoners/amountPage'
 
 test.describe('Grant Bonus To prisoners', () => {
   let redisClient: RedisClient
@@ -67,6 +69,27 @@ test.describe('Grant Bonus To prisoners', () => {
 
       const errorText = page.getByText('You must select a caseload before continuing.')
       expect(errorText).toBeVisible()
+    })
+  })
+
+  test.describe('Select amount', () => {
+    test.beforeEach(async ({ page }) => {
+      await resetStubs()
+      await login(page)
+    })
+
+    test('Should navigate to the amount page', async ({ page }) => {
+      await page.goto('/grant-bonus-to-prisoner')
+
+      await GrantBonusToPrisonersPage.verifyOnPage(page)
+
+      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+
+      const amountPage = await AmountPage.verifyOnPage(page)
+
+      expect(amountPage.amountInput).toBeVisible()
+      expect(amountPage.descriptionInput).toBeVisible()
+      expect(amountPage.doneButton).toBeVisible()
     })
   })
 })
