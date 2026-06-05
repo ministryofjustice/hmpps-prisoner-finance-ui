@@ -14,7 +14,10 @@ export default function routes(services: Services): Router {
     .get(grantBonusToPrisonersController.getGrantBonusToPrisonersSelectCaseload)
     .post(grantBonusToPrisonersController.postGrantBonusToPrisonersSelectCaseload)
 
-  grantBonusRouter.route('/amount').get(grantBonusToPrisonersController.getGrantBonusToPrisonersSelectAmount)
+  grantBonusRouter
+    .route('/amount')
+    .get(grantBonusToPrisonersController.getGrantBonusToPrisonersSelectAmount)
+    .post(grantBonusToPrisonersController.postGrantBonusToPrisonersSelectAmount)
 
   return grantBonusRouter
 }

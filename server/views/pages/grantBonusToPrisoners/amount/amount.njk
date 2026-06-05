@@ -32,7 +32,7 @@
 
   {{ govukInput({
     label: {
-      text: "amount"
+      text: "Amount"
     },
     id: "bonusAmount",
     name: "bonusAmount",
@@ -42,7 +42,9 @@
     classes: "govuk-input--width-10",
     attributes: {
         "data-testid" : "amount-input"
-    }
+    },
+    errorMessage: { text: errorMap.bonusAmount } if errorMap.bonusAmount else null
+
   }) }}
 
   {{ govukInput({
@@ -53,7 +55,8 @@
     name: "description",
     attributes: {
         "data-testid" : "description-input"
-    }
+    },
+    errorMessage: { text: errorMap.description } if errorMap.description else null
   }) }}
 
   {% endcall %}

@@ -1,5 +1,6 @@
 import { NextFunction, Response, Request } from 'express'
 import { SessionData } from 'express-session'
+import z from 'zod'
 import { Services } from '../services'
 import { AuditPage } from '../services/auditService'
 import { mapItemsForRadioButtons } from '../utils/utils'
@@ -78,4 +79,44 @@ export default class GrantBonusToPrisonersController {
       next(e)
     }
   }
+
+  public postGrantBonusToPrisonersSelectAmount = async (req: Request, res: Response, next: NextFunction) => {
+    const { body } = req
+    const parsedBody = amountAndDescriptionSchema.safeParse(body)
+
+    if (parsedBody.error) {
+      const errorMap = {
+        bonusAmount: parsedBody.error.issues.find(i => i.path[0] === 'bonusAmount')?.message,
+        description: parsedBody.error.issues.find(i => i.path[0] === 'description')?.message,
+      }
+      res.render('pages/grantBonusToPrisoners/amount/amount.njk', {
+        errorMap,
+      })
+    }
+
+    // TODO: call for the prisoners data and build the request for PF API
+    // const { token } = req.user
+    // const prisonNumbers = await this.services.prisonerSearchService.getPrisonerNumbersByPrisonId(token, 'LEI')
+  }
 }
+
+const amountAndDescriptionSchema = z.object({
+  bonusAmount: z.preprocess(
+    val => (val === null || val === undefined ? '' : val),
+    z
+      .string()
+      .min(1, 'You must select an amount to grant before continuing.')
+      .refine(val => /^\d+(\.\d{1,2})?$/.test(val), {
+        message: 'Amount must be a valid number with up to 2 decimal places',
+      })
+      .transform(val => Math.round(Number(val) * 100)),
+  ),
+
+  description: z.preprocess(
+    val => (val === null || val === undefined ? '' : val),
+    z
+      .string()
+      .min(1, 'You must include a description before continuing.')
+      .max(255, 'Description must be under 255 characters'),
+  ),
+})

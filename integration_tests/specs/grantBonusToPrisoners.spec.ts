@@ -91,5 +91,85 @@ test.describe('Grant Bonus To prisoners', () => {
       expect(amountPage.descriptionInput).toBeVisible()
       expect(amountPage.doneButton).toBeVisible()
     })
+
+    test('Should show an error if an amount has not been entered', async ({ page }) => {
+      await page.goto('/grant-bonus-to-prisoners')
+
+      await GrantBonusToPrisonersPage.verifyOnPage(page)
+
+      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+
+      await AmountPage.verifyOnPage(page)
+
+      const doneButton = page.locator('[data-testid="done-button"]')
+      await doneButton.click()
+
+      await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
+
+      const errorText = page.getByText('You must select an amount to grant before continuing.')
+      expect(errorText).toBeVisible()
+    })
+
+    test('Should show an error if a description has not been entered', async ({ page }) => {
+      await page.goto('/grant-bonus-to-prisoners')
+
+      await GrantBonusToPrisonersPage.verifyOnPage(page)
+
+      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+
+      const amountPage = await AmountPage.verifyOnPage(page)
+
+      amountPage.amountInput.fill('1.23')
+
+      const doneButton = page.locator('[data-testid="done-button"]')
+      await doneButton.click()
+
+      await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
+
+      const errorText = page.getByText('You must include a description before continuing.')
+      expect(errorText).toBeVisible()
+    })
+
+    test('Should show an error if the amount format is invalid', async ({ page }) => {
+      await page.goto('/grant-bonus-to-prisoners')
+
+      await GrantBonusToPrisonersPage.verifyOnPage(page)
+      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+
+      const amountPage = await AmountPage.verifyOnPage(page)
+
+      await amountPage.amountInput.fill('1.999')
+      await amountPage.descriptionInput.fill('Test description')
+
+      const doneButton = page.locator('[data-testid="done-button"]')
+      await doneButton.click()
+
+      await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
+
+      const errorText = page.getByText('Amount must be a valid number with up to 2 decimal places')
+      await expect(errorText).toBeVisible()
+    })
+
+    test('Should show an error if the description exceeds 255 characters', async ({ page }) => {
+      await page.goto('/grant-bonus-to-prisoners')
+
+      await GrantBonusToPrisonersPage.verifyOnPage(page)
+      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+
+      const amountPage = await AmountPage.verifyOnPage(page)
+
+      await amountPage.amountInput.fill('1.23')
+
+      const longDescription = 'a'.repeat(256)
+      await amountPage.descriptionInput.fill(longDescription)
+
+      const doneButton = page.locator('[data-testid="done-button"]')
+      await doneButton.click()
+
+      await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
+
+      const errorText = page.getByText('Description must be under 255 characters')
+      await expect(errorText).toBeVisible()
+    })
   })
 })
