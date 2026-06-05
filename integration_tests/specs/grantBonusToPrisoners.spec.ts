@@ -79,7 +79,7 @@ test.describe('Grant Bonus To prisoners', () => {
     })
 
     test('Should navigate to the amount page', async ({ page }) => {
-      await page.goto('/grant-bonus-to-prisoner')
+      await page.goto('/grant-bonus-to-prisoners')
 
       await GrantBonusToPrisonersPage.verifyOnPage(page)
 

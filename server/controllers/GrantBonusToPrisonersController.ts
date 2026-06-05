@@ -20,7 +20,7 @@ export default class GrantBonusToPrisonersController {
     return caseloads
   }
 
-  public grantBonusToPrisonersSelectCaseload = async (req: Request, res: Response, next: NextFunction) => {
+  public getGrantBonusToPrisonersSelectCaseload = async (req: Request, res: Response, next: NextFunction) => {
     await this.services.auditService.logPageView(AuditPage.GRANT_BONUS_CASELOAD, {
       who: res.locals.user.username,
       correlationId: req.id,
@@ -43,7 +43,7 @@ export default class GrantBonusToPrisonersController {
     }
   }
 
-  public grantBonusToPrisonersAmount = async (req: Request, res: Response, next: NextFunction) => {
+  public postGrantBonusToPrisonersSelectCaseload = async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (req.body.caseloadId) {
         GrantBonusToPrisonersService.updateGrantBonusForm(req.session as SessionData, {
@@ -54,7 +54,7 @@ export default class GrantBonusToPrisonersController {
         const caseloads = await this.getUserCaseloadsOrThrow(req)
 
         res.render('pages/grantBonusToPrisoners/grantBonusToPrisoners/grantBonusToPrisoners.njk', {
-          caseloadSelected: req.session.grantBonusForm.caseloadId,
+          caseloadSelected: req.session.grantBonusForm?.caseloadId,
           caseloads: mapItemsForRadioButtons({
             input: caseloads,
             valueKey: 'caseLoadId',
@@ -66,6 +66,14 @@ export default class GrantBonusToPrisonersController {
           },
         })
       }
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  public getGrantBonusToPrisonersSelectAmount = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.render('pages/grantBonusToPrisoners/amount/amount.njk')
     } catch (e) {
       next(e)
     }
