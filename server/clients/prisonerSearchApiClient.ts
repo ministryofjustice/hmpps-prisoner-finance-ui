@@ -3,7 +3,7 @@ import { asSystem, asUser, RestClient } from '@ministryofjustice/hmpps-rest-clie
 import config from '../config'
 import logger from '../../logger'
 import { Prisoner } from '../interfaces/prisoner'
-import { AttributeSearch, AttributeSearchResponse, RestPage } from '../interfaces/PrisonerAttributeSearch'
+import { PrisonerSearchResponse, RestPage } from '../interfaces/PrisonerNumberSearchResponse'
 
 export default class PrisonerSearchApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -19,36 +19,14 @@ export default class PrisonerSearchApiClient extends RestClient {
     )
   }
 
-  async getPrisonersByPrisonId(token: string, prisonId: string): Promise<RestPage<AttributeSearchResponse>> {
-    const requestBody: AttributeSearch = {
-      queries: [
-        {
-          matchers: [
-            {
-              attribute: 'prisonId',
-              type: 'String',
-              condition: 'IS',
-              searchTerm: prisonId,
-            },
-            {
-              attribute: 'status',
-              type: 'String',
-              condition: 'STARTSWITH',
-              searchTerm: 'ACTIVE',
-            },
-          ],
-        },
-      ],
-    }
-    // TODO: Refactor to use findByPrison instead
-    return this.post(
+  async getPrisonerNumbersByPrisonId(token: string, prisonId: string): Promise<RestPage<PrisonerSearchResponse>> {
+    return this.get(
       {
-        path: '/attribute-search',
+        path: `/prisoner-search/prison/${prisonId}`,
         query: {
-          size: 10000,
+          size: 5000,
           responseFields: 'prisonerNumber',
         },
-        data: requestBody,
       },
       asUser(token),
     )

@@ -6,6 +6,7 @@ import { Page } from '../interfaces/Pageable'
 import AccountResponse from '../interfaces/AccountResponse'
 import CreatedTransactionResponse from '../interfaces/CreatedTransactionResponse'
 import TransactionRequest from '../interfaces/TransactionRequest'
+import { CreateBatchTransactionFormRequest } from '../interfaces/BatchTransactionFormRequest'
 
 const emptyPage: Page<PrisonerTransactionResponse> = {
   content: [],
@@ -120,5 +121,9 @@ export default class PrisonerFinanceService {
 
   postTransaction(transaction: TransactionRequest): Promise<CreatedTransactionResponse> {
     return this.prisonerFinanceApiClient.postTransaction(transaction)
+  }
+
+  postBatchTransaction(transaction: CreateBatchTransactionFormRequest): Promise<CreatedTransactionResponse> {
+    return this.prisonerFinanceApiClient.postBatchTransactions(transaction)
   }
 }

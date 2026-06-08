@@ -30,7 +30,7 @@ describe('PrisonerSearchService', () => {
 
   describe('getPrisonersByPrisonId', () => {
     it('should call the API client with the correct prisonId', async () => {
-      apiClient.getPrisonersByPrisonId.mockResolvedValue({
+      apiClient.getPrisonerNumbersByPrisonId.mockResolvedValue({
         content: [{ alerts: [], prisonerNumber: 'A99123C' }],
         totalElements: 1,
         totalPages: 1,
@@ -41,7 +41,7 @@ describe('PrisonerSearchService', () => {
       const prisonId = 'MDI'
       await service.getPrisonerNumbersByPrisonId('FAKE_TOKEN', prisonId)
 
-      expect(apiClient.getPrisonersByPrisonId).toHaveBeenCalledWith('FAKE_TOKEN', prisonId)
+      expect(apiClient.getPrisonerNumbersByPrisonId).toHaveBeenCalledWith('FAKE_TOKEN', prisonId)
     })
   })
 })

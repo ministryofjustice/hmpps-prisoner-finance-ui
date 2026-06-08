@@ -38,7 +38,7 @@ describe('PrisonApi', () => {
       expect(response).toEqual(expectedResponse)
       expect(getSpy).toHaveBeenCalledWith(
         {
-          path: `/api/users/me/caseLoads?allCaseloads=true`,
+          path: `/api/users/me/caseLoads`,
         },
         asUser('fake-token'),
       )

@@ -2,6 +2,7 @@
 
 import { SessionData } from 'express-session'
 import GrantBonusForm from '../interfaces/GrantBonusForm'
+import { CreateBatchTransactionFormRequest } from '../interfaces/BatchTransactionFormRequest'
 
 export default class GrantBonusToPrisonersService {
   static createGrantBonusFormIfRequired(session: SessionData) {
@@ -21,5 +22,22 @@ export default class GrantBonusToPrisonersService {
 
   static clearGrantBonusForm(session: SessionData) {
     session.grantBonusForm = {}
+  }
+
+  static buildGrantBonusRequest(grantBonusForm: SessionData['grantBonusForm']) {
+    const createBatchTransactionRequest: CreateBatchTransactionFormRequest = {
+      caseloadId: grantBonusForm.caseloadId,
+      caseloadSubAccountRef: '1504:DEM',
+      postingType: 'DR',
+      controlAmount: grantBonusForm.amountPerPrisoner * grantBonusForm.prisonNumbers.length,
+      description: grantBonusForm.description,
+      prisonNumbersPostings: grantBonusForm.prisonNumbers.map(pn => ({
+        prisonNumber: pn,
+        prisonerSubAccountRef: 'CASH',
+        amount: grantBonusForm.amountPerPrisoner,
+        postingType: 'CR',
+      })),
+    }
+    return createBatchTransactionRequest
   }
 }

@@ -19,5 +19,7 @@ export default function routes(services: Services): Router {
     .get(grantBonusToPrisonersController.getGrantBonusToPrisonersSelectAmount)
     .post(grantBonusToPrisonersController.postGrantBonusToPrisonersSelectAmount)
 
+  grantBonusRouter.route('/confirmation').get(grantBonusToPrisonersController.getGrantBonusToPrisonerConfirmation)
+
   return grantBonusRouter
 }

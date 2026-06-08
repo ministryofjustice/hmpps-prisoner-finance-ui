@@ -92,11 +92,33 @@ export default class GrantBonusToPrisonersController {
       res.render('pages/grantBonusToPrisoners/amount/amount.njk', {
         errorMap,
       })
-    }
+    } else {
+      const { token } = req.user
+      const prisonNumbersSearchResponse = await this.services.prisonerSearchService.getPrisonerNumbersByPrisonId(
+        token,
+        req.session.grantBonusForm.caseloadId,
+      )
+      const prisonNumbers = prisonNumbersSearchResponse.content.map(pn => pn.prisonerNumber)
 
-    // TODO: call for the prisoners data and build the request for PF API
-    // const { token } = req.user
-    // const prisonNumbers = await this.services.prisonerSearchService.getPrisonerNumbersByPrisonId(token, 'LEI')
+      GrantBonusToPrisonersService.updateGrantBonusForm(req.session as SessionData, {
+        amountPerPrisoner: parsedBody.data.bonusAmount,
+        prisonNumbers,
+        description: parsedBody.data.description,
+      })
+
+      const { grantBonusForm } = req.session
+      const batchTransactionRequest = GrantBonusToPrisonersService.buildGrantBonusRequest(grantBonusForm)
+      const createdTransactionResponse =
+        await this.services.prisonerFinanceService.postBatchTransaction(batchTransactionRequest)
+
+      res.redirect(`./confirmation?transactionNumber=${createdTransactionResponse.id}`)
+    }
+  }
+
+  public getGrantBonusToPrisonerConfirmation = async (req: Request, res: Response, next: NextFunction) => {
+    res.render('pages/grantBonusToPrisoners/confirmation/confirmation.njk', {
+      transactionNumber: req.query.transactionNumber,
+    })
   }
 }
 

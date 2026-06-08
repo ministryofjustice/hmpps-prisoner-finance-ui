@@ -10,6 +10,7 @@ import { Page } from '../interfaces/Pageable'
 import AccountResponse from '../interfaces/AccountResponse'
 import TransactionRequest from '../interfaces/TransactionRequest'
 import CreatedTransactionResponse from '../interfaces/CreatedTransactionResponse'
+import { CreateBatchTransactionFormRequest } from '../interfaces/BatchTransactionFormRequest'
 
 export default class PrisonerFinanceApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -20,6 +21,18 @@ export default class PrisonerFinanceApiClient extends RestClient {
     return this.post(
       {
         path: `/transactions`,
+        data: transactionRequest as unknown as Record<string, unknown>,
+      },
+      asSystem(),
+    )
+  }
+
+  async postBatchTransactions(
+    transactionRequest: CreateBatchTransactionFormRequest,
+  ): Promise<CreatedTransactionResponse> {
+    return this.post(
+      {
+        path: `/transactions/batch`,
         data: transactionRequest as unknown as Record<string, unknown>,
       },
       asSystem(),
