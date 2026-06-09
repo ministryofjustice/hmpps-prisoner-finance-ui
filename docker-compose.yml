@@ -14,7 +14,7 @@ services:
       - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
 
   redis:
-    image: redis:8.6
+    image: redis:8.8
     restart: always
     ports:
       - '6379:6379'

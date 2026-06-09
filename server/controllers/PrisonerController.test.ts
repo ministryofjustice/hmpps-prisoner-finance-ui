@@ -76,7 +76,8 @@ describe('PrisonerController', () => {
           debit: 10,
           location: 'LEI',
           accountType: 'CASH',
-          runningBalance: 100,
+          subAccountBalance: 100,
+          accountBalance: 20,
         },
       ]
 
@@ -123,6 +124,7 @@ describe('PrisonerController', () => {
           credit,
           selectedFilters: expect.anything(),
         },
+        displayTotalBalance: false,
       })
     })
 
@@ -164,7 +166,8 @@ describe('PrisonerController', () => {
           debit: 10,
           location: 'LEI',
           accountType: 'CASH',
-          runningBalance: 200,
+          subAccountBalance: 200,
+          accountBalance: 30,
         },
       ]
 
@@ -221,7 +224,8 @@ describe('PrisonerController', () => {
           debit: 10,
           location: 'LEI',
           accountType: 'CASH',
-          runningBalance: 300,
+          subAccountBalance: 300,
+          accountBalance: 40,
         }
       })
 
