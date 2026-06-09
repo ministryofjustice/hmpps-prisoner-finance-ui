@@ -114,7 +114,7 @@ test.describe('Grant Bonus To prisoners', () => {
       expect(errorText).toBeVisible()
     })
 
-    test('Should show an error if an amount is less negative or zero', async ({ page }) => {
+    test('Should show an error if an amount is negative or zero', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
       await GrantBonusToPrisonersPage.verifyOnPage(page)
@@ -239,7 +239,7 @@ test.describe('Grant Bonus To prisoners', () => {
         caseloadId: prisonId,
         caseloadSubAccountRef: '1504:DEM',
         postingType: 'DR',
-        controlAmount: bonusAmountInPence * prisonNumbers.length,
+        controlAmount: bonusAmountInPence * prisonNumbers.length, // 244
         description: 'test description',
         prisonNumbersPostings: prisonNumbers.map(pn => ({
           prisonNumber: pn,
