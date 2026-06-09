@@ -5,6 +5,8 @@ import { Services } from '../services'
 import { AuditPage } from '../services/auditService'
 import { mapItemsForRadioButtons } from '../utils/utils'
 import GrantBonusToPrisonersService from '../services/GrantBonusToPrisonersService'
+import creditAmountValidator from '../validators/creditAmountValidator'
+import descriptionFieldValidator from '../validators/descriptionFieldValidator'
 
 export default class GrantBonusToPrisonersController {
   constructor(private readonly services: Services) {}
@@ -81,37 +83,51 @@ export default class GrantBonusToPrisonersController {
   }
 
   public postGrantBonusToPrisonersSelectAmount = async (req: Request, res: Response, next: NextFunction) => {
-    const { body } = req
-    const parsedBody = amountAndDescriptionSchema.safeParse(body)
+    try {
+      const { body } = req
+      const amountFormSchema = z.object({
+        bonusAmount: creditAmountValidator,
+        description: descriptionFieldValidator,
+      })
 
-    if (parsedBody.error) {
-      const errorMap = {
-        bonusAmount: parsedBody.error.issues.find(i => i.path[0] === 'bonusAmount')?.message,
-        description: parsedBody.error.issues.find(i => i.path[0] === 'description')?.message,
+      const result = amountFormSchema.safeParse(body)
+
+      if (result.success) {
+        const { token } = req.user
+        const prisonNumbersSearchResponse = await this.services.prisonerSearchService.getPrisonerNumbersByPrisonId(
+          token,
+          req.session.grantBonusForm.caseloadId,
+        )
+        const prisonNumbers = prisonNumbersSearchResponse.content.map(pn => pn.prisonerNumber)
+
+        GrantBonusToPrisonersService.updateGrantBonusForm(req.session as SessionData, {
+          amountPerPrisoner: Number(result.data.bonusAmount),
+          prisonNumbers,
+          description: result.data.description,
+        })
+
+        const { grantBonusForm } = req.session
+
+        const batchTransactionRequest = GrantBonusToPrisonersService.buildGrantBonusRequest(grantBonusForm)
+        const createdTransactionResponse =
+          await this.services.prisonerFinanceService.postBatchTransaction(batchTransactionRequest)
+
+        res.redirect(`./confirmation?transactionNumber=${createdTransactionResponse.id}`)
+      } else {
+        const allErrors = z.flattenError(result.error).fieldErrors
+        const templateErrors = Object.fromEntries(
+          Object.entries(allErrors).map(([field, errors]) => [field, errors?.[0]]),
+        )
+
+        const errorMap = {
+          bonusAmount: templateErrors.bonusAmount || null,
+          description: templateErrors.description || null,
+        }
+
+        res.render('pages/grantBonusToPrisoners/amount/amount.njk', { errorMap })
       }
-      res.render('pages/grantBonusToPrisoners/amount/amount.njk', {
-        errorMap,
-      })
-    } else {
-      const { token } = req.user
-      const prisonNumbersSearchResponse = await this.services.prisonerSearchService.getPrisonerNumbersByPrisonId(
-        token,
-        req.session.grantBonusForm.caseloadId,
-      )
-      const prisonNumbers = prisonNumbersSearchResponse.content.map(pn => pn.prisonerNumber)
-
-      GrantBonusToPrisonersService.updateGrantBonusForm(req.session as SessionData, {
-        amountPerPrisoner: parsedBody.data.bonusAmount,
-        prisonNumbers,
-        description: parsedBody.data.description,
-      })
-
-      const { grantBonusForm } = req.session
-      const batchTransactionRequest = GrantBonusToPrisonersService.buildGrantBonusRequest(grantBonusForm)
-      const createdTransactionResponse =
-        await this.services.prisonerFinanceService.postBatchTransaction(batchTransactionRequest)
-
-      res.redirect(`./confirmation?transactionNumber=${createdTransactionResponse.id}`)
+    } catch (e) {
+      next(e)
     }
   }
 
@@ -121,24 +137,3 @@ export default class GrantBonusToPrisonersController {
     })
   }
 }
-
-const amountAndDescriptionSchema = z.object({
-  bonusAmount: z.preprocess(
-    val => (val === null || val === undefined ? '' : val),
-    z
-      .string()
-      .min(1, 'You must select an amount to grant before continuing.')
-      .refine(val => /^\d+(\.\d{1,2})?$/.test(val), {
-        message: 'Amount must be a valid number with up to 2 decimal places',
-      })
-      .transform(val => Math.round(Number(val) * 100)),
-  ),
-
-  description: z.preprocess(
-    val => (val === null || val === undefined ? '' : val),
-    z
-      .string()
-      .min(1, 'You must include a description before continuing.')
-      .max(255, 'Description must be under 255 characters'),
-  ),
-})

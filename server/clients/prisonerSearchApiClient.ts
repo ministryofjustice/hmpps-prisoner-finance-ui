@@ -27,8 +27,11 @@ export default class PrisonerSearchApiClient extends RestClient {
           size: 5000,
           responseFields: 'prisonerNumber',
         },
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
-      asUser(token),
+      asSystem(),
     )
   }
 }

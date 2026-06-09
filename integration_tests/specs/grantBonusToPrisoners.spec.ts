@@ -110,7 +110,39 @@ test.describe('Grant Bonus To prisoners', () => {
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
 
-      const errorText = page.getByText('You must select an amount to grant before continuing.')
+      const errorText = page.getByText('Amount is required.')
+      expect(errorText).toBeVisible()
+    })
+
+    test('Should show an error if an amount is less negative or zero', async ({ page }) => {
+      await page.goto('/grant-bonus-to-prisoners')
+
+      await GrantBonusToPrisonersPage.verifyOnPage(page)
+
+      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+
+      const amountPage = await AmountPage.verifyOnPage(page)
+
+      await amountPage.amountInput.fill('-1.02')
+      await amountPage.descriptionInput.fill('test')
+
+      let doneButton = page.locator('[data-testid="done-button"]')
+      await doneButton.click()
+
+      await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
+
+      let errorText = page.getByText('Amount must be greater than 0.')
+      expect(errorText).toBeVisible()
+
+      await amountPage.amountInput.fill('0.00')
+      await amountPage.descriptionInput.fill('test')
+
+      doneButton = page.locator('[data-testid="done-button"]')
+      await doneButton.click()
+
+      await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
+
+      errorText = page.getByText('Amount must be greater than 0.')
       expect(errorText).toBeVisible()
     })
 
@@ -130,7 +162,7 @@ test.describe('Grant Bonus To prisoners', () => {
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
 
-      const errorText = page.getByText('You must include a description before continuing.')
+      const errorText = page.getByText('Description cannot be empty.')
       expect(errorText).toBeVisible()
     })
 
@@ -150,7 +182,7 @@ test.describe('Grant Bonus To prisoners', () => {
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
 
-      const errorText = page.getByText('Amount must be a valid number with up to 2 decimal places')
+      const errorText = page.getByText('Must be a valid number with up to 2 decimal places.')
       await expect(errorText).toBeVisible()
     })
 
@@ -172,7 +204,7 @@ test.describe('Grant Bonus To prisoners', () => {
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
 
-      const errorText = page.getByText('Description must be under 255 characters')
+      const errorText = page.getByText('Description cannot exceed 255 characters.')
       await expect(errorText).toBeVisible()
     })
 

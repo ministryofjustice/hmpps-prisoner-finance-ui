@@ -25,16 +25,17 @@ export default class GrantBonusToPrisonersService {
   }
 
   static buildGrantBonusRequest(grantBonusForm: SessionData['grantBonusForm']) {
+    const amountPerPrisonerInPence = grantBonusForm.amountPerPrisoner * 100
     const createBatchTransactionRequest: CreateBatchTransactionFormRequest = {
       caseloadId: grantBonusForm.caseloadId,
       caseloadSubAccountRef: '1504:DEM',
       postingType: 'DR',
-      controlAmount: grantBonusForm.amountPerPrisoner * grantBonusForm.prisonNumbers.length,
+      controlAmount: amountPerPrisonerInPence * grantBonusForm.prisonNumbers.length,
       description: grantBonusForm.description,
       prisonNumbersPostings: grantBonusForm.prisonNumbers.map(pn => ({
         prisonNumber: pn,
         prisonerSubAccountRef: 'CASH',
-        amount: grantBonusForm.amountPerPrisoner,
+        amount: amountPerPrisonerInPence,
         postingType: 'CR',
       })),
     }
