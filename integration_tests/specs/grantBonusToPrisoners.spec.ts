@@ -184,6 +184,14 @@ test.describe('Grant Bonus To prisoners', () => {
 
       const errorText = page.getByText('Must be a valid number with up to 2 decimal places.')
       await expect(errorText).toBeVisible()
+
+      const persistAmountInput = page.locator('[data-testid="amount-input"]')
+      await expect(persistAmountInput).toBeVisible()
+      await expect(persistAmountInput).toHaveValue('1.999')
+
+      const persistDescriptionInput = page.locator('[data-testid="description-input"]')
+      await expect(persistDescriptionInput).toBeVisible()
+      await expect(persistDescriptionInput).toHaveValue('Test description')
     })
 
     test('Should show an error if the description exceeds 255 characters', async ({ page }) => {

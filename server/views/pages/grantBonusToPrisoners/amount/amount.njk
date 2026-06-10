@@ -43,8 +43,8 @@
     attributes: {
         "data-testid" : "amount-input"
     },
-    errorMessage: { text: errorMap.bonusAmount } if errorMap.bonusAmount else null
-
+    errorMessage: { text: errorMap.bonusAmount } if errorMap.bonusAmount else null,
+    value: bonusAmount
   }) }}
 
   {{ govukInput({
@@ -56,7 +56,8 @@
     attributes: {
         "data-testid" : "description-input"
     },
-    errorMessage: { text: errorMap.description } if errorMap.description else null
+    errorMessage: { text: errorMap.description } if errorMap.description else null,
+    value: description
   }) }}
 
   {% endcall %}

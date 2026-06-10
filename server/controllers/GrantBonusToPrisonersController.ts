@@ -107,7 +107,6 @@ export default class GrantBonusToPrisonersController {
         })
 
         const { grantBonusForm } = req.session
-
         const batchTransactionRequest = GrantBonusToPrisonersService.buildGrantBonusRequest(grantBonusForm)
         const createdTransactionResponse =
           await this.services.prisonerFinanceService.postBatchTransaction(batchTransactionRequest)
@@ -119,12 +118,14 @@ export default class GrantBonusToPrisonersController {
           Object.entries(allErrors).map(([field, errors]) => [field, errors?.[0]]),
         )
 
-        const errorMap = {
-          bonusAmount: templateErrors.bonusAmount || null,
-          description: templateErrors.description || null,
-        }
-
-        res.render('pages/grantBonusToPrisoners/amount/amount.njk', { errorMap })
+        res.render('pages/grantBonusToPrisoners/amount/amount.njk', {
+          errorMap: {
+            bonusAmount: templateErrors.bonusAmount || null,
+            description: templateErrors.description || null,
+          },
+          bonusAmount: req.body.bonusAmount,
+          description: req.body.description,
+        })
       }
     } catch (e) {
       next(e)
