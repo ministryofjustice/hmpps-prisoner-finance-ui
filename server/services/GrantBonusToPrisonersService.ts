@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import { SessionData } from 'express-session'
+import { toMinor } from '@themainstack/money-utils'
 import GrantBonusForm from '../interfaces/GrantBonusForm'
 import { CreateBatchTransactionFormRequest } from '../interfaces/BatchTransactionFormRequest'
 
@@ -25,7 +26,7 @@ export default class GrantBonusToPrisonersService {
   }
 
   static buildGrantBonusRequest(grantBonusForm: SessionData['grantBonusForm']) {
-    const amountPerPrisonerInPence = grantBonusForm.amountPerPrisoner * 100
+    const amountPerPrisonerInPence = toMinor(grantBonusForm.amountPerPrisoner)
     const createBatchTransactionRequest: CreateBatchTransactionFormRequest = {
       caseloadId: grantBonusForm.caseloadId,
       caseloadSubAccountRef: '1504:DEM',
