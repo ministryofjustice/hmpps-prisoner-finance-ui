@@ -4,6 +4,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "components/forms/amountDescriptionForm.njk" import amountDescriptionForm %}
 
 {% set pageTitle = applicationName + " - Grant bonus to prisoners" %}
 {% set mainClasses = "govuk-body" %}
@@ -14,64 +15,19 @@
 
 {% endblock %}
 
-{% block content %}
-
 <div class="grant-bonus-to-prisoners-amount-page govuk-grid-row">
 
-  <form method="POST" action="./amount" data-testid='select-amount'>
-
-  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-
-  {% call govukFieldset({
-    legend: {
-      text: "Grant bonus to prisoners",
-      classes: "govuk-fieldset__legend--l",
-      isPageHeading: true
-    }
-  }) %}
-
-  {{ govukInput({
-    label: {
-      text: "Amount"
-    },
-    id: "bonusAmount",
-    name: "bonusAmount",
-    prefix: {
-        text: "£"
-    },
-    classes: "govuk-input--width-10",
-    attributes: {
-        "data-testid" : "amount-input"
-    },
-    errorMessage: { text: errorMap.bonusAmount } if errorMap.bonusAmount else null,
-    value: bonusAmount
-  }) }}
-
-  {{ govukInput({
-    label: {
-      text: "Description"
-    },
-    id: "description",
-    name: "description",
-    attributes: {
-        "data-testid" : "description-input"
-    },
-    errorMessage: { text: errorMap.description } if errorMap.description else null,
-    value: description
-  }) }}
-
-  {% endcall %}
-
-  {{ govukButton({
-    text: "Done",
-    type: "submit",
-    attributes:{
-          "data-testid" : "done-button"
-          },
-    preventDoubleClick: true
-  }) }}
-
-  </form>
-</div>
-
+{% block content %}
+  {{
+    amountDescriptionForm({
+      action: "./amount",
+      csrfToken: csrfToken,
+      headingText: "Grant bonus to prisoners",
+      errorMap: errorMap,
+      bonusAmountValue : bonusAmount,
+      descriptionValue : description
+    })
+  }}
 {% endblock %}
+
+</div>
