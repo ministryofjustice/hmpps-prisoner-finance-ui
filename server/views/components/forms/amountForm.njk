@@ -21,8 +21,8 @@
     label: {
       text: "Amount"
     },
-    id: "bonusAmount",
-    name: "bonusAmount",
+    id: "amount",
+    name: "amount",
     prefix: {
         text: "£"
     },
@@ -30,8 +30,8 @@
     attributes: {
         "data-testid" : "amount-input"
     },
-    errorMessage: { text: params.errorMap.bonusAmount } if params.errorMap.bonusAmount else null,
-    value: params.bonusAmountValue
+    errorMessage: { text: params.errorMap.amount } if params.errorMap.amount else null,
+    value: params.amountValue
   }) }}
 
   {{ govukInput({

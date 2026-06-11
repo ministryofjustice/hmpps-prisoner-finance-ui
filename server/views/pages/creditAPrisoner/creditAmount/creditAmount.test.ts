@@ -44,10 +44,10 @@ describe('Credit A Prisoner - Credit From Page', () => {
   })
 
   test('Renders the amount field, description field and done button', () => {
-    const amountField = $("[data-testid='amount-field']")
+    const amountField = $("[data-testid='amount-input']")
     expect(amountField.length).toBe(1)
 
-    const descriptionField = $("[data-testid='description-field']")
+    const descriptionField = $("[data-testid='description-input']")
     expect(descriptionField.length).toBe(1)
 
     const continueButton = $("[data-testid='done-button']")

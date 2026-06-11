@@ -6,6 +6,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
+{% from "components/forms/amountForm.njk" import amountDescriptionForm %}
 
 {% set pageTitle = applicationName + " - Profile" %}
 {% set mainClasses = "govuk-body" %}
@@ -25,60 +26,15 @@
 
 <div class="credit-from-page govuk-grid-row">
 
-  <form method="POST" action="./credit-amount" data-testid='select-credit-amount'>
-
-  <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-
-  {% call govukFieldset({
-    legend: {
-      text: "Credit amount",
-      classes: "govuk-fieldset__legend--l",
-      isPageHeading: true
-    }
-  }) %}
-
-  {{ govukInput({
-    label: {
-      text: "Credit amount"
-    },
-    id: "creditAmount",
-    name: "creditAmount",
-    prefix: {
-        text: "£"
-    },
-    classes: "govuk-input--width-10",
-    attributes: {
-        "data-testid" : "amount-field"
-    },
-    errorMessage: { text: errorMap.creditAmount } if errorMap.creditAmount else null,
-    value: creditAmount
-  }) }}
-
-  {{ govukInput({
-    label: {
-      text: "Description"
-    },
-    id: "description",
-    name: "description",
-    attributes: {
-        "data-testid" : "description-field"
-    },
-    errorMessage: { text: errorMap.description } if errorMap.description else null,
-    value: description
-  }) }}
-
-  {% endcall %}
-
-  {{ govukButton({
-    text: "Done",
-    type: "submit",
-    attributes:{
-          "data-testid" : "done-button"
-          },
-    preventDoubleClick: true
-  }) }}
-
-  </form>
-</div>
+  {{
+    amountDescriptionForm({
+      action: "./credit-amount",
+      csrfToken: csrfToken,
+      headingText: "Credit amount",
+      errorMap: errorMap,
+      amountValue : amount,
+      descriptionValue : description
+    })
+  }}
 
 {% endblock %}

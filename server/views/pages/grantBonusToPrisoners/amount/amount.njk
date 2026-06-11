@@ -4,7 +4,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "components/forms/amountDescriptionForm.njk" import amountDescriptionForm %}
+{% from "components/forms/amountForm.njk" import amountDescriptionForm %}
 
 {% set pageTitle = applicationName + " - Grant bonus to prisoners" %}
 {% set mainClasses = "govuk-body" %}
@@ -24,7 +24,7 @@
       csrfToken: csrfToken,
       headingText: "Grant bonus to prisoners",
       errorMap: errorMap,
-      bonusAmountValue : bonusAmount,
+      amountValue : amount,
       descriptionValue : description
     })
   }}

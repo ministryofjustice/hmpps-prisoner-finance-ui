@@ -86,7 +86,7 @@ export default class GrantBonusToPrisonersController {
     try {
       const { body } = req
       const amountFormSchema = z.object({
-        bonusAmount: creditAmountValidator,
+        amount: creditAmountValidator,
         description: descriptionFieldValidator,
       })
 
@@ -101,7 +101,7 @@ export default class GrantBonusToPrisonersController {
         const prisonNumbers = prisonNumbersSearchResponse.content.map(pn => pn.prisonerNumber)
 
         GrantBonusToPrisonersService.updateGrantBonusForm(req.session as SessionData, {
-          amountPerPrisoner: Number(result.data.bonusAmount),
+          amountPerPrisoner: Number(result.data.amount),
           prisonNumbers,
           description: result.data.description,
         })
@@ -120,10 +120,10 @@ export default class GrantBonusToPrisonersController {
 
         res.render('pages/grantBonusToPrisoners/amount/amount.njk', {
           errorMap: {
-            bonusAmount: templateErrors.bonusAmount || null,
+            amount: templateErrors.amount || null,
             description: templateErrors.description || null,
           },
-          bonusAmount: req.body.bonusAmount,
+          amount: req.body.amount,
           description: req.body.description,
         })
       }
