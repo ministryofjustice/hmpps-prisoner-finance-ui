@@ -22,20 +22,16 @@
       prisoner:prisoner
   }) }}
 
-
 {% endblock %}
 
 {% block content %}
-
-<div class="govuk-grid-row">
   {{
     confirmationPanel({
+    panelTitle: "Credit processed",
     confirmationMessage: "The credit has been processed. You can see the prisoners recent transactions on their",
-    backToPageLinkText : "financial profile page.",
+    confirmationMessageLinkText : "financial profile page.",
     transactionNumber : transactionNumber,
     confirmationHref: "/prisoner/" + prisonNumber
     })
   }}
-</div>
-
 {% endblock %}
