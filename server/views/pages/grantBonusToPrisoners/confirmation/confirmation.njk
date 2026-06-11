@@ -4,6 +4,7 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "components/confirmationPanel/confirmationPanel.njk" import confirmationPanel %}
 
 {% set mainClasses = "govuk-main-wrapper--l" %}
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
@@ -19,22 +20,15 @@
 
 {% block content %}
 
- <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      {{ govukPanel({
-        titleText: "Bonus grant processed",
-        html: "Your transaction number<br><strong>"+transactionNumber+"</strong>",
-        attributes: {
-          "data-testid": "confirmation-panel"
-        }
-      }) }}
-
-      <h2 class="govuk-heading-m">What happens next</h2>
-      <p class="govuk-body">
-        The bonus grant has been processed.
-        <a href="/" id="backToHomePageLink" class="govuk-back-link" data-testid="backToHomePageLink">Back To Homepage</a>
-      </p>
-    </div>
-  </div>
+<div class="govuk-grid-row">
+  {{
+    confirmationPanel({
+    confirmationMessage: "Bonus grant processed",
+    backToPageLinkText : "The bonus grant has been processed.",
+    transactionNumber : transactionNumber,
+    confirmationHref: "/"
+    })
+  }}
+</div>
 
 {% endblock %}

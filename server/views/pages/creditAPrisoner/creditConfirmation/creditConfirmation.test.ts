@@ -52,7 +52,7 @@ describe('Credit A Prisoner - Credit From Page', () => {
     const confirmationPanel = $('[data-testid="confirmation-panel"]')
     expect(confirmationPanel.text()).toContain(txnNum)
 
-    const recentTxnsLink = $('[data-testid="recent-txns-link"]')
+    const recentTxnsLink = $('[data-testid="confirmation-message-link"]')
     expect(recentTxnsLink.attr('href')).toBe(`/prisoner/${prisonNumber}`)
   })
 })

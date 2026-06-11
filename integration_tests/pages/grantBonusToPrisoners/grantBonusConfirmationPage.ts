@@ -1,7 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test'
 import AbstractPage from '../abstractPage'
 
-export default class CreditConfirmationPage extends AbstractPage {
+export default class GrantBonusConfirmationPage extends AbstractPage {
   readonly confirmationPanel: Locator
 
   readonly recentTxnsLink: Locator
@@ -12,8 +12,8 @@ export default class CreditConfirmationPage extends AbstractPage {
     this.recentTxnsLink = page.locator('[data-testid="confirmation-message-link"]')
   }
 
-  static async verifyOnPage(page: Page): Promise<CreditConfirmationPage> {
-    const creditConfirmationPage = new CreditConfirmationPage(page)
+  static async verifyOnPage(page: Page): Promise<GrantBonusConfirmationPage> {
+    const creditConfirmationPage = new GrantBonusConfirmationPage(page)
     await expect(creditConfirmationPage.confirmationPanel).toBeVisible()
     return creditConfirmationPage
   }

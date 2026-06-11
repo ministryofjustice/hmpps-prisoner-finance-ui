@@ -9,6 +9,7 @@
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 
 {% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
+{% from "components/confirmationPanel/confirmationPanel.njk" import confirmationPanel %}
 
 {% set pageTitle = applicationName + " - Profile" %}
 {% set mainClasses = "govuk-body" %}
@@ -26,22 +27,15 @@
 
 {% block content %}
 
- <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      {{ govukPanel({
-        titleText: "Credit processed",
-        html: "Your transaction number<br><strong>"+transactionNumber+"</strong>",
-        attributes: {
-          "data-testid": "confirmation-panel"
-        }
-      }) }}
-
-      <h2 class="govuk-heading-m">What happens next</h2>
-      <p class="govuk-body">
-        The credit has been processed. You can see the prisoners recent transactions on their
-        <a href="/prisoner/{{prisonNumber}}" class="govuk-link" data-testid="recent-txns-link">financial profile page.</a>
-      </p>
-    </div>
-  </div>
+<div class="govuk-grid-row">
+  {{
+    confirmationPanel({
+    confirmationMessage: "The credit has been processed. You can see the prisoners recent transactions on their",
+    backToPageLinkText : "financial profile page.",
+    transactionNumber : transactionNumber,
+    confirmationHref: "/prisoner/" + prisonNumber
+    })
+  }}
+</div>
 
 {% endblock %}

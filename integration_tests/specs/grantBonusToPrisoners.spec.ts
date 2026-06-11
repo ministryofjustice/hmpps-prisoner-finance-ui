@@ -7,6 +7,7 @@ import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import { CreateBatchTransactionFormRequest } from '../../server/interfaces/BatchTransactionFormRequest'
 import CreatedTransactionResponse from '../../server/interfaces/CreatedTransactionResponse'
+import GrantBonusConfirmationPage from '../pages/grantBonusToPrisoners/grantBonusConfirmationPage'
 
 test.describe('Grant Bonus To prisoners', () => {
   let redisClient: RedisClient
@@ -279,12 +280,12 @@ test.describe('Grant Bonus To prisoners', () => {
 
       await page.waitForURL(`/grant-bonus-to-prisoners/confirmation?transactionNumber=${transactionId}`, { timeout: 3 })
 
-      const transactionProcessedPanel = page.locator('[data-testid="confirmation-panel"]')
+      const confirmationPage = await GrantBonusConfirmationPage.verifyOnPage(page)
 
-      await expect(transactionProcessedPanel).toBeVisible()
+      await expect(confirmationPage.confirmationPanel).toBeVisible()
 
-      const confirmationMessage = await transactionProcessedPanel.textContent()
-      expect(confirmationMessage).toContain(transactionId)
+      expect(await confirmationPage.confirmationPanel.textContent()).toContain(transactionId)
+      expect(await confirmationPage.recentTxnsLink.getAttribute('href')).toBe(`/`)
     })
   })
 })
