@@ -19,16 +19,13 @@
 {% endblock %}
 
 {% block content %}
-
-<div class="govuk-grid-row">
   {{
     confirmationPanel({
-    confirmationMessage: "Bonus grant processed",
-    backToPageLinkText : "The bonus grant has been processed.",
+    panelTitle: "Bonus grant processed.",
+    confirmationMessage: "The bonus grant has been processed.",
+    confirmationMessageLinkText : "Return home",
     transactionNumber : transactionNumber,
     confirmationHref: "/"
     })
   }}
-</div>
-
 {% endblock %}
