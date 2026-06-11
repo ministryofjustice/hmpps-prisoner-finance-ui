@@ -1,9 +1,12 @@
 import { NextFunction, Response, Request } from 'express'
 import { SessionData } from 'express-session'
+import z from 'zod'
 import { Services } from '../services'
 import { AuditPage } from '../services/auditService'
 import { mapItemsForRadioButtons } from '../utils/utils'
 import GrantBonusToPrisonersService from '../services/GrantBonusToPrisonersService'
+import creditAmountValidator from '../validators/creditAmountValidator'
+import descriptionFieldValidator from '../validators/descriptionFieldValidator'
 
 export default class GrantBonusToPrisonersController {
   constructor(private readonly services: Services) {}
@@ -20,7 +23,7 @@ export default class GrantBonusToPrisonersController {
     return caseloads
   }
 
-  public grantBonusToPrisonersSelectCaseload = async (req: Request, res: Response, next: NextFunction) => {
+  public getGrantBonusToPrisonersSelectCaseload = async (req: Request, res: Response, next: NextFunction) => {
     await this.services.auditService.logPageView(AuditPage.GRANT_BONUS_CASELOAD, {
       who: res.locals.user.username,
       correlationId: req.id,
@@ -43,7 +46,7 @@ export default class GrantBonusToPrisonersController {
     }
   }
 
-  public grantBonusToPrisonersAmount = async (req: Request, res: Response, next: NextFunction) => {
+  public postGrantBonusToPrisonersSelectCaseload = async (req: Request, res: Response, next: NextFunction) => {
     try {
       if (req.body.caseloadId) {
         GrantBonusToPrisonersService.updateGrantBonusForm(req.session as SessionData, {
@@ -54,7 +57,7 @@ export default class GrantBonusToPrisonersController {
         const caseloads = await this.getUserCaseloadsOrThrow(req)
 
         res.render('pages/grantBonusToPrisoners/grantBonusToPrisoners/grantBonusToPrisoners.njk', {
-          caseloadSelected: req.session.grantBonusForm.caseloadId,
+          caseloadSelected: req.session.grantBonusForm?.caseloadId,
           caseloads: mapItemsForRadioButtons({
             input: caseloads,
             valueKey: 'caseLoadId',
@@ -69,5 +72,69 @@ export default class GrantBonusToPrisonersController {
     } catch (e) {
       next(e)
     }
+  }
+
+  public getGrantBonusToPrisonersSelectAmount = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      res.render('pages/grantBonusToPrisoners/amount/amount.njk')
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  public postGrantBonusToPrisonersSelectAmount = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { body } = req
+      const amountFormSchema = z.object({
+        amount: creditAmountValidator,
+        description: descriptionFieldValidator,
+      })
+
+      const result = amountFormSchema.safeParse(body)
+
+      if (result.success) {
+        const { token } = req.user
+        const prisonNumbersSearchResponse = await this.services.prisonerSearchService.getPrisonerNumbersByPrisonId(
+          token,
+          req.session.grantBonusForm.caseloadId,
+        )
+        const prisonNumbers = prisonNumbersSearchResponse.content.map(pn => pn.prisonerNumber)
+
+        GrantBonusToPrisonersService.updateGrantBonusForm(req.session as SessionData, {
+          amountPerPrisoner: Number(result.data.amount),
+          prisonNumbers,
+          description: result.data.description,
+        })
+
+        const { grantBonusForm } = req.session
+        const batchTransactionRequest = GrantBonusToPrisonersService.buildGrantBonusRequest(grantBonusForm)
+        const createdTransactionResponse =
+          await this.services.prisonerFinanceService.postBatchTransaction(batchTransactionRequest)
+
+        res.redirect(`./confirmation?transactionNumber=${createdTransactionResponse.id}`)
+      } else {
+        const allErrors = z.flattenError(result.error).fieldErrors
+        const templateErrors = Object.fromEntries(
+          Object.entries(allErrors).map(([field, errors]) => [field, errors?.[0]]),
+        )
+
+        res.render('pages/grantBonusToPrisoners/amount/amount.njk', {
+          errorMap: {
+            amount: templateErrors.amount || null,
+            description: templateErrors.description || null,
+          },
+          amount: req.body.amount,
+          description: req.body.description,
+        })
+      }
+    } catch (e) {
+      next(e)
+    }
+  }
+
+  public getGrantBonusToPrisonerConfirmation = async (req: Request, res: Response, next: NextFunction) => {
+    res.render('pages/grantBonusToPrisoners/confirmation/confirmation.njk', {
+      transactionNumber: req.query.transactionNumber,
+    })
   }
 }

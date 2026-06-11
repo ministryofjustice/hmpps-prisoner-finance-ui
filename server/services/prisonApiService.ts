@@ -4,7 +4,7 @@ import ActiveCaseloadResponse from '../interfaces/ActiveCaseloadResponse'
 export default class PrisonApiService {
   constructor(private readonly prisonApiClient: PrisonApiClient) {}
 
-  getUserCaseloads(token: string): Promise<ActiveCaseloadResponse[]> {
-    return this.prisonApiClient.getCaseloadsForCurrentUser(token)
+  getUserCaseloads(accessToken: string): Promise<ActiveCaseloadResponse[]> {
+    return this.prisonApiClient.getCaseloadsForCurrentUser(accessToken)
   }
 }

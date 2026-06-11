@@ -27,4 +27,21 @@ describe('PrisonerSearchService', () => {
       expect(apiClient.getPrisoner).toHaveBeenCalledWith(prisonNumber)
     })
   })
+
+  describe('getPrisonersByPrisonId', () => {
+    it('should call the API client with the correct prisonId', async () => {
+      apiClient.getPrisonerNumbersByPrisonId.mockResolvedValue({
+        content: [{ alerts: [], prisonerNumber: 'A99123C' }],
+        totalElements: 1,
+        totalPages: 1,
+        size: 1,
+        number: 0,
+      })
+
+      const prisonId = 'MDI'
+      await service.getPrisonerNumbersByPrisonId('FAKE_TOKEN', prisonId)
+
+      expect(apiClient.getPrisonerNumbersByPrisonId).toHaveBeenCalledWith('FAKE_TOKEN', prisonId)
+    })
+  })
 })

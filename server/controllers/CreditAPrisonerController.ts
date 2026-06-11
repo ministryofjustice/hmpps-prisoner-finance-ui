@@ -105,13 +105,13 @@ export default class CreditAPrisonerController {
 
   public postCreditAmount = async (req: Request, res: Response, next: NextFunction) => {
     const amountFormSchema = z.object({
-      creditAmount: creditAmountValidator,
+      amount: creditAmountValidator,
       description: descriptionFieldValidator,
     })
     const result = amountFormSchema.safeParse(req.body)
 
     if (result.success) {
-      const amount = result.data?.creditAmount
+      const amount = result.data?.amount
       const description = result.data?.description
 
       CreditAPrisonerService.updateCreditForm(req.session as SessionData, {
@@ -134,10 +134,10 @@ export default class CreditAPrisonerController {
 
       res.render('pages/creditAPrisoner/creditAmount/creditAmount.njk', {
         errorMap: {
-          creditAmount: templateErrors.creditAmount || null,
+          amount: templateErrors.amount || null,
           description: templateErrors.description || null,
         },
-        creditAmount: req.body.creditAmount,
+        amount: req.body.amount,
         description: req.body.description,
       })
     }

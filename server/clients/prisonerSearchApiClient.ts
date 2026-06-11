@@ -3,6 +3,7 @@ import { asSystem, RestClient } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
 import logger from '../../logger'
 import { Prisoner } from '../interfaces/prisoner'
+import { PrisonerSearchResponse, RestPage } from '../interfaces/PrisonerNumberSearchResponse'
 
 export default class PrisonerSearchApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -13,6 +14,22 @@ export default class PrisonerSearchApiClient extends RestClient {
     return this.get(
       {
         path: `/prisoner/${prisonNumber}`,
+      },
+      asSystem(),
+    )
+  }
+
+  async getPrisonerNumbersByPrisonId(token: string, prisonId: string): Promise<RestPage<PrisonerSearchResponse>> {
+    return this.get(
+      {
+        path: `/prisoner-search/prison/${prisonId}`,
+        query: {
+          size: 5000,
+          responseFields: 'prisonerNumber',
+        },
+        headers: {
+          'Content-Type': 'application/json',
+        },
       },
       asSystem(),
     )

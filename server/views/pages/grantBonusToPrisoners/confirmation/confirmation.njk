@@ -4,24 +4,17 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "components/confirmationPanel/confirmationPanel.njk" import confirmationPanel %}
 
 {% set mainClasses = "govuk-main-wrapper--l" %}
 {% from "govuk/components/panel/macro.njk" import govukPanel %}
 
-{% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
-{% from "components/confirmationPanel/confirmationPanel.njk" import confirmationPanel %}
-
-{% set pageTitle = applicationName + " - Profile" %}
+{% set pageTitle = applicationName + " - Grant bonus to prisoners" %}
 {% set mainClasses = "govuk-body" %}
 
 {% block beforeContent %}
 
   <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
-
-  {{ prisonerInformationHeader({
-      prisoner:prisoner
-  }) }}
-
 
 {% endblock %}
 
@@ -30,10 +23,10 @@
 <div class="govuk-grid-row">
   {{
     confirmationPanel({
-    confirmationMessage: "The credit has been processed. You can see the prisoners recent transactions on their",
-    backToPageLinkText : "financial profile page.",
+    confirmationMessage: "Bonus grant processed",
+    backToPageLinkText : "The bonus grant has been processed.",
     transactionNumber : transactionNumber,
-    confirmationHref: "/prisoner/" + prisonNumber
+    confirmationHref: "/"
     })
   }}
 </div>

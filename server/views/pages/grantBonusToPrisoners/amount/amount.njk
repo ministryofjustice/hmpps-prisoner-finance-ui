@@ -4,37 +4,30 @@
 {% from "govuk/components/button/macro.njk" import govukButton %}
 {% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
 {% from "govuk/components/input/macro.njk" import govukInput %}
-
-{% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
 {% from "components/forms/amountForm.njk" import amountDescriptionForm %}
 
-{% set pageTitle = applicationName + " - Profile" %}
+{% set pageTitle = applicationName + " - Grant bonus to prisoners" %}
 {% set mainClasses = "govuk-body" %}
 
 {% block beforeContent %}
 
   <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
 
-  {{ prisonerInformationHeader({
-      prisoner:prisoner
-  }) }}
-
-
 {% endblock %}
 
+<div class="grant-bonus-to-prisoners-amount-page govuk-grid-row">
+
 {% block content %}
-
-<div class="credit-from-page govuk-grid-row">
-
   {{
     amountDescriptionForm({
-      action: "./credit-amount",
+      action: "./amount",
       csrfToken: csrfToken,
-      headingText: "Credit amount",
+      headingText: "Grant bonus to prisoners",
       errorMap: errorMap,
       amountValue : amount,
       descriptionValue : description
     })
   }}
-
 {% endblock %}
+
+</div>

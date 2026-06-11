@@ -1,5 +1,6 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
+import { RestPage, PrisonerSearchResponse } from '../../server/interfaces/PrisonerNumberSearchResponse'
 
 export default {
   stubPing: (httpStatus = 200): SuperAgentRequest =>
@@ -61,6 +62,40 @@ export default {
           status: 'ACTIVE IN',
           cellLocation: 'RECP',
         },
+      },
+    })
+  },
+
+  stubGetPrisonersIdsByPrisonId: (prisonId: string, prisonNumbers: string[]): SuperAgentRequest => {
+    const prisonersSearchResponse: PrisonerSearchResponse[] = prisonNumbers.map(pn => ({
+      prisonerNumber: pn,
+      alerts: [],
+    }))
+    const prisonerNumbersPage: RestPage<PrisonerSearchResponse> = {
+      content: prisonersSearchResponse,
+      totalElements: prisonNumbers.length,
+      totalPages: 1,
+      size: 1,
+      number: 0,
+    }
+
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath: `/prisoner-search-api/prisoner-search/prison/${prisonId}`,
+        queryParameters: {
+          size: {
+            equalTo: '5000',
+          },
+          responseFields: {
+            equalTo: 'prisonerNumber',
+          },
+        },
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: prisonerNumbersPage,
       },
     })
   },

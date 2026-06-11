@@ -7,6 +7,7 @@ import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBal
 import { Page } from '../../server/interfaces/Pageable'
 import CreatedTransactionResponse from '../../server/interfaces/CreatedTransactionResponse'
 import TransactionRequest from '../../server/interfaces/TransactionRequest'
+import { CreateBatchTransactionFormRequest } from '../../server/interfaces/BatchTransactionFormRequest'
 
 // this is the path prefix set in feature.env PRISONER_FINANCE_API_URL
 const API_PREFIX = '/prisoner-finance-api'
@@ -247,5 +248,29 @@ export default {
     })
 
     return wireMockResponse
+  },
+
+  stubPostBatchTransaction: (
+    requestPayload: CreateBatchTransactionFormRequest,
+    responsePayload: CreatedTransactionResponse,
+  ) => {
+    return stubFor({
+      request: {
+        method: 'POST',
+        urlPattern: `${API_PREFIX}/transactions/batch`,
+        bodyPatterns: [
+          {
+            equalToJson: JSON.stringify(requestPayload),
+            ignoreArrayOrder: true,
+            ignoreExtraElements: false,
+          },
+        ],
+      },
+      response: {
+        status: 201,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: responsePayload,
+      },
+    })
   },
 }
