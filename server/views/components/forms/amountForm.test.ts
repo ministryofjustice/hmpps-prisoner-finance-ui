@@ -2,7 +2,7 @@ import nunjucks from 'nunjucks'
 import * as cheerio from 'cheerio'
 import { setUpNunJucksFilters } from '../../../utils/nunjucksSetup'
 
-describe('View Components - AmountDescriptionForm', () => {
+describe('View Components - AmountForm', () => {
   const njkEnv = nunjucks.configure(
     ['server/views', 'node_modules/govuk-frontend/dist', 'node_modules/@ministryofjustice/frontend/'],
     {
