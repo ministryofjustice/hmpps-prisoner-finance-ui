@@ -6,7 +6,7 @@
 {% from "govuk/components/input/macro.njk" import govukInput %}
 
 {% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
-{% from "components/forms/amountForm.njk" import amountDescriptionForm %}
+{% from "components/forms/amountForm.njk" import amountForm %}
 
 {% set pageTitle = applicationName + " - Profile" %}
 {% set mainClasses = "govuk-body" %}
@@ -27,7 +27,7 @@
 <div class="credit-from-page govuk-grid-row">
 
   {{
-    amountDescriptionForm({
+    amountForm({
       action: "./credit-amount",
       csrfToken: csrfToken,
       headingText: "Credit amount",
