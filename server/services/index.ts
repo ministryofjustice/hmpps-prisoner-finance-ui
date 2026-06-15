@@ -18,14 +18,12 @@ export const services = () => {
     prisonerSearchApiClient,
     prisonRegisterApiClient,
     prisonApiClient,
-    telemetryClient,
   } = dataAccess()
 
   const prisonPermissionsService = PrisonPermissionsService.create({
     prisonerSearchConfig: config.apis.prisonerSearch,
     authenticationClient: hmppsAuthClient,
     logger,
-    telemetryClient,
   })
 
   return {

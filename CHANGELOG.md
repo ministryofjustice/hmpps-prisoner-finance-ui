@@ -1,5 +1,35 @@
 # Change log
 
+**May 12th 2026** - Add codeql scan for typescript
+
+Adding an action for codeql security scanning of the application source code
+
+See PR [#742](https://github.com/ministryofjustice/hmpps-template-typescript/pull/742) and [#743](https://github.com/ministryofjustice/hmpps-template-typescript/pull/743)
+
+**May 11th 2026** - Build docker image on PR branches
+
+Moving to automatically build docker images on PR branches to more quickly identify issues which would result in broken deployments.
+
+See PR [#738](https://github.com/ministryofjustice/hmpps-template-typescript/pull/738)
+
+**April 23rd 2026** - Improve type safety
+
+Update type definitions in the codebase so that they are compatible with strict mode if enabled in [tsconfig.json](/tsconfig.json).
+
+See PR [#718](https://github.com/ministryofjustice/hmpps-template-typescript/pull/718)
+
+**April 22nd 2026** - Remove npm from final image using new alpine-runtime image.
+
+Consolidate to a 2-stage Docker build with an `alpine-runtime` final stage, removing npm from the shipped image, reducing attack surface, and limiting the number of vulnerabilities found by scanning tools.
+
+See PR [#693](https://github.com/ministryofjustice/hmpps-template-typescript/pull/693)
+
+**April 21st 2026** - Use .npmrc during docker build
+
+Ensure repo `.npmrc` is present when building docker image to inherit security settings.
+
+See PR [#719](https://github.com/ministryofjustice/hmpps-template-typescript/pull/719)
+
 **April 14th 2026** - Move to Typescript v6.
 
 See PR [#715](https://github.com/ministryofjustice/hmpps-template-typescript/pull/715)
