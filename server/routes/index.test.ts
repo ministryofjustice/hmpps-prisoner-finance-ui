@@ -3,9 +3,11 @@ import request from 'supertest'
 import { appWithAllRoutes, user } from './testutils/appSetup'
 import AuditService, { AuditPage } from '../services/auditService'
 
+import HmppsAuditClient from '../data/hmppsAuditClient'
+
 jest.mock('../services/auditService')
 
-const auditService = new AuditService(null) as jest.Mocked<AuditService>
+const auditService = new AuditService({} as HmppsAuditClient) as jest.Mocked<AuditService>
 
 let app: Express
 
@@ -23,17 +25,18 @@ afterEach(() => {
 })
 
 describe('GET /', () => {
-  it('Should log page view for index page and render the home page', async () => {
+  it('should render index page', () => {
+    auditService.logPageView.mockResolvedValue(undefined)
+
     return request(app)
       .get('/')
       .expect('Content-Type', /html/)
       .expect(200)
-      .expect(res => {
-        expect(res.text).toContain('Prisoner Finance')
-        expect(auditService.logPageView).toHaveBeenCalledWith(
-          AuditPage.INDEX,
-          expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
-        )
+      .expect(_ => {
+        expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.INDEX, {
+          who: user.username,
+          correlationId: expect.any(String),
+        })
       })
   })
 

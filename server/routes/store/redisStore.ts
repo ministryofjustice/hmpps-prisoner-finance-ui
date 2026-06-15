@@ -26,14 +26,10 @@ export default class RedisStore implements Store {
   public async get(key: string): Promise<string | null> {
     await this.ensureConnected()
     const result = await this.client.get(`${this.prefix}${key}`)
-
-    if (typeof result === 'string') {
-      return result
-    }
-    if (result === null) {
+    if (typeof result === 'object' && Object.keys(result).length === 0) {
       return null
     }
-    return Buffer.from(result).toString('utf-8')
+    return result as string
   }
 
   // _ will be the sid in implementation
