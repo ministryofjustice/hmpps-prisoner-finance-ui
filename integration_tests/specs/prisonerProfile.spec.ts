@@ -187,7 +187,7 @@ test.describe('Prisoner Profile', () => {
     await expect(transactionsLink).toContainText('View all transactions')
   })
 
-  test('Backlink should render and return to index', async ({ page }) => {
+  test('Backlink should render and return to the find prisoner page', async ({ page }) => {
     await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}`)
 
@@ -195,7 +195,7 @@ test.describe('Prisoner Profile', () => {
     await expect(prisonerProfilePage.backButton).toBeVisible()
     await prisonerProfilePage.backButton.click()
 
-    expect(new URL(page.url()).pathname).toBe('/')
+    expect(new URL(page.url()).pathname).toBe('/prisoner')
   })
 
   test('Should render the actions menu block', async ({ page }) => {
@@ -312,7 +312,7 @@ test.describe('Prisoner Profile', () => {
     }
   })
 
-  test('Should handle 404 and render error', async ({ page }) => {
+  test('Should handle 404 and render the prisoner not found page', async ({ page }) => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SPENDS')
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'CASH')
@@ -322,8 +322,8 @@ test.describe('Prisoner Profile', () => {
     const response = await page.goto(`/prisoner/${prisonNumber}`)
 
     expect(response?.status()).toBe(404)
-    expect(page.locator('[data-testid="error-page-message"]')).toContainText('Account not found')
-    expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
+    await expect(page.locator('[data-testid="prisoner-not-found-heading"]')).toContainText('Prisoner not found')
+    await expect(page.locator('[data-testid="find-prisoner-link"]')).toBeVisible()
   })
 
   test('Should handle 500 and render error', async ({ page }) => {

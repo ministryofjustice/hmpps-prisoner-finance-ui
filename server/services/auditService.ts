@@ -7,6 +7,7 @@ export enum AuditPage {
   CREDIT_TO = 'CREDIT_TO_PAGE',
   CREDIT_FROM = 'CREDIT_FROM_PAGE',
   GRANT_BONUS_CASELOAD = 'GRANT_BONUS_CASELOAD_SELECTION_PAGE',
+  FIND_PRISONER = 'FIND_PRISONER_PAGE',
 }
 
 export interface PageViewEventDetails {

@@ -1,0 +1,45 @@
+{% extends "partials/layout.njk" %}
+
+{% from "govuk/components/input/macro.njk" import govukInput %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% set pageTitle = applicationName + " - View prisoner finances" %}
+{% set mainClasses = "govuk-body" %}
+
+{% block beforeContent %}
+  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+{% endblock %}
+
+{% block content %}
+  <form method="POST" action="/prisoner" data-testid="find-prisoner-form">
+
+    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+    {{ govukInput({
+      label: {
+        text: "Enter a Prison Number",
+        classes: "govuk-label--xl",
+        isPageHeading: true
+      },
+      hint: {
+        text: "Enter the exact Prison Number of the prisoner whose finances you want to access"
+      },
+      id: "prisonNumber",
+      name: "prisonNumber",
+      classes: "govuk-input--width-10",
+      attributes: {
+        "data-testid": "prisoner-number-input"
+      },
+      errorMessage: { text: errorMap.prisonNumber } if errorMap.prisonNumber else null
+    }) }}
+
+    {{ govukButton({
+      text: "Submit",
+      type: "submit",
+      attributes: {
+        "data-testid": "submit-button"
+      }
+    }) }}
+
+  </form>
+{% endblock %}
