@@ -11,7 +11,14 @@
 
 {% block header %}
   {{ feComponents.header  | safe }}
-  {% include "../partials/phaseBanner.njk" %}
+  {# Beta phase banner temporarily disabled while this is a test environment. #}
+  {# {% include "../partials/phaseBanner.njk" %} #}
+{% endblock %}
+
+{# Render the data warning banner directly beneath the phase banner and above any page back link. #}
+{% block containerStart %}
+  {% include "../partials/dataWarningBanner.njk" %}
+  {% block beforeContent %}{% endblock %}
 {% endblock %}
 
 {% block footer %}
