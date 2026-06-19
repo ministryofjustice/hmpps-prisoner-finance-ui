@@ -9,7 +9,7 @@ services:
     ports:
       - "9091:8080"
     volumes:
-      - ./wiremock:/home/wiremock:ro
+      - ./mappings:/home/wiremock/mappings
 
   redis:
     image: redis:8.8
