@@ -45,6 +45,24 @@ export default {
     })
   },
 
+  stubGetPrisonerNotFound: (prisonNumber: string): SuperAgentRequest => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath: `/prisoner-search-api/prisoner/${prisonNumber}`,
+      },
+      response: {
+        status: 404,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          status: 404,
+          userMessage: 'Prisoner not found',
+          developerMessage: 'Prisoner not found',
+        },
+      },
+    })
+  },
+
   stubGetPrisonerOutsideCaseload: (prisonNumber: string): SuperAgentRequest => {
     return stubFor({
       request: {

@@ -4,12 +4,16 @@ import { Services } from '../services'
 import PrisonerController from '../controllers/PrisonerController'
 import getPrisonerData from '../middleware/getPrisonerData'
 import getPrisonNames from '../middleware/getPrisonNames'
+import prisonerNotFoundHandler from '../middleware/prisonerNotFoundHandler'
 import creditAPrisonerRouter from './creditAPrisoner'
 
 export default function routes(services: Services): Router {
   const prisonerRouter = Router()
-
   const prisonerController = new PrisonerController(services)
+
+  prisonerRouter.get('/', prisonerController.getFindPrisoner)
+
+  prisonerRouter.post('/', prisonerController.postFindPrisoner)
 
   prisonerRouter.get(
     '/:prisonNumber/money',
@@ -85,6 +89,7 @@ export default function routes(services: Services): Router {
 
     getPrisonerData(services),
     prisonerController.getProfile,
+    prisonerNotFoundHandler,
   )
 
   prisonerRouter.use('/:prisonNumber/money/credit-a-prisoner', creditAPrisonerRouter(services))

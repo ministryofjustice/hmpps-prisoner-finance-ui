@@ -119,6 +119,37 @@ describe('Prisoners', () => {
     expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).not.toHaveBeenCalled()
   }
 
+  describe('/prisoner', () => {
+    it('GET should return a 200, render the find prisoner page and call the audit service', async () => {
+      const response = await request(app).get('/prisoner').expect(200).expect('Content-Type', /html/)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(
+        AuditPage.FIND_PRISONER,
+        expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
+      )
+      expect(response.text).toContain('Enter a prison number')
+    })
+
+    it('POST should redirect to the prisoner profile for the entered prison number', async () => {
+      const response = await request(app).post('/prisoner').send({ prisonNumber: 'A1234BC' })
+
+      expect(response.status).toBe(302)
+      expect(response.headers.location).toBe('/prisoner/A1234BC')
+    })
+
+    it('POST should re-render the find prisoner page with an error when no prison number is entered', async () => {
+      const response = await request(app).post('/prisoner').send({ prisonNumber: '' }).expect(200)
+
+      expect(response.text).toContain('Enter a prison number')
+    })
+
+    it('POST should re-render the find prisoner page with an error when only whitespace is entered', async () => {
+      const response = await request(app).post('/prisoner').send({ prisonNumber: '   ' }).expect(200)
+
+      expect(response.text).toContain('Enter a prison number')
+    })
+  })
+
   describe('/prisoner/:prisonNumber/money', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
       await verifyTransactionPageResponse(`/prisoner/${prisonNumber}/money`, 'Transactions for all sub accounts')
@@ -158,7 +189,7 @@ describe('Prisoners', () => {
       const error = Object.assign(new Error('Not Found'), { data: { status: 404, userMessage: 'Not Found' } })
       prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockRejectedValue(error)
       const res = await request(app).get(`/prisoner/${prisonNumber}`).expect(404)
-      expect(res.text).toContain(error.data.userMessage)
+      expect(res.text).toContain('Prisoner not found')
     })
 
     it('should handle API errors (e.g. 500)', async () => {

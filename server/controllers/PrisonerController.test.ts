@@ -41,6 +41,7 @@ describe('PrisonerController', () => {
   const mockRes: Response = {
     locals: { user: { username: 'test-user' }, subAccount: 'CASH' },
     render: jest.fn(),
+    redirect: jest.fn(),
     status: jest.fn().mockReturnThis(),
   } as unknown as Response
 
@@ -52,6 +53,76 @@ describe('PrisonerController', () => {
   beforeEach(() => {
     jest.resetAllMocks()
   })
+
+  describe('getFindPrisoner', () => {
+    const mockReq = {
+      id: 'req-id-123',
+    } as unknown as Request
+
+    it('Should log the page view and render the find page', async () => {
+      await prisonerController.getFindPrisoner(mockReq, mockRes, mockNext)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.FIND_PRISONER, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+      })
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/find/find')
+      expect(mockNext).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('postFindPrisoner', () => {
+    it('Should redirect to the prisoner profile for the entered prison number', async () => {
+      const mockReq = { body: { prisonNumber: 'ABC123XX' } } as unknown as Request
+
+      await prisonerController.postFindPrisoner(mockReq, mockRes, mockNext)
+
+      expect(mockRes.redirect).toHaveBeenCalledWith('/prisoner/ABC123XX')
+      expect(mockRes.render).not.toHaveBeenCalled()
+    })
+
+    it('Should trim the entered prison number before redirecting', async () => {
+      const mockReq = { body: { prisonNumber: '  ABC123XX  ' } } as unknown as Request
+
+      await prisonerController.postFindPrisoner(mockReq, mockRes, mockNext)
+
+      expect(mockRes.redirect).toHaveBeenCalledWith('/prisoner/ABC123XX')
+    })
+
+    it('Should render the find page with an error when no prison number is entered', async () => {
+      const mockReq = { body: { prisonNumber: '' } } as unknown as Request
+
+      await prisonerController.postFindPrisoner(mockReq, mockRes, mockNext)
+
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/find/find', {
+        errorMap: { prisonNumber: 'Enter a prison number' },
+      })
+      expect(mockRes.redirect).not.toHaveBeenCalled()
+    })
+
+    it('Should render the find page with an error when only whitespace is entered', async () => {
+      const mockReq = { body: { prisonNumber: '   ' } } as unknown as Request
+
+      await prisonerController.postFindPrisoner(mockReq, mockRes, mockNext)
+
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/find/find', {
+        errorMap: { prisonNumber: 'Enter a prison number' },
+      })
+      expect(mockRes.redirect).not.toHaveBeenCalled()
+    })
+
+    it('Should render the find page with an error when the prison number is not a string', async () => {
+      const mockReq = { body: { prisonNumber: ['A1234BC', 'B2345CD'] } } as unknown as Request
+
+      await prisonerController.postFindPrisoner(mockReq, mockRes, mockNext)
+
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/find/find', {
+        errorMap: { prisonNumber: 'Enter a prison number' },
+      })
+      expect(mockRes.redirect).not.toHaveBeenCalled()
+    })
+  })
+
   describe('getTransactions', () => {
     it('Should call getTransactionPage', async () => {
       const startDate = '10/10/2010'
@@ -128,7 +199,7 @@ describe('PrisonerController', () => {
       })
     })
 
-    it('should catch exceptions', async () => {
+    it('Should catch exceptions', async () => {
       const mockReq = {
         id: 'req-id-123',
         params: { prisonNumber: 'ABC123XX' },
@@ -266,7 +337,7 @@ describe('PrisonerController', () => {
       })
     })
 
-    it('should catch exceptions', async () => {
+    it('Should catch exceptions', async () => {
       const mockReq = {
         id: 'req-id-123',
         params: { prisonNumber: 'ABC123XX' },
