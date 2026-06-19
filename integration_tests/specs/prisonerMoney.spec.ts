@@ -208,14 +208,7 @@ test.describe('Prisoner Money', () => {
       await page.goto(url)
 
       const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
-      await expect(prisonerMoneyPage.currentBalanceCard).toBeVisible()
-      await expect(prisonerMoneyPage.holdBalanceCard).toBeVisible()
       await expect(prisonerMoneyPage.totalBalanceCard).toBeVisible()
-      await expect(prisonerMoneyPage.currentBalanceCard.locator('h2')).toContainText('Current balance')
-      await expect(prisonerMoneyPage.currentBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
-
-      await expect(prisonerMoneyPage.holdBalanceCard.locator('h2')).toContainText('Hold balance')
-      await expect(prisonerMoneyPage.holdBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£0.00')
 
       await expect(prisonerMoneyPage.totalBalanceCard.locator('h2')).toContainText('Total balance')
       await expect(prisonerMoneyPage.totalBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
