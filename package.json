@@ -30,7 +30,7 @@
     "npm": "^11"
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.1063.0",
+    "@aws-sdk/client-sqs": "^3.1067.0",
     "@ministryofjustice/frontend": "^9.0.0",
     "@ministryofjustice/hmpps-auth-clients": "3.0.0",
     "@ministryofjustice/hmpps-azure-telemetry": "1.0.0",
@@ -80,7 +80,7 @@
     "@types/http-errors": "^2.0.5",
     "@types/jest": "^30.0.0",
     "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^24.13.1",
+    "@types/node": "^24.13.2",
     "@types/nunjucks": "^3.2.6",
     "@types/passport": "^1.0.17",
     "@types/passport-oauth2": "^1.8.0",
@@ -91,7 +91,7 @@
     "cheerio": "1.2.0",
     "cookie-signature": "1.2.2",
     "del": "8.0.1",
-    "esbuild": "0.28.0",
+    "esbuild": "^0.28.1",
     "esbuild-plugin-copy": "^2.1.1",
     "esbuild-plugin-manifest": "^1.0.5",
     "esbuild-sass-plugin": "^3.7.0",
@@ -109,6 +109,9 @@
   "overrides": {
     "@aws-sdk/xml-builder": {
       "fast-xml-parser": "^5.7.2"
-    }
+    },
+    "@opentelemetry/core": "2.8.0",
+    "form-data": "4.0.5",
+    "js-yaml": "4.2.0"
   }
 }
