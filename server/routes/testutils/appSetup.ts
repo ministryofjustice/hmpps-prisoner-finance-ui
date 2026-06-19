@@ -35,7 +35,6 @@ function appSetup(services: Services, production: boolean, userSupplier: () => H
   app.set('view engine', 'njk')
 
   nunjucksSetup(app)
-  app.use(setUpFeatureFlags(services.featureFlagService))
   app.use(setUpWebSession())
   app.use((req, res, next) => {
     req.user = userSupplier() as Express.User
@@ -51,6 +50,8 @@ function appSetup(services: Services, production: boolean, userSupplier: () => H
     }
     next()
   })
+  // Runs after res.locals is initialised (mirrors app.ts) so locals it sets survive.
+  app.use(setUpFeatureFlags(services.featureFlagService))
   app.use((req, _res, next) => {
     req.id = randomUUID()
     next()

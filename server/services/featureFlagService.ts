@@ -36,6 +36,7 @@ export default class FeatureFlagService {
 type FeatureFlags = {
   GRANT_BONUS_TO_PRISONERS_ENABLED: boolean
   CREDIT_ACCOUNT_ENABLED: boolean
+  DATA_WARNING_BANNER_ENABLED: boolean
 }
 
 declare module 'express-serve-static-core' {
