@@ -43,14 +43,6 @@
       </div>
       <div class="govuk-grid-column-one-third  card-group__item">
         {{ balanceCard({
-          "heading": "Hold balance",
-          "amount": holdBalance,
-          "testId": "view-prisoner-hold-balance-card",
-          "showSubHeading": false
-        }) }}
-      </div>
-      <div class="govuk-grid-column-one-third  card-group__item">
-        {{ balanceCard({
           "heading": "Total balance",
           "amount": currentBalance + holdBalance,
           "testId": "view-prisoner-total-balance-card",

@@ -154,9 +154,6 @@ describe('prisoner transactions page', () => {
     expect($('[data-testid="view-prisoner-current-balance-card_header"]').text().trim()).toBe('Current balance')
     expect($('[data-testid="view-prisoner-current-balance-card_amount"]').text().trim()).toBe('£10.00')
 
-    expect($('[data-testid="view-prisoner-hold-balance-card_header"]').text().trim()).toBe('Hold balance')
-    expect($('[data-testid="view-prisoner-hold-balance-card_amount"]').text().trim()).toBe('£0.00')
-
     expect($('[data-testid="view-prisoner-total-balance-card_header"]').text().trim()).toBe('Total balance')
     expect($('[data-testid="view-prisoner-total-balance-card_amount"]').text().trim()).toBe('£10.00')
 
