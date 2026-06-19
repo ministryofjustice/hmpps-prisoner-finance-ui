@@ -2,19 +2,25 @@ import type { Express } from 'express'
 import request from 'supertest'
 import { appWithAllRoutes, user } from './testutils/appSetup'
 import AuditService, { AuditPage } from '../services/auditService'
+import FeatureFlagService from '../services/featureFlagService'
 
 import HmppsAuditClient from '../data/hmppsAuditClient'
 
 jest.mock('../services/auditService')
+jest.mock('../services/featureFlagService')
 
 const auditService = new AuditService({} as HmppsAuditClient) as jest.Mocked<AuditService>
+const featureFlagService = new FeatureFlagService() as jest.Mocked<FeatureFlagService>
 
 let app: Express
 
 beforeEach(() => {
+  featureFlagService.isFeatureEnabled.mockReturnValue(Promise.resolve(true))
+
   app = appWithAllRoutes({
     services: {
       auditService,
+      featureFlagService,
     },
     userSupplier: () => user,
   })

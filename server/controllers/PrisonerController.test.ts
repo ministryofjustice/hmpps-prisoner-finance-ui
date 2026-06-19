@@ -11,6 +11,7 @@ import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionRe
 import { Page } from '../interfaces/Pageable'
 import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
 import PrisonApiService from '../services/prisonApiService'
+import FeatureFlagService from '../services/featureFlagService'
 
 jest.mock('../applicationInfo')
 jest.mock('../services/auditService')
@@ -27,6 +28,7 @@ describe('PrisonerController', () => {
   const prisonRegisterService = {} as unknown as jest.Mocked<PrisonRegisterService>
   const prisonPermissionsService = {} as unknown as jest.Mocked<PermissionsService>
   const prisonApiService = {} as unknown as jest.Mocked<PrisonApiService>
+  const featureFlagService = {} as unknown as jest.Mocked<FeatureFlagService>
 
   const prisonerController: PrisonerController = new PrisonerController({
     applicationInfo,
@@ -36,6 +38,7 @@ describe('PrisonerController', () => {
     prisonRegisterService,
     prisonPermissionsService,
     prisonApiService,
+    featureFlagService,
   })
 
   const mockRes: Response = {

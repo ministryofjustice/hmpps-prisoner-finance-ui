@@ -8,6 +8,8 @@ services:
     restart: always
     ports:
       - "9091:8080"
+    volumes:
+      - ./mappings:/home/wiremock/mappings
 
   redis:
     image: redis:8.8

@@ -10,8 +10,11 @@ import AuditService from '../../services/auditService'
 import { HmppsUser } from '../../interfaces/hmppsUser'
 import setUpWebSession from '../../middleware/setUpWebSession'
 import HmppsAuditClient from '../../data/hmppsAuditClient'
+import FeatureFlagService from '../../services/featureFlagService'
+import setUpFeatureFlags from '../../middleware/setUpFeatureFlags'
 
 jest.mock('../../services/auditService')
+jest.mock('../../services/featureFlagService')
 
 export const user: HmppsUser = {
   name: 'FIRST LAST',
@@ -32,6 +35,7 @@ function appSetup(services: Services, production: boolean, userSupplier: () => H
   app.set('view engine', 'njk')
 
   nunjucksSetup(app)
+  app.use(setUpFeatureFlags(services.featureFlagService))
   app.use(setUpWebSession())
   app.use((req, res, next) => {
     req.user = userSupplier() as Express.User
@@ -64,6 +68,7 @@ export function appWithAllRoutes({
   production = false,
   services = {
     auditService: new AuditService({} as HmppsAuditClient) as jest.Mocked<AuditService>,
+    featureFlagService: new FeatureFlagService() as jest.Mocked<FeatureFlagService>,
   },
   userSupplier = () => user,
 }: {

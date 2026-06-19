@@ -18,7 +18,8 @@
       "data-qa": "view-prisoner-finance-card"
     }) }}
   </div>
-   <div class="govuk-grid-column-one-third card-group__item">
+{% if grantBonusToPrisonersEnabled %}
+  <div class="govuk-grid-column-one-third card-group__item">
     {{ card({
       "href": "/grant-bonus-to-prisoners",
       "clickable": "true",
@@ -27,5 +28,6 @@
       "data-qa": "grant-a-bonus-card"
     }) }}
   </div>
+{% endif %}
 </div>
 {% endblock %}

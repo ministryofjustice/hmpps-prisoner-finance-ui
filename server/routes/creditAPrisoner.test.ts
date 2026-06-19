@@ -7,6 +7,7 @@ import mockPermissions from './testutils/mockPermissions'
 import { appWithAllRoutes, user } from './testutils/appSetup'
 
 import PrisonerSearchService from '../services/prisonerSearchService'
+import FeatureFlagService from '../services/featureFlagService'
 
 jest.mock('../services/auditService')
 jest.mock('../services/prisonerSearchService')
@@ -15,12 +16,15 @@ jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerSearchService = new PrisonerSearchService(null) as jest.Mocked<PrisonerSearchService>
 const prisonPermissionsService = {} as unknown as PermissionsService
+const featureFlagService = new FeatureFlagService() as jest.Mocked<FeatureFlagService>
 
 let app: Express
 
 describe('/credit-a-prisoner', () => {
   const prisonNumber = 'A9971EC'
   beforeEach(() => {
+    featureFlagService.isFeatureEnabled.mockReturnValue(Promise.resolve(true))
+
     mockPermissions(undefined, { [PrisonerMoneyPermission.read]: true })
 
     prisonerSearchService.getPrisoner.mockResolvedValue({
@@ -45,6 +49,7 @@ describe('/credit-a-prisoner', () => {
         auditService,
         prisonPermissionsService,
         prisonerSearchService,
+        featureFlagService,
       },
       userSupplier: () => user,
     })

@@ -16,6 +16,7 @@ import setUpStaticResources from './middleware/setUpStaticResources'
 import setUpRequestParsing from './middleware/setUpRequestParsing'
 import setUpWebSecurity from './middleware/setUpWebSecurity'
 import setUpWebSession from './middleware/setUpWebSession'
+import setUpFeatureFlags from './middleware/setUpFeatureFlags'
 import logger from '../logger'
 import config from './config'
 
@@ -39,6 +40,7 @@ export default function createApp(services: Services): express.Application {
   app.use(authorisationMiddleware())
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
+  app.use(setUpFeatureFlags(services.featureFlagService))
 
   app.use(
     getFrontendComponents({

@@ -9,6 +9,16 @@ export default function routes(services: Services): Router {
 
   const creditAPrisonerController = new CreditAPrisonerController(services)
 
+  creditAPrisonerRouter.use(async (req, res, next) => {
+    if (req.featureFlags.CREDIT_ACCOUNT_ENABLED === false) {
+      return res.render('pages/error.njk', {
+        status: '404',
+        message: 'Something went wrong. The error has been logged. Please try again',
+      })
+    }
+    return next()
+  })
+
   creditAPrisonerRouter
     .route('/credit-to')
     .get(
