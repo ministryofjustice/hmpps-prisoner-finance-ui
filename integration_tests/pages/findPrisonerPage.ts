@@ -12,7 +12,7 @@ export default class FindPrisonerPage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Enter a Prison Number' })
+    this.heading = page.getByRole('heading', { name: 'Enter a prison number' })
     this.prisonNumberInput = page.locator('[data-testid="prisoner-number-input"]')
     this.submitButton = page.locator('[data-testid="submit-button"]')
     this.errorMessage = page.locator('#prisonNumber-error')

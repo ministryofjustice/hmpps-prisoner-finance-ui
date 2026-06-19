@@ -69,17 +69,6 @@ describe('PrisonerController', () => {
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/find/find')
       expect(mockNext).not.toHaveBeenCalled()
     })
-
-    it('should catch exceptions', async () => {
-      auditService.logPageView.mockImplementation(() => {
-        throw new Error('Expected error')
-      })
-
-      await prisonerController.getFindPrisoner(mockReq, mockRes, mockNext)
-
-      expect(mockRes.render).not.toHaveBeenCalled()
-      expect(mockNext).toHaveBeenCalled()
-    })
   })
 
   describe('postFindPrisoner', () => {
@@ -106,7 +95,7 @@ describe('PrisonerController', () => {
       await prisonerController.postFindPrisoner(mockReq, mockRes, mockNext)
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/find/find', {
-        errorMap: { prisonNumber: 'Enter a prisoner number' },
+        errorMap: { prisonNumber: 'Enter a prison number' },
       })
       expect(mockRes.redirect).not.toHaveBeenCalled()
     })
@@ -117,7 +106,7 @@ describe('PrisonerController', () => {
       await prisonerController.postFindPrisoner(mockReq, mockRes, mockNext)
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/find/find', {
-        errorMap: { prisonNumber: 'Enter a prisoner number' },
+        errorMap: { prisonNumber: 'Enter a prison number' },
       })
       expect(mockRes.redirect).not.toHaveBeenCalled()
     })
@@ -128,7 +117,7 @@ describe('PrisonerController', () => {
       await prisonerController.postFindPrisoner(mockReq, mockRes, mockNext)
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/find/find', {
-        errorMap: { prisonNumber: 'Enter a prisoner number' },
+        errorMap: { prisonNumber: 'Enter a prison number' },
       })
       expect(mockRes.redirect).not.toHaveBeenCalled()
     })
@@ -210,7 +199,7 @@ describe('PrisonerController', () => {
       })
     })
 
-    it('should catch exceptions', async () => {
+    it('Should catch exceptions', async () => {
       const mockReq = {
         id: 'req-id-123',
         params: { prisonNumber: 'ABC123XX' },
@@ -348,7 +337,7 @@ describe('PrisonerController', () => {
       })
     })
 
-    it('should catch exceptions', async () => {
+    it('Should catch exceptions', async () => {
       const mockReq = {
         id: 'req-id-123',
         params: { prisonNumber: 'ABC123XX' },

@@ -57,7 +57,7 @@ test.describe('Find Prisoner', () => {
     await findPrisonerPage.submitButton.click()
 
     await expect(findPrisonerPage.errorMessage).toBeVisible()
-    await expect(findPrisonerPage.errorMessage).toContainText('Enter a prisoner number')
+    await expect(findPrisonerPage.errorMessage).toContainText('Enter a prison number')
     await expect(page).toHaveURL('/prisoner')
   })
 
@@ -68,7 +68,7 @@ test.describe('Find Prisoner', () => {
     await findPrisonerPage.findPrisoner('   ')
 
     await expect(findPrisonerPage.errorMessage).toBeVisible()
-    await expect(findPrisonerPage.errorMessage).toContainText('Enter a prisoner number')
+    await expect(findPrisonerPage.errorMessage).toContainText('Enter a prison number')
     await expect(page).toHaveURL('/prisoner')
   })
 

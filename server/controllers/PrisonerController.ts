@@ -18,35 +18,27 @@ class PrisonerController {
   constructor(private readonly services: Services) {}
 
   public getFindPrisoner = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      await this.services.auditService.logPageView(AuditPage.FIND_PRISONER, {
-        who: res.locals.user.username,
-        correlationId: req.id,
-      })
+    await this.services.auditService.logPageView(AuditPage.FIND_PRISONER, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
 
-      res.render('pages/prisoner/find/find')
-    } catch (error) {
-      next(error)
-    }
+    res.render('pages/prisoner/find/find')
   }
 
   public postFindPrisoner = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const prisonNumber = typeof req.body.prisonNumber === 'string' ? req.body.prisonNumber.trim() : ''
+    const prisonNumber = typeof req.body.prisonNumber === 'string' ? req.body.prisonNumber.trim() : ''
 
-      if (!prisonNumber) {
-        res.render('pages/prisoner/find/find', {
-          errorMap: {
-            prisonNumber: 'Enter a prisoner number',
-          },
-        })
-        return
-      }
-
-      res.redirect(`/prisoner/${prisonNumber}`)
-    } catch (error) {
-      next(error)
+    if (!prisonNumber) {
+      res.render('pages/prisoner/find/find', {
+        errorMap: {
+          prisonNumber: 'Enter a prison number',
+        },
+      })
+      return
     }
+
+    res.redirect(`/prisoner/${prisonNumber}`)
   }
 
   public getTransactions = async (req: Request, res: Response, next: NextFunction) => {

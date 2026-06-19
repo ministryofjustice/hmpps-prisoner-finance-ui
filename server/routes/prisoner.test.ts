@@ -127,7 +127,7 @@ describe('Prisoners', () => {
         AuditPage.FIND_PRISONER,
         expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
       )
-      expect(response.text).toContain('Enter a Prison Number')
+      expect(response.text).toContain('Enter a prison number')
     })
 
     it('POST should redirect to the prisoner profile for the entered prison number', async () => {
@@ -140,13 +140,13 @@ describe('Prisoners', () => {
     it('POST should re-render the find prisoner page with an error when no prison number is entered', async () => {
       const response = await request(app).post('/prisoner').send({ prisonNumber: '' }).expect(200)
 
-      expect(response.text).toContain('Enter a prisoner number')
+      expect(response.text).toContain('Enter a prison number')
     })
 
     it('POST should re-render the find prisoner page with an error when only whitespace is entered', async () => {
       const response = await request(app).post('/prisoner').send({ prisonNumber: '   ' }).expect(200)
 
-      expect(response.text).toContain('Enter a prisoner number')
+      expect(response.text).toContain('Enter a prison number')
     })
   })
 
