@@ -22,20 +22,16 @@ export default class CreditAPrisonerController {
       correlationId: req.id,
     })
 
-    try {
-      const prisonerReference = req.params.prisonNumber as string
+    const prisonerReference = req.params.prisonNumber as string
 
-      const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(prisonerReference)
+    const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(prisonerReference)
 
-      CreditAPrisonerService.createCreditFormIfRequired(req.session as SessionData, prisonerReference)
+    CreditAPrisonerService.createCreditFormIfRequired(req.session as SessionData, prisonerReference)
 
-      res.render('pages/creditAPrisoner/creditTo/creditTo.njk', {
-        subAccountSelected: req.session.creditForm.creditSubAccountId,
-        subAccounts: this.mapSubAccountsToRadioContents(subAccounts, 'sub-account-radio'),
-      })
-    } catch (e) {
-      next(e)
-    }
+    res.render('pages/creditAPrisoner/creditTo/creditTo.njk', {
+      subAccountSelected: req.session.creditForm.creditSubAccountId,
+      subAccounts: this.mapSubAccountsToRadioContents(subAccounts, 'sub-account-radio'),
+    })
   }
 
   public postCreditTo = async (req: Request, res: Response, next: NextFunction) => {
@@ -65,18 +61,18 @@ export default class CreditAPrisonerController {
       res.redirect('./credit-to')
       return
     }
+    // this will give the prisoner a credit from the current user's selected prison in DPS - we probably need to flag this in the UI
+    const caseloads = await this.services.prisonApiService.getUserCaseloads(req.user?.token as string)
+    const currentCaseload = caseloads.find(caseload => caseload.currentlyActive)
 
-    try {
-      // TODO: phase 1 hardcoded to LEI
-      const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference('LEI')
-      const subaccountsForDisplay = this.mapSubAccountsToRadioContents(subAccounts, 'prison-account-radio')
+    const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(
+      currentCaseload?.caseLoadId,
+    )
+    const subaccountsForDisplay = this.mapSubAccountsToRadioContents(subAccounts, 'prison-account-radio')
 
-      const debitSubAccountId = req.session?.creditForm?.debitSubAccountId
+    const debitSubAccountId = req.session?.creditForm?.debitSubAccountId
 
-      res.render('pages/creditAPrisoner/creditFrom/creditFrom.njk', { items: subaccountsForDisplay, debitSubAccountId })
-    } catch (e) {
-      next(e)
-    }
+    res.render('pages/creditAPrisoner/creditFrom/creditFrom.njk', { items: subaccountsForDisplay, debitSubAccountId })
   }
 
   public postCreditFrom = async (req: Request, res: Response, next: NextFunction) => {
@@ -84,18 +80,14 @@ export default class CreditAPrisonerController {
       CreditAPrisonerService.updateCreditForm(req.session as SessionData, { debitSubAccountId: req.body.creditFrom })
       res.redirect('./credit-amount')
     } else {
-      try {
-        const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference('LEI')
-        const subaccountsForDisplay = this.mapSubAccountsToRadioContents(subAccounts, 'prison-account-radio')
-        res.render('pages/creditAPrisoner/creditFrom/creditFrom.njk', {
-          items: subaccountsForDisplay,
-          errorMap: {
-            errorText: 'You must select a sub-account before continuing.',
-          },
-        })
-      } catch (e) {
-        next(e)
-      }
+      const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference('LEI')
+      const subaccountsForDisplay = this.mapSubAccountsToRadioContents(subAccounts, 'prison-account-radio')
+      res.render('pages/creditAPrisoner/creditFrom/creditFrom.njk', {
+        items: subaccountsForDisplay,
+        errorMap: {
+          errorText: 'You must select a sub-account before continuing.',
+        },
+      })
     }
   }
 
@@ -119,13 +111,9 @@ export default class CreditAPrisonerController {
         description,
       })
 
-      try {
-        const transactionReq = CreditAPrisonerService.createTransactionRequest(req.session.creditForm)
-        const createdTransactionResponse = await this.services.prisonerFinanceService.postTransaction(transactionReq)
-        res.redirect(`./credit-confirmation?transactionNumber=${createdTransactionResponse.id}`)
-      } catch (e) {
-        next(e)
-      }
+      const transactionReq = CreditAPrisonerService.createTransactionRequest(req.session.creditForm)
+      const createdTransactionResponse = await this.services.prisonerFinanceService.postTransaction(transactionReq)
+      res.redirect(`./credit-confirmation?transactionNumber=${createdTransactionResponse.id}`)
     } else {
       const allErrors = z.flattenError(result.error).fieldErrors
       const templateErrors = Object.fromEntries(

@@ -28,7 +28,7 @@ export default {
           {
             caseLoadId: 'MDI',
             description: 'Moorland (HMP & YOI)',
-            currentlyActive: true,
+            currentlyActive: false,
           },
           {
             caseLoadId: 'LPI',
@@ -38,7 +38,7 @@ export default {
           {
             caseLoadId: 'LEI',
             description: 'Leeds',
-            currentlyActive: false,
+            currentlyActive: true,
           },
         ],
       },
