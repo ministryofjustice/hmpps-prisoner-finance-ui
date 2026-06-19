@@ -9,6 +9,16 @@ export default function routes(services: Services): Router {
 
   const grantBonusToPrisonersController = new GrantBonusToPrisonersController(services)
 
+  grantBonusRouter.use(async (req, res, next) => {
+    if (req.featureFlags.GRANT_BONUS_TO_PRISONERS_ENABLED === false) {
+      return res.render('pages/error.njk', {
+        status: '404',
+        message: 'Something went wrong. The error has been logged. Please try again',
+      })
+    }
+    return next()
+  })
+
   grantBonusRouter
     .route('/')
     .get(grantBonusToPrisonersController.getGrantBonusToPrisonersSelectCaseload)

@@ -20,6 +20,7 @@ generic-service:
     PRISON_REGISTER_API_URL: "https://prison-register-preprod.hmpps.service.justice.gov.uk"
     ENVIRONMENT_NAME: PRE-PRODUCTION
     AUDIT_ENABLED: "false"
+    FEATURE_TOGGLE_URL: "https://feature-toggles-preprod.hmpps.service.justice.gov.uk/"
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-prisoner-finance-ui-dev

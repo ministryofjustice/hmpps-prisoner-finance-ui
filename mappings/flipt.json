@@ -1,0 +1,38 @@
+{
+      "request": {
+        "urlPathPattern": "/feature-flags/internal/v1/evaluation/snapshot/namespace/prisoner-finance",
+        "method": "GET"
+      },
+      "response": {
+        "status": 200,
+        "jsonBody": {
+          "namespace": {
+            "key": "prisoner-finance"
+          },
+          "flags": [
+            {
+              "key": "grant-bonus-to-prisoners-enabled",
+              "name": "grant-bonus-to-prisoners-enabled",
+              "description": "",
+              "enabled": true,
+              "type": "BOOLEAN_FLAG_TYPE",
+              "createdAt": "2025-11-17T15:28:37.920581Z",
+              "updatedAt": "2025-11-17T17:06:39.269084Z",
+              "rules": [],
+              "rollouts": []
+            },
+            {
+              "key": "credit-account-enabled",
+              "name": "credit-account-enabled",
+              "description": "",
+              "enabled": true,
+              "type": "BOOLEAN_FLAG_TYPE",
+              "createdAt": "2025-11-17T15:28:37.920581Z",
+              "updatedAt": "2025-11-17T17:06:39.269084Z",
+              "rules": [],
+              "rollouts": []
+            }
+          ]
+        }
+      }
+    }

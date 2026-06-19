@@ -138,12 +138,14 @@ Create a branch and switch to it, eg:
 
 `git checkout -b template-changes-2309`
 
-Fetch all remotes:
+Run this script
 
-`git fetch --all`
+```
+LATEST_COMMIT_MAIN=$(git ls-remote origin refs/heads/main | awk '{print $1}')
+LATEST_CHERRY_PICK=$(cat .last_template_commit_cherry_pick  )
 
-Merge the changes from the template into your service source:
+git cherry-pick $LATEST_COMMIT_MAIN^..$LATEST_CHERRY_PICK
 
-`git merge template/main --allow-unrelated-histories`
-
-You'll need to manually handle the merge of the changes, but if you do it early, carefully, and regularly, it won't be too much of a hassle.
+echo LATEST_COMMIT_MAIN > .last_template_commit_cherry_pick
+```
+make sure you've updated `.last_template_commit_cherry_pick` once merged

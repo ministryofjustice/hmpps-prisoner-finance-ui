@@ -8,6 +8,7 @@ import logger from '../../logger'
 import PrisonerSearchService from './prisonerSearchService'
 import PrisonRegisterService from './prisonRegisterService'
 import PrisonApiService from './prisonApiService'
+import FeatureFlagService from './featureFlagService'
 
 export const services = () => {
   const {
@@ -34,6 +35,7 @@ export const services = () => {
     prisonRegisterService: new PrisonRegisterService(prisonRegisterApiClient),
     prisonApiService: new PrisonApiService(prisonApiClient),
     prisonPermissionsService,
+    featureFlagService: new FeatureFlagService(),
   }
 }
 
