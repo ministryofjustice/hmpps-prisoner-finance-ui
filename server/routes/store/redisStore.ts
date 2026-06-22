@@ -26,7 +26,7 @@ export default class RedisStore implements Store {
   public async get(key: string): Promise<string | null> {
     await this.ensureConnected()
     const result = await this.client.get(`${this.prefix}${key}`)
-    if (typeof result === 'object' && Object.keys(result).length === 0) {
+    if (result instanceof Object && Object.keys(result).length === 0) {
       return null
     }
     return result as string
