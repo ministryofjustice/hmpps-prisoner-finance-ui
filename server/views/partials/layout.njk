@@ -11,7 +11,15 @@
 
 {% block header %}
   {{ feComponents.header  | safe }}
-  {% include "../partials/phaseBanner.njk" %}
+{% endblock %}
+
+{% block containerStart %}
+  {% if dataWarningBannerEnabled %}
+    {% include "../partials/dataWarningBanner.njk" %}
+  {% else %}
+    {% include "../partials/phaseBanner.njk" %}
+  {% endif %}
+  {% block beforeContent %}{% endblock %}
 {% endblock %}
 
 {% block footer %}
