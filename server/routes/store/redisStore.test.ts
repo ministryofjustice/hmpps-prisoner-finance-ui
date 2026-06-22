@@ -35,6 +35,15 @@ describe('RedisStore', () => {
       expect(mockClient.get).toHaveBeenCalledWith('123')
       expect(result).toBeNull()
     })
+
+    it('should return null when it returns null', async () => {
+      mockClient.get.mockResolvedValue(null)
+
+      const result = await store.get('123')
+
+      expect(mockClient.get).toHaveBeenCalledWith('123')
+      expect(result).toBeNull()
+    })
   })
 
   describe('set()', () => {

@@ -29,7 +29,7 @@ export default class RedisStore implements Store {
     if (result instanceof Object && Object.keys(result).length === 0) {
       return null
     }
-    return result as string
+    return result as string | null
   }
 
   // _ will be the sid in implementation
