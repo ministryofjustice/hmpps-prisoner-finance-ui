@@ -35,6 +35,14 @@
     <div class="card-group govuk-grid-column-two-thirds" id="prisonerFinanceCard">
       <div class="govuk-grid-column-one-third  card-group__item">
         {{ balanceCard({
+          "heading": "Current balance",
+          "amount": currentBalance,
+          "testId": "view-prisoner-current-balance-card",
+          "showSubHeading": false
+        }) }}
+      </div>
+      <div class="govuk-grid-column-one-third  card-group__item">
+        {{ balanceCard({
           "heading": "Total balance",
           "amount": currentBalance + holdBalance,
           "testId": "view-prisoner-total-balance-card",
