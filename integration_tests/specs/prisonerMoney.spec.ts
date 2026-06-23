@@ -314,7 +314,8 @@ test.describe('Prisoner Money', () => {
       await expect(page.locator('[data-testid="incentive-level"]')).toContainText('Enhanced')
     })
 
-    test(`${pageName} - should display the prisoner information tab`, async ({ page }) => {
+    // temporary disabled for UR
+    test.skip(`${pageName} - should display the prisoner information tab`, async ({ page }) => {
       await baseStubs(subAccountReference)
       await page.goto(url)
       await PrisonerMoneyPage.verifyOnPage(page)
