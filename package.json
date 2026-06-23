@@ -30,7 +30,7 @@
     "npm": "^11"
   },
   "dependencies": {
-    "@aws-sdk/client-sqs": "^3.1067.0",
+    "@aws-sdk/client-sqs": "^3.1069.0",
     "@flipt-io/flipt-client-js": "0.4.2",
     "@ministryofjustice/frontend": "^9.0.0",
     "@ministryofjustice/hmpps-auth-clients": "3.0.0",
@@ -70,7 +70,7 @@
     "@ministryofjustice/frontend-types": "2.0.0",
     "@ministryofjustice/hmpps-npm-script-allowlist": "0.0.6",
     "@ministryofjustice/hmpps-precommit-hooks": "3.0.1",
-    "@playwright/test": "1.60.0",
+    "@playwright/test": "1.61.0",
     "@tsconfig/node24": "^24.0.4",
     "@types/bunyan": "^1.8.11",
     "@types/bunyan-format": "^0.2.9",
@@ -109,7 +109,7 @@
   },
   "overrides": {
     "@aws-sdk/xml-builder": {
-      "fast-xml-parser": "^5.8.0"
+      "fast-xml-parser": "^5.9.0"
     },
     "@opentelemetry/core": "2.8.0",
     "form-data": "4.0.6",
