@@ -3,9 +3,6 @@ import { check } from 'k6'
 
 const domain = __ENV.DOMAIN;
 
-console.log(__ENV)
-console.log(__ENV.DOMAIN)
-
 const httpParams = {
     headers: {
         'Content-Type': 'application/json',
