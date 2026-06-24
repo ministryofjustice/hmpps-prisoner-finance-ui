@@ -18,6 +18,7 @@ const baseUrl = `https://${domain}`
 export default function verify_health() {
     const res = http.get(`${baseUrl}/health`, httpParams)
 
+    console.log(domain)
     console.log(res.status)
     console.log(res.body)
 
