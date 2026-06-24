@@ -7,7 +7,7 @@
 {% macro confirmationPanel(params) %}
 
  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
+    <div class="govuk-grid-column-two-thirds govuk-!-static-padding-top-3">
       {{ govukPanel({
         titleText: params.panelTitle,
         html: "Your transaction number<br><strong>"+params.transactionNumber+"</strong>",
