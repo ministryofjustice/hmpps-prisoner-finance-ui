@@ -14,11 +14,7 @@
 {% endblock %}
 
 {% block containerStart %}
-  {% if dataWarningBannerEnabled %}
-    {% include "../partials/dataWarningBanner.njk" %}
-  {% else %}
-    {% include "../partials/phaseBanner.njk" %}
-  {% endif %}
+  {% include "../partials/phaseBanner.njk" %}
   {% block beforeContent %}{% endblock %}
 {% endblock %}
 

@@ -6,6 +6,8 @@
 {% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
 {% from "components/actionBlock/actionBlock.njk" import actionBlock %}
 {% from "components/transactionAmount/transactionAmount.njk" import transactionAmount %}
+{% from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner %}
+
 
 {% set pageTitle = applicationName + " - Profile" %}
 {% set mainClasses = "govuk-body" %}
@@ -24,6 +26,8 @@
 {% block content %}
 
 <h2 id="prisonerProfileHeading" >Finances</h2>
+
+{{ dataWarningBanner(dataWarningBannerEnabled) }}
 
 <div class="govuk-grid-row">
 

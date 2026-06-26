@@ -1,0 +1,19 @@
+{% from "moj/components/alert/macro.njk" import mojAlert %}
+
+
+{% macro dataWarningBanner(enabled) %}
+
+  {% if enabled %}
+    {{ mojAlert({
+      variant: "warning",
+      title: "Test environment",
+      dismissible: false,
+      html: '<b>This web page is for testing only.</b><p>The data you will see if the financial data of real prisoners, but may be inaccurate or incomplete.</p>',
+      attributes: {
+        "data-qa": "data-warning-banner"
+      },
+      classes: "govuk-!-margin-top-5"
+    }) }}
+  {% endif %}
+
+{% endmacro %}
