@@ -1,4 +1,5 @@
 {% extends "partials/layout.njk" %}
+{% from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner %}
 
 {% set pageTitle = applicationName + " - Prisoner not found" %}
 {% set mainClasses = "govuk-body" %}
@@ -9,6 +10,9 @@
 
 {% block content %}
   <h1 class="govuk-heading-xl" data-testid="prisoner-not-found-heading">Prisoner not found</h1>
+
+  {{ dataWarningBanner(dataWarningBannerEnabled) }}
+
   <p class="govuk-body">Check the prison number is correct and try again.</p>
   <p class="govuk-body">
     <a class="govuk-link" href="/prisoner" data-testid="find-prisoner-link">Find a prisoner</a>

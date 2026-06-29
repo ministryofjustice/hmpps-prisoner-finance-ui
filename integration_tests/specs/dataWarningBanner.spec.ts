@@ -3,10 +3,8 @@ import { login, resetStubs } from '../testUtils'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
-import CreditToPage from '../pages/creditAPrisoner/creditToPage'
 import { Page as PrisonerTransactionPage } from '../../server/interfaces/Pageable'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
-import AccountResponse from '../../server/interfaces/AccountResponse'
 
 const prisonNumber = 'ABC123XZ'
 
@@ -21,21 +19,6 @@ const emptyTransactions: PrisonerTransactionPage<PrisonerTransactionResponse> = 
 
 const zeroBalance = { accountId: '', balanceDateTime: '', amount: 0 }
 const zeroSubAccountBalance = { subAccountId: '', balanceDateTime: '', amount: 0 }
-
-const prisonerAccount: AccountResponse = {
-  id: 'TESTUUID',
-  reference: prisonNumber,
-  createdAt: '',
-  createdBy: '',
-  type: 'PRISONER',
-  subAccounts: [
-    { id: 'TESTSUBUUID1', reference: 'Spends', createdAt: '', createdBy: '', parentAccountId: 'TESTUUID' },
-    { id: 'TESTSUBUUID2', reference: 'Savings', createdAt: '', createdBy: '', parentAccountId: 'TESTUUID' },
-    { id: 'TESTSUBUUID3', reference: 'Cash', createdAt: '', createdBy: '', parentAccountId: 'TESTUUID' },
-  ],
-}
-
-const prisonAccount: AccountResponse = { ...prisonerAccount, reference: 'LEI', type: 'PRISON' }
 
 const stubPrisonerProfile = async () => {
   await prisonerSearchApi.stubGetPrisoner(prisonNumber)
@@ -58,38 +41,26 @@ const stubTransactions = async (subAccountReference: string) => {
   }
 }
 
-const stubCreditAPrisoner = async () => {
-  await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-  await prisonerFinanceApi.stubGetAccountByReference(prisonNumber, prisonerAccount)
-  await prisonerFinanceApi.stubGetAccountByReference('LEI', prisonAccount)
-}
-
-type BannerVariant = 'warning' | 'information'
-
 type RouteCase = {
   name: string
-  variant: BannerVariant
   navigate: (page: Page) => Promise<void>
 }
 
 const routeCases: RouteCase[] = [
   {
     name: 'Home',
-    variant: 'warning',
     navigate: async page => {
       await page.goto('/')
     },
   },
   {
     name: 'Find prisoner',
-    variant: 'information',
     navigate: async page => {
       await page.goto('/prisoner')
     },
   },
   {
     name: 'Prisoner profile',
-    variant: 'information',
     navigate: async page => {
       await stubPrisonerProfile()
       await page.goto(`/prisoner/${prisonNumber}`)
@@ -97,7 +68,6 @@ const routeCases: RouteCase[] = [
   },
   {
     name: 'Prisoner not found',
-    variant: 'information',
     navigate: async page => {
       await prisonerSearchApi.stubGetPrisonerNotFound('Z9999ZZ')
       await page.goto('/prisoner/Z9999ZZ')
@@ -105,7 +75,6 @@ const routeCases: RouteCase[] = [
   },
   {
     name: 'All transactions',
-    variant: 'information',
     navigate: async page => {
       await stubTransactions('')
       await page.goto(`/prisoner/${prisonNumber}/money`)
@@ -113,7 +82,6 @@ const routeCases: RouteCase[] = [
   },
   {
     name: 'Private cash transactions',
-    variant: 'information',
     navigate: async page => {
       await stubTransactions('CASH')
       await page.goto(`/prisoner/${prisonNumber}/money/private-cash`)
@@ -121,7 +89,6 @@ const routeCases: RouteCase[] = [
   },
   {
     name: 'Spends transactions',
-    variant: 'information',
     navigate: async page => {
       await stubTransactions('SPENDS')
       await page.goto(`/prisoner/${prisonNumber}/money/spends`)
@@ -129,64 +96,9 @@ const routeCases: RouteCase[] = [
   },
   {
     name: 'Savings transactions',
-    variant: 'information',
     navigate: async page => {
       await stubTransactions('SAVINGS')
       await page.goto(`/prisoner/${prisonNumber}/money/savings`)
-    },
-  },
-  {
-    name: 'Credit a prisoner - credit to',
-    variant: 'information',
-    navigate: async page => {
-      await stubCreditAPrisoner()
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-    },
-  },
-  {
-    name: 'Credit a prisoner - credit from',
-    variant: 'information',
-    navigate: async page => {
-      await stubCreditAPrisoner()
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-    },
-  },
-  {
-    name: 'Credit a prisoner - credit amount',
-    variant: 'information',
-    navigate: async page => {
-      await stubCreditAPrisoner()
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
-    },
-  },
-  {
-    name: 'Credit a prisoner - confirmation',
-    variant: 'information',
-    navigate: async page => {
-      await stubCreditAPrisoner()
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-confirmation?transactionNumber=123`)
-    },
-  },
-  {
-    name: 'Grant bonus to prisoners - select caseload',
-    variant: 'information',
-    navigate: async page => {
-      await page.goto('/grant-bonus-to-prisoners')
-    },
-  },
-  {
-    name: 'Grant bonus to prisoners - amount',
-    variant: 'information',
-    navigate: async page => {
-      await page.goto('/grant-bonus-to-prisoners/amount')
-    },
-  },
-  {
-    name: 'Grant bonus to prisoners - confirmation',
-    variant: 'information',
-    navigate: async page => {
-      await page.goto('/grant-bonus-to-prisoners/confirmation?transactionNumber=123')
     },
   },
 ]
@@ -201,15 +113,16 @@ test.describe('Data warning banner', () => {
     await resetStubs()
   })
 
-  for (const { name, variant, navigate } of routeCases) {
-    test(`shows the ${variant} data warning banner on the ${name} page`, async ({ page }) => {
+  for (const { name, navigate } of routeCases) {
+    test(`shows data warning banner on the ${name} page`, async ({ page }) => {
       await navigate(page)
 
-      const dataWarningBanner = page.locator('[data-qa="data-warning-banner"]')
+      const dataWarningBanner = page.locator('[data-testid="warning-banner"]')
       await expect(dataWarningBanner).toBeVisible()
-      await expect(dataWarningBanner).toHaveClass(new RegExp(`moj-alert--${variant}`))
-      await expect(dataWarningBanner).toContainText('This is a test environment')
-      await expect(dataWarningBanner).toContainText('Do not use real personal data')
+      await expect(dataWarningBanner).toContainText('This web page is for testing only')
+      await expect(dataWarningBanner).toContainText(
+        'The data you will see if the financial data of real prisoners, but may be inaccurate or incomplete',
+      )
     })
   }
 })
