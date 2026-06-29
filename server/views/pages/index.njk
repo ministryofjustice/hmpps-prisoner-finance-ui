@@ -1,38 +1,36 @@
-{% extends "../partials/layout.njk" %}
-{% from "../components/card/card.njk" import card %}
-{% from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner %}
+{%- extends "../partials/layout-full-width.njk" -%}
 
+{%- from "../components/card/card.njk" import card -%}
 
-{% set pageTitle = applicationName + " - Home" %}
-{% set mainClasses = "govuk-body" %}
-{% set isHomepage = true %}
+{%- set pageTitle = "Prisoner Finance" -%}
+{%- set isHomepage = true -%}
 
-{% block content %}
+{% block beforeContent %}
+  {{ dataWarningBanner(dataWarningBannerEnabled) }}
+{% endblock %}
 
-<h1 id="prisonerFinanceHeading">Prisoner Finance</h1>
+{% block innerContent %}
+  <div class="card-group govuk-grid-row" id="prisonerFinanceCards">
+    <div class="govuk-grid-column-one-third card-group__item">
+      {{ card({
+        "href": "/prisoner",
+        "clickable": "true",
+        "heading": "View prisoner finances",
+        "description": "View transactions and balances for a prisoner's accounts.",
+        "data-qa": "view-prisoner-finance-card"
+      }) }}
+    </div>
 
-{{ dataWarningBanner(dataWarningBannerEnabled) }}
-
-<div class="card-group govuk-grid-row" id="prisonerFinanceCards">
-  <div class="govuk-grid-column-one-third card-group__item">
-    {{ card({
-      "href": "/prisoner",
-      "clickable": "true",
-      "heading": "View prisoner finances",
-      "description": "View transactions and balances for a prisoner's accounts.",
-      "data-qa": "view-prisoner-finance-card"
-    }) }}
+  {% if grantBonusToPrisonersEnabled %}
+    <div class="govuk-grid-column-one-third card-group__item">
+      {{ card({
+        "href": "/grant-bonus-to-prisoners",
+        "clickable": "true",
+        "heading": "Grant a bonus to prisoners",
+        "description": "Batch process a bonus grant to all prisoners in your caseload.",
+        "data-qa": "grant-a-bonus-card"
+      }) }}
+    </div>
+  {% endif %}
   </div>
-{% if grantBonusToPrisonersEnabled %}
-  <div class="govuk-grid-column-one-third card-group__item">
-    {{ card({
-      "href": "/grant-bonus-to-prisoners",
-      "clickable": "true",
-      "heading": "Grant a bonus to prisoners",
-      "description": "Batch process a bonus grant to all prisoners in your caseload.",
-      "data-qa": "grant-a-bonus-card"
-    }) }}
-  </div>
-{% endif %}
-</div>
 {% endblock %}
