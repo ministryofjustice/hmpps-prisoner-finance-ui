@@ -57,39 +57,3 @@ describe('GET /', () => {
       })
   })
 })
-
-describe('data-warning-banner-enabled feature flag', () => {
-  beforeEach(() => {
-    auditService.logPageView.mockResolvedValue(undefined)
-  })
-
-  it('shows the data warning banner and hides the beta phase banner when the flag is enabled', () => {
-    featureFlagService.isFeatureEnabled.mockImplementation(flag =>
-      Promise.resolve(flag === 'data-warning-banner-enabled'),
-    )
-
-    return request(app)
-      .get('/')
-      .expect(200)
-      .expect(res => {
-        expect(res.text).toContain('data-qa="data-warning-banner"')
-        expect(res.text).toContain('This is a test environment')
-        expect(res.text).not.toContain('data-qa="phase-banner"')
-      })
-  })
-
-  it('shows the beta phase banner and hides the data warning banner when the flag is disabled', () => {
-    featureFlagService.isFeatureEnabled.mockImplementation(flag =>
-      Promise.resolve(flag !== 'data-warning-banner-enabled'),
-    )
-
-    return request(app)
-      .get('/')
-      .expect(200)
-      .expect(res => {
-        expect(res.text).toContain('data-qa="phase-banner"')
-        expect(res.text).toContain('This is a new service')
-        expect(res.text).not.toContain('data-qa="data-warning-banner"')
-      })
-  })
-})

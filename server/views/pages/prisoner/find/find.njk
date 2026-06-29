@@ -2,6 +2,8 @@
 
 {% from "govuk/components/input/macro.njk" import govukInput %}
 {% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner %}
+
 
 {% set pageTitle = applicationName + " - View prisoner finances" %}
 {% set mainClasses = "govuk-body" %}
@@ -15,11 +17,15 @@
 
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
+
+    {% set labelHtml %}
+      <h1 class="govuk-label--xl">Enter a prison number</h1>
+      {{ dataWarningBanner(dataWarningBannerEnabled) }}
+    {% endset %}
+
     {{ govukInput({
       label: {
-        text: "Enter a prison number",
-        classes: "govuk-label--xl",
-        isPageHeading: true
+        html: labelHtml
       },
       id: "prisonNumber",
       name: "prisonNumber",
