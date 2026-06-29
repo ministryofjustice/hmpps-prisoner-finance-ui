@@ -17,11 +17,16 @@
 
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
-    <h1>Enter a prison number</h1>
 
-    {{ dataWarningBanner(dataWarningBannerEnabled) }}
+    {% set labelHtml %}
+      <h1 class="govuk-label--xl">Enter a prison number</h1>
+      {{ dataWarningBanner(dataWarningBannerEnabled) }}
+    {% endset %}
 
     {{ govukInput({
+      label: {
+        html: labelHtml
+      },
       id: "prisonNumber",
       name: "prisonNumber",
       classes: "govuk-input--width-10",
