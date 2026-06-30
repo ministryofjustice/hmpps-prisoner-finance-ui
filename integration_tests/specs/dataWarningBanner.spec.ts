@@ -121,7 +121,7 @@ test.describe('Data warning banner', () => {
       await expect(dataWarningBanner).toBeVisible()
       await expect(dataWarningBanner).toContainText('This web page is for testing only')
       await expect(dataWarningBanner).toContainText(
-        'The data you will see if the financial data of real prisoners, but may be inaccurate or incomplete',
+        'The data you will see is the financial data of real prisoners, but may be inaccurate or incomplete',
       )
     })
   }
