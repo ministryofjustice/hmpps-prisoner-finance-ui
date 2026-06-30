@@ -6,13 +6,11 @@ export default class PrisonerProfilePage extends AbstractPage {
 
   readonly backButton: Locator
 
-  readonly tableTransactions: Locator
+  readonly recentTransactionsList: Locator
 
   readonly balanceCards: Locator
 
-  readonly transactionContainer: Locator
-
-  readonly transactionsLink: Locator
+  readonly viewAllTransactionsLink: Locator
 
   readonly profileHeader: Locator
 
@@ -23,19 +21,30 @@ export default class PrisonerProfilePage extends AbstractPage {
     this.heading = page.getByRole('heading', { name: 'Finances', exact: true })
     this.backButton = page.getByRole('link', { name: 'Back', exact: true })
 
-    this.transactionContainer = page.locator('table[data-testid="prisoner-transactions-table-container"]')
-    this.tableTransactions = page.locator('table[data-testid="prisoner-transactions-table"]')
-    this.balanceCards = page.locator('[data-testid="prisoner-balance-cards"]')
-    this.transactionsLink = page.locator('[data-testid="transactions-page-link"]')
     this.profileHeader = page.locator('[data-testid="hmpps-profile-banner"]')
-    this.actionMenuBlock = page.locator('[data-testid="credit-menu"]')
+
+    this.balanceCards = page.locator('.hmpps-summary-container')
+
+    this.recentTransactionsList = page.locator('table[data-testid="prisoner-transactions-table"]')
+    this.viewAllTransactionsLink = page.getByRole('link', { name: 'View all transactions', exact: true })
+
+    this.actionMenuBlock = page.locator('.hmpps-actions-block')
+  }
+
+  static async load(page: Page, prisonNumber: string): Promise<PrisonerProfilePage> {
+    await page.goto(`/prisoner/${prisonNumber}`)
+    return this.verifyOnPage(page, prisonNumber)
   }
 
   static async verifyOnPage(page: Page, prisonNumber: string): Promise<PrisonerProfilePage> {
-    expect(page.url()).toContain(`/prisoner/${prisonNumber}`)
+    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}`)
 
     const prisonerProfilePage = new PrisonerProfilePage(page)
     await expect(prisonerProfilePage.heading).toBeVisible()
     return prisonerProfilePage
+  }
+
+  getBalanceCardFor(subAccountName: string): Locator {
+    return this.balanceCards.filter({ has: this.page.getByRole('heading', { name: subAccountName }) }).first()
   }
 }

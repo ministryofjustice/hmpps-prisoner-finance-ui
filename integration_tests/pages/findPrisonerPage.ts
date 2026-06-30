@@ -21,6 +21,8 @@ export default class FindPrisonerPage extends AbstractPage {
   }
 
   static async verifyOnPage(page: Page): Promise<FindPrisonerPage> {
+    expect(new URL(page.url()).pathname).toBe('/prisoner')
+
     const findPrisonerPage = new FindPrisonerPage(page)
     await expect(findPrisonerPage.heading).toBeVisible()
     return findPrisonerPage

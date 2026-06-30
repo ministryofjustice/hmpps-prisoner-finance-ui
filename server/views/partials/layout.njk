@@ -1,6 +1,7 @@
 {%- extends "govuk/template.njk" -%}
 
 {%- from "govuk/components/back-link/macro.njk" import govukBackLink -%}
+{%- from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader -%}
 
 {%- set mainClasses = "govuk-body" -%}
 
@@ -24,6 +25,9 @@
       text: (backText if backText or "Back"),
       href: backUrl
     }) }}
+  {%- endif -%}
+  {%- if showPrisonerInformation -%}
+    {{ prisonerInformationHeader({ prisoner: prisoner }) }}
   {%- endif -%}
   {% block beforeContent %}{% endblock %}
 {%- endblock -%}

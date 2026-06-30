@@ -148,11 +148,11 @@ test.describe('Prisoner Money', () => {
         await baseStubs(subAccountReference)
         await page.goto(url)
 
-        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
-        await expect(prisonerMoneyPage.tableTransactions).toBeVisible()
-        await expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
+        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
+        await expect(prisonerMoneyPage.transactionList).toBeVisible()
+        await expect(prisonerMoneyPage.transactionList.locator('thead tr th')).toHaveCount(6)
 
-        const headers = await prisonerMoneyPage.tableTransactions.locator('thead th')
+        const headers = await prisonerMoneyPage.transactionList.locator('thead th')
         await expect(headers.nth(0)).toHaveText('Date')
         await expect(headers.nth(1)).toHaveText('Transaction description')
         await expect(headers.nth(2)).toHaveText('Amount')
@@ -160,7 +160,7 @@ test.describe('Prisoner Money', () => {
         await expect(headers.nth(4)).toHaveText('Account')
         await expect(headers.nth(5)).toHaveText('Location')
 
-        const rows = prisonerMoneyPage.tableTransactions.locator('tbody tr')
+        const rows = prisonerMoneyPage.transactionList.locator('tbody tr')
         await expect(rows).toHaveCount(transactionPayload.length)
 
         // Row 1
@@ -206,7 +206,7 @@ test.describe('Prisoner Money', () => {
         await baseStubs(subAccountReference)
         await page.goto(url)
 
-        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
 
         await expect(prisonerMoneyPage.currentBalanceCard).toBeVisible()
         await expect(prisonerMoneyPage.currentBalanceCard.locator('h2')).toContainText('Current balance')
@@ -224,7 +224,7 @@ test.describe('Prisoner Money', () => {
 
         await page.goto(url)
 
-        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
         await expect(prisonerMoneyPage.backButton).toBeVisible()
 
         // stubs for profile page
@@ -292,7 +292,7 @@ test.describe('Prisoner Money', () => {
       test(`Should not have any automatically detectable WCAG A or AA violations`, async ({ page }) => {
         await baseStubs(subAccountReference)
         await page.goto(url)
-        await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
 
         const accessibilityScanResults = await new AxeBuilder({ page })
           .withTags(['wcag2a', 'wcag2aa', 'wcag22a', 'wcag22aa'])
@@ -305,7 +305,7 @@ test.describe('Prisoner Money', () => {
         await baseStubs(subAccountReference)
         await page.goto(url)
 
-        const { prisonerInformationHeader } = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        const { prisonerInformationHeader } = await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
         await expect(prisonerInformationHeader).toBeVisible()
         await expect(page.locator('[data-testid="prisonerName"]')).toContainText('Smith, John')
         await expect(page.locator('[data-testid="prisonerNumber"]')).toContainText(prisonNumber)
@@ -319,7 +319,7 @@ test.describe('Prisoner Money', () => {
       test.skip(`Should display the prisoner information tab`, async ({ page }) => {
         await baseStubs(subAccountReference)
         await page.goto(url)
-        await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
 
         const profileTabs = page.locator('[data-testid="profile-tabs"]')
         const overviewTabLink = profileTabs.locator('li a').first()
@@ -343,8 +343,8 @@ test.describe('Prisoner Money', () => {
 
         await page.goto(url)
 
-        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
-        await expect(prisonerMoneyPage.tableTransactions).not.toBeVisible()
+        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
+        await expect(prisonerMoneyPage.transactionList).not.toBeVisible()
 
         const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
         await expect(noTransactionsMessage).toBeVisible()
@@ -354,7 +354,7 @@ test.describe('Prisoner Money', () => {
       test(`Should display the filter`, async ({ page }) => {
         await baseStubs(subAccountReference)
         await page.goto(url)
-        await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
 
         const filterComponent = page.locator('[data-module="moj-filter"]')
         const filterSelected = page.locator('[class="moj-filter__selected"]')
@@ -444,7 +444,7 @@ test.describe('Prisoner Money', () => {
         test(`Should filter by ${caseName}`, async ({ page }) => {
           await baseStubs(subAccountReference)
           await page.goto(url)
-          const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+          const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
 
           await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
           await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
@@ -558,7 +558,7 @@ test.describe('Prisoner Money', () => {
 
           await page.goto(startUrl)
 
-          const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+          const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
 
           await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
           await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
@@ -596,7 +596,7 @@ test.describe('Prisoner Money', () => {
       test(`Should be able to remove selected filters`, async ({ page }) => {
         await baseStubs(subAccountReference)
         await page.goto(url)
-        await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
 
         const startDateFilter = page.locator('input[id="startDate"]')
         const endDateFilter = page.locator('input[id="endDate"]')
@@ -642,7 +642,7 @@ test.describe('Prisoner Money', () => {
       test(`Should clear all filters`, async ({ page }) => {
         await baseStubs(subAccountReference)
         await page.goto(url)
-        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading)
 
         const applyFilterButton = page.locator('[data-test-id="submit-button"]')
 
@@ -718,7 +718,11 @@ test.describe('Prisoner Money', () => {
 
         await page.goto(`${url}/${buildQueriesForPage(10)}`)
 
-        const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(
+          page,
+          prisonNumber,
+          pageHeading,
+        )
         await expect(topPagination).toBeVisible()
         await expect(bottomPagination).toBeVisible()
 
@@ -799,7 +803,11 @@ test.describe('Prisoner Money', () => {
 
         await page.goto(`${url}/${buildQueriesForPage(10)}`)
 
-        const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(
+          page,
+          prisonNumber,
+          pageHeading,
+        )
 
         await expect(topPagination).toBeVisible()
         await expect(bottomPagination).toBeVisible()
@@ -881,7 +889,11 @@ test.describe('Prisoner Money', () => {
 
         await page.goto(`${url}/${buildQueriesForPage(10)}`)
 
-        const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(
+          page,
+          prisonNumber,
+          pageHeading,
+        )
 
         await expect(topPagination).toBeVisible()
         await expect(bottomPagination).toBeVisible()
