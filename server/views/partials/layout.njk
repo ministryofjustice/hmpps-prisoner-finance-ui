@@ -1,7 +1,8 @@
 {%- extends "govuk/template.njk" -%}
 
 {%- from "govuk/components/back-link/macro.njk" import govukBackLink -%}
-{%- from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner -%}
+
+{%- set mainClasses = "govuk-body" -%}
 
 {% block head %}
   <link href="{{ '/assets/css/index.css' | assetMap }}" rel="stylesheet"/>
@@ -14,10 +15,12 @@
 
 {% block header %}
   {{ feComponents.header  | safe }}
-  {% include "../partials/phaseBanner.njk" %}
+  {% if not dataWarningBannerEnabled %}
+    {% include "../partials/phaseBanner.njk" %}
+  {% endif %}
 {% endblock %}
 
-{%- block containerStart -%}
+{% block containerStart %}
   {%- if backUrl -%}
     {{ govukBackLink({
       text: (backText if backText or "Back"),
@@ -29,9 +32,6 @@
 
 {% block footer %}
   {{ feComponents.footer | safe }}
-{% endblock %}
-
-{% block bodyStart %}
 {% endblock %}
 
 {% block bodyEnd %}

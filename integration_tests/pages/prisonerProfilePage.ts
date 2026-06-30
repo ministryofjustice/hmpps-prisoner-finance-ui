@@ -20,10 +20,11 @@ export default class PrisonerProfilePage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.heading = page.locator('#prisonerProfileHeading')
+    this.heading = page.getByRole('heading', { name: 'Finances' })
+    this.backButton = page.getByRole('link', { name: 'Back' })
+
     this.transactionContainer = page.locator('table[data-testid="prisoner-transactions-table-container"]')
     this.tableTransactions = page.locator('table[data-testid="prisoner-transactions-table"]')
-    this.backButton = page.locator('[data-testid="backLink"]')
     this.balanceCards = page.locator('[data-testid="prisoner-balance-cards"]')
     this.transactionsLink = page.locator('[data-testid="transactions-page-link"]')
     this.profileHeader = page.locator('[data-testid="hmpps-profile-banner"]')

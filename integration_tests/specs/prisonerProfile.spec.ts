@@ -322,7 +322,7 @@ test.describe('Prisoner Profile', () => {
     const response = await page.goto(`/prisoner/${prisonNumber}`)
 
     expect(response?.status()).toBe(404)
-    await expect(page.locator('[data-testid="prisoner-not-found-heading"]')).toContainText('Prisoner not found')
+    await expect(page.getByRole('heading', { name: 'Prisoner not found' })).toBeVisible()
     await expect(page.locator('[data-testid="find-prisoner-link"]')).toBeVisible()
   })
 
@@ -336,7 +336,7 @@ test.describe('Prisoner Profile', () => {
     const response = await page.goto(`/prisoner/${prisonNumber}`)
 
     expect(response?.status()).toBe(500)
-    await expect(page.locator('[data-testid="error-page-message"]')).toContainText('Internal Server Error')
+    await expect(page.getByRole('heading', { name: 'Internal Server Error' })).toBeVisible()
     await expect(page.locator('[data-testid="error-page-status"]')).toContainText('500')
   })
 

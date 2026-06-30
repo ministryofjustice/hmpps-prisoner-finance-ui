@@ -1,129 +1,107 @@
-{% extends "partials/layout.njk" %}
+{%- extends "partials/layout-three-quarters.njk" -%}
 
-{% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "components/summaryContainer/summaryContainer.njk" import summaryContainer %}
-{% from "components/balanceCard/balanceCard.njk" import balanceCard %}
-{% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
-{% from "components/actionBlock/actionBlock.njk" import actionBlock %}
-{% from "components/transactionAmount/transactionAmount.njk" import transactionAmount %}
-{% from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner %}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+{%- from "components/summaryContainer/summaryContainer.njk" import summaryContainer -%}
+{%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
+{%- from "components/actionBlock/actionBlock.njk" import actionBlock -%}
+{%- from "components/transactionAmount/transactionAmount.njk" import transactionAmount -%}
+{%- from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner -%}
 
-
-{% set pageTitle = applicationName + " - Profile" %}
-{% set mainClasses = "govuk-body" %}
+{%- set pageTitle = "Finances" -%}
+{%- set backUrl = "/prisoner" -%}
 
 {% block beforeContent %}
-
-  <a href="/prisoner" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
-
-  {{ prisonerInformationHeader({
-      prisoner:prisoner
-  }) }}
-
-
+  {{ dataWarningBanner(dataWarningBannerEnabled) }}
 {% endblock %}
 
-{% block content %}
+{% block innerContent %}
+  <div class="hmpps-balance-cards" data-testid="prisoner-balance-cards">
+    {{ balanceCard({
+      "heading": "Spends",
+      "amount": subAccountBalances.spends.amount,
+      "testId": "spends-card",
+      "showSubHeading": true,
+      "balanceCardLink": {
+        "href": "/prisoner/"+prisonNumber+"/money/spends",
+        "text": "Spends transactions"
+      }
+    }) }}
 
-<h2 id="prisonerProfileHeading" >Finances</h2>
+    {{ balanceCard({
+      "heading": "Private cash",
+      "amount": subAccountBalances.privateCash.amount,
+      "testId": "private-cash-card",
+      "showSubHeading": true,
+        "balanceCardLink": {
+          "href": "/prisoner/"+prisonNumber+"/money/private-cash",
+          "text": "Private cash transactions"
+      }
+    }) }}
 
-{{ dataWarningBanner(dataWarningBannerEnabled) }}
-
-<div class="govuk-grid-row">
-
-  <div class="govuk-grid-column-three-quarters">
-
-    <div class="hmpps-balance-cards" data-testid="prisoner-balance-cards">
-      {{ balanceCard({
-          "heading": "Spends",
-          "amount": subAccountBalances.spends.amount,
-          "testId": "spends-card",
-          "showSubHeading": true,
-          "balanceCardLink": {
-            "href": "/prisoner/"+prisonNumber+"/money/spends",
-            "text": "Spends transactions"
-          }
-        }) }}
-
-        {{ balanceCard({
-          "heading": "Private cash",
-          "amount": subAccountBalances.privateCash.amount,
-          "testId": "private-cash-card",
-          "showSubHeading": true,
-            "balanceCardLink": {
-              "href": "/prisoner/"+prisonNumber+"/money/private-cash",
-              "text": "Private cash transactions"
-          }
-        }) }}
-
-        {{ balanceCard({
-          "heading": "Savings",
-          "amount": subAccountBalances.savings.amount,
-          "testId": "savings-card",
-          "showSubHeading": true,
-            "balanceCardLink": {
-              "href": "/prisoner/"+prisonNumber+"/money/savings",
-              "text": "Savings transactions"
-          }
-        }) }}
-
-    </div>
-
-    <div>
-      {% set tableRows = [] %}
-      {% for row in transactions %}
-          {% set rowData = [
-            { text: row.date | formatDateForView },
-            { text: row.description },
-            { html: transactionAmount(row)},
-            { text: row.accountBalance | penceToPound if row.accountBalance !== null else '-' },
-            { text: row.accountType | formatPrisonerAccountType }
-            ] %}
-          {% set tableRows = (tableRows.push(rowData), tableRows) %}
-      {% endfor %}
-      {% call summaryContainer({
-                  heading : "All account transactions",
-                  "testId" : "prisoner-transactions-table-container"
-                  }) %}
-          <div class="hmpps-summary-container__table_container">
-            {% if transactions | length > 0 %}
-              {{ govukTable({
-                  attributes: {
-                    "data-testid": "prisoner-transactions-table"
-                  },
-                  classes: "transaction-table",
-                  head: [
-                    { text: "Date" },
-                    { text: "Transaction description" },
-                    { text: "Amount" },
-                    { text: "Balance" },
-                    { text: "Account" }
-                  ],
-                  rows: tableRows
-                }) }}
-            {% else %}
-              <p data-testid="no-transactions-message"> No transactions to show </p>
-            {% endif %}
-          </div>
-
-      <div>
-        <a href="/prisoner/{{prisonNumber}}/money" data-testid="transactions-page-link" >View all transactions</a>
-      </div>
-      {% endcall %}
-    </div>
-
-  </div>
-  <div class="govuk-grid-column-one-quarter">
-    {{ actionBlock({
-        actions: [
-        {text: "Credit account", 'dataTestId': 'credit-menu', url:"/prisoner/"+prisonNumber+"/money/credit-a-prisoner/credit-to"},
-        {text: "Debit account", 'dataTestId': 'debit-menu'},
-        {text: "Sub account transfer", 'dataTestId': 'subaccount-menu'},
-        {text: "Adjudications", 'dataTestId': 'adjudications-menu'},
-        {text: "Export statement", 'dataTestId': 'export-menu'},
-        {text: "Close account", 'dataTestId': 'close-menu'}]
+    {{ balanceCard({
+      "heading": "Savings",
+      "amount": subAccountBalances.savings.amount,
+      "testId": "savings-card",
+      "showSubHeading": true,
+        "balanceCardLink": {
+          "href": "/prisoner/"+prisonNumber+"/money/savings",
+          "text": "Savings transactions"
+      }
     }) }}
   </div>
-</div>
 
+  {% set tableRows = [] %}
+  {% for row in transactions %}
+    {% set rowData = [
+      { text: row.date | formatDateForView },
+      { text: row.description },
+      { html: transactionAmount(row)},
+      { text: row.accountBalance | penceToPound if row.accountBalance !== null else '-' },
+      { text: row.accountType | formatPrisonerAccountType }
+      ] %}
+    {% set tableRows = (tableRows.push(rowData), tableRows) %}
+  {% endfor %}
+
+  {% call summaryContainer({
+    heading : "All account transactions",
+    "testId" : "prisoner-transactions-table-container"
+  }) %}
+    <div class="hmpps-summary-container__table_container">
+      {% if transactions | length > 0 %}
+        {{ govukTable({
+            attributes: {
+              "data-testid": "prisoner-transactions-table"
+            },
+            classes: "transaction-table",
+            head: [
+              { text: "Date" },
+              { text: "Transaction description" },
+              { text: "Amount" },
+              { text: "Balance" },
+              { text: "Account" }
+            ],
+            rows: tableRows
+          }) }}
+      {% else %}
+        <p data-testid="no-transactions-message"> No transactions to show </p>
+      {% endif %}
+    </div>
+
+    <p class="govuk-body">
+      <a href="/prisoner/{{prisonNumber}}/money" data-testid="transactions-page-link" >View all transactions</a>
+    </p>
+  {% endcall %}
+{% endblock %}
+
+{% block secondaryContent %}
+  {{ actionBlock({
+    actions: [
+      {text: "Credit account", 'dataTestId': 'credit-menu', url:"/prisoner/"+prisonNumber+"/money/credit-a-prisoner/credit-to"},
+      {text: "Debit account", 'dataTestId': 'debit-menu'},
+      {text: "Sub account transfer", 'dataTestId': 'subaccount-menu'},
+      {text: "Adjudications", 'dataTestId': 'adjudications-menu'},
+      {text: "Export statement", 'dataTestId': 'export-menu'},
+      {text: "Close account", 'dataTestId': 'close-menu'}
+    ]
+  }) }}
 {% endblock %}

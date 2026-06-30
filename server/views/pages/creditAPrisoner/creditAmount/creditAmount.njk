@@ -1,42 +1,19 @@
-{% extends "partials/layout.njk" %}
+{%- extends "partials/layout-wizard-step.njk" -%}
 
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
+{%- from "components/forms/amountForm.njk" import amountForm -%}
 
-{% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
-{% from "components/forms/amountForm.njk" import amountForm %}
+{%- set pageTitle = "Credit a prisoner amount" -%}
+{%- set backUrl = "/" -%}
 
-{% set pageTitle = applicationName + " - Profile" %}
-{% set mainClasses = "govuk-body" %}
-
-{% block beforeContent %}
-
-  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
-
-  {{ prisonerInformationHeader({
-      prisoner:prisoner
-  }) }}
-
-
-{% endblock %}
-
-{% block content %}
-
-<div class="credit-from-page govuk-grid-row">
-
-  {{
-    amountForm({
+{% block innerContent %}
+  <div class="credit-from-page">
+    {{ amountForm({
       action: "./credit-amount",
       csrfToken: csrfToken,
       headingText: "Credit amount",
       errorMap: errorMap,
       amountValue : amount,
       descriptionValue : description
-    })
-  }}
-
-</div>
-
+    }) }}
+  </div>
 {% endblock %}

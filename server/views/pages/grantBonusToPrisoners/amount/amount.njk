@@ -1,33 +1,19 @@
-{% extends "partials/layout.njk" %}
+{%- extends "partials/layout-wizard-step.njk" -%}
 
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "components/forms/amountForm.njk" import amountForm %}
+{%- from "components/forms/amountForm.njk" import amountForm -%}
 
-{% set pageTitle = applicationName + " - Grant bonus to prisoners" %}
-{% set mainClasses = "govuk-body" %}
+{%- set pageTitle = "Grant bonus to prisoners" -%}
+{%- set backUrl = "/" -%}
 
-{% block beforeContent %}
-
-  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
-
-{% endblock %}
-
-<div class="grant-bonus-to-prisoners-amount-page govuk-grid-row">
-
-{% block content %}
-  {{
-    amountForm({
+{% block innerContent %}
+  <div class="grant-bonus-to-prisoners-amount-page">
+    {{ amountForm({
       action: "./amount",
       csrfToken: csrfToken,
       headingText: "Grant bonus to prisoners",
       errorMap: errorMap,
       amountValue : amount,
       descriptionValue : description
-    })
-  }}
+    }) }}
+  </div>
 {% endblock %}
-
-</div>

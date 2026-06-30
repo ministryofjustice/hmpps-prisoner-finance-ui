@@ -97,6 +97,7 @@ describe('prisoner transactions page', () => {
   const params = {
     prisonNumber,
     applicationName: 'Hmpps Prisoner Finance Ui',
+    headerTitle: 'Finance',
     transactions: payload,
     prisoner: { firstName: 'BOB', lastName: 'Taylor' },
     currentBalance: 1000,
@@ -107,6 +108,7 @@ describe('prisoner transactions page', () => {
   const paramsWithoutLastRunningBalance = {
     prisonNumber,
     applicationName: 'Hmpps Prisoner Finance Ui',
+    headerTitle: 'Finance',
     transactions: payloadWithoutLastRunningBalance,
     prisoner: { firstName: 'BOB', lastName: 'Taylor' },
     currentBalance: 1000,
@@ -139,9 +141,9 @@ describe('prisoner transactions page', () => {
 
     const title = $('title')
 
-    expect(title.text()).toContain('Hmpps Prisoner Finance Ui - Finance')
+    expect(title.text()).toContain('Finance - Hmpps Prisoner Finance Ui')
 
-    const backLink = $('#backLink')
+    const backLink = $('.govuk-back-link')
 
     expect(backLink.text()).toContain('Back')
     expect(backLink.attr('href')).toBe(`/prisoner/${prisonNumber}`)

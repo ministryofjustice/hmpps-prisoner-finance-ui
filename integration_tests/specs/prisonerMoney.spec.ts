@@ -143,781 +143,791 @@ test.describe('Prisoner Money', () => {
     },
   ]
   for (const { url, pageName, pageHeading, subAccountReference, expectedRunningBalances } of transactionPage) {
-    test(`${pageName} - Should display Header and Transactions table`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-      await page.goto(url)
-
-      const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
-      await expect(prisonerMoneyPage.heading).toBeVisible()
-      await expect(prisonerMoneyPage.heading).toContainText(pageHeading)
-      await expect(prisonerMoneyPage.tableTransactions).toBeVisible()
-      await expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
-
-      const headers = await prisonerMoneyPage.tableTransactions.locator('thead th')
-      await expect(headers.nth(0)).toHaveText('Date')
-      await expect(headers.nth(1)).toHaveText('Transaction description')
-      await expect(headers.nth(2)).toHaveText('Amount')
-      await expect(headers.nth(3)).toHaveText('Balance')
-      await expect(headers.nth(4)).toHaveText('Account')
-      await expect(headers.nth(5)).toHaveText('Location')
-
-      const rows = prisonerMoneyPage.tableTransactions.locator('tbody tr')
-      await expect(rows).toHaveCount(transactionPayload.length)
-
-      // Row 1
-      let cells = rows.nth(0).locator('td')
-      await expect(cells.nth(0)).toHaveText('10/03/2026\n10:48')
-      await expect(cells.nth(1)).toHaveText('test')
-      await expect(cells.nth(2)).toHaveText('-0.10')
-      await expect(cells.nth(3)).toHaveText(expectedRunningBalances[0])
-      await expect(cells.nth(4)).toHaveText('Private cash')
-      await expect(cells.nth(5)).toHaveText('Leeds (HMP)')
-
-      // Row 2
-      cells = rows.nth(1).locator('td')
-      await expect(cells.nth(0)).toHaveText('10/03/2026\n10:47')
-      await expect(cells.nth(1)).toHaveText('')
-      await expect(cells.nth(2)).toHaveText('0.20')
-      await expect(cells.nth(2)).toHaveCSS('font-weight', '400')
-      await expect(cells.nth(3)).toHaveText(expectedRunningBalances[1])
-      await expect(cells.nth(4)).toHaveText('Savings')
-      await expect(cells.nth(5)).toHaveText('Moorland (HMP & YOI)')
-
-      // Row 3
-      cells = rows.nth(2).locator('td')
-      await expect(cells.nth(0)).toHaveText('10/03/2026\n10:46')
-      await expect(cells.nth(1)).toHaveText('Cash to Savings Transfer')
-      await expect(cells.nth(2)).toHaveText('-0.10')
-      await expect(cells.nth(3)).toHaveText(expectedRunningBalances[2])
-      await expect(cells.nth(4)).toHaveText('Private cash')
-      await expect(cells.nth(5)).toHaveText('')
-
-      // Row 4
-      cells = rows.nth(3).locator('td')
-      await expect(cells.nth(0)).toHaveText('10/03/2026\n10:45')
-      await expect(cells.nth(1)).toHaveText('Transaction in secret prison')
-      await expect(cells.nth(2)).toHaveText('0.10')
-      await expect(cells.nth(2)).toHaveCSS('font-weight', '400')
-      await expect(cells.nth(3)).toHaveText(expectedRunningBalances[3])
-      await expect(cells.nth(4)).toHaveText('Savings')
-      await expect(cells.nth(5)).toHaveText('XXX')
-    })
-
-    test(`${pageName} - Should display the balance cards with the total amounts`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-      await page.goto(url)
-
-      const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
-
-      await expect(prisonerMoneyPage.currentBalanceCard).toBeVisible()
-      await expect(prisonerMoneyPage.currentBalanceCard.locator('h2')).toContainText('Current balance')
-      await expect(prisonerMoneyPage.currentBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
-    })
-
-    test(`${pageName} - Backlink should render and return to profile page`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-
-      await page.goto(url)
-
-      const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
-      await expect(prisonerMoneyPage.backButton).toBeVisible()
-
-      // stubs for profile page
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse)
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SPENDS')
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'CASH')
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SAVINGS')
-      await prisonerMoneyPage.backButton.click()
-
-      expect(new URL(page.url()).pathname).toBe(`/prisoner/${prisonNumber}`)
-    })
-
-    test(`${pageName} - Should handle 404 and render error`, async ({ page }) => {
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      if (subAccountReference) {
-        await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, subAccountReference)
-      } else {
-        await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
-      }
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(prisonNumber)
-      await prisonRegisterApi.stubGetPrisonNames()
-
-      const response = await page.goto(url)
-
-      expect(response?.status()).toBe(404)
-      await expect(page.locator('[data-testid="error-page-message"]')).toContainText('Account not found')
-      await expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
-    })
-
-    test(`${pageName} - should handle page out of bound and redirect to a 404`, async ({ page }) => {
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberReturnsPageOutOfBound(prisonNumber, {
-        pageNumber: '999',
-        pageSize: '25',
-      })
-
-      await stubBalances(subAccountReference)
-      await prisonRegisterApi.stubGetPrisonNames()
-
-      const response = await page.goto(`${url}?page=999`)
-      expect(response?.status()).toBe(404)
-      await expect(page.locator('[data-testid="error-page-message"]')).toContainText('Page requested is out of range')
-      await expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
-    })
-
-    test(`${pageName} - Should handle 500 and render error`, async ({ page }) => {
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await stubBalances(subAccountReference)
-      await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
-      await prisonRegisterApi.stubGetPrisonNames()
-
-      const response = await page.goto(url)
-      expect(response?.status()).toBe(500)
-      await expect(page.locator('[data-testid="error-page-message"]')).toContainText('Internal Server Error')
-      await expect(page.locator('[data-testid="error-page-status"]')).toContainText('500')
-    })
-
-    test(`${pageName} - Should redirect to sign-out when prisoner is outside user caseload`, async ({ page }) => {
-      await prisonerSearchApi.stubGetPrisonerOutsideCaseload(prisonNumber)
-      await page.goto(url)
-      await expect(page).toHaveURL(/.*\/sign-out/)
-    })
-
-    test(`${pageName} - Should not have any automatically detectable WCAG A or AA violations`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-      await page.goto(url)
-      await PrisonerMoneyPage.verifyOnPage(page)
-
-      const accessibilityScanResults = await new AxeBuilder({ page })
-        .withTags(['wcag2a', 'wcag2aa', 'wcag22a', 'wcag22aa'])
-        .analyze()
-
-      expect(accessibilityScanResults.violations).toEqual([])
-    })
-
-    test(`${pageName} - Should display prisoner information header`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-      await page.goto(url)
-
-      const { prisonerInformationHeader } = await PrisonerMoneyPage.verifyOnPage(page)
-      await expect(prisonerInformationHeader).toBeVisible()
-      await expect(page.locator('[data-testid="prisonerName"]')).toContainText('Smith, John')
-      await expect(page.locator('[data-testid="prisonerNumber"]')).toContainText(prisonNumber)
-      await expect(page.locator('[data-testid="cell-location"]')).toContainText('RECP')
-      await expect(page.locator('[data-testid="category"]')).toContainText('C')
-      await expect(page.locator('[data-testid="csra"]')).toContainText('Standard')
-      await expect(page.locator('[data-testid="incentive-level"]')).toContainText('Enhanced')
-    })
-
-    // temporary disabled for UR
-    test.skip(`${pageName} - should display the prisoner information tab`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-      await page.goto(url)
-      await PrisonerMoneyPage.verifyOnPage(page)
-
-      const profileTabs = page.locator('[data-testid="profile-tabs"]')
-      const overviewTabLink = profileTabs.locator('li a').first()
-      await expect(overviewTabLink).toHaveAttribute(
-        'href',
-        `https://prisoner-dev.digital.prison.service.justice.gov.uk/prisoner/${prisonNumber}`,
-      )
-    })
-
-    test(`${pageName} - should display no transactions`, async ({ page }) => {
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, emptyPageTransactionsResponse, {
-        subAccountReference,
-      })
-      await stubBalances(subAccountReference)
-      await prisonRegisterApi.stubGetPrisonNames()
-
-      await page.goto(url)
-
-      const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
-      await expect(prisonerMoneyPage.tableTransactions).not.toBeVisible()
-
-      const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
-      await expect(noTransactionsMessage).toBeVisible()
-      await expect(noTransactionsMessage).toHaveText('No transactions to show')
-    })
-
-    test(`${pageName} - should display the filter`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-      await page.goto(url)
-      await PrisonerMoneyPage.verifyOnPage(page)
-
-      const filterComponent = page.locator('[data-module="moj-filter"]')
-      const filterSelected = page.locator('[class="moj-filter__selected"]')
-      const filterOptions = page.locator('[class="moj-filter__options"]')
-
-      await expect(filterSelected).toBeVisible()
-      await expect(filterComponent).toBeVisible()
-      await expect(filterOptions).toBeVisible()
-    })
-
-    const casesValidFilters = [
-      {
-        caseName: 'just startDate',
-        expectedUrl: `${url}?startDate=10%2F10%2F2010&endDate=#filterForm`,
-        action: async (page: PrisonerMoneyPage) => {
-          await page.startDateFilter.fill('10/10/2010')
-          await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
-            startDate: '2010-10-10',
-            subAccountReference,
-          })
-        },
-      },
-      {
-        caseName: 'both startDate and endDate',
-        expectedUrl: `${url}?startDate=10%2F10%2F2010&endDate=10%2F10%2F2020#filterForm`,
-        action: async (page: PrisonerMoneyPage) => {
-          await page.startDateFilter.fill('10/10/2010')
-          await page.endDateFilter.fill('10/10/2020')
-          await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
-            startDate: '2010-10-10',
-            endDate: '2020-10-10',
-            subAccountReference,
-          })
-        },
-      },
-      {
-        caseName: 'just endDate',
-        expectedUrl: `${url}?startDate=&endDate=10%2F10%2F2020#filterForm`,
-        action: async (page: PrisonerMoneyPage) => {
-          await page.endDateFilter.fill('10/10/2020')
-          await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
-            endDate: '2020-10-10',
-            subAccountReference,
-          })
-        },
-      },
-      {
-        caseName: 'just debit',
-        debit: 'true',
-        expectedUrl: `${url}?startDate=&endDate=&debit=true#filterForm`,
-        action: async (page: PrisonerMoneyPage) => {
-          await page.debitFilter.click()
-          await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
-            debit: 'true',
-            subAccountReference,
-          })
-        },
-      },
-      {
-        caseName: 'just credit',
-        credit: 'true',
-        expectedUrl: `${url}?startDate=&endDate=&credit=true#filterForm`,
-        action: async (page: PrisonerMoneyPage) => {
-          await page.creditFilter.click()
-          await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
-            credit: 'true',
-            subAccountReference,
-          })
-        },
-      },
-      {
-        caseName: 'both debit and credit',
-        expectedUrl: `${url}?startDate=&endDate=&credit=true&debit=true#filterForm`,
-        action: async (page: PrisonerMoneyPage) => {
-          await page.creditFilter.click()
-          await page.debitFilter.click()
-          await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
-            debit: 'true',
-            credit: 'true',
-            subAccountReference,
-          })
-        },
-      },
-    ]
-    for (const { caseName, expectedUrl, action } of casesValidFilters) {
-      test(`${pageName} - should filter by ${caseName}`, async ({ page }) => {
+    test.describe(`${pageName} - ${url}`, () => {
+      test(`Should display Header and Transactions table`, async ({ page }) => {
         await baseStubs(subAccountReference)
         await page.goto(url)
-        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
 
-        await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
-        await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
-        await expect(prisonerMoneyPage.creditFilter).toBeVisible()
-        await expect(prisonerMoneyPage.debitFilter).toBeVisible()
+        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        await expect(prisonerMoneyPage.tableTransactions).toBeVisible()
+        await expect(prisonerMoneyPage.tableTransactions.locator('thead tr th')).toHaveCount(6)
 
-        await action(prisonerMoneyPage)
-        await prisonerMoneyPage.applyFilterButton.click()
+        const headers = await prisonerMoneyPage.tableTransactions.locator('thead th')
+        await expect(headers.nth(0)).toHaveText('Date')
+        await expect(headers.nth(1)).toHaveText('Transaction description')
+        await expect(headers.nth(2)).toHaveText('Amount')
+        await expect(headers.nth(3)).toHaveText('Balance')
+        await expect(headers.nth(4)).toHaveText('Account')
+        await expect(headers.nth(5)).toHaveText('Location')
 
-        const endDateError = page.locator('[id="endDate-error"]')
-        const startDateError = page.locator('[id="startDate-error"]')
-        const creditError = page.locator('[id="credit-error"]')
-        const debitError = page.locator('[id="debit-error"]')
+        const rows = prisonerMoneyPage.tableTransactions.locator('tbody tr')
+        await expect(rows).toHaveCount(transactionPayload.length)
 
-        await expect(endDateError).not.toBeVisible()
-        await expect(startDateError).not.toBeVisible()
-        await expect(creditError).not.toBeVisible()
-        await expect(debitError).not.toBeVisible()
+        // Row 1
+        let cells = rows.nth(0).locator('td')
+        await expect(cells.nth(0)).toHaveText('10/03/2026\n10:48')
+        await expect(cells.nth(1)).toHaveText('test')
+        await expect(cells.nth(2)).toHaveText('-0.10')
+        await expect(cells.nth(3)).toHaveText(expectedRunningBalances[0])
+        await expect(cells.nth(4)).toHaveText('Private cash')
+        await expect(cells.nth(5)).toHaveText('Leeds (HMP)')
 
-        await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
-        await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
-        await expect(prisonerMoneyPage.creditFilter).toBeVisible()
-        await expect(prisonerMoneyPage.debitFilter).toBeVisible()
+        // Row 2
+        cells = rows.nth(1).locator('td')
+        await expect(cells.nth(0)).toHaveText('10/03/2026\n10:47')
+        await expect(cells.nth(1)).toHaveText('')
+        await expect(cells.nth(2)).toHaveText('0.20')
+        await expect(cells.nth(2)).toHaveCSS('font-weight', '400')
+        await expect(cells.nth(3)).toHaveText(expectedRunningBalances[1])
+        await expect(cells.nth(4)).toHaveText('Savings')
+        await expect(cells.nth(5)).toHaveText('Moorland (HMP & YOI)')
 
-        const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
-        await expect(noTransactionsMessage).not.toBeVisible()
+        // Row 3
+        cells = rows.nth(2).locator('td')
+        await expect(cells.nth(0)).toHaveText('10/03/2026\n10:46')
+        await expect(cells.nth(1)).toHaveText('Cash to Savings Transfer')
+        await expect(cells.nth(2)).toHaveText('-0.10')
+        await expect(cells.nth(3)).toHaveText(expectedRunningBalances[2])
+        await expect(cells.nth(4)).toHaveText('Private cash')
+        await expect(cells.nth(5)).toHaveText('')
 
-        await expect(page).toHaveURL(expectedUrl)
+        // Row 4
+        cells = rows.nth(3).locator('td')
+        await expect(cells.nth(0)).toHaveText('10/03/2026\n10:45')
+        await expect(cells.nth(1)).toHaveText('Transaction in secret prison')
+        await expect(cells.nth(2)).toHaveText('0.10')
+        await expect(cells.nth(2)).toHaveCSS('font-weight', '400')
+        await expect(cells.nth(3)).toHaveText(expectedRunningBalances[3])
+        await expect(cells.nth(4)).toHaveText('Savings')
+        await expect(cells.nth(5)).toHaveText('XXX')
       })
-    }
 
-    const casesInvalidFilters = [
-      {
-        caseName: 'invalid startDate',
-        startDateErrorMessage: 'Start date must be a real date, like 18/01/2026',
-        startUrl: `${url}#filterForm`,
-        expectedUrl: `${url}?startDate=XXXX&endDate=#filterForm`,
-        action: async (page: PrisonerMoneyPage) => {
-          await page.startDateFilter.fill('XXXX')
-          await page.applyFilterButton.click()
-        },
-      },
-      {
-        caseName: 'invalid startDate and endDate',
-        startDateErrorMessage: 'Start date must be a real date, like 18/01/2026',
-        endDateErrorMessage: 'End date must be a real date, like 18/01/2026',
-        startUrl: `${url}#filterForm`,
-        expectedUrl: `${url}?startDate=XXXX&endDate=XXXX#filterForm`,
-        action: async (page: PrisonerMoneyPage) => {
-          await page.startDateFilter.fill('XXXX')
-          await page.endDateFilter.fill('XXXX')
-          await page.applyFilterButton.click()
-        },
-      },
-      {
-        caseName: 'invalid endDate',
-        endDateErrorMessage: 'End date must be a real date, like 18/01/2026',
-        startUrl: `${url}#filterForm`,
-        expectedUrl: `${url}?startDate=&endDate=99%2F99%2F9999#filterForm`,
-        action: async (page: PrisonerMoneyPage) => {
-          await page.endDateFilter.fill('99/99/9999')
-          await page.applyFilterButton.click()
-        },
-      },
-      {
-        caseName: 'endate earlier than startDate',
-        endDateErrorMessage: 'End date cannot be earlier than start date',
-        startUrl: `${url}#filterForm`,
-        expectedUrl: `${url}?startDate=10%2F10%2F2020&endDate=10%2F10%2F2010#filterForm`,
-        action: async (page: PrisonerMoneyPage) => {
-          await page.startDateFilter.fill('10/10/2020')
-          await page.endDateFilter.fill('10/10/2010')
-          await page.applyFilterButton.click()
-        },
-      },
-      {
-        caseName: 'invalid debit',
-        debitErrorMessage: 'Debit must be true or false\n',
-        startUrl: `${url}?debit=xxxx#filterForm`,
-        expectedUrl: `${url}?debit=xxxx#filterForm`,
-        action: async (_page: PrisonerMoneyPage) => {},
-      },
-      {
-        caseName: 'invalid credit',
-        creditErrorMessage: 'Credit must be true or false\n',
-        startUrl: `${url}?credit=xxxx#filterForm`,
-        expectedUrl: `${url}?credit=xxxx#filterForm`,
-        action: async (_page: PrisonerMoneyPage) => {},
-      },
-      {
-        caseName: 'invalid debit and credit',
-        debitErrorMessage: 'Debit must be true or false\n',
-        creditErrorMessage: 'Credit must be true or false\n',
-        startUrl: `${url}?credit=xxxx&debit=xxxx#filterForm`,
-        expectedUrl: `${url}?credit=xxxx&debit=xxxx#filterForm`,
-        action: async (_page: PrisonerMoneyPage) => {},
-      },
-    ]
-    for (const {
-      caseName,
-      startDateErrorMessage,
-      endDateErrorMessage,
-      debitErrorMessage,
-      creditErrorMessage,
-      startUrl,
-      expectedUrl,
-      action,
-    } of casesInvalidFilters) {
-      test(`${pageName} - Should show validation errors on ${caseName}`, async ({ page }) => {
+      test(`Should display the balance cards with the total amounts`, async ({ page }) => {
+        await baseStubs(subAccountReference)
+        await page.goto(url)
+
+        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+
+        await expect(prisonerMoneyPage.currentBalanceCard).toBeVisible()
+        await expect(prisonerMoneyPage.currentBalanceCard.locator('h2')).toContainText('Current balance')
+        await expect(prisonerMoneyPage.currentBalanceCard.locator('.hmpps-balance-card__amount')).toContainText(
+          '£12.34',
+        )
+
+        await expect(prisonerMoneyPage.totalBalanceCard).toBeVisible()
+        await expect(prisonerMoneyPage.totalBalanceCard.locator('h2')).toContainText('Total balance')
+        await expect(prisonerMoneyPage.totalBalanceCard.locator('.hmpps-balance-card__amount')).toContainText('£12.34')
+      })
+
+      test(`${pageName} - Backlink should render and return to profile page`, async ({ page }) => {
         await baseStubs(subAccountReference)
 
-        await page.goto(startUrl)
+        await page.goto(url)
 
-        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
+        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        await expect(prisonerMoneyPage.backButton).toBeVisible()
 
-        await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
-        await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
-        await expect(prisonerMoneyPage.creditFilter).toBeVisible()
-        await expect(prisonerMoneyPage.debitFilter).toBeVisible()
+        // stubs for profile page
+        await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse)
+        await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SPENDS')
+        await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'CASH')
+        await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SAVINGS')
+        await prisonerMoneyPage.backButton.click()
 
-        await action(prisonerMoneyPage)
+        expect(new URL(page.url()).pathname).toBe(`/prisoner/${prisonNumber}`)
+      })
 
-        const endDateError = page.locator('[id="endDate-error"]')
-        const startDateError = page.locator('[id="startDate-error"]')
-        const creditDebitError = page.locator('[id="creditDebit-error"]')
-
-        const checkMessages = []
-        for (const { errorMessage, errorComponent } of [
-          { errorMessage: startDateErrorMessage, errorComponent: startDateError },
-          { errorMessage: endDateErrorMessage, errorComponent: endDateError },
-          { errorMessage: `${creditErrorMessage ?? ''}${debitErrorMessage ?? ''}`, errorComponent: creditDebitError },
-        ]) {
-          if (errorMessage) {
-            checkMessages.push(expect(errorComponent).toContainText(errorMessage))
-          } else {
-            checkMessages.push(expect(errorComponent).not.toBeVisible())
-          }
+      test(`Should handle 404 and render error`, async ({ page }) => {
+        await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+        if (subAccountReference) {
+          await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, subAccountReference)
+        } else {
+          await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, balancePayload)
         }
-        await Promise.all(checkMessages)
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(prisonNumber)
+        await prisonRegisterApi.stubGetPrisonNames()
+
+        const response = await page.goto(url)
+
+        expect(response?.status()).toBe(404)
+        await expect(page.getByRole('heading', { name: 'Account not found' })).toBeVisible()
+        await expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
+      })
+
+      test(`Should handle page out of bound and redirect to a 404`, async ({ page }) => {
+        await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberReturnsPageOutOfBound(prisonNumber, {
+          pageNumber: '999',
+          pageSize: '25',
+        })
+
+        await stubBalances(subAccountReference)
+        await prisonRegisterApi.stubGetPrisonNames()
+
+        const response = await page.goto(`${url}?page=999`)
+        expect(response?.status()).toBe(404)
+        await expect(page.getByRole('heading', { name: 'Page requested is out of range' })).toBeVisible()
+        await expect(page.locator('[data-testid="error-page-status"]')).toContainText('404')
+      })
+
+      test(`Should handle 500 and render error`, async ({ page }) => {
+        await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+        await stubBalances(subAccountReference)
+        await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
+        await prisonRegisterApi.stubGetPrisonNames()
+
+        const response = await page.goto(url)
+        expect(response?.status()).toBe(500)
+        await expect(page.getByRole('heading', { name: 'Internal Server Error' })).toBeVisible()
+        await expect(page.locator('[data-testid="error-page-status"]')).toContainText('500')
+      })
+
+      test(`Should redirect to sign-out when prisoner is outside user caseload`, async ({ page }) => {
+        await prisonerSearchApi.stubGetPrisonerOutsideCaseload(prisonNumber)
+        await page.goto(url)
+        await expect(page).toHaveURL(/.*\/sign-out/)
+      })
+
+      test(`Should not have any automatically detectable WCAG A or AA violations`, async ({ page }) => {
+        await baseStubs(subAccountReference)
+        await page.goto(url)
+        await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+
+        const accessibilityScanResults = await new AxeBuilder({ page })
+          .withTags(['wcag2a', 'wcag2aa', 'wcag22a', 'wcag22aa'])
+          .analyze()
+
+        expect(accessibilityScanResults.violations).toEqual([])
+      })
+
+      test(`Should display prisoner information header`, async ({ page }) => {
+        await baseStubs(subAccountReference)
+        await page.goto(url)
+
+        const { prisonerInformationHeader } = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        await expect(prisonerInformationHeader).toBeVisible()
+        await expect(page.locator('[data-testid="prisonerName"]')).toContainText('Smith, John')
+        await expect(page.locator('[data-testid="prisonerNumber"]')).toContainText(prisonNumber)
+        await expect(page.locator('[data-testid="cell-location"]')).toContainText('RECP')
+        await expect(page.locator('[data-testid="category"]')).toContainText('C')
+        await expect(page.locator('[data-testid="csra"]')).toContainText('Standard')
+        await expect(page.locator('[data-testid="incentive-level"]')).toContainText('Enhanced')
+      })
+
+      // temporary disabled for UR
+      test.skip(`Should display the prisoner information tab`, async ({ page }) => {
+        await baseStubs(subAccountReference)
+        await page.goto(url)
+        await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+
+        const profileTabs = page.locator('[data-testid="profile-tabs"]')
+        const overviewTabLink = profileTabs.locator('li a').first()
+        await expect(overviewTabLink).toHaveAttribute(
+          'href',
+          `https://prisoner-dev.digital.prison.service.justice.gov.uk/prisoner/${prisonNumber}`,
+        )
+      })
+
+      test(`Should display no transactions`, async ({ page }) => {
+        await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+          prisonNumber,
+          emptyPageTransactionsResponse,
+          {
+            subAccountReference,
+          },
+        )
+        await stubBalances(subAccountReference)
+        await prisonRegisterApi.stubGetPrisonNames()
+
+        await page.goto(url)
+
+        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        await expect(prisonerMoneyPage.tableTransactions).not.toBeVisible()
 
         const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
         await expect(noTransactionsMessage).toBeVisible()
-        await expect(noTransactionsMessage).toHaveText("Please fix the filter's errors to view transactions")
-
-        await expect(page).toHaveURL(expectedUrl)
-      })
-    }
-
-    test(`${pageName} - Should be able to remove selected filters`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-      await page.goto(url)
-      await PrisonerMoneyPage.verifyOnPage(page)
-
-      const startDateFilter = page.locator('input[id="startDate"]')
-      const endDateFilter = page.locator('input[id="endDate"]')
-      const applyFilterButton = page.locator('[data-test-id="submit-button"]')
-
-      await expect(startDateFilter).toBeVisible()
-      await expect(endDateFilter).toBeVisible()
-
-      const startDateVal = '10/10/2010'
-      const endDateVal = '10/12/2010'
-
-      await startDateFilter.fill(startDateVal)
-      await endDateFilter.fill(endDateVal)
-
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
-        startDate: '2010-10-10',
-        endDate: '2010-12-10',
-        subAccountReference,
+        await expect(noTransactionsMessage).toHaveText('No transactions to show')
       })
 
-      await applyFilterButton.click()
+      test(`Should display the filter`, async ({ page }) => {
+        await baseStubs(subAccountReference)
+        await page.goto(url)
+        await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
 
-      await expect(page).toHaveURL(
-        `${url}?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
-      )
+        const filterComponent = page.locator('[data-module="moj-filter"]')
+        const filterSelected = page.locator('[class="moj-filter__selected"]')
+        const filterOptions = page.locator('[class="moj-filter__options"]')
 
-      await expect(startDateFilter).toBeVisible()
-      await expect(endDateFilter).toBeVisible()
-
-      const startDatefilterTag = page.getByRole('link', { name: 'Start date' })
-
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
-        endDate: '2010-12-10',
-        subAccountReference,
+        await expect(filterSelected).toBeVisible()
+        await expect(filterComponent).toBeVisible()
+        await expect(filterOptions).toBeVisible()
       })
 
-      await startDatefilterTag.click()
-      await expect(page).toHaveURL(`${url}?endDate=${encodeURIComponent(endDateVal)}&page=1#filterForm`)
-      expect(await endDateFilter.inputValue()).toBe(endDateVal)
-      expect(await startDateFilter.textContent()).toHaveLength(0)
-    })
+      const casesValidFilters = [
+        {
+          caseName: 'just startDate',
+          expectedUrl: `${url}?startDate=10%2F10%2F2010&endDate=#filterForm`,
+          action: async (page: PrisonerMoneyPage) => {
+            await page.startDateFilter.fill('10/10/2010')
+            await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+              startDate: '2010-10-10',
+              subAccountReference,
+            })
+          },
+        },
+        {
+          caseName: 'both startDate and endDate',
+          expectedUrl: `${url}?startDate=10%2F10%2F2010&endDate=10%2F10%2F2020#filterForm`,
+          action: async (page: PrisonerMoneyPage) => {
+            await page.startDateFilter.fill('10/10/2010')
+            await page.endDateFilter.fill('10/10/2020')
+            await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+              startDate: '2010-10-10',
+              endDate: '2020-10-10',
+              subAccountReference,
+            })
+          },
+        },
+        {
+          caseName: 'just endDate',
+          expectedUrl: `${url}?startDate=&endDate=10%2F10%2F2020#filterForm`,
+          action: async (page: PrisonerMoneyPage) => {
+            await page.endDateFilter.fill('10/10/2020')
+            await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+              endDate: '2020-10-10',
+              subAccountReference,
+            })
+          },
+        },
+        {
+          caseName: 'just debit',
+          debit: 'true',
+          expectedUrl: `${url}?startDate=&endDate=&debit=true#filterForm`,
+          action: async (page: PrisonerMoneyPage) => {
+            await page.debitFilter.click()
+            await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+              debit: 'true',
+              subAccountReference,
+            })
+          },
+        },
+        {
+          caseName: 'just credit',
+          credit: 'true',
+          expectedUrl: `${url}?startDate=&endDate=&credit=true#filterForm`,
+          action: async (page: PrisonerMoneyPage) => {
+            await page.creditFilter.click()
+            await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+              credit: 'true',
+              subAccountReference,
+            })
+          },
+        },
+        {
+          caseName: 'both debit and credit',
+          expectedUrl: `${url}?startDate=&endDate=&credit=true&debit=true#filterForm`,
+          action: async (page: PrisonerMoneyPage) => {
+            await page.creditFilter.click()
+            await page.debitFilter.click()
+            await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+              debit: 'true',
+              credit: 'true',
+              subAccountReference,
+            })
+          },
+        },
+      ]
+      for (const { caseName, expectedUrl, action } of casesValidFilters) {
+        test(`Should filter by ${caseName}`, async ({ page }) => {
+          await baseStubs(subAccountReference)
+          await page.goto(url)
+          const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
 
-    test(`${pageName} - Should clear all filters`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-      await page.goto(url)
-      const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page)
+          await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
+          await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
+          await expect(prisonerMoneyPage.creditFilter).toBeVisible()
+          await expect(prisonerMoneyPage.debitFilter).toBeVisible()
 
-      const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+          await action(prisonerMoneyPage)
+          await prisonerMoneyPage.applyFilterButton.click()
 
-      await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
-      await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
-      await expect(prisonerMoneyPage.creditFilter).toBeVisible()
-      await expect(prisonerMoneyPage.debitFilter).toBeVisible()
+          const endDateError = page.locator('[id="endDate-error"]')
+          const startDateError = page.locator('[id="startDate-error"]')
+          const creditError = page.locator('[id="credit-error"]')
+          const debitError = page.locator('[id="debit-error"]')
 
-      const startDateVal = '10/10/2010'
-      const endDateVal = '10/12/2010'
+          await expect(endDateError).not.toBeVisible()
+          await expect(startDateError).not.toBeVisible()
+          await expect(creditError).not.toBeVisible()
+          await expect(debitError).not.toBeVisible()
 
-      await prisonerMoneyPage.startDateFilter.fill(startDateVal)
-      await prisonerMoneyPage.endDateFilter.fill(endDateVal)
-      await prisonerMoneyPage.creditFilter.click()
-      await prisonerMoneyPage.debitFilter.click()
+          await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
+          await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
+          await expect(prisonerMoneyPage.creditFilter).toBeVisible()
+          await expect(prisonerMoneyPage.debitFilter).toBeVisible()
 
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
-        startDate: '2010-10-10',
-        endDate: '2010-12-10',
-        credit: 'true',
-        debit: 'true',
-        subAccountReference,
-      })
+          const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
+          await expect(noTransactionsMessage).not.toBeVisible()
 
-      await applyFilterButton.click()
-
-      await expect(page).toHaveURL(
-        `${url}?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}&credit=true&debit=true#filterForm`,
-      )
-
-      const clearFilters = page.getByText('Clear Filters')
-
-      await clearFilters.click()
-
-      await expect(page).toHaveURL(`${url}?#filterForm`)
-
-      expect(await prisonerMoneyPage.startDateFilter.textContent()).toHaveLength(0)
-      expect(await prisonerMoneyPage.endDateFilter.textContent()).toHaveLength(0)
-      await expect(prisonerMoneyPage.creditFilter).not.toBeChecked()
-      await expect(prisonerMoneyPage.debitFilter).not.toBeChecked()
-    })
-
-    test(`${pageName} - Should render pagination component and allow progression`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-
-      const createPageTransactionResponse = (pageNumber: number): Page<PrisonerTransactionResponse> => {
-        return {
-          content: transactionPayload,
-          totalElements: 500,
-          totalPages: 20,
-          pageNumber,
-          pageSize: 25,
-          isLastPage: pageNumber === 20,
-        }
+          await expect(page).toHaveURL(expectedUrl)
+        })
       }
 
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
-        prisonNumber,
-        createPageTransactionResponse(10),
+      const casesInvalidFilters = [
         {
-          startDate: '2026-04-09',
-          endDate: '2026-04-12',
-          pageNumber: '10',
-          pageSize: '25',
-          credit: 'true',
-          debit: 'true',
-          subAccountReference,
+          caseName: 'invalid startDate',
+          startDateErrorMessage: 'Start date must be a real date, like 18/01/2026',
+          startUrl: `${url}#filterForm`,
+          expectedUrl: `${url}?startDate=XXXX&endDate=#filterForm`,
+          action: async (page: PrisonerMoneyPage) => {
+            await page.startDateFilter.fill('XXXX')
+            await page.applyFilterButton.click()
+          },
         },
-      )
-
-      const buildQueriesForPage = (pageNumber: number) =>
-        `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
-
-      await page.goto(`${url}/${buildQueriesForPage(10)}`)
-
-      const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page)
-      await expect(topPagination).toBeVisible()
-      await expect(bottomPagination).toBeVisible()
-
-      const topNavButton = topPagination.locator("[aria-label='Page 9']")
-      await expect(topNavButton).toBeVisible()
-      expect(await topNavButton.getAttribute('href')).toBe(buildQueriesForPage(9))
-
-      await baseStubs(subAccountReference)
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
-        prisonNumber,
-        createPageTransactionResponse(9),
         {
-          startDate: '2026-04-09',
-          endDate: '2026-04-12',
-          pageNumber: '9',
-          pageSize: '25',
-          credit: 'true',
-          debit: 'true',
-          subAccountReference,
+          caseName: 'invalid startDate and endDate',
+          startDateErrorMessage: 'Start date must be a real date, like 18/01/2026',
+          endDateErrorMessage: 'End date must be a real date, like 18/01/2026',
+          startUrl: `${url}#filterForm`,
+          expectedUrl: `${url}?startDate=XXXX&endDate=XXXX#filterForm`,
+          action: async (page: PrisonerMoneyPage) => {
+            await page.startDateFilter.fill('XXXX')
+            await page.endDateFilter.fill('XXXX')
+            await page.applyFilterButton.click()
+          },
         },
-      )
+        {
+          caseName: 'invalid endDate',
+          endDateErrorMessage: 'End date must be a real date, like 18/01/2026',
+          startUrl: `${url}#filterForm`,
+          expectedUrl: `${url}?startDate=&endDate=99%2F99%2F9999#filterForm`,
+          action: async (page: PrisonerMoneyPage) => {
+            await page.endDateFilter.fill('99/99/9999')
+            await page.applyFilterButton.click()
+          },
+        },
+        {
+          caseName: 'endate earlier than startDate',
+          endDateErrorMessage: 'End date cannot be earlier than start date',
+          startUrl: `${url}#filterForm`,
+          expectedUrl: `${url}?startDate=10%2F10%2F2020&endDate=10%2F10%2F2010#filterForm`,
+          action: async (page: PrisonerMoneyPage) => {
+            await page.startDateFilter.fill('10/10/2020')
+            await page.endDateFilter.fill('10/10/2010')
+            await page.applyFilterButton.click()
+          },
+        },
+        {
+          caseName: 'invalid debit',
+          debitErrorMessage: 'Debit must be true or false\n',
+          startUrl: `${url}?debit=xxxx#filterForm`,
+          expectedUrl: `${url}?debit=xxxx#filterForm`,
+          action: async (_page: PrisonerMoneyPage) => {},
+        },
+        {
+          caseName: 'invalid credit',
+          creditErrorMessage: 'Credit must be true or false\n',
+          startUrl: `${url}?credit=xxxx#filterForm`,
+          expectedUrl: `${url}?credit=xxxx#filterForm`,
+          action: async (_page: PrisonerMoneyPage) => {},
+        },
+        {
+          caseName: 'invalid debit and credit',
+          debitErrorMessage: 'Debit must be true or false\n',
+          creditErrorMessage: 'Credit must be true or false\n',
+          startUrl: `${url}?credit=xxxx&debit=xxxx#filterForm`,
+          expectedUrl: `${url}?credit=xxxx&debit=xxxx#filterForm`,
+          action: async (_page: PrisonerMoneyPage) => {},
+        },
+      ]
+      for (const {
+        caseName,
+        startDateErrorMessage,
+        endDateErrorMessage,
+        debitErrorMessage,
+        creditErrorMessage,
+        startUrl,
+        expectedUrl,
+        action,
+      } of casesInvalidFilters) {
+        test(`Should show validation errors on ${caseName}`, async ({ page }) => {
+          await baseStubs(subAccountReference)
 
-      await topNavButton.click()
+          await page.goto(startUrl)
 
-      expect(page.url()).toContain(buildQueriesForPage(9))
+          const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
 
-      const topResultText = topPagination.locator('.moj-pagination__results')
-      await expect(topResultText).toBeVisible()
+          await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
+          await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
+          await expect(prisonerMoneyPage.creditFilter).toBeVisible()
+          await expect(prisonerMoneyPage.debitFilter).toBeVisible()
 
-      expect(await topResultText.innerText()).toBe('Showing 201 to 225 of 500 total results')
+          await action(prisonerMoneyPage)
 
-      const bottomResultText = bottomPagination.locator('.moj-pagination__results')
-      await expect(bottomResultText).toBeVisible()
+          const endDateError = page.locator('[id="endDate-error"]')
+          const startDateError = page.locator('[id="startDate-error"]')
+          const creditDebitError = page.locator('[id="creditDebit-error"]')
 
-      expect(await bottomResultText.innerText()).toBe('Showing 201 to 225 of 500 total results')
+          const checkMessages = []
+          for (const { errorMessage, errorComponent } of [
+            { errorMessage: startDateErrorMessage, errorComponent: startDateError },
+            { errorMessage: endDateErrorMessage, errorComponent: endDateError },
+            { errorMessage: `${creditErrorMessage ?? ''}${debitErrorMessage ?? ''}`, errorComponent: creditDebitError },
+          ]) {
+            if (errorMessage) {
+              checkMessages.push(expect(errorComponent).toContainText(errorMessage))
+            } else {
+              checkMessages.push(expect(errorComponent).not.toBeVisible())
+            }
+          }
+          await Promise.all(checkMessages)
 
-      const topCurrentPageLi = topPagination.locator('.govuk-pagination__item--current')
-      const topCurrentPageA = topCurrentPageLi.locator('a')
-      expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
-      expect(await topCurrentPageA.innerText()).toBe('9')
+          const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
+          await expect(noTransactionsMessage).toBeVisible()
+          await expect(noTransactionsMessage).toHaveText("Please fix the filter's errors to view transactions")
 
-      const bottomCurrentPageLi = bottomPagination.locator('.govuk-pagination__item--current')
-      const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
-      expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
-      expect(await bottomCurrentPageA.innerText()).toBe('9')
-    })
-
-    test(`${pageName} - should allow progression with next button`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-
-      const createPageTransactionResponse = (pageNumber: number): Page<PrisonerTransactionResponse> => {
-        return {
-          content: transactionPayload,
-          totalElements: 500,
-          totalPages: 20,
-          pageNumber,
-          pageSize: 25,
-          isLastPage: pageNumber === 20,
-        }
+          await expect(page).toHaveURL(expectedUrl)
+        })
       }
 
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
-        prisonNumber,
-        createPageTransactionResponse(10),
-        {
-          startDate: '2026-04-09',
-          endDate: '2026-04-12',
-          pageNumber: '10',
-          pageSize: '25',
+      test(`Should be able to remove selected filters`, async ({ page }) => {
+        await baseStubs(subAccountReference)
+        await page.goto(url)
+        await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+
+        const startDateFilter = page.locator('input[id="startDate"]')
+        const endDateFilter = page.locator('input[id="endDate"]')
+        const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+
+        await expect(startDateFilter).toBeVisible()
+        await expect(endDateFilter).toBeVisible()
+
+        const startDateVal = '10/10/2010'
+        const endDateVal = '10/12/2010'
+
+        await startDateFilter.fill(startDateVal)
+        await endDateFilter.fill(endDateVal)
+
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+          startDate: '2010-10-10',
+          endDate: '2010-12-10',
+          subAccountReference,
+        })
+
+        await applyFilterButton.click()
+
+        await expect(page).toHaveURL(
+          `${url}?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
+        )
+
+        await expect(startDateFilter).toBeVisible()
+        await expect(endDateFilter).toBeVisible()
+
+        const startDatefilterTag = page.getByRole('link', { name: 'Start date' })
+
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+          endDate: '2010-12-10',
+          subAccountReference,
+        })
+
+        await startDatefilterTag.click()
+        await expect(page).toHaveURL(`${url}?endDate=${encodeURIComponent(endDateVal)}&page=1#filterForm`)
+        expect(await endDateFilter.inputValue()).toBe(endDateVal)
+        expect(await startDateFilter.textContent()).toHaveLength(0)
+      })
+
+      test(`Should clear all filters`, async ({ page }) => {
+        await baseStubs(subAccountReference)
+        await page.goto(url)
+        const prisonerMoneyPage = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+
+        const applyFilterButton = page.locator('[data-test-id="submit-button"]')
+
+        await expect(prisonerMoneyPage.startDateFilter).toBeVisible()
+        await expect(prisonerMoneyPage.endDateFilter).toBeVisible()
+        await expect(prisonerMoneyPage.creditFilter).toBeVisible()
+        await expect(prisonerMoneyPage.debitFilter).toBeVisible()
+
+        const startDateVal = '10/10/2010'
+        const endDateVal = '10/12/2010'
+
+        await prisonerMoneyPage.startDateFilter.fill(startDateVal)
+        await prisonerMoneyPage.endDateFilter.fill(endDateVal)
+        await prisonerMoneyPage.creditFilter.click()
+        await prisonerMoneyPage.debitFilter.click()
+
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, pageTransactionsResponse, {
+          startDate: '2010-10-10',
+          endDate: '2010-12-10',
           credit: 'true',
           debit: 'true',
           subAccountReference,
-        },
-      )
+        })
 
-      const buildQueriesForPage = (pageNumber: number) =>
-        `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
+        await applyFilterButton.click()
 
-      await page.goto(`${url}/${buildQueriesForPage(10)}`)
+        await expect(page).toHaveURL(
+          `${url}?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}&credit=true&debit=true#filterForm`,
+        )
 
-      const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page)
+        const clearFilters = page.getByText('Clear Filters')
 
-      await expect(topPagination).toBeVisible()
-      await expect(bottomPagination).toBeVisible()
+        await clearFilters.click()
 
-      const nextNavButton = topPagination.locator("[rel='next']")
-      await expect(nextNavButton).toBeVisible()
-      expect(await nextNavButton.getAttribute('href')).toBe(buildQueriesForPage(11))
+        await expect(page).toHaveURL(`${url}?#filterForm`)
 
-      await baseStubs(subAccountReference)
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
-        prisonNumber,
-        createPageTransactionResponse(11),
-        {
-          startDate: '2026-04-09',
-          endDate: '2026-04-12',
-          pageNumber: '11',
-          pageSize: '25',
-          credit: 'true',
-          debit: 'true',
-          subAccountReference,
-        },
-      )
+        expect(await prisonerMoneyPage.startDateFilter.textContent()).toHaveLength(0)
+        expect(await prisonerMoneyPage.endDateFilter.textContent()).toHaveLength(0)
+        await expect(prisonerMoneyPage.creditFilter).not.toBeChecked()
+        await expect(prisonerMoneyPage.debitFilter).not.toBeChecked()
+      })
 
-      await nextNavButton.click()
+      test(`Should render pagination component and allow progression`, async ({ page }) => {
+        await baseStubs(subAccountReference)
 
-      expect(page.url()).toContain(buildQueriesForPage(11))
-
-      const topResultText = topPagination.locator('.moj-pagination__results')
-      await expect(topResultText).toBeVisible()
-
-      expect(await topResultText.innerText()).toBe('Showing 251 to 275 of 500 total results')
-
-      const bottomResultText = bottomPagination.locator('.moj-pagination__results')
-      await expect(bottomResultText).toBeVisible()
-
-      expect(await bottomResultText.innerText()).toBe('Showing 251 to 275 of 500 total results')
-
-      const topCurrentPageLi = topPagination.locator('.govuk-pagination__item--current')
-      const topCurrentPageA = topCurrentPageLi.locator('a')
-      expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
-      expect(await topCurrentPageA.innerText()).toBe('11')
-
-      const bottomCurrentPageLi = bottomPagination.locator('.govuk-pagination__item--current')
-      const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
-      expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
-      expect(await bottomCurrentPageA.innerText()).toBe('11')
-    })
-
-    test(`${pageName} -should allow progression with previous button`, async ({ page }) => {
-      await baseStubs(subAccountReference)
-
-      const createPageTransactionResponse = (pageNumber: number): Page<PrisonerTransactionResponse> => {
-        return {
-          content: transactionPayload,
-          totalElements: 500,
-          totalPages: 20,
-          pageNumber,
-          pageSize: 25,
-          isLastPage: pageNumber === 20,
+        const createPageTransactionResponse = (pageNumber: number): Page<PrisonerTransactionResponse> => {
+          return {
+            content: transactionPayload,
+            totalElements: 500,
+            totalPages: 20,
+            pageNumber,
+            pageSize: 25,
+            isLastPage: pageNumber === 20,
+          }
         }
-      }
 
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
-        prisonNumber,
-        createPageTransactionResponse(10),
-        {
-          startDate: '2026-04-09',
-          endDate: '2026-04-12',
-          pageNumber: '10',
-          pageSize: '25',
-          credit: 'true',
-          debit: 'true',
-          subAccountReference,
-        },
-      )
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+          prisonNumber,
+          createPageTransactionResponse(10),
+          {
+            startDate: '2026-04-09',
+            endDate: '2026-04-12',
+            pageNumber: '10',
+            pageSize: '25',
+            credit: 'true',
+            debit: 'true',
+            subAccountReference,
+          },
+        )
 
-      const buildQueriesForPage = (pageNumber: number) =>
-        `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
+        const buildQueriesForPage = (pageNumber: number) =>
+          `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
 
-      await page.goto(`${url}/${buildQueriesForPage(10)}`)
+        await page.goto(`${url}/${buildQueriesForPage(10)}`)
 
-      const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page)
+        const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+        await expect(topPagination).toBeVisible()
+        await expect(bottomPagination).toBeVisible()
 
-      await expect(topPagination).toBeVisible()
-      await expect(bottomPagination).toBeVisible()
+        const topNavButton = topPagination.locator("[aria-label='Page 9']")
+        await expect(topNavButton).toBeVisible()
+        expect(await topNavButton.getAttribute('href')).toBe(buildQueriesForPage(9))
 
-      const prevNavButton = topPagination.locator("[rel='prev']")
-      await expect(prevNavButton).toBeVisible()
-      expect(await prevNavButton.getAttribute('href')).toBe(buildQueriesForPage(9))
+        await baseStubs(subAccountReference)
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+          prisonNumber,
+          createPageTransactionResponse(9),
+          {
+            startDate: '2026-04-09',
+            endDate: '2026-04-12',
+            pageNumber: '9',
+            pageSize: '25',
+            credit: 'true',
+            debit: 'true',
+            subAccountReference,
+          },
+        )
 
-      await baseStubs(subAccountReference)
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
-        prisonNumber,
-        createPageTransactionResponse(9),
-        {
-          startDate: '2026-04-09',
-          endDate: '2026-04-12',
-          pageNumber: '9',
-          pageSize: '25',
-          credit: 'true',
-          debit: 'true',
-          subAccountReference,
-        },
-      )
+        await topNavButton.click()
 
-      await prevNavButton.click()
+        expect(page.url()).toContain(buildQueriesForPage(9))
 
-      expect(page.url()).toContain(buildQueriesForPage(9))
+        const topResultText = topPagination.locator('.moj-pagination__results')
+        await expect(topResultText).toBeVisible()
 
-      const topResultText = topPagination.locator('.moj-pagination__results')
-      await expect(topResultText).toBeVisible()
+        expect(await topResultText.innerText()).toBe('Showing 201 to 225 of 500 total results')
 
-      expect(await topResultText.innerText()).toBe('Showing 201 to 225 of 500 total results')
+        const bottomResultText = bottomPagination.locator('.moj-pagination__results')
+        await expect(bottomResultText).toBeVisible()
 
-      const bottomResultText = bottomPagination.locator('.moj-pagination__results')
-      await expect(bottomResultText).toBeVisible()
+        expect(await bottomResultText.innerText()).toBe('Showing 201 to 225 of 500 total results')
 
-      expect(await bottomResultText.innerText()).toBe('Showing 201 to 225 of 500 total results')
+        const topCurrentPageLi = topPagination.locator('.govuk-pagination__item--current')
+        const topCurrentPageA = topCurrentPageLi.locator('a')
+        expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
+        expect(await topCurrentPageA.innerText()).toBe('9')
 
-      const topCurrentPageLi = topPagination.locator('.govuk-pagination__item--current')
-      const topCurrentPageA = topCurrentPageLi.locator('a')
-      expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
-      expect(await topCurrentPageA.innerText()).toBe('9')
+        const bottomCurrentPageLi = bottomPagination.locator('.govuk-pagination__item--current')
+        const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
+        expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
+        expect(await bottomCurrentPageA.innerText()).toBe('9')
+      })
 
-      const bottomCurrentPageLi = bottomPagination.locator('.govuk-pagination__item--current')
-      const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
-      expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
-      expect(await bottomCurrentPageA.innerText()).toBe('9')
+      test(`Should allow progression with next button`, async ({ page }) => {
+        await baseStubs(subAccountReference)
+
+        const createPageTransactionResponse = (pageNumber: number): Page<PrisonerTransactionResponse> => {
+          return {
+            content: transactionPayload,
+            totalElements: 500,
+            totalPages: 20,
+            pageNumber,
+            pageSize: 25,
+            isLastPage: pageNumber === 20,
+          }
+        }
+
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+          prisonNumber,
+          createPageTransactionResponse(10),
+          {
+            startDate: '2026-04-09',
+            endDate: '2026-04-12',
+            pageNumber: '10',
+            pageSize: '25',
+            credit: 'true',
+            debit: 'true',
+            subAccountReference,
+          },
+        )
+
+        const buildQueriesForPage = (pageNumber: number) =>
+          `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
+
+        await page.goto(`${url}/${buildQueriesForPage(10)}`)
+
+        const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+
+        await expect(topPagination).toBeVisible()
+        await expect(bottomPagination).toBeVisible()
+
+        const nextNavButton = topPagination.locator("[rel='next']")
+        await expect(nextNavButton).toBeVisible()
+        expect(await nextNavButton.getAttribute('href')).toBe(buildQueriesForPage(11))
+
+        await baseStubs(subAccountReference)
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+          prisonNumber,
+          createPageTransactionResponse(11),
+          {
+            startDate: '2026-04-09',
+            endDate: '2026-04-12',
+            pageNumber: '11',
+            pageSize: '25',
+            credit: 'true',
+            debit: 'true',
+            subAccountReference,
+          },
+        )
+
+        await nextNavButton.click()
+
+        expect(page.url()).toContain(buildQueriesForPage(11))
+
+        const topResultText = topPagination.locator('.moj-pagination__results')
+        await expect(topResultText).toBeVisible()
+
+        expect(await topResultText.innerText()).toBe('Showing 251 to 275 of 500 total results')
+
+        const bottomResultText = bottomPagination.locator('.moj-pagination__results')
+        await expect(bottomResultText).toBeVisible()
+
+        expect(await bottomResultText.innerText()).toBe('Showing 251 to 275 of 500 total results')
+
+        const topCurrentPageLi = topPagination.locator('.govuk-pagination__item--current')
+        const topCurrentPageA = topCurrentPageLi.locator('a')
+        expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
+        expect(await topCurrentPageA.innerText()).toBe('11')
+
+        const bottomCurrentPageLi = bottomPagination.locator('.govuk-pagination__item--current')
+        const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
+        expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
+        expect(await bottomCurrentPageA.innerText()).toBe('11')
+      })
+
+      test(`Should allow progression with previous button`, async ({ page }) => {
+        await baseStubs(subAccountReference)
+
+        const createPageTransactionResponse = (pageNumber: number): Page<PrisonerTransactionResponse> => {
+          return {
+            content: transactionPayload,
+            totalElements: 500,
+            totalPages: 20,
+            pageNumber,
+            pageSize: 25,
+            isLastPage: pageNumber === 20,
+          }
+        }
+
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+          prisonNumber,
+          createPageTransactionResponse(10),
+          {
+            startDate: '2026-04-09',
+            endDate: '2026-04-12',
+            pageNumber: '10',
+            pageSize: '25',
+            credit: 'true',
+            debit: 'true',
+            subAccountReference,
+          },
+        )
+
+        const buildQueriesForPage = (pageNumber: number) =>
+          `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
+
+        await page.goto(`${url}/${buildQueriesForPage(10)}`)
+
+        const { topPagination, bottomPagination } = await PrisonerMoneyPage.verifyOnPage(page, pageHeading)
+
+        await expect(topPagination).toBeVisible()
+        await expect(bottomPagination).toBeVisible()
+
+        const prevNavButton = topPagination.locator("[rel='prev']")
+        await expect(prevNavButton).toBeVisible()
+        expect(await prevNavButton.getAttribute('href')).toBe(buildQueriesForPage(9))
+
+        await baseStubs(subAccountReference)
+        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(
+          prisonNumber,
+          createPageTransactionResponse(9),
+          {
+            startDate: '2026-04-09',
+            endDate: '2026-04-12',
+            pageNumber: '9',
+            pageSize: '25',
+            credit: 'true',
+            debit: 'true',
+            subAccountReference,
+          },
+        )
+
+        await prevNavButton.click()
+
+        expect(page.url()).toContain(buildQueriesForPage(9))
+
+        const topResultText = topPagination.locator('.moj-pagination__results')
+        await expect(topResultText).toBeVisible()
+
+        expect(await topResultText.innerText()).toBe('Showing 201 to 225 of 500 total results')
+
+        const bottomResultText = bottomPagination.locator('.moj-pagination__results')
+        await expect(bottomResultText).toBeVisible()
+
+        expect(await bottomResultText.innerText()).toBe('Showing 201 to 225 of 500 total results')
+
+        const topCurrentPageLi = topPagination.locator('.govuk-pagination__item--current')
+        const topCurrentPageA = topCurrentPageLi.locator('a')
+        expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
+        expect(await topCurrentPageA.innerText()).toBe('9')
+
+        const bottomCurrentPageLi = bottomPagination.locator('.govuk-pagination__item--current')
+        const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
+        expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
+        expect(await bottomCurrentPageA.innerText()).toBe('9')
+      })
     })
   }
 })

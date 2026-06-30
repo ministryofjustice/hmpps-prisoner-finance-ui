@@ -1,119 +1,103 @@
-{% extends "partials/layout.njk" %}
+{%- extends "partials/layout-full-width.njk" -%}
 
-{% from "components/balanceCard/balanceCard.njk" import balanceCard %}
-{% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
-{% from "components/transactionAmount/transactionAmount.njk" import transactionAmount %}
-{% from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner %}
-{% from "govuk/components/table/macro.njk" import govukTable %}
-{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
-{% from "moj/components/filter/macro.njk" import mojFilter %}
-{% from "moj/components/date-picker/macro.njk" import mojDatePicker %}
-{% from "moj/components/pagination/macro.njk" import mojPagination %}
+{%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
+{%- from "components/transactionAmount/transactionAmount.njk" import transactionAmount -%}
+{%- from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner -%}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+{%- from "govuk/components/checkboxes/macro.njk" import govukCheckboxes -%}
+{%- from "moj/components/filter/macro.njk" import mojFilter -%}
+{%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
 
-{% set pageTitle = applicationName + " - Finance" %}
-{% set mainClasses = "govuk-body" %}
+{%- set pageTitle = headerTitle -%}
+{%- set backUrl = "/prisoner/" + prisonNumber -%}
 
 {% block beforeContent %}
-
-<a href="/prisoner/{{prisonNumber}}" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
-
-  {{ prisonerInformationHeader({
-      prisoner:prisoner
-  }) }}
-
-
+  {{ dataWarningBanner(dataWarningBannerEnabled) }}
 {% endblock %}
 
-{% block content %}
-<div class="prisoner-transactions-page">
-
-  <h1 id="prisonerTransactionsHeading">{{headerTitle}}</h1>
-
-  {{ dataWarningBanner(dataWarningBannerEnabled) }}
-
-  <div class="govuk-grid-row">
-    <div class="card-group govuk-grid-column-two-thirds" id="prisonerFinanceCard">
-      <div class="govuk-grid-column-one-third  card-group__item">
-        {{ balanceCard({
-          "heading": "Current balance",
-          "amount": currentBalance,
-          "testId": "view-prisoner-current-balance-card",
-          "showSubHeading": false
-        }) }}
+{% block innerContent %}
+  <div class="prisoner-transactions-page">
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-three-quarters">
+        <div class="card-group govuk-grid-row" id="prisonerFinanceCard">
+          <div class="govuk-grid-column-one-third card-group__item">
+            {{ balanceCard({
+              "heading": "Current balance",
+              "amount": currentBalance,
+              "testId": "view-prisoner-current-balance-card",
+              "showSubHeading": false
+            }) }}
+          </div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <div class="moj-filter-layout">
-    <div class="moj-filter-layout__filter moj-filter-layout__filter--small"
-        data-module="list-filter"
-        data-filter-start-shown="true"
-      >
-      <div class="moj-filter">
-        <form method="get" action="#filterForm" id="filterForm">
-          {%- set filterOptionsHtml %}
+    <div class="moj-filter-layout">
+      <div class="moj-filter-layout__filter moj-filter-layout__filter--small"
+          data-module="list-filter"
+          data-filter-start-shown="true"
+        >
+        <div class="moj-filter">
+          <form method="get" action="#filterForm" id="filterForm">
+            {%- set filterOptionsHtml %}
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Date range</legend>
 
-            <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Date range</legend>
-
-            {{ mojDatePicker({
-              id: 'startDate',
-              name: 'startDate',
-              leadingZeros: 'true',
-              label: { text: "From", classes: "govuk-label--s"},
-              value: filters.startDate,
-              hint: {
-                text: "For example, 17/05/2024."
-              },
-              errorMessage: { text: errorMap.startDate } if errorMap.startDate else null
-            }) }}
-
-            {{ mojDatePicker({
-              id: 'endDate',
-              name: 'endDate',
-              leadingZeros: 'true',
-              label: { text: "To", classes: "govuk-label--s" },
-              value: filters.endDate,
-              hint: {
-                text: "For example, 18/05/2024."
-              },
-              errorMessage: { text: errorMap.endDate } if errorMap.endDate else null
-            }) }}
-
-            {{ govukCheckboxes({
-              name: "creditDebit",
-              fieldset: {
-                legend: {
-                  text: "Credit or debit",
-                  classes: "govuk-fieldset__legend--s"
-                }
-              },
-              items: [
-                {
-                  name: "credit",
-                  checked: filters.credit === 'true',
-                  value: "true",
-                  text: "Credit",
-                  id: "creditFilter"
+              {{ mojDatePicker({
+                id: 'startDate',
+                name: 'startDate',
+                leadingZeros: 'true',
+                label: { text: "From", classes: "govuk-label--s"},
+                value: filters.startDate,
+                hint: {
+                  text: "For example, 17/05/2024."
                 },
-                {
-                  name: "debit",
-                  checked: filters.debit === 'true',
-                  value: "true",
-                  text: "Debit",
-                  id: "debitFilter"
-                }
-              ],
-              errorMessage: {
-                text: errorMap.credit | default("") + errorMap.debit | default("")
-              } if errorMap.credit or errorMap.debit else null
-            }) }}
+                errorMessage: { text: errorMap.startDate } if errorMap.startDate else null
+              }) }}
 
-          {% endset -%}
+              {{ mojDatePicker({
+                id: 'endDate',
+                name: 'endDate',
+                leadingZeros: 'true',
+                label: { text: "To", classes: "govuk-label--s" },
+                value: filters.endDate,
+                hint: {
+                  text: "For example, 18/05/2024."
+                },
+                errorMessage: { text: errorMap.endDate } if errorMap.endDate else null
+              }) }}
 
-          {{ mojFilter({
+              {{ govukCheckboxes({
+                name: "creditDebit",
+                fieldset: {
+                  legend: {
+                    text: "Credit or debit",
+                    classes: "govuk-fieldset__legend--s"
+                  }
+                },
+                items: [
+                  {
+                    name: "credit",
+                    checked: filters.credit === 'true',
+                    value: "true",
+                    text: "Credit",
+                    id: "creditFilter"
+                  },
+                  {
+                    name: "debit",
+                    checked: filters.debit === 'true',
+                    value: "true",
+                    text: "Debit",
+                    id: "debitFilter"
+                  }
+                ],
+                errorMessage: {
+                  text: errorMap.credit | default("") + errorMap.debit | default("")
+                } if errorMap.credit or errorMap.debit else null
+              }) }}
+            {% endset -%}
+
+            {{ mojFilter({
               heading: {
                 text: "Filter"
               },
@@ -138,76 +122,72 @@
                 categories: filters.selectedFilters
                 },
                 optionsHtml: filterOptionsHtml
-            })
-          }}
-        </form>
+              })
+            }}
+          </form>
+        </div>
+      </div>
+
+      <div class="moj-filter-layout__content">
+        <div class="moj-action-bar">
+          <div class="moj-action-bar__filter moj-action-bar__filter--no-actions"></div>
+        </div>
+
+        {% set tableRows = [] %}
+        {% for row in transactions %}
+          {% set balance =  row.subAccountBalance  %}
+          {% if displayTotalBalance %}
+            {% set balance =  row.accountBalance  %}
+          {% endif %}
+
+          {% set rowData = [
+            { text: row.date | formatDateForView },
+            { text: row.description },
+            { html: transactionAmount(row)},
+            { text: (balance | penceToPound) if balance !== null else '-' },
+            { text: row.accountType | formatPrisonerAccountType },
+            { text: row.location | convertPrisonIdToName(prisonNames)}
+          ] %}
+          {% set tableRows = (tableRows.push(rowData), tableRows) %}
+        {% endfor %}
+
+        {% if transactions | length > 0 %}
+          <div id="top-pagination">
+            {{ mojPagination(paginationItems) }}
+          </div>
+
+          {{ govukTable({
+            attributes: {
+              "data-testid": "prisoner-transactions-table"
+            },
+            classes: "transaction-table",
+            caption: "",
+            captionClasses: "govuk-table__caption--m",
+            head: [
+              { text: "Date" },
+              { text: "Transaction description" },
+              { text: "Amount" },
+              { text: "Balance"},
+              { text: "Account" },
+              { text: "Location" }
+            ],
+            rows: tableRows
+          }) }}
+
+          <div id="bottom-pagination">
+            {{ mojPagination(paginationItems) }}
+          </div>
+
+        {% else %}
+          <p data-testid="no-transactions-message">
+            {% if hasValidationErrors %}
+              Please fix the filter's errors to view transactions
+            {% else %}
+              No transactions to show
+            {% endif %}
+          </p>
+        {% endif %}
       </div>
     </div>
-
-    <div class="moj-filter-layout__content">
-      <div class="moj-action-bar">
-        <div class="moj-action-bar__filter moj-action-bar__filter--no-actions"></div>
-      </div>
-
-      {% set tableRows = [] %}
-
-      {% for row in transactions %}
-        {% set balance =  row.subAccountBalance  %}
-        {% if displayTotalBalance %}
-          {% set balance =  row.accountBalance  %}
-        {% endif %}
-
-        {% set rowData = [
-          { text: row.date | formatDateForView },
-          { text: row.description },
-          { html: transactionAmount(row)},
-          { text: (balance | penceToPound) if balance !== null else '-' },
-          { text: row.accountType | formatPrisonerAccountType },
-          { text: row.location | convertPrisonIdToName(prisonNames)}
-        ] %}
-        {% set tableRows = (tableRows.push(rowData), tableRows) %}
-      {% endfor %}
-
-      {% if transactions | length > 0 %}
-
-      <div id="top-pagination">
-        {{ mojPagination(paginationItems) }}
-      </div>
-
-        {{ govukTable({
-          attributes: {
-            "data-testid": "prisoner-transactions-table"
-          },
-          classes: "transaction-table",
-          caption: "",
-          captionClasses: "govuk-table__caption--m",
-          head: [
-            { text: "Date" },
-            { text: "Transaction description" },
-            { text: "Amount" },
-            { text: "Balance"},
-            { text: "Account" },
-            { text: "Location" }
-          ],
-          rows: tableRows
-        }) }}
-
-      <div id="bottom-pagination">
-        {{ mojPagination(paginationItems) }}
-      </div>
-
-      {% else %}
-        <p data-testid="no-transactions-message">
-          {% if hasValidationErrors %}
-            Please fix the filter's errors to view transactions
-          {% else %}
-            No transactions to show
-          {% endif %}
-        </p>
-      {% endif %}
-      </div>
   </div>
-</div>
-
-
 {% endblock %}

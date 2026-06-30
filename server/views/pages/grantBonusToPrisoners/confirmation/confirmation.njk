@@ -1,31 +1,16 @@
-{% extends "partials/layout.njk" %}
+{%- extends "partials/layout-wizard-step.njk" -%}
 
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "components/confirmationPanel/confirmationPanel.njk" import confirmationPanel %}
+{%- from "components/confirmationPanel/confirmationPanel.njk" import confirmationPanel -%}
 
-{% set mainClasses = "govuk-main-wrapper--l" %}
-{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{%- set pageTitle = "Grant bonus to prisoners" -%}
+{%- set backUrl = "/" -%}
 
-{% set pageTitle = applicationName + " - Grant bonus to prisoners" %}
-{% set mainClasses = "govuk-body" %}
-
-{% block beforeContent %}
-
-  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
-
-{% endblock %}
-
-{% block content %}
-  {{
-    confirmationPanel({
+{% block innerContent %}
+  {{ confirmationPanel({
     panelTitle: "Bonus grant processed.",
     confirmationMessage: "The bonus grant has been processed.",
     confirmationMessageLinkText : "Return home",
     transactionNumber : transactionNumber,
     confirmationHref: "/"
-    })
-  }}
+  }) }}
 {% endblock %}

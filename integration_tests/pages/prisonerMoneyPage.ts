@@ -28,11 +28,12 @@ export default class PrisonerMoneyPage extends AbstractPage {
 
   readonly debitFilter: Locator
 
-  private constructor(page: Page) {
+  private constructor(page: Page, headerText: string) {
     super(page)
-    this.heading = page.locator('#prisonerTransactionsHeading')
+    this.heading = page.getByRole('heading', { name: headerText })
+    this.backButton = page.getByRole('link', { name: 'Back' })
+
     this.tableTransactions = page.locator('table[data-testid="prisoner-transactions-table"]')
-    this.backButton = page.locator('[data-testid="backLink"]')
     this.currentBalanceCard = page.locator('[data-testid="view-prisoner-current-balance-card"]')
     this.totalBalanceCard = page.locator('[data-testid="view-prisoner-total-balance-card"]')
     this.prisonerInformationHeader = page.locator('[data-testid="hmpps-profile-banner"]')
@@ -45,8 +46,8 @@ export default class PrisonerMoneyPage extends AbstractPage {
     this.debitFilter = page.locator('input[id="debitFilter"]')
   }
 
-  static async verifyOnPage(page: Page): Promise<PrisonerMoneyPage> {
-    const prisonerMoneyPage = new PrisonerMoneyPage(page)
+  static async verifyOnPage(page: Page, headerText: string): Promise<PrisonerMoneyPage> {
+    const prisonerMoneyPage = new PrisonerMoneyPage(page, headerText)
     await expect(prisonerMoneyPage.heading).toBeVisible()
     return prisonerMoneyPage
   }

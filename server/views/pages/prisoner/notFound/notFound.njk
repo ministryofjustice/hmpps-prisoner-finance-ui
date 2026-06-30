@@ -1,19 +1,17 @@
-{% extends "partials/layout.njk" %}
-{% from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner %}
+{%- extends "partials/layout-two-thirds.njk" -%}
 
-{% set pageTitle = applicationName + " - Prisoner not found" %}
-{% set mainClasses = "govuk-body" %}
+{%- from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner -%}
+
+{%- set pageTitle = "Prisoner not found" -%}
+{%- set backUrl = "/prisoner" -%}
 
 {% block beforeContent %}
-  <a href="/prisoner" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+  {{ dataWarningBanner(dataWarningBannerEnabled) }}
 {% endblock %}
 
-{% block content %}
-  <h1 class="govuk-heading-xl" data-testid="prisoner-not-found-heading">Prisoner not found</h1>
-
-  {{ dataWarningBanner(dataWarningBannerEnabled) }}
-
+{% block innerContent %}
   <p class="govuk-body">Check the prison number is correct and try again.</p>
+
   <p class="govuk-body">
     <a class="govuk-link" href="/prisoner" data-testid="find-prisoner-link">Find a prisoner</a>
   </p>

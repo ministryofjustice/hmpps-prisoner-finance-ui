@@ -1,12 +1,10 @@
-{% extends "../partials/layout.njk" %}
+{%- extends "partials/layout-two-thirds.njk" -%}
 
-{% set pageTitle = applicationName + " - Error" %}
-{% set mainClasses = "govuk-body" %}
+{%- set pageTitle = message -%}
+{%- set backUrl = "/" -%}
 
-{% block content %}
-
-  <h1 data-testid="error-page-message">{{ message }}</h1>
+{% block innerContent %}
   <h2 data-testid="error-page-status">{{ status }}</h2>
-  <pre data-testid="error-page-stack">{{ stack }}</pre>
 
+  <pre data-testid="error-page-stack"><code>{{ stack }}</code></pre>
 {% endblock %}

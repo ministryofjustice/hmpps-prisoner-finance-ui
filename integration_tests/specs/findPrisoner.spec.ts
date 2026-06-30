@@ -87,9 +87,10 @@ test.describe('Find Prisoner', () => {
     ])
     expect(response.status()).toBe(404)
 
-    await expect(page.locator('[data-testid="prisoner-not-found-heading"]')).toContainText('Prisoner not found')
-    await expect(page.locator('[data-testid="find-prisoner-link"]')).toBeVisible()
-    await expect(page).toHaveURL(`/prisoner/${invalidPrisonNumber}`)
+    await expect(page.getByRole('heading', { name: 'Prisoner not found' })).toBeVisible()
+
+    await page.getByRole('link', { name: 'Find a prisoner' }).click()
+    await expect(page).toHaveURL(`/prisoner`)
   })
 
   test('find prisoner page should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
@@ -110,7 +111,7 @@ test.describe('Find Prisoner', () => {
     await prisonerSearchApi.stubGetPrisonerNotFound(invalidPrisonNumber)
 
     await page.goto(`/prisoner/${invalidPrisonNumber}`)
-    await expect(page.locator('[data-testid="prisoner-not-found-heading"]')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Prisoner not found' })).toBeVisible()
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag22a', 'wcag22aa'])

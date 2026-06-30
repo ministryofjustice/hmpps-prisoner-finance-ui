@@ -1,20 +1,18 @@
-{% extends "partials/layout.njk" %}
+{%- extends "partials/layout-two-thirds.njk" -%}
 
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner %}
+{%- from "govuk/components/input/macro.njk" import govukInput -%}
+{%- from "govuk/components/button/macro.njk" import govukButton -%}
+{%- from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner -%}
 
-
-{% set pageTitle = applicationName + " - View prisoner finances" %}
-{% set mainClasses = "govuk-body" %}
+{%- set pageTitle = "View prisoner finances" -%}
+{%- set backUrl = "/" -%}
 
 {% block beforeContent %}
-  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+  {{ dataWarningBanner(dataWarningBannerEnabled) }}
 {% endblock %}
 
-{% block content %}
+{% block innerContent %}
   <form method="POST" action="/prisoner" data-testid="find-prisoner-form">
-
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
 
 
@@ -43,6 +41,5 @@
         "data-testid": "submit-button"
       }
     }) }}
-
   </form>
 {% endblock %}

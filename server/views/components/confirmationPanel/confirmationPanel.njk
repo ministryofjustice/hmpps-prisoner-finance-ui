@@ -1,27 +1,24 @@
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{%- from "govuk/components/radios/macro.njk" import govukRadios -%}
+{%- from "govuk/components/button/macro.njk" import govukButton -%}
+{%- from "govuk/components/fieldset/macro.njk" import govukFieldset -%}
+{%- from "govuk/components/input/macro.njk" import govukInput -%}
+{%- from "govuk/components/panel/macro.njk" import govukPanel -%}
 
 {% macro confirmationPanel(params) %}
+  <div class="govuk-!-margin-top-5">
+    {{ govukPanel({
+      titleText: params.panelTitle,
+      html: "Your transaction number<br><strong>"+params.transactionNumber+"</strong>",
+      attributes: {
+        "data-testid": "confirmation-panel"
+      }
+    }) }}
 
- <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds govuk-!-static-padding-top-3">
-      {{ govukPanel({
-        titleText: params.panelTitle,
-        html: "Your transaction number<br><strong>"+params.transactionNumber+"</strong>",
-        attributes: {
-          "data-testid": "confirmation-panel"
-        }
-      }) }}
+    <h2 class="govuk-heading-m">What happens next</h2>
 
-      <h2 class="govuk-heading-m">What happens next</h2>
-      <p class="govuk-body">
-        {{params.confirmationMessage}}
-        <a href={{params.confirmationHref}} class="govuk-link" data-testid="confirmation-message-link">{{params.confirmationMessageLinkText}}</a>
-      </p>
-    </div>
+    <p class="govuk-body">
+      {{params.confirmationMessage}}
+      <a href={{params.confirmationHref}} class="govuk-link" data-testid="confirmation-message-link">{{params.confirmationMessageLinkText}}</a>
+    </p>
   </div>
-
-  {% endmacro %}
+{% endmacro %}

@@ -1,37 +1,16 @@
-{% extends "partials/layout.njk" %}
+{%- extends "partials/layout-wizard-step.njk" -%}
 
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
+{%- from "components/confirmationPanel/confirmationPanel.njk" import confirmationPanel -%}
 
-{% set mainClasses = "govuk-main-wrapper--l" %}
-{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{%- set pageTitle = "Credit a prisoner confirmation" -%}
+{%- set backUrl = "/" -%}
 
-{% from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader %}
-{% from "components/confirmationPanel/confirmationPanel.njk" import confirmationPanel %}
-
-{% set pageTitle = applicationName + " - Profile" %}
-{% set mainClasses = "govuk-body" %}
-
-{% block beforeContent %}
-
-  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
-
-  {{ prisonerInformationHeader({
-      prisoner:prisoner
-  }) }}
-
-{% endblock %}
-
-{% block content %}
-  {{
-    confirmationPanel({
+{% block innerContent %}
+  {{ confirmationPanel({
     panelTitle: "Credit processed",
     confirmationMessage: "The credit has been processed. You can see the prisoners recent transactions on their",
     confirmationMessageLinkText : "financial profile page.",
     transactionNumber : transactionNumber,
     confirmationHref: "/prisoner/" + prisonNumber
-    })
-  }}
+  }) }}
 {% endblock %}

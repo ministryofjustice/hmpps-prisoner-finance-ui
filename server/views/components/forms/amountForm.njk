@@ -1,63 +1,56 @@
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
-{% from "govuk/components/input/macro.njk" import govukInput %}
+{%- from "govuk/components/button/macro.njk" import govukButton -%}
+{%- from "govuk/components/fieldset/macro.njk" import govukFieldset -%}
+{%- from "govuk/components/input/macro.njk" import govukInput -%}
 
 {% macro amountForm(params) %}
+  <form method="POST" action="{{params.action}}" class="govuk-!-margin-top-5" data-testid='select-amount'>
+    <input type="hidden" name="_csrf" value="{{ params.csrfToken }}">
 
-<form method="POST" action="{{params.action}}" data-testid='select-amount'>
+    {% call govukFieldset({
+      legend: {
+        text: params.headingText,
+        classes: "govuk-fieldset__legend--l",
+        isPageHeading: true
+      }
+    }) %}
+      {{ govukInput({
+        label: {
+          text: "Amount"
+        },
+        id: "amount",
+        name: "amount",
+        prefix: {
+          text: "£"
+        },
+        classes: "govuk-input--width-10",
+        attributes: {
+          "data-testid" : "amount-input"
+        },
+        errorMessage: { text: params.errorMap.amount } if params.errorMap.amount else null,
+        value: params.amountValue
+      }) }}
 
-  <input type="hidden" name="_csrf" value="{{ params.csrfToken }}">
+      {{ govukInput({
+        label: {
+          text: "Description"
+        },
+        id: "description",
+        name: "description",
+        attributes: {
+          "data-testid" : "description-input"
+        },
+        errorMessage: { text: params.errorMap.description } if params.errorMap.description else null,
+        value: params.descriptionValue
+      }) }}
+    {% endcall %}
 
-  {% call govukFieldset({
-    legend: {
-      text: params.headingText,
-      classes: "govuk-fieldset__legend--l govuk-!-static-padding-top-3",
-      isPageHeading: true
-    }
-  }) %}
-
-  {{ govukInput({
-    label: {
-      text: "Amount"
-    },
-    id: "amount",
-    name: "amount",
-    prefix: {
-        text: "£"
-    },
-    classes: "govuk-input--width-10",
-    attributes: {
-        "data-testid" : "amount-input"
-    },
-    errorMessage: { text: params.errorMap.amount } if params.errorMap.amount else null,
-    value: params.amountValue
-  }) }}
-
-  {{ govukInput({
-    label: {
-      text: "Description"
-    },
-    id: "description",
-    name: "description",
-    attributes: {
-        "data-testid" : "description-input"
-    },
-    errorMessage: { text: params.errorMap.description } if params.errorMap.description else null,
-    value: params.descriptionValue
-  }) }}
-
-  {% endcall %}
-
-  {{ govukButton({
-    text: "Done",
-    type: "submit",
-    attributes:{
-          "data-testid" : "done-button"
-          },
-    preventDoubleClick: true
-  }) }}
-
+    {{ govukButton({
+      text: "Done",
+      type: "submit",
+      attributes:{
+        "data-testid" : "done-button"
+      },
+      preventDoubleClick: true
+    }) }}
   </form>
-
   {% endmacro %}

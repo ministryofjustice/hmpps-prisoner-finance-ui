@@ -1,22 +1,20 @@
-{% from "components/summaryContainer/summaryContainer.njk" import summaryContainer %}
+{%- from "components/summaryContainer/summaryContainer.njk" import summaryContainer -%}
 
 {% macro balanceCard(params) %}
   {% call summaryContainer(params) %}
     <div class="hmpps-balance-card__body">
-
-      {% if params.showSubHeading %}
+    {% if params.showSubHeading %}
       <h3 class="govuk-heading-l hmpps-balance-card__subHeading" data-testid="balance-card-subheading">
           Account total
       </h3>
-      {% endif %}
+    {% endif %}
 
       <p class="govuk-body hmpps-balance-card__amount" data-testid="{{ params.testId }}_amount">{{ '£' + params.amount | penceToPound }}</p>
 
-      {% if params.balanceCardLink %}
-        <hr class="govuk-section-break govuk-section-break--visible">
-        <a href={{params.balanceCardLink.href}} data-testid="{{ params.testId }}_balance-card-link">{{params.balanceCardLink.text}}</a>
-      {% endif %}
+    {% if params.balanceCardLink %}
+      <hr class="govuk-section-break govuk-section-break--visible">
+      <a href={{params.balanceCardLink.href}} data-testid="{{ params.testId }}_balance-card-link">{{params.balanceCardLink.text}}</a>
+    {% endif %}
     </div>
   {% endcall %}
-
 {% endmacro %}
