@@ -39,11 +39,13 @@ export default class PrisonerMoneyPage extends AbstractPage {
     this.prisonerInformationHeader = page.locator('[data-testid="hmpps-profile-banner"]')
     this.topPagination = page.locator('#top-pagination')
     this.bottomPagination = page.locator('#bottom-pagination')
-    this.applyFilterButton = page.locator('[data-test-id="submit-button"]')
-    this.startDateFilter = page.locator('input[id="startDate"]')
-    this.endDateFilter = page.locator('input[id="endDate"]')
-    this.creditFilter = page.locator('input[id="creditFilter"]')
-    this.debitFilter = page.locator('input[id="debitFilter"]')
+
+    this.applyFilterButton = page.getByRole('button', { name: 'Apply filters', exact: true })
+
+    this.startDateFilter = page.getByLabel('From', { exact: true })
+    this.endDateFilter = page.getByLabel('To', { exact: true })
+    this.creditFilter = page.getByLabel('Credit', { exact: true })
+    this.debitFilter = page.getByLabel('Debit', { exact: true })
   }
 
   static async verifyOnPage(page: Page, headerText: string): Promise<PrisonerMoneyPage> {

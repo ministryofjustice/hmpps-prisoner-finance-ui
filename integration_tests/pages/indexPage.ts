@@ -10,7 +10,8 @@ export default class IndexPage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.heading = page.locator('#prisonerFinanceHeading')
+    this.heading = page.getByRole('heading', { name: 'Prisoner Finance', exact: true })
+
     this.viewPrisonerFinanceCard = page.locator('[data-qa="view-prisoner-finance-card"]')
     this.grantBonusToPrisonersCard = page.locator('[data-qa="grant-a-bonus-card"]')
   }

@@ -4,7 +4,7 @@ import AbstractPage from '../abstractPage'
 export default class CreditFromPage extends AbstractPage {
   readonly heading: Locator
 
-  readonly radioButtons: Locator
+  readonly prisonSubAccountOptions: Locator
 
   readonly continueButton: Locator
 
@@ -13,8 +13,10 @@ export default class CreditFromPage extends AbstractPage {
   constructor(page: Page) {
     super(page)
     this.heading = page.getByRole('heading', { name: 'Credit from', exact: true })
-    this.radioButtons = page.locator('[data-testid="prison-account-radio"]')
-    this.continueButton = page.locator('[data-testid="continue-button"]')
+
+    this.prisonSubAccountOptions = page.getByRole('radio')
+    this.continueButton = page.getByRole('button', { name: 'Continue', exact: true })
+
     this.errorMessage = page.locator('[id="creditFrom-error"]')
   }
 
@@ -26,7 +28,7 @@ export default class CreditFromPage extends AbstractPage {
 
   static async completeAndMoveOn(page: Page): Promise<void> {
     const creditFromPage = await this.verifyOnPage(page)
-    await creditFromPage.radioButtons.first().click()
+    await creditFromPage.prisonSubAccountOptions.first().click()
     await creditFromPage.continueButton.click()
   }
 }

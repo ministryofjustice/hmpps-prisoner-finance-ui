@@ -1,13 +1,14 @@
 import { expect, test } from '@playwright/test'
 import { createRedisClient, RedisClient } from '../../server/data/redisClient'
 import { login, resetStubs, unsignCookie } from '../testUtils'
-import GrantBonusToPrisonersPage from '../pages/grantBonusToPrisoners/grantBonusToPrisonersPage'
+import GrantBonusCaseloadPage from '../pages/grantBonusToPrisoners/grantBonusCaseloadPage'
 import AmountPage from '../pages/grantBonusToPrisoners/amountPage'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import { CreateBatchTransactionFormRequest } from '../../server/interfaces/BatchTransactionFormRequest'
 import CreatedTransactionResponse from '../../server/interfaces/CreatedTransactionResponse'
 import GrantBonusConfirmationPage from '../pages/grantBonusToPrisoners/grantBonusConfirmationPage'
+import IndexPage from '../pages/indexPage'
 
 test.describe('Grant Bonus To prisoners', () => {
   let redisClient: RedisClient
@@ -86,9 +87,9 @@ test.describe('Grant Bonus To prisoners', () => {
     test('Should navigate to the amount page', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusToPrisonersPage.verifyOnPage(page)
+      await GrantBonusCaseloadPage.verifyOnPage(page)
 
-      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+      await GrantBonusCaseloadPage.completeAndMoveOn(page)
 
       const amountPage = await AmountPage.verifyOnPage(page)
 
@@ -100,9 +101,9 @@ test.describe('Grant Bonus To prisoners', () => {
     test('Should show an error if an amount has not been entered', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusToPrisonersPage.verifyOnPage(page)
+      await GrantBonusCaseloadPage.verifyOnPage(page)
 
-      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+      await GrantBonusCaseloadPage.completeAndMoveOn(page)
 
       await AmountPage.verifyOnPage(page)
 
@@ -118,9 +119,9 @@ test.describe('Grant Bonus To prisoners', () => {
     test('Should show an error if an amount is negative or zero', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusToPrisonersPage.verifyOnPage(page)
+      await GrantBonusCaseloadPage.verifyOnPage(page)
 
-      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+      await GrantBonusCaseloadPage.completeAndMoveOn(page)
 
       const amountPage = await AmountPage.verifyOnPage(page)
 
@@ -150,9 +151,9 @@ test.describe('Grant Bonus To prisoners', () => {
     test('Should show an error if a description has not been entered', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusToPrisonersPage.verifyOnPage(page)
+      await GrantBonusCaseloadPage.verifyOnPage(page)
 
-      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+      await GrantBonusCaseloadPage.completeAndMoveOn(page)
 
       const amountPage = await AmountPage.verifyOnPage(page)
 
@@ -170,8 +171,8 @@ test.describe('Grant Bonus To prisoners', () => {
     test('Should show an error if the amount format is invalid', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusToPrisonersPage.verifyOnPage(page)
-      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+      await GrantBonusCaseloadPage.verifyOnPage(page)
+      await GrantBonusCaseloadPage.completeAndMoveOn(page)
 
       const amountPage = await AmountPage.verifyOnPage(page)
 
@@ -198,8 +199,8 @@ test.describe('Grant Bonus To prisoners', () => {
     test('Should show an error if the description exceeds 255 characters', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusToPrisonersPage.verifyOnPage(page)
-      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+      await GrantBonusCaseloadPage.verifyOnPage(page)
+      await GrantBonusCaseloadPage.completeAndMoveOn(page)
 
       const amountPage = await AmountPage.verifyOnPage(page)
 
@@ -219,16 +220,10 @@ test.describe('Grant Bonus To prisoners', () => {
 
     test('allows form completion if fields are correctly completed', async ({ page, context }) => {
       await page.goto('/grant-bonus-to-prisoners')
-      await GrantBonusToPrisonersPage.verifyOnPage(page)
-      await GrantBonusToPrisonersPage.completeAndMoveOn(page)
+      await GrantBonusCaseloadPage.verifyOnPage(page)
+      await GrantBonusCaseloadPage.completeAndMoveOn(page)
 
       const amountPage = await AmountPage.verifyOnPage(page)
-
-      const { amountInput, descriptionInput, doneButton } = await AmountPage.verifyOnPage(page)
-
-      expect(amountPage.amountInput).toBeVisible()
-      expect(amountPage.descriptionInput).toBeVisible()
-      expect(amountPage.doneButton).toBeVisible()
 
       const cookies = await context.cookies()
       const unsignedCookie = unsignCookie(cookies[0].value)
@@ -274,18 +269,15 @@ test.describe('Grant Bonus To prisoners', () => {
 
       await prisonerFinanceApi.stubPostBatchTransaction(expectedRequestPayload, responsePayload)
 
-      await amountInput.fill(bonusAmountForForm)
-      await descriptionInput.fill('test description')
-      await doneButton.click()
-
-      await page.waitForURL(`/grant-bonus-to-prisoners/confirmation?transactionNumber=${transactionId}`, { timeout: 3 })
+      await amountPage.amountInput.fill(bonusAmountForForm)
+      await amountPage.descriptionInput.fill('test description')
+      await amountPage.doneButton.click()
 
       const confirmationPage = await GrantBonusConfirmationPage.verifyOnPage(page)
+      await expect(confirmationPage.confirmationPanel).toContainText(transactionId)
+      await confirmationPage.returnHomeLink.click()
 
-      await expect(confirmationPage.confirmationPanel).toBeVisible()
-
-      expect(await confirmationPage.confirmationPanel.textContent()).toContain(transactionId)
-      expect(await confirmationPage.recentTxnsLink.getAttribute('href')).toBe(`/`)
+      await IndexPage.verifyOnPage(page)
     })
   })
 })

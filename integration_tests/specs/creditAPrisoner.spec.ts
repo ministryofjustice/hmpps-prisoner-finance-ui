@@ -7,6 +7,10 @@ import CreditFromPage from '../pages/creditAPrisoner/creditFromPage'
 import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import CreditAmountPage from '../pages/creditAPrisoner/creditAmountPage'
 import CreditConfirmationPage from '../pages/creditAPrisoner/creditConfirmationPage'
+import PrisonerProfilePage from '../pages/prisonerProfilePage'
+import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
+import { Page } from '../../server/interfaces/Pageable'
+import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBalanceResponse'
 
 test.describe('Credit A Prisoner Pages', () => {
   const prisonNumber = 'ABC123XZ'
@@ -60,7 +64,7 @@ test.describe('Credit A Prisoner Pages', () => {
 
       const creditToPage = await CreditToPage.verifyOnPage(page)
 
-      const { radioButtons, continueButton } = creditToPage
+      const { subAccountOptions: radioButtons, continueButton } = creditToPage
 
       expect(radioButtons).toHaveCount(3)
       expect(await continueButton.textContent()).toContain('Continue')
@@ -82,7 +86,7 @@ test.describe('Credit A Prisoner Pages', () => {
 
       const creditToPage = await CreditToPage.verifyOnPage(page)
 
-      const { radioButtons, continueButton } = creditToPage
+      const { subAccountOptions: radioButtons, continueButton } = creditToPage
 
       expect(radioButtons).toHaveCount(3)
       expect(await continueButton.textContent()).toContain('Continue')
@@ -107,7 +111,7 @@ test.describe('Credit A Prisoner Pages', () => {
 
       const creditToPage = await CreditToPage.verifyOnPage(page)
 
-      const { radioButtons, continueButton } = creditToPage
+      const { subAccountOptions: radioButtons, continueButton } = creditToPage
 
       expect(radioButtons).toHaveCount(3)
       expect(await continueButton.textContent()).toContain('Continue')
@@ -200,7 +204,7 @@ test.describe('Credit A Prisoner Pages', () => {
       await CreditToPage.completeAndMoveOn(page)
       const creditFromPage = await CreditFromPage.verifyOnPage(page)
 
-      const { radioButtons, continueButton } = creditFromPage
+      const { prisonSubAccountOptions: radioButtons, continueButton } = creditFromPage
 
       expect(radioButtons).toHaveCount(3)
       expect(await continueButton.textContent()).toContain('Continue')
@@ -217,7 +221,7 @@ test.describe('Credit A Prisoner Pages', () => {
       await CreditToPage.completeAndMoveOn(page)
       const creditFromPage = await CreditFromPage.verifyOnPage(page)
 
-      const { radioButtons, continueButton } = creditFromPage
+      const { prisonSubAccountOptions: radioButtons, continueButton } = creditFromPage
 
       await radioButtons.first().click()
       await continueButton.click()
@@ -241,7 +245,7 @@ test.describe('Credit A Prisoner Pages', () => {
       await CreditToPage.completeAndMoveOn(page)
       const creditFromPage = await CreditFromPage.verifyOnPage(page)
 
-      const { continueButton, radioButtons } = creditFromPage
+      const { continueButton, prisonSubAccountOptions: radioButtons } = creditFromPage
 
       await continueButton.click()
 
@@ -265,7 +269,7 @@ test.describe('Credit A Prisoner Pages', () => {
       await CreditToPage.completeAndMoveOn(page)
       const creditFromPage = await CreditFromPage.verifyOnPage(page)
 
-      const { radioButtons, continueButton } = creditFromPage
+      const { prisonSubAccountOptions: radioButtons, continueButton } = creditFromPage
 
       await radioButtons.nth(1).click()
 
@@ -645,7 +649,7 @@ test.describe('Credit A Prisoner Pages', () => {
         prisonerAccountReference: newPrisonNumber,
       })
 
-      const { radioButtons } = creditToPage
+      const { subAccountOptions: radioButtons } = creditToPage
 
       expect(await radioButtons.count()).toBe(3)
 
@@ -654,12 +658,16 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(radioButtons.nth(2)).not.toBeChecked()
     })
   })
+
   test.describe('Credit confirmation page', () => {
     const transactionId = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+
     test.beforeEach(async ({ page }) => {
       await resetStubs()
       await login(page)
+
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+
       await prisonerFinanceApi.stubGetAccountByReference(prisonNumber, {
         id: 'TESTUUID',
         reference: prisonNumber,
@@ -690,6 +698,7 @@ test.describe('Credit A Prisoner Pages', () => {
           },
         ],
       })
+
       await prisonerFinanceApi.stubGetAccountByReference('LEI', {
         id: 'TESTUUID',
         reference: 'LEI',
@@ -720,6 +729,7 @@ test.describe('Credit A Prisoner Pages', () => {
           },
         ],
       })
+
       const reqPayload = {
         creditSubAccountId: 'TESTSUBUUID1',
         debitSubAccountId: 'TESTSUBUUID1',
@@ -738,19 +748,45 @@ test.describe('Credit A Prisoner Pages', () => {
         entrySequence: 1,
         postings: [],
       })
+
+      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, {
+        content: [],
+        totalElements: 0,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 1,
+        isLastPage: true,
+      } as Page<PrisonerTransactionResponse>)
+      await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', {
+        subAccountId: '',
+        balanceDateTime: '',
+        amount: 0,
+      } as SubAccountBalanceResponse)
+      await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', {
+        subAccountId: '',
+        balanceDateTime: '',
+        amount: 0,
+      } as SubAccountBalanceResponse)
+      await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', {
+        subAccountId: '',
+        balanceDateTime: '',
+        amount: 0,
+      } as SubAccountBalanceResponse)
     })
+
     test('should appear at end of flow, showing transaction id link to prisoner transaction page', async ({ page }) => {
       await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+
       await CreditToPage.completeAndMoveOn(page)
       await CreditFromPage.completeAndMoveOn(page)
       await CreditAmountPage.completeAndMoveOn(page)
 
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-confirmation`)
+      const creditConfirmationPage = await CreditConfirmationPage.verifyOnPage(page, prisonNumber)
+      await expect(creditConfirmationPage.confirmationPanel).toContainText(transactionId)
+      await creditConfirmationPage.financialProfileLink.click()
 
-      const creditConfirmationPage = await CreditConfirmationPage.verifyOnPage(page)
-
-      expect(await creditConfirmationPage.confirmationPanel.textContent()).toContain(transactionId)
-      expect(await creditConfirmationPage.recentTxnsLink.getAttribute('href')).toBe(`/prisoner/${prisonNumber}`)
+      await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
     })
   })
 })

@@ -41,13 +41,12 @@ test.describe('Find Prisoner', () => {
     await stubPrisonerProfile()
 
     const index = await IndexPage.verifyOnPage(page)
-    await index.viewPrisonerFinanceCard.locator('a').click()
+    await index.viewPrisonerFinanceCard.click()
 
     const findPrisonerPage = await FindPrisonerPage.verifyOnPage(page)
     await findPrisonerPage.findPrisoner(prisonNumber)
 
-    await PrisonerProfilePage.verifyOnPage(page)
-    await expect(page).toHaveURL(`/prisoner/${prisonNumber}`)
+    await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
   })
 
   test('shows an error when submitting with no prison number entered', async ({ page }) => {

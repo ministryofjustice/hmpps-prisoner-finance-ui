@@ -439,6 +439,7 @@ test.describe('Prisoner Money', () => {
           },
         },
       ]
+
       for (const { caseName, expectedUrl, action } of casesValidFilters) {
         test(`Should filter by ${caseName}`, async ({ page }) => {
           await baseStubs(subAccountReference)

@@ -118,7 +118,7 @@ test.describe('Prisoner Profile', () => {
     await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}`)
 
-    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
     await expect(prisonerProfilePage.heading).toBeVisible()
     await expect(prisonerProfilePage.heading).toContainText('Finances')
     await expect(prisonerProfilePage.tableTransactions).toBeVisible()
@@ -154,7 +154,7 @@ test.describe('Prisoner Profile', () => {
     await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}`)
 
-    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
     expect(prisonerProfilePage.profileHeader).toBeVisible()
   })
 
@@ -162,7 +162,7 @@ test.describe('Prisoner Profile', () => {
     await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}`)
 
-    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
     const spendsCard = prisonerProfilePage.balanceCards.locator('[data-testid="spends-card"]')
     await expect(spendsCard.locator('[data-testid="spends-card_header"]')).toContainText('Spends')
     await expect(spendsCard.locator('[data-testid="spends-card_amount"]')).toContainText('£12.34')
@@ -180,7 +180,7 @@ test.describe('Prisoner Profile', () => {
     await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}`)
 
-    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
     const { transactionsLink } = prisonerProfilePage
     await expect(transactionsLink).toBeVisible()
     await expect(transactionsLink).toHaveAttribute('href', `/prisoner/${prisonNumber}/money`)
@@ -191,7 +191,7 @@ test.describe('Prisoner Profile', () => {
     await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}`)
 
-    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
     await expect(prisonerProfilePage.backButton).toBeVisible()
     await prisonerProfilePage.backButton.click()
 
@@ -201,7 +201,7 @@ test.describe('Prisoner Profile', () => {
   test('Should render the actions menu block', async ({ page }) => {
     await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}`)
-    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
 
     await expect(prisonerProfilePage.actionMenuBlock).toBeVisible()
 
@@ -257,7 +257,7 @@ test.describe('Prisoner Profile', () => {
 
         await page.goto(`/prisoner/${prisonNumber}`)
 
-        const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+        const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
 
         const balanceCardLink = prisonerProfilePage.balanceCards.locator(`[data-testid="${testId}_balance-card-link"]`)
         await expect(balanceCardLink).toBeVisible()
@@ -304,7 +304,7 @@ test.describe('Prisoner Profile', () => {
 
         await page.goto(`/prisoner/${prisonNumber}`)
 
-        const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+        const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
 
         const errorCard = prisonerProfilePage.balanceCards.locator(`[data-testid="${testId}"]`)
         await expect(errorCard.locator('.hmpps-balance-card__amount')).toContainText('0.00')
@@ -351,7 +351,7 @@ test.describe('Prisoner Profile', () => {
   test('Should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
     await baseStubs()
     await page.goto(`/prisoner/${prisonNumber}`)
-    await PrisonerProfilePage.verifyOnPage(page)
+    await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag22a', 'wcag22aa'])
@@ -369,7 +369,7 @@ test.describe('Prisoner Profile', () => {
 
     await page.goto(`/prisoner/${prisonNumber}`)
 
-    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page)
+    const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
     expect(prisonerProfilePage.tableTransactions).not.toBeVisible()
 
     const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')

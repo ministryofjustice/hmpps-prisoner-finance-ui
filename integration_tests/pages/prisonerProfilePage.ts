@@ -31,7 +31,9 @@ export default class PrisonerProfilePage extends AbstractPage {
     this.actionMenuBlock = page.locator('[data-testid="credit-menu"]')
   }
 
-  static async verifyOnPage(page: Page): Promise<PrisonerProfilePage> {
+  static async verifyOnPage(page: Page, prisonNumber: string): Promise<PrisonerProfilePage> {
+    expect(page.url()).toContain(`/prisoner/${prisonNumber}`)
+
     const prisonerProfilePage = new PrisonerProfilePage(page)
     await expect(prisonerProfilePage.heading).toBeVisible()
     return prisonerProfilePage

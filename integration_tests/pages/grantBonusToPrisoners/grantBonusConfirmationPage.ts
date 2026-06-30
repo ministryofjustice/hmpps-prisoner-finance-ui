@@ -4,12 +4,13 @@ import AbstractPage from '../abstractPage'
 export default class GrantBonusConfirmationPage extends AbstractPage {
   readonly confirmationPanel: Locator
 
-  readonly recentTxnsLink: Locator
+  readonly returnHomeLink: Locator
 
   constructor(page: Page) {
     super(page)
     this.confirmationPanel = page.locator('[data-testid="confirmation-panel"]')
-    this.recentTxnsLink = page.locator('[data-testid="confirmation-message-link"]')
+
+    this.returnHomeLink = page.getByRole('link', { name: 'Return home', exact: true })
   }
 
   static async verifyOnPage(page: Page): Promise<GrantBonusConfirmationPage> {
