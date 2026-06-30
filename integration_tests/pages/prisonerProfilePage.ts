@@ -20,8 +20,8 @@ export default class PrisonerProfilePage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Finances' })
-    this.backButton = page.getByRole('link', { name: 'Back' })
+    this.heading = page.getByRole('heading', { name: 'Finances', exact: true })
+    this.backButton = page.getByRole('link', { name: 'Back', exact: true })
 
     this.transactionContainer = page.locator('table[data-testid="prisoner-transactions-table-container"]')
     this.tableTransactions = page.locator('table[data-testid="prisoner-transactions-table"]')

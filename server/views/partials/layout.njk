@@ -15,9 +15,7 @@
 
 {% block header %}
   {{ feComponents.header  | safe }}
-  {% if not dataWarningBannerEnabled %}
-    {% include "../partials/phaseBanner.njk" %}
-  {% endif %}
+  {% include "../partials/phaseBanner.njk" %}
 {% endblock %}
 
 {% block containerStart %}

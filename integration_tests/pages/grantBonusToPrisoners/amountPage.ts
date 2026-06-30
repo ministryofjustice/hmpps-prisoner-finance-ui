@@ -12,7 +12,7 @@ export default class AmountPage extends AbstractPage {
 
   constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Grant bonus to prisoners' })
+    this.heading = page.getByRole('heading', { name: 'Grant bonus to prisoners', exact: true })
     this.amountInput = page.locator('[data-testid="amount-input"]')
     this.descriptionInput = page.locator('[data-testid="description-input"]')
     this.doneButton = page.locator('[data-testid="done-button"]')

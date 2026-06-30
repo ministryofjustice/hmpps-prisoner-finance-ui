@@ -16,7 +16,7 @@ export default class CreditAmountPage extends AbstractPage {
 
   constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Credit amount' })
+    this.heading = page.getByRole('heading', { name: 'Credit amount', exact: true })
     this.amountField = page.locator('[data-testid="amount-input"]')
     this.descriptionField = page.locator('[data-testid="description-input"]')
     this.doneButton = page.locator('[data-testid="done-button"]')

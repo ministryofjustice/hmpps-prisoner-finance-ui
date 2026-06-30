@@ -12,7 +12,7 @@ export default class CreditToPage extends AbstractPage {
 
   constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Credit to' })
+    this.heading = page.getByRole('heading', { name: 'Credit to', exact: true })
     this.radioButtons = page.locator('[data-testid="sub-account-radio"]')
     this.continueButton = page.locator('[data-testid="continue-button"]')
     this.errorMessage = page.locator('[id="creditTo-error"]')

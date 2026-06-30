@@ -12,7 +12,7 @@ export default class GrantBonusCaseloadPage extends AbstractPage {
 
   constructor(page: Page) {
     super(page)
-    this.heading = page.getByText('Grant bonus to prisoners')
+    this.heading = page.getByRole('heading', { name: 'Grant bonus to prisoners', exact: true })
     this.radiosTitle = page.locator('[data-testid="radio-group-heading"]')
     this.radios = page.getByRole('radio')
     this.continueButton = page.locator('[data-testid="continue-button"]')

@@ -12,7 +12,7 @@ export default class CreditFromPage extends AbstractPage {
 
   constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Credit from' })
+    this.heading = page.getByRole('heading', { name: 'Credit from', exact: true })
     this.radioButtons = page.locator('[data-testid="prison-account-radio"]')
     this.continueButton = page.locator('[data-testid="continue-button"]')
     this.errorMessage = page.locator('[id="creditFrom-error"]')
