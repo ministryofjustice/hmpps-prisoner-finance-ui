@@ -1,4 +1,4 @@
-{%- extends "partials/layout-wizard-step.njk" -%}
+{%- extends "partials/layout-two-thirds.njk" -%}
 
 {%- from "govuk/components/input/macro.njk" import govukInput -%}
 {%- from "govuk/components/button/macro.njk" import govukButton -%}
@@ -8,7 +8,7 @@
 {%- set pageTitle = "View prisoner finances" -%}
 {%- set backUrl = "/" -%}
 
-{% block beforeContent %}
+{% block contentHeader %}
   {{ dataWarningBanner(dataWarningBannerEnabled) }}
 {% endblock %}
 
@@ -18,9 +18,7 @@
 
     {{ govukInput({
       label: {
-        text: "Enter a prison number",
-        classes: "govuk-label--l",
-        isPageHeading: true
+        text: "Enter a prison number"
       },
       id: "prisonNumber",
       name: "prisonNumber",
