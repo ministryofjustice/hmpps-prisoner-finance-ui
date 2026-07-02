@@ -4,7 +4,7 @@ import AbstractPage from './abstractPage'
 export default class PrisonerMoneyPage extends AbstractPage {
   readonly heading: Locator
 
-  readonly backButton: Locator
+  readonly backLink: Locator
 
   readonly transactionList: Locator
 
@@ -31,7 +31,7 @@ export default class PrisonerMoneyPage extends AbstractPage {
   private constructor(page: Page, headerText: string) {
     super(page)
     this.heading = page.getByRole('heading', { name: headerText, exact: true })
-    this.backButton = page.getByRole('link', { name: 'Back', exact: true })
+    this.backLink = page.getByRole('link', { name: 'Back', exact: true })
 
     this.prisonerInformationHeader = page.locator('[data-testid="hmpps-profile-banner"]')
 
@@ -56,7 +56,7 @@ export default class PrisonerMoneyPage extends AbstractPage {
     subAccountName?: string,
   ): Promise<PrisonerMoneyPage> {
     expect(new URL(page.url()).pathname).toEqual(
-      `/prisoner/${prisonNumber}/money${subAccountName ? `/${subAccountName}` : ''}`,
+      `/prisoner/${prisonNumber}/money${`${subAccountName || ''}` !== '' ? `/${subAccountName}` : ''}`,
     )
 
     const prisonerMoneyPage = new PrisonerMoneyPage(page, headerText)

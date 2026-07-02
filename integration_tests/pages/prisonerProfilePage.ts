@@ -4,7 +4,7 @@ import AbstractPage from './abstractPage'
 export default class PrisonerProfilePage extends AbstractPage {
   readonly heading: Locator
 
-  readonly backButton: Locator
+  readonly backLink: Locator
 
   readonly recentTransactionsList: Locator
 
@@ -19,7 +19,7 @@ export default class PrisonerProfilePage extends AbstractPage {
   private constructor(page: Page) {
     super(page)
     this.heading = page.getByRole('heading', { name: 'Finances', exact: true })
-    this.backButton = page.getByRole('link', { name: 'Back', exact: true })
+    this.backLink = page.getByRole('link', { name: 'Back', exact: true })
 
     this.profileHeader = page.locator('[data-testid="hmpps-profile-banner"]')
 

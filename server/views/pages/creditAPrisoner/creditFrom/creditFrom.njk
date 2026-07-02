@@ -3,11 +3,12 @@
 {%- from "components/forms/radiosSelectionForm.njk" import radiosSelectionForm -%}
 
 {%- set pageTitle = "Credit a prisoner from" -%}
-{%- set backUrl = "/" -%}
+{%- set backUrl = "./credit-to" -%}
 {%- set showPrisonerInformation = true -%}
 
 {% block innerContent %}
   {{ radiosSelectionForm({
+    additionalClasses: "hmpps-subaccount-select",
     action: "./credit-from",
     csrfToken: csrfToken,
     headingText: "Credit from",

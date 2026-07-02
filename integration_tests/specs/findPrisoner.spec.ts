@@ -5,31 +5,17 @@ import IndexPage from '../pages/indexPage'
 import FindPrisonerPage from '../pages/findPrisonerPage'
 import PrisonerProfilePage from '../pages/prisonerProfilePage'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
-import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
-import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
-import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBalanceResponse'
-import { Page } from '../../server/interfaces/Pageable'
+import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 
 test.describe('Find Prisoner', () => {
   const prisonNumber = 'A1234BC'
 
-  const emptyPageTransactionsResponse: Page<PrisonerTransactionResponse> = {
-    content: [],
-    totalElements: 0,
-    totalPages: 1,
-    pageNumber: 1,
-    pageSize: 99,
-    isLastPage: true,
-  }
-
-  const zeroBalance: SubAccountBalanceResponse = { subAccountId: '', balanceDateTime: '', amount: 0 }
-
   const stubPrisonerProfile = async () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, emptyPageTransactionsResponse)
-    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', zeroBalance)
-    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', zeroBalance)
-    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', zeroBalance)
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
+    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS')
+    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
+    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS')
   }
 
   test.beforeEach(async ({ page }) => {

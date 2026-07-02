@@ -1,4 +1,4 @@
-type SubAccountResponse = {
+export type SubAccountResponse = {
   id: string
   reference: string
   createdBy: string

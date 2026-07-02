@@ -1,21 +1,13 @@
 import { expect, test, type Page } from '@playwright/test'
 import { login, resetStubs } from '../testUtils'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
-import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
+import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
-import { Page as PrisonerTransactionPage } from '../../server/interfaces/Pageable'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 
 const prisonNumber = 'ABC123XZ'
 
-const emptyTransactions: PrisonerTransactionPage<PrisonerTransactionResponse> = {
-  content: [],
-  totalElements: 0,
-  totalPages: 1,
-  pageNumber: 1,
-  pageSize: 99,
-  isLastPage: true,
-}
+const emptyTransactions: PrisonerTransactionResponse[] = []
 
 const zeroBalance = { accountId: '', balanceDateTime: '', amount: 0 }
 const zeroSubAccountBalance = { subAccountId: '', balanceDateTime: '', amount: 0 }

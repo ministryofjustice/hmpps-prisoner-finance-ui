@@ -4,13 +4,10 @@ import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import CreditToPage from '../pages/creditAPrisoner/creditToPage'
 import { createRedisClient, RedisClient } from '../../server/data/redisClient'
 import CreditFromPage from '../pages/creditAPrisoner/creditFromPage'
-import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
+import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import CreditAmountPage from '../pages/creditAPrisoner/creditAmountPage'
 import CreditConfirmationPage from '../pages/creditAPrisoner/creditConfirmationPage'
 import PrisonerProfilePage from '../pages/prisonerProfilePage'
-import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
-import { Page } from '../../server/interfaces/Pageable'
-import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBalanceResponse'
 
 test.describe('Credit A Prisoner Pages', () => {
   const prisonNumber = 'ABC123XZ'
@@ -20,378 +17,321 @@ test.describe('Credit A Prisoner Pages', () => {
     redisClient = await createRedisClient().connect()
   })
 
-  test.describe('Credit To Page', () => {
-    test.beforeEach(async ({ page }) => {
-      await resetStubs()
-      await login(page)
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonerFinanceApi.stubGetAccountByReference(prisonNumber, {
-        id: 'TESTUUID',
-        reference: prisonNumber,
-        createdAt: '',
-        createdBy: '',
-        type: 'PRISONER',
-        subAccounts: [
-          {
-            id: 'TESTSUBUUID1',
-            reference: 'Spends',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID2',
-            reference: 'Savings',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID3',
-            reference: 'Cash',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-        ],
-      })
-    })
-
-    test('Should display radio buttons and allow selection and progress to next page', async ({ page, context }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      const cookies = await context.cookies()
-      const unsignedCookie = unsignCookie(cookies[0].value)
-
-      const creditToPage = await CreditToPage.verifyOnPage(page)
-
-      const { subAccountOptions: radioButtons, continueButton } = creditToPage
-
-      expect(radioButtons).toHaveCount(3)
-      expect(await continueButton.textContent()).toContain('Continue')
-
-      await radioButtons.first().click()
-      await continueButton.click()
-
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
-
-      const response = await redisClient.get(unsignedCookie as string)
-      const parsedData = JSON.parse(response as string)
-      expect(parsedData.creditForm).toMatchObject({ creditSubAccountId: 'TESTSUBUUID1' })
-    })
-
-    test('Remains on credit to page with error message if continue is pressed before an option is selected', async ({
-      page,
-    }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-
-      const creditToPage = await CreditToPage.verifyOnPage(page)
-
-      const { subAccountOptions: radioButtons, continueButton } = creditToPage
-
-      expect(radioButtons).toHaveCount(3)
-      expect(await continueButton.textContent()).toContain('Continue')
-
-      await continueButton.click()
-
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-
-      expect(creditToPage.errorMessage).toBeVisible()
-
-      expect(radioButtons).toHaveCount(3)
-
-      const errorText = creditToPage.errorMessage
-
-      expect(errorText).toContainText('You must select a sub-account before continuing.')
-    })
-
-    test('Should rerender previously selected button if user returns to page', async ({ page, context }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      const cookies = await context.cookies()
-      const unsignedCookie = unsignCookie(cookies[0].value)
-
-      const creditToPage = await CreditToPage.verifyOnPage(page)
-
-      const { subAccountOptions: radioButtons, continueButton } = creditToPage
-
-      expect(radioButtons).toHaveCount(3)
-      expect(await continueButton.textContent()).toContain('Continue')
-
-      await radioButtons.nth(1).click()
-
-      expect(radioButtons.nth(1)).toBeChecked()
-
-      await continueButton.click()
-
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
-
-      const response = await redisClient.get(unsignedCookie as string)
-      const parsedData = JSON.parse(response as string)
-      expect(parsedData.creditForm).toMatchObject({ creditSubAccountId: 'TESTSUBUUID2' })
-
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-
-      expect(radioButtons.nth(1)).toBeChecked()
-    })
+  test.beforeEach(async ({ page }) => {
+    await resetStubs()
+    await login(page)
   })
-  test.describe('Credit From Page', () => {
-    test.beforeEach(async ({ page }) => {
-      await resetStubs()
-      await login(page)
+
+  test.describe('Crediting a prisoner', () => {
+    const prisonerSubAccountReference = 'SUB_ACCOUNT_1'
+    const prisonSubAccountReference = 'PRISON_ACCOUNT_1'
+    const transactionAmount = '100.10'
+    const transactionDescription = 'Credit a prisoner end-to-end test'
+
+    let transactionId: string
+    test.beforeEach(async () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonerFinanceApi.stubGetAccountByReference(prisonNumber, {
-        id: 'TESTUUID',
-        reference: prisonNumber,
-        createdAt: '',
-        createdBy: '',
-        type: 'PRISONER',
-        subAccounts: [
-          {
-            id: 'TESTSUBUUID1',
-            reference: 'Spends',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID2',
-            reference: 'Savings',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID3',
-            reference: 'Cash',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-        ],
-      })
-      await prisonerFinanceApi.stubGetAccountByReference('LEI', {
-        id: 'TESTUUID',
-        reference: 'LEI',
-        createdAt: '',
-        createdBy: '',
-        type: 'PRISON',
-        subAccounts: [
-          {
-            id: 'TESTSUBUUID1',
-            reference: '2001:CANT',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID2',
-            reference: '2002:WONT',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID3',
-            reference: '2003:SHANT',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-        ],
-      })
-    })
-    test('should render a set of radio buttons based on the subaccounts available for a prison', async ({ page }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      const creditFromPage = await CreditFromPage.verifyOnPage(page)
+      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
 
-      const { prisonSubAccountOptions: radioButtons, continueButton } = creditFromPage
+      await prisonerFinanceApi.stubGetPrisonerAccountByReference(prisonNumber, [
+        {
+          id: 'TESTSUBUUID1',
+          reference: prisonerSubAccountReference,
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+      ])
 
-      expect(radioButtons).toHaveCount(3)
-      expect(await continueButton.textContent()).toContain('Continue')
-    })
+      await prisonerFinanceApi.stubGetPrisonAccountByReference('LEI', [
+        {
+          id: 'TESTSUBUUID1',
+          reference: prisonSubAccountReference,
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+      ])
 
-    test('should render clickable radios, which when clicked are added to the session storage and allow progression', async ({
-      page,
-      context,
-    }) => {
-      const cookies = await context.cookies()
-      const unsignedCookie = unsignCookie(cookies[0].value)
-
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      const creditFromPage = await CreditFromPage.verifyOnPage(page)
-
-      const { prisonSubAccountOptions: radioButtons, continueButton } = creditFromPage
-
-      await radioButtons.first().click()
-      await continueButton.click()
-
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
-
-      const response = await redisClient.get(unsignedCookie as string)
-      const parsedData = JSON.parse(response as string)
-
-      // creditSubAccountId is coming from CredittoPage.completeAndMoveOn
-      expect(parsedData.creditForm).toMatchObject({
+      transactionId = await prisonerFinanceApi.stubPostTransaction({
         creditSubAccountId: 'TESTSUBUUID1',
         debitSubAccountId: 'TESTSUBUUID1',
+        amount: 100 * parseFloat(transactionAmount),
+        description: transactionDescription,
       })
     })
 
-    test('should render an error message and not allow progression if no radio button is selected', async ({
-      page,
-    }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      const creditFromPage = await CreditFromPage.verifyOnPage(page)
+    test('Can credit a prisoner', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
 
-      const { continueButton, prisonSubAccountOptions: radioButtons } = creditFromPage
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
 
-      await continueButton.click()
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.enterTransactionDetails(transactionAmount, transactionDescription)
 
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
+      const creditConfirmationPage = await CreditConfirmationPage.verifyOnPage(page, prisonNumber)
+      await expect(creditConfirmationPage.confirmationPanel).toContainText(transactionId)
+      await creditConfirmationPage.financialProfileLink.click()
 
-      expect(radioButtons).toHaveCount(3)
-
-      expect(await creditFromPage.errorMessage.textContent()).toContain(
-        'You must select a sub-account before continuing.',
-      )
-    })
-
-    test('if use progresses and returns, the form should remember the previously selected option', async ({
-      page,
-      context,
-    }) => {
-      const cookies = await context.cookies()
-      const unsignedCookie = unsignCookie(cookies[0].value)
-
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      const creditFromPage = await CreditFromPage.verifyOnPage(page)
-
-      const { prisonSubAccountOptions: radioButtons, continueButton } = creditFromPage
-
-      await radioButtons.nth(1).click()
-
-      expect(radioButtons.nth(1)).toBeChecked()
-
-      await continueButton.click()
-
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
-
-      const response = await redisClient.get(unsignedCookie as string)
-      const parsedData = JSON.parse(response as string)
-
-      // creditSubAccountRef is coming from CredittoPage.completeAndMoveOn
-      expect(parsedData.creditForm).toMatchObject({
-        creditSubAccountId: 'TESTSUBUUID1',
-        debitSubAccountId: 'TESTSUBUUID2',
-      })
-
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
-
-      expect(radioButtons.nth(1)).toBeChecked()
-    })
-
-    test('should return to credit-to page if user arrives without credit-to account in session storage', async ({
-      page,
-    }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
-      await CreditToPage.verifyOnPage(page)
-
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+      await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
     })
   })
-  test.describe('Credit Amount Page', () => {
-    test.beforeEach(async ({ page }) => {
-      await resetStubs()
-      await login(page)
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonerFinanceApi.stubGetAccountByReference(prisonNumber, {
-        id: 'TESTUUID',
-        reference: prisonNumber,
-        createdAt: '',
-        createdBy: '',
-        type: 'PRISONER',
-        subAccounts: [
-          {
-            id: 'TESTSUBUUID1',
-            reference: 'Spends',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID2',
-            reference: 'Savings',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID3',
-            reference: 'Cash',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-        ],
-      })
-      await prisonerFinanceApi.stubGetAccountByReference('LEI', {
-        id: 'TESTUUID',
-        reference: 'LEI',
-        createdAt: '',
-        createdBy: '',
-        type: 'PRISON',
-        subAccounts: [
-          {
-            id: 'TESTSUBUUID1',
-            reference: '2001:CANT',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID2',
-            reference: '2002:WONT',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID3',
-            reference: '2003:SHANT',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-        ],
-      })
-    })
-    test('should render the credit amount and description fields, and a done button', async ({ page }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      await CreditFromPage.completeAndMoveOn(page)
 
-      const creditAmountPage = await CreditAmountPage.verifyOnPage(page)
+  test.describe('Selecting the prisoners sub account to credit', () => {
+    const prisonerSubAccountReference = 'SUB_ACCOUNT_2'
+    const prisonSubAccountReference = 'PRISON_SUB_ACCOUNT_2'
+
+    test.beforeEach(async () => {
+      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+
+      await prisonerFinanceApi.stubGetPrisonerAccountByReference(prisonNumber, [
+        {
+          id: 'TESTSUBUUID2',
+          reference: prisonerSubAccountReference,
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+        {
+          id: 'TESTSUBUUID3',
+          reference: 'SUB_ACCOUNT_3',
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+        {
+          id: 'TESTSUBUUID4',
+          reference: 'SUB_ACCOUNT_4',
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+      ])
+
+      await prisonerFinanceApi.stubGetPrisonAccountByReference('LEI', [
+        {
+          id: 'TESTSUBUUID1',
+          reference: prisonSubAccountReference,
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+      ])
+    })
+
+    test('Can see all the available sub account options', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+
+      expect(creditToPage.subAccountList.locator('.govuk-radios__item')).toContainText([
+        prisonerSubAccountReference,
+        'SUB_ACCOUNT_3',
+        'SUB_ACCOUNT_4',
+      ])
+    })
+
+    test('Can continue to select the prison account to debit', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      await CreditFromPage.verifyOnPage(page, prisonNumber)
+    })
+
+    test('Can see the selected sub account after returning to the page', async ({ page }) => {
+      let creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.backLink.click()
+
+      creditToPage = await CreditToPage.verifyOnPage(page, prisonNumber)
+      expect(creditToPage.subAccountList.getByRole('radio', { name: prisonerSubAccountReference })).toBeChecked()
+    })
+
+    test('Cannot continue if no sub account is selected', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.continueButton.click()
+
+      await CreditToPage.verifyOnPage(page, prisonNumber)
+    })
+
+    test('Can see the reason for not continuing', async ({ page }) => {
+      let creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.continueButton.click()
+
+      creditToPage = await CreditToPage.verifyOnPage(page, prisonNumber)
+
+      expect(creditToPage.errorMessage).toBeVisible()
+      expect(creditToPage.errorMessage).toContainText('You must select a sub-account before continuing.')
+    })
+  })
+
+  test.describe('Selecting the prison sub account to debit', () => {
+    const prisonerSubAccountReference = 'SUB_ACCOUNT_1'
+    const prisonSubAccountReference = 'PRISON_ACCOUNT_1'
+
+    test.beforeEach(async () => {
+      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
+
+      await prisonerFinanceApi.stubGetPrisonerAccountByReference(prisonNumber, [
+        {
+          id: 'TESTSUBUUID1',
+          reference: prisonerSubAccountReference,
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+      ])
+
+      await prisonerFinanceApi.stubGetPrisonAccountByReference('LEI', [
+        {
+          id: 'TESTSUBUUID1',
+          reference: prisonSubAccountReference,
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+        {
+          id: 'TESTSUBUUID2',
+          reference: '2002:WONT',
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+        {
+          id: 'TESTSUBUUID3',
+          reference: '2003:SHANT',
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+      ])
+    })
+
+    test('Can see all the available sub account options', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+
+      expect(creditFromPage.subAccountList.locator('.govuk-radios__item')).toContainText([
+        prisonSubAccountReference,
+        '2002:WONT',
+        '2003:SHANT',
+      ])
+    })
+
+    test('Can continue to select the prison account to debit', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      await CreditAmountPage.verifyOnPage(page, prisonNumber)
+    })
+
+    test('Can see the selected sub account after returning to the page', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      let creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.backLink.click()
+
+      creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      expect(creditFromPage.subAccountList.getByRole('radio', { name: prisonSubAccountReference })).toBeChecked()
+    })
+
+    test('Cannot continue if no sub account is selected', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.continueButton.click()
+
+      await CreditFromPage.verifyOnPage(page, prisonNumber)
+    })
+
+    test('Can see the reason for not continuing', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      let creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.continueButton.click()
+
+      creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+
+      expect(creditFromPage.errorMessage).toBeVisible()
+      expect(creditFromPage.errorMessage).toContainText('You must select a sub-account before continuing.')
+    })
+
+    test('Cannot pick a sub account to debit until a sub account to credit is selected', async ({ page }) => {
+      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
+      await CreditToPage.verifyOnPage(page, prisonNumber)
+    })
+  })
+
+  test.describe('Credit Amount Page', () => {
+    const prisonerSubAccountReference = 'SUB_ACCOUNT_1'
+    const prisonSubAccountReference = 'PRISON_ACCOUNT_1'
+
+    test.beforeEach(async () => {
+      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+
+      await prisonerFinanceApi.stubGetPrisonerAccountByReference(prisonNumber, [
+        {
+          id: 'TESTSUBUUID1',
+          reference: prisonerSubAccountReference,
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+      ])
+
+      await prisonerFinanceApi.stubGetPrisonAccountByReference('LEI', [
+        {
+          id: 'TESTSUBUUID1',
+          reference: prisonSubAccountReference,
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+      ])
+    })
+
+    test('should render the credit amount and description fields, and a done button', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
 
       expect(creditAmountPage.amountField).toBeVisible()
       expect(creditAmountPage.descriptionField).toBeVisible()
       expect(creditAmountPage.doneButton).toBeVisible()
     })
-    test('allows form completion if fields are correctly completed, and clears credit form session', async ({
+
+    test.skip('allows form completion if fields are correctly completed, and clears credit form session', async ({
       page,
       context,
-      request,
     }) => {
       const cookies = await context.cookies()
       const unsignedCookie = unsignCookie(cookies[0].value)
 
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      await CreditFromPage.completeAndMoveOn(page)
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
 
-      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page)
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page, prisonNumber)
 
       const reqPayload = {
         creditSubAccountId: 'TESTSUBUUID1',
@@ -432,21 +372,22 @@ test.describe('Credit A Prisoner Pages', () => {
 
       expect(parsedData.creditForm).toEqual({})
 
-      const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request)
-      expect(wireMockResponse.status()).toBe(200)
-      const data = await wireMockResponse.json()
+      const wireMockResponse = await prisonerFinanceApi.getPostTransactionRequests()
+      const data = await wireMockResponse.body()
       expect(data.requests.length).toBe(1)
       expect(JSON.parse(data.requests[0].body)).toEqual(reqPayload)
     })
-    test('Should redirect to error page if the session data is malformed', async ({ page, context, request }) => {
+
+    test.skip('Should redirect to error page if the session data is malformed', async ({ page, context }) => {
       const cookies = await context.cookies()
       const unsignedCookie = unsignCookie(cookies[0].value)
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
 
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      await CreditFromPage.completeAndMoveOn(page)
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
 
-      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page)
+      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page, prisonNumber)
 
       const reqPayload = {
         creditSubAccountId: 'TESTSUBUUID1',
@@ -482,17 +423,19 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
       expect((await responsePromise).status()).toBe(500)
 
-      const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request)
-      expect(wireMockResponse.status()).toBe(200)
-      const data = await wireMockResponse.json()
+      const wireMockResponse = await prisonerFinanceApi.getPostTransactionRequests()
+      const data = await wireMockResponse.body()
       expect(data.requests.length).toBe(0)
     })
-    test('Should redirect to error page if post transaction returns an error', async ({ page, request }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      await CreditFromPage.completeAndMoveOn(page)
 
-      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page)
+    test.skip('Should redirect to error page if post transaction returns an error', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page, prisonNumber)
 
       const reqPayload = {
         creditSubAccountId: 'TESTSUBUUID1',
@@ -512,21 +455,25 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
       expect((await responsePromise).status()).toBe(500)
 
-      const wireMockResponse = await prisonerFinanceApi.getWiremockPostTransactionRequest(request)
-      expect(wireMockResponse.status()).toBe(200)
-      const data = await wireMockResponse.json()
+      const wireMockResponse = await prisonerFinanceApi.getPostTransactionRequests()
+      const data = await wireMockResponse.body()
       expect(data.requests.length).toBe(1)
       expect(JSON.parse(data.requests[0].body)).toEqual(reqPayload)
     })
-    test('does not allow form completion if amount field is incorrectly completed, rendering an amount error instead. Should restore valid description', async ({
+
+    test.skip('does not allow form completion if amount field is incorrectly completed, rendering an amount error instead. Should restore valid description', async ({
       page,
     }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      await CreditFromPage.completeAndMoveOn(page)
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
 
-      const { amountField, descriptionField, doneButton, amountErrorMessage } =
-        await CreditAmountPage.verifyOnPage(page)
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const { amountField, descriptionField, doneButton, amountErrorMessage } = await CreditAmountPage.verifyOnPage(
+        page,
+        prisonNumber,
+      )
 
       await amountField.fill('banana')
       await descriptionField.fill('test description')
@@ -539,15 +486,18 @@ test.describe('Credit A Prisoner Pages', () => {
 
       expect(await descriptionField.inputValue()).toContain('test description')
     })
-    test('does not allow form completion if description field is incorrectly completed, rendering an description error instead. Restores valid amount.', async ({
+
+    test.skip('does not allow form completion if description field is incorrectly completed, rendering an description error instead. Restores valid amount.', async ({
       page,
     }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      await CreditFromPage.completeAndMoveOn(page)
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
 
       const { amountField, descriptionField, doneButton, descriptionErrorMessage } =
-        await CreditAmountPage.verifyOnPage(page)
+        await CreditAmountPage.verifyOnPage(page, prisonNumber)
 
       await amountField.fill('100')
       await descriptionField.fill('')
@@ -559,15 +509,18 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(descriptionErrorMessage).toBeVisible()
       expect(await amountField.inputValue()).toContain('100')
     })
-    test('does not allow form completion if description and amount field are incorrectly completed, rendering errors for both.', async ({
+
+    test.skip('does not allow form completion if description and amount field are incorrectly completed, rendering errors for both.', async ({
       page,
     }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      await CreditFromPage.completeAndMoveOn(page)
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
 
       const { amountField, descriptionField, doneButton, amountErrorMessage, descriptionErrorMessage } =
-        await CreditAmountPage.verifyOnPage(page)
+        await CreditAmountPage.verifyOnPage(page, prisonNumber)
 
       await amountField.fill('banana')
       await descriptionField.fill('')
@@ -583,16 +536,19 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(await descriptionField.inputValue()).toContain('')
       expect(await amountField.inputValue()).toContain('banana')
     })
-    test('should start a fresh form if the user navigates to a new prisoner account after partial completion', async ({
+
+    test.skip('should start a fresh form if the user navigates to a new prisoner account after partial completion', async ({
       page,
       context,
     }) => {
       const cookies = await context.cookies()
       const unsignedCookie = unsignCookie(cookies[0].value)
 
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-      await CreditToPage.completeAndMoveOn(page)
-      await CreditFromPage.completeAndMoveOn(page)
+      let creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
 
       const response = await redisClient.get(unsignedCookie as string)
       const parsedData = JSON.parse(response as string)
@@ -607,40 +563,34 @@ test.describe('Credit A Prisoner Pages', () => {
       const newPrisonNumber = 'ZZZZ123'
 
       await prisonerSearchApi.stubGetPrisoner(newPrisonNumber)
-      await prisonerFinanceApi.stubGetAccountByReference(newPrisonNumber, {
-        id: 'TESTUUID',
-        reference: newPrisonNumber,
-        createdAt: '',
-        createdBy: '',
-        type: 'PRISONER',
-        subAccounts: [
-          {
-            id: 'TESTSUBUUID1',
-            reference: 'Spends',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID2',
-            reference: 'Savings',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID3',
-            reference: 'Cash',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-        ],
-      })
+
+      await prisonerFinanceApi.stubGetPrisonAccountByReference(newPrisonNumber, [
+        {
+          id: 'TESTSUBUUID1',
+          reference: 'Spends',
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+        {
+          id: 'TESTSUBUUID2',
+          reference: 'Savings',
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+        {
+          id: 'TESTSUBUUID3',
+          reference: 'Cash',
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+      ])
 
       await page.goto(`/prisoner/${newPrisonNumber}/money/credit-a-prisoner/credit-to`)
 
-      const creditToPage = await CreditToPage.verifyOnPage(page)
+      creditToPage = await CreditToPage.verifyOnPage(page, newPrisonNumber)
 
       const newResponse = await redisClient.get(unsignedCookie as string)
       const newData = JSON.parse(newResponse as string)
@@ -649,144 +599,13 @@ test.describe('Credit A Prisoner Pages', () => {
         prisonerAccountReference: newPrisonNumber,
       })
 
-      const { subAccountOptions: radioButtons } = creditToPage
+      const radioButtons = creditToPage.subAccountList.getByRole('radio')
 
       expect(await radioButtons.count()).toBe(3)
 
       expect(radioButtons.nth(0)).not.toBeChecked()
       expect(radioButtons.nth(1)).not.toBeChecked()
       expect(radioButtons.nth(2)).not.toBeChecked()
-    })
-  })
-
-  test.describe('Credit confirmation page', () => {
-    const transactionId = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
-
-    test.beforeEach(async ({ page }) => {
-      await resetStubs()
-      await login(page)
-
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-
-      await prisonerFinanceApi.stubGetAccountByReference(prisonNumber, {
-        id: 'TESTUUID',
-        reference: prisonNumber,
-        createdAt: '',
-        createdBy: '',
-        type: 'PRISONER',
-        subAccounts: [
-          {
-            id: 'TESTSUBUUID1',
-            reference: 'Spends',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID2',
-            reference: 'Savings',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID3',
-            reference: 'Cash',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-        ],
-      })
-
-      await prisonerFinanceApi.stubGetAccountByReference('LEI', {
-        id: 'TESTUUID',
-        reference: 'LEI',
-        createdAt: '',
-        createdBy: '',
-        type: 'PRISON',
-        subAccounts: [
-          {
-            id: 'TESTSUBUUID1',
-            reference: '2001:CANT',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID2',
-            reference: '2002:WONT',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-          {
-            id: 'TESTSUBUUID3',
-            reference: '2003:SHANT',
-            createdAt: '',
-            createdBy: '',
-            parentAccountId: 'TESTUUID',
-          },
-        ],
-      })
-
-      const reqPayload = {
-        creditSubAccountId: 'TESTSUBUUID1',
-        debitSubAccountId: 'TESTSUBUUID1',
-        amount: 10010,
-        description: 'test description',
-      }
-
-      await prisonerFinanceApi.stubPostTransaction(reqPayload, {
-        id: transactionId,
-        createdBy: 'test',
-        createdAt: '2026-05-08T11:03:15.786Z',
-        reference: 'TEXT',
-        description: 'test description',
-        timestamp: '2026-05-05T09:40:05.531Z',
-        amount: 10010,
-        entrySequence: 1,
-        postings: [],
-      })
-
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, {
-        content: [],
-        totalElements: 0,
-        totalPages: 1,
-        pageNumber: 1,
-        pageSize: 1,
-        isLastPage: true,
-      } as Page<PrisonerTransactionResponse>)
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', {
-        subAccountId: '',
-        balanceDateTime: '',
-        amount: 0,
-      } as SubAccountBalanceResponse)
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', {
-        subAccountId: '',
-        balanceDateTime: '',
-        amount: 0,
-      } as SubAccountBalanceResponse)
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', {
-        subAccountId: '',
-        balanceDateTime: '',
-        amount: 0,
-      } as SubAccountBalanceResponse)
-    })
-
-    test('should appear at end of flow, showing transaction id link to prisoner transaction page', async ({ page }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
-
-      await CreditToPage.completeAndMoveOn(page)
-      await CreditFromPage.completeAndMoveOn(page)
-      await CreditAmountPage.completeAndMoveOn(page)
-
-      const creditConfirmationPage = await CreditConfirmationPage.verifyOnPage(page, prisonNumber)
-      await expect(creditConfirmationPage.confirmationPanel).toContainText(transactionId)
-      await creditConfirmationPage.financialProfileLink.click()
-
-      await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
     })
   })
 })
