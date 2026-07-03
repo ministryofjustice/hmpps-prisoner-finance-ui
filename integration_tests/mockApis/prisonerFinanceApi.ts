@@ -1,4 +1,5 @@
 import { SuperAgentRequest } from 'superagent'
+import { APIRequestContext } from '@playwright/test'
 import { getMatchingRequests, stubFor } from './wiremock'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceResponse'
@@ -11,6 +12,7 @@ import { CreateBatchTransactionFormRequest } from '../../server/interfaces/Batch
 
 // this is the path prefix set in feature.env PRISONER_FINANCE_API_URL
 const API_PREFIX = '/prisoner-finance-api'
+const WIREMOCK_URL = 'http://localhost:9091'
 
 export const stubPing = () =>
   stubFor({
@@ -428,8 +430,17 @@ export const stubPostBatchTransaction = (
 
 export const getPostTransactionRequests = async () =>
   getMatchingRequests({
+    method: 'POST',
+    urlPattern: `${API_PREFIX}/transactions`,
+  })
+
+export const getWiremockPostTransactionRequest = async (request: APIRequestContext) => {
+  const wireMockResponse = await request.post(`${WIREMOCK_URL}/__admin/requests/find`, {
     data: {
       method: 'POST',
       urlPattern: `${API_PREFIX}/transactions`,
     },
   })
+
+  return wireMockResponse
+}

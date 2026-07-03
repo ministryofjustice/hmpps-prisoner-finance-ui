@@ -1,6 +1,5 @@
 import { expect, test } from '@playwright/test'
-import { createRedisClient, RedisClient } from '../../server/data/redisClient'
-import { login, resetStubs, unsignCookie } from '../testUtils'
+import { login, resetStubs, getSessionData } from '../testUtils'
 import GrantBonusCaseloadPage from '../pages/grantBonusToPrisoners/grantBonusCaseloadPage'
 import AmountPage from '../pages/grantBonusToPrisoners/amountPage'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
@@ -11,12 +10,6 @@ import GrantBonusConfirmationPage from '../pages/grantBonusToPrisoners/grantBonu
 import IndexPage from '../pages/indexPage'
 
 test.describe('Grant Bonus To prisoners', () => {
-  let redisClient: RedisClient
-
-  test.beforeAll(async () => {
-    redisClient = await createRedisClient().connect()
-  })
-
   test.describe('Select a caseload', () => {
     test.beforeEach(async ({ page }) => {
       await resetStubs()
@@ -48,8 +41,6 @@ test.describe('Grant Bonus To prisoners', () => {
 
     test('Should navigate to next page and save form response', async ({ page, context }) => {
       await page.goto('/grant-bonus-to-prisoners')
-      const cookies = await context.cookies()
-      const unsignedCookie = unsignCookie(cookies[0].value)
 
       const radios = page.getByRole('radio')
 
@@ -60,8 +51,7 @@ test.describe('Grant Bonus To prisoners', () => {
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
 
-      const response = await redisClient.get(unsignedCookie as string)
-      const parsedData = JSON.parse(response as string)
+      const parsedData = (await getSessionData(context)) as { grantBonusForm: { caseloadId: string } }
       expect(parsedData.grantBonusForm).toMatchObject({ caseloadId: 'MDI' })
     })
 
@@ -225,12 +215,9 @@ test.describe('Grant Bonus To prisoners', () => {
 
       const amountPage = await AmountPage.verifyOnPage(page)
 
-      const cookies = await context.cookies()
-      const unsignedCookie = unsignCookie(cookies[0].value)
-      const redisResponse = await redisClient.get(unsignedCookie as string)
-      const sessionData = JSON.parse(redisResponse as string)
-
+      // TODO: set the prison all the way through
       const prisonNumbers = ['A999912', 'AE22132']
+      const sessionData = (await getSessionData(context)) as { grantBonusForm: { caseloadId: string } }
       const prisonId = sessionData.grantBonusForm.caseloadId! as string
 
       await prisonerSearchApi.stubGetPrisonersIdsByPrisonId(prisonId, prisonNumbers)

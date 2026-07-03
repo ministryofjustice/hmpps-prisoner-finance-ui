@@ -1,8 +1,7 @@
 import { expect, test } from '@playwright/test'
-import { login, resetStubs, unsignCookie } from '../testUtils'
+import { login, resetStubs, getSessionData, setSessionData } from '../testUtils'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import CreditToPage from '../pages/creditAPrisoner/creditToPage'
-import { createRedisClient, RedisClient } from '../../server/data/redisClient'
 import CreditFromPage from '../pages/creditAPrisoner/creditFromPage'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import CreditAmountPage from '../pages/creditAPrisoner/creditAmountPage'
@@ -12,11 +11,6 @@ import InternalServerErrorPage from '../pages/internalServerErrorPage'
 
 test.describe('Credit A Prisoner Pages', () => {
   const prisonNumber = 'ABC123XZ'
-  let redisClient: RedisClient
-
-  test.beforeAll(async () => {
-    redisClient = await createRedisClient().connect()
-  })
 
   test.beforeEach(async ({ page }) => {
     await resetStubs()
@@ -551,6 +545,13 @@ test.describe('Credit A Prisoner Pages', () => {
 
     // TODO: this should be a controller test
     test('Can see that an error occured if the session data is malformed', async ({ page, context }) => {
+      await prisonerFinanceApi.stubPostTransaction({
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+        amount: 100 * parseFloat(transactionAmount),
+        description: transactionDescription,
+      })
+
       const creditToPage = await CreditToPage.load(page, prisonNumber)
       await creditToPage.selectASubAccount(prisonerSubAccountReference)
 
@@ -560,27 +561,56 @@ test.describe('Credit A Prisoner Pages', () => {
       const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
 
       // overriding cookie with malformed data
-      const cookies = await context.cookies()
-      const unsignedCookie = unsignCookie(cookies[0].value)
-      const response = await redisClient.get(unsignedCookie as string)
-      const parsedData = JSON.parse(response as string)
-
-      parsedData.creditForm = {}
-      await redisClient.set(unsignedCookie as string, JSON.stringify(parsedData))
+      await setSessionData(context, { ...(await getSessionData(context)), creditForm: {} })
 
       await creditAmountPage.enterTransactionDetails(transactionAmount, transactionDescription)
+
       await InternalServerErrorPage.verifyOnPage(
         page,
         `/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`,
       )
 
       const wireMockResponse = await prisonerFinanceApi.getPostTransactionRequests()
-      const data = await wireMockResponse.body()
-      expect(data.requests.length).toBe(0)
+      expect(wireMockResponse.status).toBe(200)
+      expect(wireMockResponse.body.requests.length).toBe(0)
+    })
+
+    // TODO: this should be a controller test
+    test('Can see that API was not called if session data is malformed', async ({ page, context }) => {
+      await prisonerFinanceApi.stubPostTransaction({
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+        amount: 100 * parseFloat(transactionAmount),
+        description: transactionDescription,
+      })
+
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+
+      // overriding cookie with malformed data
+      await setSessionData(context, { ...(await getSessionData(context)), creditForm: {} })
+
+      await creditAmountPage.enterTransactionDetails(transactionAmount, transactionDescription)
+
+      const wireMockResponse = await prisonerFinanceApi.getPostTransactionRequests()
+      expect(wireMockResponse.status).toBe(200)
+      expect(wireMockResponse.body.requests.length).toBe(0)
     })
 
     // TODO: this should be a controller test
     test('Can see that an error occured if creating the transaction failed', async ({ page }) => {
+      await prisonerFinanceApi.stubPostTransactionReturnError({
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+        amount: 100 * parseFloat(transactionAmount),
+        description: transactionDescription,
+      })
+
       const creditToPage = await CreditToPage.load(page, prisonNumber)
       await creditToPage.selectASubAccount(prisonerSubAccountReference)
 
@@ -590,7 +620,6 @@ test.describe('Credit A Prisoner Pages', () => {
       const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
       await creditAmountPage.enterTransactionDetails(transactionAmount, transactionDescription)
 
-      await creditAmountPage.enterTransactionDetails(transactionAmount, transactionDescription)
       await InternalServerErrorPage.verifyOnPage(
         page,
         `/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`,
