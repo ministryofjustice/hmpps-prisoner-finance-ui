@@ -42,7 +42,7 @@ export default class CreditToPage extends AbstractPage {
     await this.continueButton.click()
   }
 
-  async getSubAccountOption(subAccountName: string): Promise<Locator> {
+  getSubAccountOption(subAccountName: string): Locator {
     return this.subAccountList.getByRole('radio', { name: subAccountName })
   }
 }

@@ -6,7 +6,7 @@ export default class InternalServerErrorPage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Internal Server Error', exact: true })
+    this.heading = page.getByRole('heading', { name: 'An error has occured', exact: true })
   }
 
   static async verifyOnPage(page: Page, path: string): Promise<InternalServerErrorPage> {

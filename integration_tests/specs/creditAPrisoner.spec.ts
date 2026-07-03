@@ -8,6 +8,7 @@ import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import CreditAmountPage from '../pages/creditAPrisoner/creditAmountPage'
 import CreditConfirmationPage from '../pages/creditAPrisoner/creditConfirmationPage'
 import PrisonerProfilePage from '../pages/prisonerProfilePage'
+import InternalServerErrorPage from '../pages/internalServerErrorPage'
 
 test.describe('Credit A Prisoner Pages', () => {
   const prisonNumber = 'ABC123XZ'
@@ -62,7 +63,27 @@ test.describe('Credit A Prisoner Pages', () => {
     })
 
     test('Can credit a prisoner', async ({ page }) => {
-      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      await prisonerProfilePage.creditAPrisonerLink.click()
+
+      const creditToPage = await CreditToPage.verifyOnPage(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.enterTransactionDetails(transactionAmount, transactionDescription)
+
+      const creditConfirmationPage = await CreditConfirmationPage.verifyOnPage(page, prisonNumber)
+      await expect(creditConfirmationPage.confirmationPanel).toContainText(transactionId)
+
+      await creditConfirmationPage.financialProfileLink.click()
+      await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
+    })
+
+    test('Can start with a clean process after completing the process', async ({ page }) => {
+      let creditToPage = await CreditToPage.load(page, prisonNumber)
       await creditToPage.selectASubAccount(prisonerSubAccountReference)
 
       const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
@@ -75,7 +96,46 @@ test.describe('Credit A Prisoner Pages', () => {
       await expect(creditConfirmationPage.confirmationPanel).toContainText(transactionId)
       await creditConfirmationPage.financialProfileLink.click()
 
-      await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
+      await prisonerProfilePage.creditAPrisonerLink.click()
+
+      creditToPage = await CreditToPage.verifyOnPage(page, prisonNumber)
+      expect(creditToPage.getSubAccountOption(prisonerSubAccountReference)).not.toBeChecked()
+    })
+
+    test('Can credit a new prisoner after partially completing the process for another prisoner', async ({ page }) => {
+      const previousPrisonNumber = 'ZZZZ123'
+
+      await prisonerSearchApi.stubGetPrisoner(previousPrisonNumber)
+      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(previousPrisonNumber, [])
+
+      await prisonerFinanceApi.stubGetPrisonerAccountByReference(previousPrisonNumber, [
+        {
+          id: 'TESTSUBUUID1',
+          reference: prisonerSubAccountReference,
+          createdAt: '',
+          createdBy: '',
+          parentAccountId: 'TESTUUID',
+        },
+      ])
+
+      const previousCreditToPage = await CreditToPage.load(page, previousPrisonNumber)
+      await previousCreditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const previousCreditFromPage = await CreditFromPage.verifyOnPage(page, previousPrisonNumber)
+      await previousCreditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.enterTransactionDetails(transactionAmount, transactionDescription)
+
+      const creditConfirmationPage = await CreditConfirmationPage.verifyOnPage(page, prisonNumber)
+      await expect(creditConfirmationPage.confirmationPanel).toContainText(transactionId)
     })
   })
 
@@ -244,7 +304,7 @@ test.describe('Credit A Prisoner Pages', () => {
       await creditAmountPage.backLink.click()
 
       creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
-      expect(creditFromPage.subAccountList.getByRole('radio', { name: prisonSubAccountReference })).toBeChecked()
+      expect(creditFromPage.getSubAccountOption(prisonSubAccountReference)).toBeChecked()
     })
 
     test('Cannot continue if no sub account is selected', async ({ page }) => {
@@ -276,9 +336,11 @@ test.describe('Credit A Prisoner Pages', () => {
     })
   })
 
-  test.describe('Credit Amount Page', () => {
+  test.describe('entering the details of the credit to the prisoner', () => {
     const prisonerSubAccountReference = 'SUB_ACCOUNT_1'
     const prisonSubAccountReference = 'PRISON_ACCOUNT_1'
+    const transactionAmount = '100.10'
+    const transactionDescription = 'Credit a prisoner end-to-end test'
 
     test.beforeEach(async () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
@@ -304,7 +366,191 @@ test.describe('Credit A Prisoner Pages', () => {
       ])
     })
 
-    test('should render the credit amount and description fields, and a done button', async ({ page }) => {
+    test('Can enter an amount to credit to the prisoner', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.amountField.fill(transactionAmount)
+
+      expect(creditAmountPage.amountField).toHaveValue(transactionAmount)
+    })
+
+    test('Cannot continue with no amount entered', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.descriptionField.fill(transactionDescription)
+      await creditAmountPage.doneButton.click()
+
+      await CreditAmountPage.verifyOnPage(page, prisonNumber)
+    })
+
+    test('Can see why no amount stops them from continuing', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      let creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.descriptionField.fill(transactionDescription)
+      await creditAmountPage.doneButton.click()
+
+      creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      expect(creditAmountPage.amountErrorMessage).toContainText('Amount is required')
+    })
+
+    test('Can see why zero amount stops them from continuing', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      let creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.amountField.fill('0')
+      await creditAmountPage.descriptionField.fill(transactionDescription)
+      await creditAmountPage.doneButton.click()
+
+      creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      expect(creditAmountPage.amountErrorMessage).toContainText('Amount must be greater than 0')
+    })
+
+    test('Can see why text for the amount stops them from continuing', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      let creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.amountField.fill('Banana')
+      await creditAmountPage.descriptionField.fill(transactionDescription)
+      await creditAmountPage.doneButton.click()
+
+      creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      expect(creditAmountPage.amountErrorMessage).toContainText('Must be a valid number with up to 2 decimal places')
+    })
+
+    test('Can see why a negative amount stops them from continuing', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      let creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.amountField.fill('-100.00')
+      await creditAmountPage.descriptionField.fill(transactionDescription)
+      await creditAmountPage.doneButton.click()
+
+      creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      expect(creditAmountPage.amountErrorMessage).toContainText('Amount must be greater than 0')
+    })
+
+    test('Can add a description of the amount to credit to the prisoner', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.descriptionField.fill(transactionDescription)
+
+      expect(creditAmountPage.descriptionField).toHaveValue(transactionDescription)
+    })
+
+    test('Cannot continue with no description entered', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.amountField.fill(transactionAmount)
+      await creditAmountPage.doneButton.click()
+
+      await CreditAmountPage.verifyOnPage(page, prisonNumber)
+    })
+
+    test('Can see why an empty description is not allowed', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.amountField.fill(transactionAmount)
+      await creditAmountPage.doneButton.click()
+
+      await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      expect(creditAmountPage.descriptionErrorMessage).toContainText('Description cannot be empty')
+    })
+
+    test('Can see why a description that is too long is not allowed', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.amountField.fill(transactionAmount)
+      await creditAmountPage.descriptionField.fill('x'.repeat(256))
+      await creditAmountPage.doneButton.click()
+
+      await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      expect(creditAmountPage.descriptionErrorMessage).toContainText('Description cannot exceed 255 characters')
+    })
+
+    test('Can see all entry errors at the same time', async ({ page }) => {
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.doneButton.click()
+
+      await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      expect(creditAmountPage.amountErrorMessage).toContainText('Amount is required')
+      expect(creditAmountPage.descriptionErrorMessage).toContainText('Description cannot be empty')
+    })
+
+    test('Can continue to complete a credit to a prisoner', async ({ page }) => {
+      await prisonerFinanceApi.stubPostTransaction({
+        creditSubAccountId: 'TESTSUBUUID1',
+        debitSubAccountId: 'TESTSUBUUID1',
+        amount: 100 * parseFloat(transactionAmount),
+        description: transactionDescription,
+      })
+
+      const creditToPage = await CreditToPage.load(page, prisonNumber)
+      await creditToPage.selectASubAccount(prisonerSubAccountReference)
+
+      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
+      await creditFromPage.selectASubAccount(prisonSubAccountReference)
+
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.enterTransactionDetails(transactionAmount, transactionDescription)
+
+      await CreditConfirmationPage.verifyOnPage(page, prisonNumber)
+    })
+
+    // TODO: this should be a controller test
+    test('Can see that an error occured if the session data is malformed', async ({ page, context }) => {
       const creditToPage = await CreditToPage.load(page, prisonNumber)
       await creditToPage.selectASubAccount(prisonerSubAccountReference)
 
@@ -313,181 +559,45 @@ test.describe('Credit A Prisoner Pages', () => {
 
       const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
 
-      expect(creditAmountPage.amountField).toBeVisible()
-      expect(creditAmountPage.descriptionField).toBeVisible()
-      expect(creditAmountPage.doneButton).toBeVisible()
-    })
-
-    test.skip('allows form completion if fields are correctly completed, and clears credit form session', async ({
-      page,
-      context,
-    }) => {
-      const cookies = await context.cookies()
-      const unsignedCookie = unsignCookie(cookies[0].value)
-
-      const creditToPage = await CreditToPage.load(page, prisonNumber)
-      await creditToPage.selectASubAccount(prisonerSubAccountReference)
-
-      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
-      await creditFromPage.selectASubAccount(prisonSubAccountReference)
-
-      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page, prisonNumber)
-
-      const reqPayload = {
-        creditSubAccountId: 'TESTSUBUUID1',
-        debitSubAccountId: 'TESTSUBUUID1',
-        amount: 10010,
-        description: 'test description',
-      }
-
-      await prisonerFinanceApi.stubPostTransaction(reqPayload, {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        createdBy: 'test',
-        createdAt: '2026-05-08T11:03:15.786Z',
-        reference: 'TEXT',
-        description: 'test description',
-        timestamp: '2026-05-05T09:40:05.531Z',
-        amount: 10010,
-        entrySequence: 1,
-        postings: [],
-      })
-
-      let response = await redisClient.get(unsignedCookie as string)
-      let parsedData = JSON.parse(response as string)
-
-      // refs are coming from complete and move on calls
-      expect(parsedData.creditForm).toMatchObject({
-        creditSubAccountId: 'TESTSUBUUID1',
-        debitSubAccountId: 'TESTSUBUUID1',
-      })
-
-      await amountField.fill('100.10')
-      await descriptionField.fill('test description')
-      await doneButton.click()
-
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-confirmation`)
-
-      response = await redisClient.get(unsignedCookie as string)
-      parsedData = JSON.parse(response as string)
-
-      expect(parsedData.creditForm).toEqual({})
-
-      const wireMockResponse = await prisonerFinanceApi.getPostTransactionRequests()
-      const data = await wireMockResponse.body()
-      expect(data.requests.length).toBe(1)
-      expect(JSON.parse(data.requests[0].body)).toEqual(reqPayload)
-    })
-
-    test.skip('Should redirect to error page if the session data is malformed', async ({ page, context }) => {
-      const cookies = await context.cookies()
-      const unsignedCookie = unsignCookie(cookies[0].value)
-      const creditToPage = await CreditToPage.load(page, prisonNumber)
-      await creditToPage.selectASubAccount(prisonerSubAccountReference)
-
-      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
-      await creditFromPage.selectASubAccount(prisonSubAccountReference)
-
-      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page, prisonNumber)
-
-      const reqPayload = {
-        creditSubAccountId: 'TESTSUBUUID1',
-        debitSubAccountId: 'TESTSUBUUID1',
-        amount: 10010,
-        description: 'test description',
-      }
-
-      await prisonerFinanceApi.stubPostTransaction(reqPayload, {
-        id: '3fa85f64-5717-4562-b3fc-2c963f66afa6',
-        createdBy: 'test',
-        createdAt: '2026-05-08T11:03:15.786Z',
-        reference: 'TEXT',
-        description: 'test description',
-        timestamp: '2026-05-05T09:40:05.531Z',
-        amount: 10010,
-        entrySequence: 1,
-        postings: [],
-      })
-
       // overriding cookie with malformed data
+      const cookies = await context.cookies()
+      const unsignedCookie = unsignCookie(cookies[0].value)
       const response = await redisClient.get(unsignedCookie as string)
       const parsedData = JSON.parse(response as string)
+
       parsedData.creditForm = {}
       await redisClient.set(unsignedCookie as string, JSON.stringify(parsedData))
 
-      await amountField.fill('100.10')
-      await descriptionField.fill('test description')
-      const responsePromise = page.waitForResponse(btnResponse => btnResponse.status() === 500)
-
-      await doneButton.click()
-
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
-      expect((await responsePromise).status()).toBe(500)
+      await creditAmountPage.enterTransactionDetails(transactionAmount, transactionDescription)
+      await InternalServerErrorPage.verifyOnPage(
+        page,
+        `/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`,
+      )
 
       const wireMockResponse = await prisonerFinanceApi.getPostTransactionRequests()
       const data = await wireMockResponse.body()
       expect(data.requests.length).toBe(0)
     })
 
-    test.skip('Should redirect to error page if post transaction returns an error', async ({ page }) => {
+    // TODO: this should be a controller test
+    test('Can see that an error occured if creating the transaction failed', async ({ page }) => {
       const creditToPage = await CreditToPage.load(page, prisonNumber)
       await creditToPage.selectASubAccount(prisonerSubAccountReference)
 
       const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
       await creditFromPage.selectASubAccount(prisonSubAccountReference)
 
-      const { amountField, descriptionField, doneButton } = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      const creditAmountPage = await CreditAmountPage.verifyOnPage(page, prisonNumber)
+      await creditAmountPage.enterTransactionDetails(transactionAmount, transactionDescription)
 
-      const reqPayload = {
-        creditSubAccountId: 'TESTSUBUUID1',
-        debitSubAccountId: 'TESTSUBUUID1',
-        amount: 10010,
-        description: 'test description',
-      }
-
-      await prisonerFinanceApi.stubPostTransactionReturnError(reqPayload)
-
-      await amountField.fill('100.10')
-      await descriptionField.fill('test description')
-      const responsePromise = page.waitForResponse(btnResponse => btnResponse.status() === 500)
-
-      await doneButton.click()
-
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
-      expect((await responsePromise).status()).toBe(500)
-
-      const wireMockResponse = await prisonerFinanceApi.getPostTransactionRequests()
-      const data = await wireMockResponse.body()
-      expect(data.requests.length).toBe(1)
-      expect(JSON.parse(data.requests[0].body)).toEqual(reqPayload)
-    })
-
-    test.skip('does not allow form completion if amount field is incorrectly completed, rendering an amount error instead. Should restore valid description', async ({
-      page,
-    }) => {
-      const creditToPage = await CreditToPage.load(page, prisonNumber)
-      await creditToPage.selectASubAccount(prisonerSubAccountReference)
-
-      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
-      await creditFromPage.selectASubAccount(prisonSubAccountReference)
-
-      const { amountField, descriptionField, doneButton, amountErrorMessage } = await CreditAmountPage.verifyOnPage(
+      await creditAmountPage.enterTransactionDetails(transactionAmount, transactionDescription)
+      await InternalServerErrorPage.verifyOnPage(
         page,
-        prisonNumber,
+        `/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`,
       )
-
-      await amountField.fill('banana')
-      await descriptionField.fill('test description')
-      expect(amountErrorMessage).not.toBeVisible()
-      await doneButton.click()
-
-      expect(page.url()).toContain(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
-
-      expect(amountErrorMessage).toBeVisible()
-
-      expect(await descriptionField.inputValue()).toContain('test description')
     })
 
-    test.skip('does not allow form completion if description field is incorrectly completed, rendering an description error instead. Restores valid amount.', async ({
+    test('does not allow form completion if description field is incorrectly completed, rendering an description error instead. Restores valid amount.', async ({
       page,
     }) => {
       const creditToPage = await CreditToPage.load(page, prisonNumber)
@@ -510,7 +620,7 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(await amountField.inputValue()).toContain('100')
     })
 
-    test.skip('does not allow form completion if description and amount field are incorrectly completed, rendering errors for both.', async ({
+    test('does not allow form completion if description and amount field are incorrectly completed, rendering errors for both.', async ({
       page,
     }) => {
       const creditToPage = await CreditToPage.load(page, prisonNumber)
@@ -535,77 +645,6 @@ test.describe('Credit A Prisoner Pages', () => {
       expect(descriptionErrorMessage).toBeVisible()
       expect(await descriptionField.inputValue()).toContain('')
       expect(await amountField.inputValue()).toContain('banana')
-    })
-
-    test.skip('should start a fresh form if the user navigates to a new prisoner account after partial completion', async ({
-      page,
-      context,
-    }) => {
-      const cookies = await context.cookies()
-      const unsignedCookie = unsignCookie(cookies[0].value)
-
-      let creditToPage = await CreditToPage.load(page, prisonNumber)
-      await creditToPage.selectASubAccount(prisonerSubAccountReference)
-
-      const creditFromPage = await CreditFromPage.verifyOnPage(page, prisonNumber)
-      await creditFromPage.selectASubAccount(prisonSubAccountReference)
-
-      const response = await redisClient.get(unsignedCookie as string)
-      const parsedData = JSON.parse(response as string)
-
-      // refs are coming from complete and move on calls
-      expect(parsedData.creditForm).toEqual({
-        prisonerAccountReference: prisonNumber,
-        creditSubAccountId: 'TESTSUBUUID1',
-        debitSubAccountId: 'TESTSUBUUID1',
-      })
-
-      const newPrisonNumber = 'ZZZZ123'
-
-      await prisonerSearchApi.stubGetPrisoner(newPrisonNumber)
-
-      await prisonerFinanceApi.stubGetPrisonAccountByReference(newPrisonNumber, [
-        {
-          id: 'TESTSUBUUID1',
-          reference: 'Spends',
-          createdAt: '',
-          createdBy: '',
-          parentAccountId: 'TESTUUID',
-        },
-        {
-          id: 'TESTSUBUUID2',
-          reference: 'Savings',
-          createdAt: '',
-          createdBy: '',
-          parentAccountId: 'TESTUUID',
-        },
-        {
-          id: 'TESTSUBUUID3',
-          reference: 'Cash',
-          createdAt: '',
-          createdBy: '',
-          parentAccountId: 'TESTUUID',
-        },
-      ])
-
-      await page.goto(`/prisoner/${newPrisonNumber}/money/credit-a-prisoner/credit-to`)
-
-      creditToPage = await CreditToPage.verifyOnPage(page, newPrisonNumber)
-
-      const newResponse = await redisClient.get(unsignedCookie as string)
-      const newData = JSON.parse(newResponse as string)
-
-      expect(newData.creditForm).toEqual({
-        prisonerAccountReference: newPrisonNumber,
-      })
-
-      const radioButtons = creditToPage.subAccountList.getByRole('radio')
-
-      expect(await radioButtons.count()).toBe(3)
-
-      expect(radioButtons.nth(0)).not.toBeChecked()
-      expect(radioButtons.nth(1)).not.toBeChecked()
-      expect(radioButtons.nth(2)).not.toBeChecked()
     })
   })
 })

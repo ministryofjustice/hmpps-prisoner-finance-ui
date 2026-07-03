@@ -1,10 +1,15 @@
 {%- extends "partials/layout-two-thirds.njk" -%}
 
-{%- set pageTitle = message -%}
+{%- set pageTitle = 'An error has occured' -%}
 {%- set backUrl = "/" -%}
 
 {% block innerContent %}
-  <h2 data-testid="error-page-status">{{ status }}</h2>
+  <h2 class="govuk-heading-m">
+    {% if status %}
+      <span class="govuk-caption-m" data-testid="error-page-status"><span class="govuk-visually-hidden">Status:</span> {{ status }}</span>
+    {% endif %}
+    {{ message }}
+  </h2>
 
-  <pre data-testid="error-page-stack"><code>{{ stack }}</code></pre>
+  <pre class="govuk-body" data-testid="error-page-stack"><code>{{ stack }}</code></pre>
 {% endblock %}

@@ -304,20 +304,6 @@ test.describe('Prisoner Money', () => {
         await expect(page.locator('[data-testid="incentive-level"]')).toContainText('Enhanced')
       })
 
-      // temporary disabled for UR
-      test.skip(`Should display the prisoner information tab`, async ({ page }) => {
-        await baseStubs(subAccountReference)
-        await page.goto(url)
-        await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, pageHeading, path)
-
-        const profileTabs = page.locator('[data-testid="profile-tabs"]')
-        const overviewTabLink = profileTabs.locator('li a').first()
-        await expect(overviewTabLink).toHaveAttribute(
-          'href',
-          `https://prisoner-dev.digital.prison.service.justice.gov.uk/prisoner/${prisonNumber}`,
-        )
-      })
-
       test(`Should display no transactions`, async ({ page }) => {
         await prisonerSearchApi.stubGetPrisoner(prisonNumber)
         await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [], {

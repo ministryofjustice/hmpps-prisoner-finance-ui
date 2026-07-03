@@ -47,4 +47,8 @@ export default class PrisonerProfilePage extends AbstractPage {
   getBalanceCardFor(subAccountName: string): Locator {
     return this.balanceCards.filter({ has: this.page.getByRole('heading', { name: subAccountName }) }).first()
   }
+
+  get creditAPrisonerLink(): Locator {
+    return this.actionMenuBlock.getByRole('link', { name: 'Credit account', exact: true })
+  }
 }
