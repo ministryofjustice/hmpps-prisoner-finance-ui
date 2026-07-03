@@ -12,7 +12,7 @@ export default class FindPrisonerPage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Enter a prison number', exact: true })
+    this.heading = page.getByRole('heading', { name: 'View prisoner finances', exact: true })
 
     this.prisonNumberInput = page.getByLabel('Enter a prison number', { exact: true })
     this.submitButton = page.getByRole('button', { name: 'Submit', exact: true })
