@@ -16,39 +16,38 @@
 {% endblock %}
 
 {% block innerContent %}
-  <div class="hmpps-balance-cards" data-testid="prisoner-balance-cards">
-    {{ balanceCard({
-      "heading": "Spends",
-      "amount": subAccountBalances.spends.amount,
-      "testId": "spends-card",
-      "showSubHeading": true,
-      "balanceCardLink": {
-        "href": "/prisoner/"+prisonNumber+"/money/spends",
-        "text": "Spends transactions"
-      }
-    }) }}
-
-    {{ balanceCard({
-      "heading": "Private cash",
-      "amount": subAccountBalances.privateCash.amount,
-      "testId": "private-cash-card",
-      "showSubHeading": true,
-        "balanceCardLink": {
-          "href": "/prisoner/"+prisonNumber+"/money/private-cash",
-          "text": "Private cash transactions"
-      }
-    }) }}
-
-    {{ balanceCard({
-      "heading": "Savings",
-      "amount": subAccountBalances.savings.amount,
-      "testId": "savings-card",
-      "showSubHeading": true,
-        "balanceCardLink": {
-          "href": "/prisoner/"+prisonNumber+"/money/savings",
-          "text": "Savings transactions"
-      }
-    }) }}
+  <div class="hmpps-balance-card-group">
+    <ul class="govuk-grid-row card-group">
+      <li class="govuk-grid-column-one-third card-group__item">
+        {{ balanceCard({
+          heading: "Spends",
+          amount: subAccountBalances.spends.amount,
+          link: {
+            href: "/prisoner/"+prisonNumber+"/money/spends",
+            text: "Spends transactions"
+          }
+        }) }}
+      </li>
+      <li class="govuk-grid-column-one-third card-group__item">
+        {{ balanceCard({
+          heading: "Private cash",
+          amount: subAccountBalances.privateCash.amount,
+          link: {
+            href: "/prisoner/"+prisonNumber+"/money/private-cash",
+            text: "Private cash transactions"
+          }
+        }) }}
+      </li>
+      <li class="govuk-grid-column-one-third card-group__item">
+        {{ balanceCard({
+          heading: "Savings",
+          amount: subAccountBalances.savings.amount,
+          link: {
+            href: "/prisoner/"+prisonNumber+"/money/savings",
+            text: "Savings transactions"
+          }
+        }) }}
+    </ul>
   </div>
 
   {% set tableRows = [] %}

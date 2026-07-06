@@ -1,20 +1,16 @@
-{%- from "components/summaryContainer/summaryContainer.njk" import summaryContainer -%}
+{%- macro balanceCard(params) -%}
+  <div class="card card--clickable hmpps-balance-card">
+    <h2 class="govuk-heading-m card__heading hmpps-balance-card__header">{{ params.heading }}</h2>
 
-{% macro balanceCard(params) %}
-  {% call summaryContainer(params) %}
     <div class="hmpps-balance-card__body">
-    {% if params.showSubHeading %}
-      <h3 class="govuk-heading-l hmpps-balance-card__subHeading" data-testid="balance-card-subheading">
-          Account total
-      </h3>
-    {% endif %}
+      <p class="govuk-body card__description hmpps-balance-card__description">Total</p>
+      <p class="govuk-body hmpps-balance-card__total">&pound;{{ params.amount | penceToPound }}</p>
 
-      <p class="govuk-body hmpps-balance-card__amount" data-testid="{{ params.testId }}_amount">{{ '£' + params.amount | penceToPound }}</p>
-
-    {% if params.balanceCardLink %}
-      <hr class="govuk-section-break govuk-section-break--visible">
-      <a href={{params.balanceCardLink.href}} data-testid="{{ params.testId }}_balance-card-link">{{params.balanceCardLink.text}}</a>
+    {% if params.link %}
+      <p class="govuk-body hmpps-balance-card__action">
+        <a class="govuk-link card__link govuk-link--no-visited-state" href="{{params.link.href}}">{{params.link.text}}</a>
+      </p>
     {% endif %}
     </div>
-  {% endcall %}
-{% endmacro %}
+  </div>
+{%- endmacro -%}

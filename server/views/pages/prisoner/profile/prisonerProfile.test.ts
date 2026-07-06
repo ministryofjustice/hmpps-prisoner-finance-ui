@@ -201,22 +201,18 @@ describe('prisoner profile page', () => {
   })
 
   it('should render a balance card for Spends, Private cash, Savings', () => {
-    const balanceCards = $('.hmpps-balance-cards')
-    expect(balanceCards.length).not.toBe(0)
+    const balanceCards = $('.hmpps-balance-card')
 
-    expect(balanceCards.find('.hmpps-summary-container').length).toEqual(3)
+    expect(balanceCards.length).toEqual(3)
 
-    const spendsCard = balanceCards.find('[data-testid="spends-card"]')
-    expect(spendsCard.find('[data-testid="spends-card_header"]').text()).toEqual('Spends')
-    expect(spendsCard.find('[data-testid="spends-card_amount"]').text()).toEqual('£12.34')
+    expect($(balanceCards[0]).text()).toContain('Spends')
+    expect($(balanceCards[0]).text()).toContain('£12.34')
 
-    const privateCashCard = balanceCards.children('[data-testid="private-cash-card"]')
-    expect(privateCashCard.find('[data-testid="private-cash-card_header"]').text()).toEqual('Private cash')
-    expect(privateCashCard.find('[data-testid="private-cash-card_amount"]').text()).toEqual('£34.56')
+    expect($(balanceCards[1]).text()).toContain('Private cash')
+    expect($(balanceCards[1]).text()).toContain('£34.56')
 
-    const savingsCard = balanceCards.children('[data-testid="savings-card"]')
-    expect(savingsCard.find('[data-testid="savings-card_header"]').text()).toEqual('Savings')
-    expect(savingsCard.find('[data-testid="savings-card_amount"]').text()).toEqual('£0.00')
+    expect($(balanceCards[2]).text()).toContain('Savings')
+    expect($(balanceCards[2]).text()).toContain('£0.00')
   })
 
   it('should render no transactions', () => {

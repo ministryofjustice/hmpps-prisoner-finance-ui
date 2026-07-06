@@ -10,13 +10,13 @@ import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 
-import PrisonerProfilePage from '../pages/prisonerProfilePage'
+import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import PrisonerMoneyPage from '../pages/prisonerMoneyPage'
 import FindPrisonerPage from '../pages/findPrisonerPage'
 import PrisonerNotFoundErrorPage from '../pages/prisonerNotFoundErrorPage'
 import InternalServerErrorPage from '../pages/internalServerErrorPage'
 
-test.describe('Prisoner financial profile', () => {
+test.describe('Viewing a prisoners financial profile', () => {
   const transactionPayload: Array<PrisonerTransactionResponse> = [
     {
       date: '2026-03-10T10:48:28.094Z',
@@ -129,7 +129,7 @@ test.describe('Prisoner financial profile', () => {
     test('Should display a prisoners financial profile', async ({ page }) => {
       await setupPrisonerProfileStubs()
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
       expect(prisonerProfilePage.profileHeader).toContainText('Smith, John')
       expect(prisonerProfilePage.profileHeader).toContainText(prisonNumber)
@@ -138,15 +138,15 @@ test.describe('Prisoner financial profile', () => {
     test('Should display the savings sub account balance', async ({ page }) => {
       await setupPrisonerProfileStubs()
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
-      await expect(prisonerProfilePage.getBalanceCardFor('Savings')).toContainText('Account total £0.00')
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
+      await expect(prisonerProfilePage.getBalanceCardFor('Savings')).toContainText('Savings Total £0.00')
     })
 
     test('Should be able to view all savings sub account transactions', async ({ page }) => {
       await setupPrisonerProfileStubs()
       await setupPrisonerMoniesSubAccountStubs('SAVINGS')
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
       await prisonerProfilePage.getBalanceCardFor('Savings').getByRole('link', { name: 'Savings transactions' }).click()
       await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, 'Savings transactions', 'savings')
@@ -155,15 +155,15 @@ test.describe('Prisoner financial profile', () => {
     test('Should display the spends sub account balance', async ({ page }) => {
       await setupPrisonerProfileStubs()
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
-      await expect(prisonerProfilePage.getBalanceCardFor('Spends')).toContainText('Account total £12.34')
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
+      await expect(prisonerProfilePage.getBalanceCardFor('Spends')).toContainText('Spends Total £12.34')
     })
 
     test('Should be able to view all spends sub account transactions', async ({ page }) => {
       await setupPrisonerProfileStubs()
       await setupPrisonerMoniesSubAccountStubs('SPENDS')
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
       await prisonerProfilePage.getBalanceCardFor('Spends').getByRole('link', { name: 'Spends transactions' }).click()
       await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, 'Spends transactions', 'spends')
@@ -172,15 +172,15 @@ test.describe('Prisoner financial profile', () => {
     test('Should display the private cash sub account balance', async ({ page }) => {
       await setupPrisonerProfileStubs()
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
-      await expect(prisonerProfilePage.getBalanceCardFor('Private cash')).toContainText('Account total £34.56')
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
+      await expect(prisonerProfilePage.getBalanceCardFor('Private cash')).toContainText('Private cash Total £34.56')
     })
 
     test('Should be able to view all private cash sub account transactions', async ({ page }) => {
       await setupPrisonerProfileStubs()
       await setupPrisonerMoniesSubAccountStubs('CASH')
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
       await prisonerProfilePage
         .getBalanceCardFor('Private cash')
@@ -192,7 +192,7 @@ test.describe('Prisoner financial profile', () => {
     test('Should be able to go back to find a prisoner', async ({ page }) => {
       await setupPrisonerProfileStubs()
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
       await prisonerProfilePage.backLink.click()
       await FindPrisonerPage.verifyOnPage(page)
@@ -201,7 +201,7 @@ test.describe('Prisoner financial profile', () => {
     test('Should show the actions that can be performed', async ({ page }) => {
       await setupPrisonerProfileStubs()
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
       await expect(prisonerProfilePage.actionMenuBlock.getByRole('link', { name: 'Credit account' })).toBeVisible()
       await expect(prisonerProfilePage.actionMenuBlock.getByRole('link', { name: 'Debit account' })).toBeVisible()
@@ -218,7 +218,7 @@ test.describe('Prisoner financial profile', () => {
     test('Should display a list of recent transactions', async ({ page }) => {
       await setupPrisonerProfileStubs()
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
       await expect(prisonerProfilePage.recentTransactionsList).toBeVisible()
       await expect(prisonerProfilePage.recentTransactionsList.locator('thead tr th')).toHaveCount(5)
 
@@ -242,7 +242,7 @@ test.describe('Prisoner financial profile', () => {
       await setupPrisonerProfileStubs()
       await setupPrisonerMoniesStubs()
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
       await prisonerProfilePage.viewAllTransactionsLink.click()
       await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, 'Transactions for all sub accounts')
@@ -257,7 +257,7 @@ test.describe('Prisoner financial profile', () => {
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', balancePayload[2])
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
       expect(prisonerProfilePage.recentTransactionsList).not.toBeVisible()
 
       const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
@@ -271,7 +271,7 @@ test.describe('Prisoner financial profile', () => {
       await setupPrisonerProfileStubs()
       await setupPrisonerMoniesSubAccountStubs('SPENDS')
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
       await prisonerProfilePage.getBalanceCardFor('Spends').getByRole('link').click()
       await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, `Spends transactions`, 'spends')
     })
@@ -280,7 +280,7 @@ test.describe('Prisoner financial profile', () => {
       await setupPrisonerProfileStubs()
       await setupPrisonerMoniesSubAccountStubs('CASH')
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
       await prisonerProfilePage.getBalanceCardFor('Private cash').getByRole('link').click()
       await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, `Private cash transactions`, 'private-cash')
     })
@@ -289,7 +289,7 @@ test.describe('Prisoner financial profile', () => {
       await setupPrisonerProfileStubs()
       await setupPrisonerMoniesSubAccountStubs('SAVINGS')
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
       await prisonerProfilePage.getBalanceCardFor('Savings').getByRole('link').click()
       await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, `Savings transactions`, 'savings')
     })
@@ -311,7 +311,7 @@ test.describe('Prisoner financial profile', () => {
         amount: 5800,
       } as SubAccountBalanceResponse)
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
       const spendsCard = prisonerProfilePage.getBalanceCardFor('Spends')
       await expect(spendsCard).toContainText('£0.00')
@@ -332,7 +332,7 @@ test.describe('Prisoner financial profile', () => {
         amount: 5800,
       } as SubAccountBalanceResponse)
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
       const spendsCard = prisonerProfilePage.getBalanceCardFor('Private cash')
       await expect(spendsCard).toContainText('£0.00')
@@ -353,7 +353,7 @@ test.describe('Prisoner financial profile', () => {
       } as SubAccountBalanceResponse)
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SAVINGS')
 
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
       const spendsCard = prisonerProfilePage.getBalanceCardFor('Savings')
       await expect(spendsCard).toContainText('£0.00')
@@ -362,26 +362,52 @@ test.describe('Prisoner financial profile', () => {
 
   test.describe('Requesting a prisoner profile that does not exist', async () => {
     test('Should inform user that prisoner could not be found', async ({ page }) => {
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SPENDS')
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'CASH')
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SAVINGS')
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(prisonNumber)
-
       await page.goto(`/prisoner/${prisonNumber}`)
-
       await PrisonerNotFoundErrorPage.verifyOnPage(page, prisonNumber)
     })
 
     test('Should allow user to find another prisoner', async ({ page }) => {
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SPENDS')
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'CASH')
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SAVINGS')
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(prisonNumber)
-
       await page.goto(`/prisoner/${prisonNumber}`)
+      const prisonerNotFoundErrorPage = await PrisonerNotFoundErrorPage.verifyOnPage(page, prisonNumber)
+      await prisonerNotFoundErrorPage.findPrisonerLink.click()
 
+      await FindPrisonerPage.verifyOnPage(page)
+    })
+  })
+
+  test.describe('Requesting a prisoner account with no transactions', async () => {
+    test.beforeAll(async () => {
+      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(prisonNumber)
+    })
+
+    test('Should inform user that prisoner could not be found', async ({ page }) => {
+      await page.goto(`/prisoner/${prisonNumber}`)
+      await PrisonerNotFoundErrorPage.verifyOnPage(page, prisonNumber)
+    })
+
+    test('Should allow user to find another prisoner', async ({ page }) => {
+      await page.goto(`/prisoner/${prisonNumber}`)
+      const prisonerNotFoundErrorPage = await PrisonerNotFoundErrorPage.verifyOnPage(page, prisonNumber)
+      await prisonerNotFoundErrorPage.findPrisonerLink.click()
+
+      await FindPrisonerPage.verifyOnPage(page)
+    })
+  })
+
+  test.describe('Requesting a prisoner account with no sub account balances', async () => {
+    test.beforeAll(async () => {
+      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
+    })
+
+    test('Should inform user that prisoner could not be found', async ({ page }) => {
+      await page.goto(`/prisoner/${prisonNumber}`)
+      await PrisonerNotFoundErrorPage.verifyOnPage(page, prisonNumber)
+    })
+
+    test('Should allow user to find another prisoner', async ({ page }) => {
+      await page.goto(`/prisoner/${prisonNumber}`)
       const prisonerNotFoundErrorPage = await PrisonerNotFoundErrorPage.verifyOnPage(page, prisonNumber)
       await prisonerNotFoundErrorPage.findPrisonerLink.click()
 
@@ -418,7 +444,7 @@ test.describe('Prisoner financial profile', () => {
 
   test('Should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
     await setupPrisonerProfileStubs()
-    await PrisonerProfilePage.load(page, prisonNumber)
+    await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
     const accessibilityScanResults = await new AxeBuilder({ page })
       .withTags(['wcag2a', 'wcag2aa', 'wcag22a', 'wcag22aa'])

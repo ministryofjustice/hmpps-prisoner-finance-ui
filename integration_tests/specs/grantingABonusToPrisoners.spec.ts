@@ -9,7 +9,7 @@ import CreatedTransactionResponse from '../../server/interfaces/CreatedTransacti
 import GrantBonusConfirmationPage from '../pages/grantBonusToPrisoners/grantBonusConfirmationPage'
 import IndexPage from '../pages/indexPage'
 
-test.describe('Grant Bonus To prisoners', () => {
+test.describe('Granting a bonus to prisoners', () => {
   test.describe('Select a caseload', () => {
     test.beforeEach(async ({ page }) => {
       await resetStubs()

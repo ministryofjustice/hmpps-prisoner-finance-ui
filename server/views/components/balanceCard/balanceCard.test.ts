@@ -28,18 +28,20 @@ describe('View Components - BalanceCard', () => {
       amount: 1000,
     })
 
-    expect($('.hmpps-summary-container__heading').text().trim()).toBe('Test')
-    expect($('.hmpps-balance-card__amount').text().trim()).toBe('£10.00')
+    const balanceCards = $('.hmpps-balance-card').first()
+    expect(balanceCards.text()).toContain('Test')
+    expect(balanceCards.text()).toContain('£10.00')
   })
 
-  it('should render subHeader if provided', () => {
+  it('should render subHeading if provided', () => {
     const $ = renderCard({
       heading: 'Test',
       amount: 1000,
       showSubHeading: true,
     })
 
-    expect($('[data-testid="balance-card-subheading"]').text().trim()).toBe('Account total')
+    const balanceCards = $('.hmpps-balance-card').first()
+    expect(balanceCards.text()).toContain('Total')
   })
 
   it('should render link to subaccount page if provided', () => {
@@ -47,13 +49,14 @@ describe('View Components - BalanceCard', () => {
       heading: 'Test',
       amount: 1000,
       testId: 'privateCash',
-      balanceCardLink: {
+      link: {
         href: 'private-cash',
         text: 'private cash transactions',
       },
     })
 
-    expect($('[data-testid="privateCash_balance-card-link"]').text().trim()).toBe('private cash transactions')
-    expect($('[data-testid="privateCash_balance-card-link"]').attr('href')).toBe('private-cash')
+    const balanceCards = $('.hmpps-balance-card')
+    expect($(balanceCards[0]).text()).toContain('private cash transactions')
+    expect($(balanceCards[0]).find('a').attr('href')).toContain('private-cash')
   })
 })

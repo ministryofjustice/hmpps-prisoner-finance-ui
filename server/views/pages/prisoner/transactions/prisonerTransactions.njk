@@ -19,20 +19,14 @@
 
 {% block innerContent %}
   <div class="prisoner-transactions-page">
-    <div class="govuk-grid-row">
-      <div class="govuk-grid-column-three-quarters">
-        <div class="card-group govuk-grid-row" id="prisonerFinanceCard">
-          <div class="govuk-grid-column-one-third card-group__item">
-            {{ balanceCard({
-              "heading": "Current balance",
-              "amount": currentBalance,
-              "testId": "view-prisoner-current-balance-card",
-              "showSubHeading": false
-            }) }}
-          </div>
-        </div>
-      </div>
-    </div>
+    <ul class="govuk-grid-row card-group">
+      <li class="govuk-grid-column-one-quarter card-group__item">
+        {{ balanceCard({
+          heading: "Current balance",
+          amount: currentBalance
+        }) }}
+      </li>
+    </ul>
 
     <div class="moj-filter-layout">
       <div class="moj-filter-layout__filter moj-filter-layout__filter--small"

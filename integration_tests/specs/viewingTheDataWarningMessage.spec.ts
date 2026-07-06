@@ -95,7 +95,7 @@ const routeCases: RouteCase[] = [
   },
 ]
 
-test.describe('Data warning banner', () => {
+test.describe('Viewing the data warning message', () => {
   test.beforeEach(async ({ page }) => {
     await resetStubs()
     await login(page)
@@ -111,9 +111,8 @@ test.describe('Data warning banner', () => {
 
       const dataWarningBanner = page.locator('[data-testid="warning-banner"]')
       await expect(dataWarningBanner).toBeVisible()
-      await expect(dataWarningBanner).toContainText('This web page is for testing only')
       await expect(dataWarningBanner).toContainText(
-        'The data you will see is the financial data of real prisoners, but may be inaccurate or incomplete',
+        'This web page is for testing only. The data you will see is the financial data of real prisoners, but may be inaccurate or incomplete',
       )
     })
   }

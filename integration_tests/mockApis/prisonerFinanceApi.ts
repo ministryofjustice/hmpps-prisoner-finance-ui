@@ -187,7 +187,15 @@ export const stubGetPrisonerTransactionsInternalServerError = (prisonNumber: str
     },
   })
 
-export const stubGetPrisonerAccountBalance = (prisonNumber: string, payload: AccountBalanceResponse) =>
+const deafultAccountBalanceResponse: AccountBalanceResponse = {
+  accountId: '',
+  balanceDateTime: '',
+  amount: 0,
+}
+export const stubGetPrisonerAccountBalance = (
+  prisonNumber: string,
+  payload: AccountBalanceResponse = deafultAccountBalanceResponse,
+) =>
   stubFor({
     request: {
       method: 'GET',

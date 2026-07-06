@@ -1,19 +1,44 @@
 .hmpps-balance-card {
+  border: 1px solid govuk-colour('dark-grey');
+  box-shadow: 0 5px govuk-colour('mid-grey');
+  @include govuk-responsive-margin(4, 'bottom');
+  padding: 0;
+
+  &__header {
+    background-color: govuk-colour('light-grey');
+    @include govuk-responsive-padding(3, 'left');
+    @include govuk-responsive-padding(3, 'right');
+    @include govuk-responsive-margin(3, 'bottom');
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: center;
+
+    line-height: 50px;
+    font-size: 24px;
+    font-weight: bold;
+    margin: 0;
+  }
 
   &__body {
-    h3 {
-      line-height: 30px;
-      font-size: 16px;
-      font-weight: bold;
-      margin: 0;
-    }
+    @include govuk-responsive-padding(3, 'left');
+    @include govuk-responsive-padding(3, 'right');
+    height: calc(100% - 50px);
+    min-height: 7rem;
   }
 
-  &__amount {
-    line-height: 40px;
-    font-size: 26px;
-    font-weight: bolder;
-    margin-bottom: 0px;
+  &__description {
+    @include govuk-font($size: 19, $weight: 'bold');
+    margin-top: 16px;
   }
 
+  &__action {
+    @include govuk-font($size: 19, $weight: 'normal');
+    margin-top: 8px;
+  }
+
+  &__total {
+    @include govuk-font($size: 36, $weight: 'normal');
+    margin: 0;
+  }
 }

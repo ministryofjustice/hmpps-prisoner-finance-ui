@@ -6,10 +6,10 @@ import CreditFromPage from '../pages/creditAPrisoner/creditFromPage'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import CreditAmountPage from '../pages/creditAPrisoner/creditAmountPage'
 import CreditConfirmationPage from '../pages/creditAPrisoner/creditConfirmationPage'
-import PrisonerProfilePage from '../pages/prisonerProfilePage'
+import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import InternalServerErrorPage from '../pages/internalServerErrorPage'
 
-test.describe('Credit A Prisoner Pages', () => {
+test.describe('Crediting a prisoner', () => {
   const prisonNumber = 'ABC123XZ'
 
   test.beforeEach(async ({ page }) => {
@@ -57,8 +57,8 @@ test.describe('Credit A Prisoner Pages', () => {
     })
 
     test('Can credit a prisoner', async ({ page }) => {
-      const prisonerProfilePage = await PrisonerProfilePage.load(page, prisonNumber)
-      await prisonerProfilePage.creditAPrisonerLink.click()
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
+      await prisonerProfilePage.getAction('Credit account').click()
 
       const creditToPage = await CreditToPage.verifyOnPage(page, prisonNumber)
       await creditToPage.selectASubAccount(prisonerSubAccountReference)
@@ -73,7 +73,7 @@ test.describe('Credit A Prisoner Pages', () => {
       await expect(creditConfirmationPage.confirmationPanel).toContainText(transactionId)
 
       await creditConfirmationPage.financialProfileLink.click()
-      await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
+      await PrisonerFinancialProfilePage.verifyOnPage(page, prisonNumber)
     })
 
     test('Can start with a clean process after completing the process', async ({ page }) => {
@@ -90,8 +90,8 @@ test.describe('Credit A Prisoner Pages', () => {
       await expect(creditConfirmationPage.confirmationPanel).toContainText(transactionId)
       await creditConfirmationPage.financialProfileLink.click()
 
-      const prisonerProfilePage = await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
-      await prisonerProfilePage.creditAPrisonerLink.click()
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.verifyOnPage(page, prisonNumber)
+      await prisonerProfilePage.getAction('Credit account').click()
 
       creditToPage = await CreditToPage.verifyOnPage(page, prisonNumber)
       expect(creditToPage.getSubAccountOption(prisonerSubAccountReference)).not.toBeChecked()

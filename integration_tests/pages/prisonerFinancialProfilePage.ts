@@ -1,7 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test'
 import AbstractPage from './abstractPage'
 
-export default class PrisonerProfilePage extends AbstractPage {
+export default class PrisonerFinancialProfilePage extends AbstractPage {
   readonly heading: Locator
 
   readonly backLink: Locator
@@ -23,7 +23,7 @@ export default class PrisonerProfilePage extends AbstractPage {
 
     this.profileHeader = page.locator('[data-testid="hmpps-profile-banner"]')
 
-    this.balanceCards = page.locator('.hmpps-summary-container')
+    this.balanceCards = page.locator('.hmpps-balance-card')
 
     this.recentTransactionsList = page.locator('table[data-testid="prisoner-transactions-table"]')
     this.viewAllTransactionsLink = page.getByRole('link', { name: 'View all transactions', exact: true })
@@ -31,24 +31,26 @@ export default class PrisonerProfilePage extends AbstractPage {
     this.actionMenuBlock = page.locator('.hmpps-actions-block')
   }
 
-  static async load(page: Page, prisonNumber: string): Promise<PrisonerProfilePage> {
+  static async load(page: Page, prisonNumber: string): Promise<PrisonerFinancialProfilePage> {
     await page.goto(`/prisoner/${prisonNumber}`)
     return this.verifyOnPage(page, prisonNumber)
   }
 
-  static async verifyOnPage(page: Page, prisonNumber: string): Promise<PrisonerProfilePage> {
+  static async verifyOnPage(page: Page, prisonNumber: string): Promise<PrisonerFinancialProfilePage> {
     expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}`)
 
-    const prisonerProfilePage = new PrisonerProfilePage(page)
+    const prisonerProfilePage = new PrisonerFinancialProfilePage(page)
     await expect(prisonerProfilePage.heading).toBeVisible()
     return prisonerProfilePage
   }
 
   getBalanceCardFor(subAccountName: string): Locator {
-    return this.balanceCards.filter({ has: this.page.getByRole('heading', { name: subAccountName }) }).first()
+    return this.balanceCards
+      .filter({ has: this.page.getByRole('heading', { name: subAccountName, exact: true }) })
+      .first()
   }
 
-  get creditAPrisonerLink(): Locator {
-    return this.actionMenuBlock.getByRole('link', { name: 'Credit account', exact: true })
+  getAction(actionName: string): Locator {
+    return this.actionMenuBlock.getByRole('link', { name: actionName, exact: true })
   }
 }

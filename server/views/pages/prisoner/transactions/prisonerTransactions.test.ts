@@ -153,8 +153,10 @@ describe('prisoner transactions page', () => {
     expect(transactionsTable.find('thead tr th').length).toBe(6)
     expect(transactionsTable.find('tbody tr').length).toBe(payload.length)
 
-    expect($('[data-testid="view-prisoner-current-balance-card_header"]').text().trim()).toBe('Current balance')
-    expect($('[data-testid="view-prisoner-current-balance-card_amount"]').text().trim()).toBe('£10.00')
+    const balanceCards = $('.hmpps-balance-card')
+
+    expect($(balanceCards[0]).text()).toContain('Current balance')
+    expect($(balanceCards[0]).text()).toContain('£10.00')
 
     const filterComponent = $('[data-module="moj-filter"]')
     const filterSelected = $('[class="moj-filter__selected"]')

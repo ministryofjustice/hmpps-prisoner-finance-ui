@@ -3,11 +3,11 @@ import { AxeBuilder } from '@axe-core/playwright'
 import { login, resetStubs } from '../testUtils'
 import IndexPage from '../pages/indexPage'
 import FindPrisonerPage from '../pages/findPrisonerPage'
-import PrisonerProfilePage from '../pages/prisonerProfilePage'
+import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 
-test.describe('Find Prisoner', () => {
+test.describe('Finding a prisoners financial profile', () => {
   const prisonNumber = 'A1234BC'
 
   const stubPrisonerProfile = async () => {
@@ -32,7 +32,7 @@ test.describe('Find Prisoner', () => {
     const findPrisonerPage = await FindPrisonerPage.verifyOnPage(page)
     await findPrisonerPage.findPrisoner(prisonNumber)
 
-    await PrisonerProfilePage.verifyOnPage(page, prisonNumber)
+    await PrisonerFinancialProfilePage.verifyOnPage(page, prisonNumber)
   })
 
   test('shows an error when submitting with no prison number entered', async ({ page }) => {
