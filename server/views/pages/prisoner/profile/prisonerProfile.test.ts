@@ -122,7 +122,7 @@ describe('prisoner profile page', () => {
       privateCash: { amount: 3456 },
       savings: { amount: 0 },
     },
-    prisoner: {
+    prisonerDetails: {
       firstName: 'John',
       lastName: 'Smith',
       prisonerNumber: 'AB123456',
@@ -147,7 +147,7 @@ describe('prisoner profile page', () => {
       privateCash: { amount: 3456 },
       savings: { amount: 0 },
     },
-    prisoner: {
+    prisonerDetails: {
       firstName: 'John',
       lastName: 'Smith',
       prisonerNumber: 'AB123456',
@@ -258,12 +258,7 @@ describe('prisoner profile page', () => {
     expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(5)
     expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(5)
 
-    const lastTransactionRunningBalance = $('table[data-testid="prisoner-transactions-table"] tbody tr')
-      .last()
-      .find('td')
-      .eq(3)
-      .text()
-      .trim()
+    const lastTransactionRunningBalance = transactionsTable.find('tbody tr').last().find('td').eq(3).text().trim()
 
     expect(lastTransactionRunningBalance).toBe('-')
   })

@@ -20,23 +20,23 @@ export default function routes(services: Services): Router {
 
   creditAPrisonerRouter
     .route('/credit-to')
-    .get(populatePrisonerDetails(services), getPrisonerData(services), creditAPrisonerController.getCreditTo)
-    .post(populatePrisonerDetails(services), getPrisonerData(services), creditAPrisonerController.postCreditTo)
+    .get(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.getCreditTo)
+    .post(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.postCreditTo)
 
   creditAPrisonerRouter
     .route('/credit-from')
-    .get(populatePrisonerDetails(services), getPrisonerData(services), creditAPrisonerController.getCreditFrom)
-    .post(populatePrisonerDetails(services), getPrisonerData(services), creditAPrisonerController.postCreditFrom)
+    .get(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.getCreditFrom)
+    .post(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.postCreditFrom)
 
   creditAPrisonerRouter
     .route('/credit-amount')
-    .get(populatePrisonerDetails(services), getPrisonerData(services), creditAPrisonerController.getCreditAmount)
-    .post(populatePrisonerDetails(services), getPrisonerData(services), creditAPrisonerController.postCreditAmount)
+    .get(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.getCreditAmount)
+    .post(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.postCreditAmount)
 
   creditAPrisonerRouter.get(
     '/credit-confirmation',
     populatePrisonerDetails(services),
-    getPrisonerData(services),
+    getPrisonerData,
     creditAPrisonerController.getCreditConfirmation,
   )
 

@@ -18,7 +18,7 @@ export default function routes(services: Services): Router {
   prisonerRouter.get(
     '/:prisonNumber/money',
     populatePrisonerDetails(services),
-    getPrisonerData(services),
+    getPrisonerData,
     getPrisonNames(services),
     (req: Request, res: Response, next: NextFunction) => {
       res.locals.auditPage = AuditPage.PRISONER_TRANSACTIONS
@@ -29,7 +29,7 @@ export default function routes(services: Services): Router {
   prisonerRouter.get(
     '/:prisonNumber/money/private-cash',
     populatePrisonerDetails(services),
-    getPrisonerData(services),
+    getPrisonerData,
     getPrisonNames(services),
     (req: Request, res: Response, next: NextFunction) => {
       res.locals.subAccount = 'CASH'
@@ -42,7 +42,7 @@ export default function routes(services: Services): Router {
   prisonerRouter.get(
     '/:prisonNumber/money/spends',
     populatePrisonerDetails(services),
-    getPrisonerData(services),
+    getPrisonerData,
     getPrisonNames(services),
     (req: Request, res: Response, next: NextFunction) => {
       res.locals.subAccount = 'SPENDS'
@@ -55,7 +55,7 @@ export default function routes(services: Services): Router {
   prisonerRouter.get(
     '/:prisonNumber/money/savings',
     populatePrisonerDetails(services),
-    getPrisonerData(services),
+    getPrisonerData,
     getPrisonNames(services),
     (req: Request, res: Response, next: NextFunction) => {
       res.locals.subAccount = 'SAVINGS'
@@ -68,7 +68,7 @@ export default function routes(services: Services): Router {
   prisonerRouter.get(
     '/:prisonNumber',
     populatePrisonerDetails(services),
-    getPrisonerData(services),
+    getPrisonerData,
     prisonerController.getProfile,
     prisonerNotFoundHandler,
   )

@@ -133,18 +133,17 @@
             {% set balance =  row.accountBalance  %}
           {% endif %}
 
-          {% set rowData = [
+          {%- set balance = balance if balance is defined else null -%}
+          {%- set amount = row.credit if row.credit > 0 else -1 * row.debit -%}
+          {%- set amountClass = "amount-credit" if row.credit > 0 else "amount-debit" -%}
+          {%- set rowData = [
             { text: row.date | formatDateForView },
             { text: row.description },
-            {
-              text: (row.credit if row.credit > 0 else "-" + row.debit) | penceToPound,
-              format: "numeric",
-              classes: "amount-credit" if row.credit > 0 else "amount-debit"
-            },
+            { text: amount | penceToPound, format: "numeric", classes: amountClass },
             { text: (balance | penceToPound) if balance !== null else '-', format: "numeric" },
             { text: row.accountType | formatPrisonerAccountType },
             { text: row.location | convertPrisonIdToName(prisonNames)}
-          ] %}
+          ] -%}
           {% set tableRows = (tableRows.push(rowData), tableRows) %}
         {% endfor %}
 

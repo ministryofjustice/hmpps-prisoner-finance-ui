@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express'
+import { Request, Response, NextFunction } from 'express'
 import { PrisonerMoneyPermission, prisonerPermissionsGuard } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import { Prisoner } from '../interfaces/prisoner'
 import PrisonerDetails from '../@types/prisonerDetails'
@@ -19,19 +19,10 @@ export const toPrisonerDetails = (prisoner: Prisoner): PrisonerDetails => ({
   cellLocation: prisoner.cellLocation,
 })
 
-export const getPrisonerData = ({ prisonerSearchService }: Services): RequestHandler => {
-  return async (req, res, next) => {
-    try {
-      const prisonNumber = req.params.prisonNumber as string
-
-      const prisonerDetails = await prisonerSearchService.getPrisoner(prisonNumber)
-      console.log('prisonerDetails', prisonerDetails)
-
-      res.locals.prisonerDetails = toPrisonerDetails(prisonerDetails)
-      console.log('localPrisonerDetails', res.locals.prisonerDetails)
-      next()
-    } catch (error) {
-      next(error)
-    }
+export const getPrisonerData = (req: Request, res: Response, next: NextFunction): void => {
+  if (req.middleware?.prisonerData) {
+    res.locals.prisonerDetails = toPrisonerDetails(req.middleware.prisonerData)
   }
+
+  return next()
 }
