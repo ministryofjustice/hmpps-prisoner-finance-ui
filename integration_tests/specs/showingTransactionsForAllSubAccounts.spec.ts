@@ -57,19 +57,6 @@ test.describe('Showing transactions for all sub accounts', () => {
     },
   ]
 
-  const baseStubs = async () => {
-    const prisonNumber = 'ABC123XZ'
-
-    await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
-    await prisonRegisterApi.stubGetPrisonNames()
-    await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, {
-      accountId: '123456',
-      balanceDateTime: '12:34:56',
-      amount: 1234,
-    })
-  }
-
   test.beforeEach(async ({ page }) => {
     await resetStubs()
     await login(page)
