@@ -3,6 +3,8 @@ export interface Prisoner {
   lastName: string
   prisonerNumber: string
   prisonId: string
+  prisonName: string
+  dateOfBirth: string
   status: string
   cellLocation: string
   category: string

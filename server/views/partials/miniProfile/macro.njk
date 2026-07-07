@@ -1,0 +1,9 @@
+{#
+ Parameters:
+    miniProfile = a component to render details from res.locals.prisonerDetails.
+    Can set details into req.middleware.prisonerData with populatePrisonerDetails() middleware,
+    then set it into res.locals.prisonerDetails (and cache it into req.journeyData.prisonerDetails if in a journey page).
+#}
+{% macro miniProfile(prisonerDetails, originalUrl) %}
+    {%- include "./template.njk" -%}
+{% endmacro %}

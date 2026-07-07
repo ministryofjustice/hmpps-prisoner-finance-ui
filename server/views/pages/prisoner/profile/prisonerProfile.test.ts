@@ -182,7 +182,7 @@ describe('prisoner profile page', () => {
   })
 
   it("should render prisoner's profile header", () => {
-    const profileHeader = $('[data-testid="hmpps-profile-banner"]')
+    const profileHeader = $('.mini-profile')
     expect(profileHeader.length).not.toBe(0)
   })
 

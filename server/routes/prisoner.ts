@@ -1,8 +1,7 @@
 import { Router, NextFunction, Request, Response } from 'express'
-import { PrisonerMoneyPermission, prisonerPermissionsGuard } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import { Services } from '../services'
 import PrisonerController from '../controllers/PrisonerController'
-import getPrisonerData from '../middleware/getPrisonerData'
+import { getPrisonerData, populatePrisonerDetails } from '../middleware/populatePrisonerDetails'
 import getPrisonNames from '../middleware/getPrisonNames'
 import prisonerNotFoundHandler from '../middleware/prisonerNotFoundHandler'
 import creditAPrisonerRouter from './creditAPrisoner'
@@ -18,12 +17,7 @@ export default function routes(services: Services): Router {
 
   prisonerRouter.get(
     '/:prisonNumber/money',
-
-    prisonerPermissionsGuard(services.prisonPermissionsService, {
-      requestDependentOn: [PrisonerMoneyPermission.read],
-      getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-    }),
-
+    populatePrisonerDetails(services),
     getPrisonerData(services),
     getPrisonNames(services),
     (req: Request, res: Response, next: NextFunction) => {
@@ -34,12 +28,7 @@ export default function routes(services: Services): Router {
 
   prisonerRouter.get(
     '/:prisonNumber/money/private-cash',
-
-    prisonerPermissionsGuard(services.prisonPermissionsService, {
-      requestDependentOn: [PrisonerMoneyPermission.read],
-      getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-    }),
-
+    populatePrisonerDetails(services),
     getPrisonerData(services),
     getPrisonNames(services),
     (req: Request, res: Response, next: NextFunction) => {
@@ -52,12 +41,7 @@ export default function routes(services: Services): Router {
 
   prisonerRouter.get(
     '/:prisonNumber/money/spends',
-
-    prisonerPermissionsGuard(services.prisonPermissionsService, {
-      requestDependentOn: [PrisonerMoneyPermission.read],
-      getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-    }),
-
+    populatePrisonerDetails(services),
     getPrisonerData(services),
     getPrisonNames(services),
     (req: Request, res: Response, next: NextFunction) => {
@@ -70,12 +54,7 @@ export default function routes(services: Services): Router {
 
   prisonerRouter.get(
     '/:prisonNumber/money/savings',
-
-    prisonerPermissionsGuard(services.prisonPermissionsService, {
-      requestDependentOn: [PrisonerMoneyPermission.read],
-      getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-    }),
-
+    populatePrisonerDetails(services),
     getPrisonerData(services),
     getPrisonNames(services),
     (req: Request, res: Response, next: NextFunction) => {
@@ -88,12 +67,7 @@ export default function routes(services: Services): Router {
 
   prisonerRouter.get(
     '/:prisonNumber',
-
-    prisonerPermissionsGuard(services.prisonPermissionsService, {
-      requestDependentOn: [PrisonerMoneyPermission.read],
-      getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-    }),
-
+    populatePrisonerDetails(services),
     getPrisonerData(services),
     prisonerController.getProfile,
     prisonerNotFoundHandler,

@@ -1,5 +1,13 @@
 .transaction-table {
-  .credit-amount {
-    font-weight: bolder;
+  .amount {
+    text-align: right;
+
+    &-credit {
+      font-weight: bolder;
+    }
+
+    &-debit {
+      font-weight: normal;
+    }
   }
 }

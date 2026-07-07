@@ -10,6 +10,7 @@ import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import SubAccountNotFoundErrorPage from '../pages/subAccountNotFoundErrorPage'
 import IndexPage from '../pages/indexPage'
 import PrisonerPrivateCashPage from '../pages/prisonerPrivateCashPage'
+import prisonApi from '../mockApis/prisonApi'
 
 test.describe('Showing all transactions for a specific sub account', () => {
   const transactionPayload: PrisonerTransactionResponse[] = [
@@ -65,6 +66,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonNumber = 'DD1234D'
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
       })
@@ -74,13 +76,14 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonerPrivateCashPage = await PrisonerPrivateCashPage.load(page, prisonNumber)
 
       await expect(prisonerPrivateCashPage.prisonerInformationHeader).toBeVisible()
-      await expect(prisonerPrivateCashPage.prisonerInformationHeader).toContainText(`Smith, John ${prisonNumber}`)
+      await expect(prisonerPrivateCashPage.prisonerInformationHeader).toContainText(`SMITH, JOHN ${prisonNumber}`)
     })
 
     test(`Can view current balance of sub account`, async ({ page }) => {
       const prisonNumber = 'AA1234A'
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
       })
@@ -101,6 +104,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonNumber = 'BB1234B'
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
       })
@@ -121,6 +125,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonNumber = 'CC1234C'
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
       })
@@ -141,6 +146,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonNumber = 'JJ1234J'
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
       })
@@ -179,6 +185,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
 
     test.beforeAll(async () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(prisonNumber)
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
     })
@@ -206,6 +213,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
 
     test.beforeAll(async () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [], {
         subAccountReference: 'SPENDS',
       })
@@ -230,6 +238,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonNumber = 'II1234I'
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
       await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
       await prisonRegisterApi.stubGetPrisonNames()
@@ -242,6 +251,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonNumber = 'GG1234G'
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
       await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
       await prisonRegisterApi.stubGetPrisonNames()
@@ -275,6 +285,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonNumber = 'EE1234E'
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
       })
@@ -301,6 +312,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonNumber = 'EE1234E'
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [], {
         subAccountReference: 'CASH',
       })
@@ -319,6 +331,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
 
   test(`Should handle page out of bound and redirect to a 404`, async ({ page }) => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberReturnsPageOutOfBound(prisonNumber, {
       pageNumber: '999',
       pageSize: '25',

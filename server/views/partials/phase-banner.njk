@@ -1,0 +1,9 @@
+{%- from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner -%}
+
+{{ govukPhaseBanner({
+  attributes: {
+    role: "complementary"
+  },
+  tag: { text: "Beta" },
+  html: 'This is a new service - your <a class="govuk-link feedback" href="mailto:digital-prisoner-finance@justice.gov.uk?subject=Prisoner Finance Service feedback">feedback</a> will help us to improve it.'
+}) }}

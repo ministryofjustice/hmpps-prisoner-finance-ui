@@ -21,7 +21,7 @@ export default class PrisonerFinancialProfilePage extends AbstractPage {
     this.heading = page.getByRole('heading', { name: 'Finances', exact: true })
     this.backLink = page.getByRole('link', { name: 'Back', exact: true })
 
-    this.profileHeader = page.locator('[data-testid="hmpps-profile-banner"]')
+    this.profileHeader = page.locator('.mini-profile')
 
     this.balanceCards = page.locator('.hmpps-balance-card')
 

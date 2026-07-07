@@ -6,12 +6,14 @@ import FindPrisonerPage from '../pages/findPrisonerPage'
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
+import prisonApi from '../mockApis/prisonApi'
 
 test.describe('Finding a prisoners financial profile', () => {
   const prisonNumber = 'A1234BC'
 
   const stubPrisonerProfile = async () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonApi.stubGetPrisonerImage()
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS')
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')

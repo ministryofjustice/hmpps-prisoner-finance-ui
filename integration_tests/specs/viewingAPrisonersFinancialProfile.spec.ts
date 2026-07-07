@@ -9,6 +9,7 @@ import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceRe
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
+import prisonApi from '../mockApis/prisonApi'
 
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import PrisonerMoneyPage from '../pages/prisonerMoneyPage'
@@ -90,6 +91,7 @@ test.describe('Viewing a prisoners financial profile', () => {
 
   const setupPrisonerProfileStubs = async () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonApi.stubGetPrisonerImage()
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', balancePayload[0])
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])
@@ -98,6 +100,7 @@ test.describe('Viewing a prisoners financial profile', () => {
 
   const setupPrisonerMoniesStubs = async () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonApi.stubGetPrisonerImage()
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
     await prisonRegisterApi.stubGetPrisonNames()
     await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, {
@@ -109,6 +112,7 @@ test.describe('Viewing a prisoners financial profile', () => {
 
   const setupPrisonerMoniesSubAccountStubs = async (subAccountRef: string) => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonApi.stubGetPrisonerImage()
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
       subAccountReference: subAccountRef,
     })
@@ -131,7 +135,7 @@ test.describe('Viewing a prisoners financial profile', () => {
 
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
-      expect(prisonerProfilePage.profileHeader).toContainText('Smith, John')
+      expect(prisonerProfilePage.profileHeader).toContainText('SMITH, JOHN')
       expect(prisonerProfilePage.profileHeader).toContainText(prisonNumber)
     })
 
@@ -252,6 +256,7 @@ test.describe('Viewing a prisoners financial profile', () => {
   test.describe('Viewing a summary of the prisoners most recent transactions when there are no transactions', async () => {
     test('should inform the user that there are no transactions to show', async ({ page }) => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', balancePayload[0])
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])
@@ -298,6 +303,7 @@ test.describe('Viewing a prisoners financial profile', () => {
   test.describe('Showing balances for prisoner sub accounts that do not exist', async () => {
     test(`Spends account should have zero balance if not created`, async ({ page }) => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SPENDS')
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', {
@@ -319,6 +325,7 @@ test.describe('Viewing a prisoners financial profile', () => {
 
     test(`Private cash account should have zero balance if not created`, async ({ page }) => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', {
         subAccountId: '',
@@ -340,6 +347,7 @@ test.describe('Viewing a prisoners financial profile', () => {
 
     test(`Savings account should have zero balance if not created`, async ({ page }) => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', {
         subAccountId: '',
@@ -378,6 +386,7 @@ test.describe('Viewing a prisoners financial profile', () => {
   test.describe('Requesting a prisoner account with no transactions', async () => {
     test.beforeAll(async () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(prisonNumber)
     })
 
@@ -398,6 +407,7 @@ test.describe('Viewing a prisoners financial profile', () => {
   test.describe('Requesting a prisoner account with no sub account balances', async () => {
     test.beforeAll(async () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
     })
 
@@ -418,6 +428,7 @@ test.describe('Viewing a prisoners financial profile', () => {
   test.describe('Requesting a prisoner profile that causes an error', async () => {
     test('Should handle server errors and inform the user', async ({ page }) => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', balancePayload[0])
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])

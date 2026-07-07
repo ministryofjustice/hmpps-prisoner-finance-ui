@@ -44,4 +44,15 @@ export default {
       },
     })
   },
+
+  stubGetPrisonerImage: (): SuperAgentRequest =>
+    stubFor({
+      request: {
+        method: 'GET',
+        urlPattern: '/prison-api/api/bookings/offenderNo/([a-zA-Z0-9]*)/image/data',
+      },
+      response: {
+        status: 404,
+      },
+    }),
 }

@@ -30,8 +30,10 @@ describe('/credit-a-prisoner', () => {
     prisonerSearchService.getPrisoner.mockResolvedValue({
       firstName: 'BOB',
       lastName: 'TAYLOR',
+      dateOfBirth: '1990-01-01',
       prisonerNumber: prisonNumber,
       prisonId: 'MDI',
+      prisonName: 'Moorland (HMP & YOI)',
       status: 'ACTIVE IN',
       cellLocation: 'RECP',
       category: 'C',

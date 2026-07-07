@@ -4,6 +4,7 @@ import tokenVerification from './mockApis/tokenVerification'
 import hmppsAuth, { type UserToken } from './mockApis/hmppsAuth'
 import { resetStubs } from './mockApis/wiremock'
 import prisonApi from './mockApis/prisonApi'
+import componentsApi from './mockApis/componentsApi'
 import config from '../server/config'
 import { createRedisClient, RedisClient } from '../server/data/redisClient'
 
@@ -29,6 +30,7 @@ export const login = async (
     hmppsAuth.token({ name, roles, authSource }),
     tokenVerification.stubVerifyToken(active),
     prisonApi.stubGetUserCaseloads(),
+    componentsApi.stubComponents(),
   ])
   await attemptHmppsAuthLogin(page)
 }

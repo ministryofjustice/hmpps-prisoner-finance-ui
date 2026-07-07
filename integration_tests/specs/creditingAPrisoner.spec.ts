@@ -8,6 +8,7 @@ import CreditAmountPage from '../pages/creditAPrisoner/creditAmountPage'
 import CreditConfirmationPage from '../pages/creditAPrisoner/creditConfirmationPage'
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import InternalServerErrorPage from '../pages/internalServerErrorPage'
+import prisonApi from '../mockApis/prisonApi'
 
 test.describe('Crediting a prisoner', () => {
   const prisonNumber = 'ABC123XZ'
@@ -26,6 +27,7 @@ test.describe('Crediting a prisoner', () => {
     let transactionId: string
     test.beforeEach(async () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
 
       await prisonerFinanceApi.stubGetPrisonerAccountByReference(prisonNumber, [
@@ -101,6 +103,7 @@ test.describe('Crediting a prisoner', () => {
       const previousPrisonNumber = 'ZZZZ123'
 
       await prisonerSearchApi.stubGetPrisoner(previousPrisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(previousPrisonNumber, [])
 
       await prisonerFinanceApi.stubGetPrisonerAccountByReference(previousPrisonNumber, [
@@ -139,6 +142,7 @@ test.describe('Crediting a prisoner', () => {
 
     test.beforeEach(async () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
 
       await prisonerFinanceApi.stubGetPrisonerAccountByReference(prisonNumber, [
         {
@@ -227,6 +231,7 @@ test.describe('Crediting a prisoner', () => {
 
     test.beforeEach(async () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
 
       await prisonerFinanceApi.stubGetPrisonerAccountByReference(prisonNumber, [
@@ -338,6 +343,7 @@ test.describe('Crediting a prisoner', () => {
 
     test.beforeEach(async () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
 
       await prisonerFinanceApi.stubGetPrisonerAccountByReference(prisonNumber, [
         {

@@ -1,36 +1,52 @@
 {%- extends "govuk/template.njk" -%}
 
+{%- from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs -%}
 {%- from "govuk/components/back-link/macro.njk" import govukBackLink -%}
+{%- from "partials/miniProfile/macro.njk" import miniProfile -%}
 {%- from "components/prisonerInformationHeader/prisonerInformationHeader.njk" import prisonerInformationHeader -%}
 
 {%- set mainClasses = "govuk-body" -%}
 
 {% block head %}
   <link href="{{ '/assets/css/index.css' | assetMap }}" rel="stylesheet"/>
-  {% for css in feComponents.cssIncludes %}
-    <link href="{{ css }}" nonce="{{ cspNonce }}" rel="stylesheet" />
-  {% endfor %}
+  {%- for css in feComponents.cssIncludes -%}
+  <link href="{{ css }}" nonce="{{ cspNonce }}" rel="stylesheet" />
+  {%- endfor -%}
 {% endblock %}
 
-{% block pageTitle %}{% if pageTitle %}{{ pageTitle }} - {% endif %}{{ applicationName }}{% endblock %}
+{% block pageTitle %}{% if pageTitle %}{{ pageTitle }} - {% endif %}{{ applicationName }} - DPS{% endblock %}
 
 {% block header %}
-  {{ feComponents.header  | safe }}
-  {% include "../partials/phaseBanner.njk" %}
+  {{ feComponents.header | safe }}
+  {% block meta %}{% endblock %}
 {% endblock %}
 
-{% block containerStart %}
+{% block beforeContent %}
+  {% include "partials/phase-banner.njk" %}
+
   {%- if backUrl -%}
     {{ govukBackLink({
-      text: (backText if backText or "Back"),
+      text: backText or "Back",
       href: backUrl
     }) }}
   {%- endif -%}
-  {%- if showPrisonerInformation -%}
-    {{ prisonerInformationHeader({ prisoner: prisoner }) }}
+
+  {%- if showBreadcrumbs and breadcrumbs and(not backUrl) -%}
+    <div class="govuk-!-display-none-print">
+      <div>
+        {{ govukBreadcrumbs({
+          items: breadcrumbs.items
+        }) }}
+      </div>
+    </div>
   {%- endif -%}
-  {% block beforeContent %}{% endblock %}
-{%- endblock -%}
+
+  {%- if showPrisonerInformation -%}
+    {{ miniProfile(prisonerDetails, originalUrl) }}
+  {%- endif -%}
+
+  {% block pageHeader %}{% endblock %}
+{% endblock %}
 
 {% block footer %}
   {{ feComponents.footer | safe }}
@@ -38,7 +54,8 @@
 
 {% block bodyEnd %}
   <script type="module" src="{{ '/assets/js/index.js' | assetMap }}"></script>
-  {% for js in feComponents.jsIncludes %}
-    <script src="{{ js }}" nonce="{{ cspNonce }}"></script>
-  {% endfor %}
+  {%- for js in feComponents.jsIncludes -%}
+  <script src="{{ js }}" nonce="{{ cspNonce }}"></script>
+  {%- endfor -%}
+  {% block pageScripts %}{% endblock %}
 {% endblock %}

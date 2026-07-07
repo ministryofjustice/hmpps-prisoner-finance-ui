@@ -135,7 +135,7 @@ describe('prisoner transactions page', () => {
   })
 
   it('should render the page elements correctly', () => {
-    const header = $('#prisonerInformationHeader')
+    const header = $('.mini-profile')
 
     expect(header.length > 0).toBe(true)
 
