@@ -1,7 +1,6 @@
 {%- extends "partials/layout-full-width.njk" -%}
 
 {%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
-{%- from "components/transactionAmount/transactionAmount.njk" import transactionAmount -%}
 {%- from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner -%}
 {%- from "govuk/components/table/macro.njk" import govukTable -%}
 {%- from "govuk/components/checkboxes/macro.njk" import govukCheckboxes -%}
@@ -138,8 +137,12 @@
           {% set rowData = [
             { text: row.date | formatDateForView },
             { text: row.description },
-            { html: transactionAmount(row)},
-            { text: (balance | penceToPound) if balance !== null else '-' },
+            {
+              text: (row.credit if row.credit > 0 else "-" + row.debit) | penceToPound,
+              format: "numeric",
+              classes: "amount-credit" if row.credit > 0 else "amount-debit"
+            },
+            { text: (balance | penceToPound) if balance !== null else '-', format: "numeric" },
             { text: row.accountType | formatPrisonerAccountType },
             { text: row.location | convertPrisonIdToName(prisonNames)}
           ] %}
@@ -161,8 +164,8 @@
             head: [
               { text: "Date" },
               { text: "Transaction description" },
-              { text: "Amount" },
-              { text: "Balance"},
+              { text: "Amount", format: "numeric" },
+              { text: "Balance", format: "numeric" },
               { text: "Account" },
               { text: "Location" }
             ],
