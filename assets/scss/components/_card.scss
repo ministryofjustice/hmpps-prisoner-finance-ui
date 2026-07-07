@@ -66,6 +66,7 @@ $card-border-color: #d9dadb;
 .card-group {
   display: flex;
   flex-wrap: wrap;
+  margin-top: 0;
   margin-bottom: govuk-spacing(3);
   padding: 0;
 
@@ -81,6 +82,7 @@ $card-border-color: #d9dadb;
     @include govuk-media-query($until: desktop) {
       flex: 0 0 100%;
     }
+
     .card {
       margin-bottom: govuk-spacing(5);
     }
