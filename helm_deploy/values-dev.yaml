@@ -21,7 +21,7 @@ generic-service:
     FEATURE_TOGGLE_URL: "https://feature-toggles-dev.hmpps.service.justice.gov.uk/"
 
     ENVIRONMENT_NAME: DEV
-    AUDIT_ENABLED: "false"
+    AUDIT_ENABLED: "true"
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-prisoner-finance-ui-dev
