@@ -19,7 +19,7 @@ test.describe('Granting a bonus to prisoners', () => {
     test('Should navigate to grant a bonus to prisoners page', async ({ page }) => {
       await page.goto('/')
 
-      const card = page.locator('[data-qa="grant-a-bonus-card"]')
+      const card = page.getByTestId('grant-a-bonus-card')
       await card.click()
 
       await page.waitForURL('/grant-bonus-to-prisoners', { timeout: 1 })

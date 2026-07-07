@@ -12,8 +12,13 @@ export default class IndexPage extends AbstractPage {
     super(page)
     this.heading = page.getByRole('heading', { name: 'Prisoner Finance', exact: true })
 
-    this.viewPrisonerFinanceCard = page.locator('[data-qa="view-prisoner-finance-card"]')
-    this.grantBonusToPrisonersCard = page.locator('[data-qa="grant-a-bonus-card"]')
+    this.viewPrisonerFinanceCard = page
+      .locator('.card')
+      .filter({ has: page.getByRole('heading', { name: 'View prisoner finances', exact: true }) })
+
+    this.grantBonusToPrisonersCard = page
+      .locator('.card')
+      .filter({ has: page.getByRole('heading', { name: 'Grant a bonus to prisoners', exact: true }) })
   }
 
   static async verifyOnPage(page: Page): Promise<IndexPage> {
