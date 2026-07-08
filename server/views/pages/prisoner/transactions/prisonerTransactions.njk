@@ -39,7 +39,7 @@
                 id: 'startDate',
                 name: 'startDate',
                 leadingZeros: 'true',
-                label: { text: "From", classes: "govuk-label--s"},
+                label: { text: "From"},
                 value: filters.startDate,
                 hint: {
                   text: "For example, 17/05/2024."
@@ -51,7 +51,7 @@
                 id: 'endDate',
                 name: 'endDate',
                 leadingZeros: 'true',
-                label: { text: "To", classes: "govuk-label--s" },
+                label: { text: "To" },
                 value: filters.endDate,
                 hint: {
                   text: "For example, 18/05/2024."
@@ -106,10 +106,9 @@
                 },
 
                 categories: filters.selectedFilters
-                },
-                optionsHtml: filterOptionsHtml
-              })
-            }}
+              },
+              optionsHtml: filterOptionsHtml
+            }) }}
           </form>
         </div>
       </div>
