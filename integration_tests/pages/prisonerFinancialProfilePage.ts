@@ -25,7 +25,7 @@ export default class PrisonerFinancialProfilePage extends AbstractPage {
 
     this.balanceCards = page.locator('.hmpps-balance-card')
 
-    this.recentTransactionsList = page.locator('table[data-testid="prisoner-transactions-table"]')
+    this.recentTransactionsList = page.locator('.transaction-table')
     this.viewAllTransactionsLink = page.getByRole('link', { name: 'View all transactions', exact: true })
 
     this.actionMenuBlock = page.locator('.hmpps-actions-block')

@@ -50,7 +50,7 @@
 
   {% set tableRows = [] %}
   {% for row in transactions %}
-    {%- set balance = row.balance if row.balance is defined else null -%}
+    {%- set balance = row.accountBalance if row.accountBalance is defined else null -%}
     {%- set amount = row.credit if row.credit > 0 else -1 * row.debit -%}
     {%- set amountClass = "amount-credit" if row.credit > 0 else "amount-debit" -%}
     {%- set rowData = [

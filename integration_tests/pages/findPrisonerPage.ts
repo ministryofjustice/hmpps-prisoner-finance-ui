@@ -20,6 +20,11 @@ export default class FindPrisonerPage extends AbstractPage {
     this.errorMessage = page.locator('#prisonNumber-error')
   }
 
+  static async load(page: Page): Promise<FindPrisonerPage> {
+    await page.goto('/prisoner')
+    return this.verifyOnPage(page)
+  }
+
   static async verifyOnPage(page: Page): Promise<FindPrisonerPage> {
     expect(new URL(page.url()).pathname).toBe('/prisoner')
 

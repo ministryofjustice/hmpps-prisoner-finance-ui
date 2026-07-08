@@ -21,6 +21,11 @@ export default class IndexPage extends AbstractPage {
       .filter({ has: page.getByRole('heading', { name: 'Grant a bonus to prisoners', exact: true }) })
   }
 
+  static async load(page: Page): Promise<IndexPage> {
+    await page.goto('/')
+    return this.verifyOnPage(page)
+  }
+
   static async verifyOnPage(page: Page): Promise<IndexPage> {
     const indexPage = new IndexPage(page)
     await expect(indexPage.heading).toBeVisible()

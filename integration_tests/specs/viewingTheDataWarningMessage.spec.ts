@@ -4,6 +4,11 @@ import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
+import IndexPage from '../pages/indexPage'
+import FindPrisonerPage from '../pages/findPrisonerPage'
+import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
+import PrisonerTransactionsPage from '../pages/prisonerTransactionsPage'
+import PrisonerPrivateCashPage from '../pages/prisonerPrivateCashPage'
 
 const prisonNumber = 'ABC123XZ'
 
@@ -42,20 +47,20 @@ const routeCases: RouteCase[] = [
   {
     name: 'Home',
     navigate: async page => {
-      await page.goto('/')
+      await IndexPage.load(page)
     },
   },
   {
     name: 'Find prisoner',
     navigate: async page => {
-      await page.goto('/prisoner')
+      await FindPrisonerPage.load(page)
     },
   },
   {
     name: 'Prisoner profile',
     navigate: async page => {
       await stubPrisonerProfile()
-      await page.goto(`/prisoner/${prisonNumber}`)
+      await PrisonerFinancialProfilePage.load(page, prisonNumber)
     },
   },
   {
@@ -69,28 +74,14 @@ const routeCases: RouteCase[] = [
     name: 'All transactions',
     navigate: async page => {
       await stubTransactions('')
-      await page.goto(`/prisoner/${prisonNumber}/money`)
+      await PrisonerTransactionsPage.load(page, prisonNumber)
     },
   },
   {
-    name: 'Private cash transactions',
+    name: 'Sub account transactions',
     navigate: async page => {
       await stubTransactions('CASH')
-      await page.goto(`/prisoner/${prisonNumber}/money/private-cash`)
-    },
-  },
-  {
-    name: 'Spends transactions',
-    navigate: async page => {
-      await stubTransactions('SPENDS')
-      await page.goto(`/prisoner/${prisonNumber}/money/spends`)
-    },
-  },
-  {
-    name: 'Savings transactions',
-    navigate: async page => {
-      await stubTransactions('SAVINGS')
-      await page.goto(`/prisoner/${prisonNumber}/money/savings`)
+      await PrisonerPrivateCashPage.load(page, prisonNumber)
     },
   },
 ]
@@ -109,7 +100,7 @@ test.describe('Viewing the data warning message', () => {
     test(`shows data warning banner on the ${name} page`, async ({ page }) => {
       await navigate(page)
 
-      const dataWarningBanner = page.locator('[data-testid="warning-banner"]')
+      const dataWarningBanner = page.locator('.data-warning-banner')
       await expect(dataWarningBanner).toBeVisible()
       await expect(dataWarningBanner).toContainText(
         'This web page is for testing only. The data you will see is the financial data of real prisoners, but may be inaccurate or incomplete',

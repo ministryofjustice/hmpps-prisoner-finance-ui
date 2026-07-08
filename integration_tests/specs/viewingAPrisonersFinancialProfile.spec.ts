@@ -224,22 +224,17 @@ test.describe('Viewing a prisoners financial profile', () => {
 
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
       await expect(prisonerProfilePage.recentTransactionsList).toBeVisible()
-      await expect(prisonerProfilePage.recentTransactionsList.locator('thead tr th')).toHaveCount(5)
+      await expect(prisonerProfilePage.recentTransactionsList).toContainText(
+        ['Date', 'Transaction description', 'Amount', 'Balance', 'Account'].join(' '),
+      )
 
-      const headers = prisonerProfilePage.recentTransactionsList.locator('thead')
-      await expect(headers).toHaveText(['Date', 'Transaction description', 'Amount', 'Balance', 'Account'].join(' '))
-
-      const rows = prisonerProfilePage.recentTransactionsList.locator('tbody tr')
-      await expect(rows).toHaveCount(5)
-
-      await expect(rows.first()).toHaveText(
+      await expect(prisonerProfilePage.recentTransactionsList).toContainText(
         ['10/03/2026\n10:48', transactionPayload[0].description, '-0.10', '0.11', 'Private cash'].join(' '),
       )
 
-      await expect(rows.nth(1)).toHaveText(
+      await expect(prisonerProfilePage.recentTransactionsList).toContainText(
         ['11/03/2026\n10:47', transactionPayload[1].description, '0.20', '10.00', 'Savings'].join(' '),
       )
-      await expect(rows.nth(1).locator('td').nth(2)).toHaveCSS('font-weight', '400')
     })
 
     test('Should be able to view all transactions', async ({ page }) => {

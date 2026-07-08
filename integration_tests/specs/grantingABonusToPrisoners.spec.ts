@@ -17,12 +17,11 @@ test.describe('Granting a bonus to prisoners', () => {
     })
 
     test('Should navigate to grant a bonus to prisoners page', async ({ page }) => {
-      await page.goto('/')
+      const indexPage = await IndexPage.load(page)
 
-      const card = page.getByTestId('grant-a-bonus-card')
-      await card.click()
+      await indexPage.grantBonusToPrisonersCard.click()
 
-      await page.waitForURL('/grant-bonus-to-prisoners', { timeout: 1 })
+      await GrantBonusCaseloadPage.verifyOnPage(page)
     })
 
     test('Should show the list of caseloads for the user', async ({ page }) => {
