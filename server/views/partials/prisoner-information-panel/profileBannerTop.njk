@@ -1,0 +1,60 @@
+{% set formattedName =  prisonerDetails | lastNameCommaFirstName %}
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full">
+    <div data-qa="hidden-outside-establishment-banner"></div>
+    <div>
+      <div class="govuk-grid-column-full hmpps-profile-banner-top">
+        <div class="hmpps-profile-banner-photo">
+          <img class="hmpps-profile-photo" src="/prisoner-image/{{ prisonerDetails.prisonerNumber}}" alt="Image of {{ formattedName }}" loading="lazy" data-qa="prisoner-photo"/>
+        </div>
+
+        <h2 class="govuk-heading-xl hmpps-profile-prisoner-name" data-testid="prisonerName">
+          {{ formattedName }}
+        </h2>
+
+        <div class="info">
+          <p class="govuk-body hmpps-profile-prisoner-number" data-testid="prisonerNumber">
+            {{ prisonerDetails.prisonerNumber }}<span class="govuk-visually-hidden"> prison number</span>
+          </p>
+
+          <div class="info__links">
+            <div>
+              <h3>Location</h3>
+              <a data-testid="cell-location" href="#">
+                {{ prisonerDetails.cellLocation | default("Not known") }}
+              </a>
+            </div>
+            <div>
+              <h3>Category</h3>
+              <a data-testid="category" href="#">
+                {{ prisonerDetails.category | default("Not entered") }}
+              </a>
+            </div>
+            <div>
+              <h3>CSRA</h3>
+              <a data-testid="csra" href="#">
+                {{ prisonerDetails.csra | default("Not entered") }}
+              </a>
+            </div>
+            <div>
+              <h3>Incentive level</h3>
+              <a data-testid="incentive-level" href="#">
+                {{ prisonerDetails.currentIncentive.level.description | default("Not entered") }}
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="govuk-grid-row">
+  <div class="govuk-grid-column-full hmpps-profile-banner-alerts">
+    <div class="govuk-grid-row">
+      <ul class="alerts-list" data-qa="alert-flags">
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,6 +1,7 @@
+{% set formattedName =  prisonerDetails | lastNameCommaFirstName %}
+
 <section aria-label="Prisoner details" role="region">
   <div class="mini-profile govuk-!-margin-top-7" data-qa="mini-profile">
-    {% set formattedName =  prisonerDetails | lastNameCommaFirstName %}
     <div class="mini-profile-inner">
       <div class="mini-profile-left">
         <img class="mini-profile-person-img" src="/prisoner-image/{{ prisonerDetails.prisonerNumber}}" alt="Image of {{ formattedName }}" loading="lazy" data-qa="mini-profile-person-img">
@@ -19,18 +20,37 @@
               <span class="govuk-body" data-qa="mini-profile-dob">{{ prisonerDetails.dateOfBirth | formatDate }}</span>
             </li>
           {% endif %}
-          {% if prisonerDetails.prisonName %}
-            <li>
-              <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Establishment</span>
-              <span class="govuk-body" data-qa="mini-profile-prison-name">{{ prisonerDetails.prisonName }}</span>
-            </li>
-          {% endif %}
           {% if prisonerDetails.cellLocation %}
             <li>
               <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Cell number</span>
               <span class="govuk-body" data-qa="mini-profile-cell-location">{{ prisonerDetails.cellLocation }}</span>
             </li>
           {% endif %}
+          {% if prisonerDetails.prisonName %}
+            <li>
+              <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Establishment</span>
+              <span class="govuk-body" data-qa="mini-profile-prison-name">{{ prisonerDetails.prisonName }}</span>
+            </li>
+          {% endif %}
+          {% if prisonerDetails.category %}
+            <li>
+              <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Category</span>
+              <span class="govuk-body" data-qa="mini-profile-category">{{ prisonerDetails.category }}</span>
+            </li>
+          {% endif %}
+          {% if prisonerDetails.csra %}
+            <li>
+              <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">CSRA</span>
+              <span class="govuk-body" data-qa="mini-profile-csra">{{ prisonerDetails.csra }}</span>
+            </li>
+          {% endif %}
+          {% if prisonerDetails.currentIncentive %}
+            <li>
+              <span class="govuk-heading-s govuk-!-margin-bottom-0 govuk-!-padding-0">Incentive level</span>
+              <span class="govuk-body" data-qa="mini-profile-incentive-level">{{ prisonerDetails.currentIncentive.level.description | default("Not entered") }}</span>
+            </li>
+          {% endif %}
+
         </ul>
       </div>
     </div>

@@ -135,7 +135,7 @@ describe('prisoner transactions page', () => {
   })
 
   it('should render the page elements correctly', () => {
-    const header = $('.mini-profile')
+    const header = $('.mini-profile, .hmpps-profile-banner')
 
     expect(header.length > 0).toBe(true)
 

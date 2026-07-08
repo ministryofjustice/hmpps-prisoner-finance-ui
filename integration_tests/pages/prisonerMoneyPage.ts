@@ -12,7 +12,7 @@ export default class PrisonerMoneyPage extends AbstractPage {
 
   readonly totalBalanceCard: Locator
 
-  readonly prisonerInformationHeader: Locator
+  readonly profileHeader: Locator
 
   readonly topPagination: Locator
 
@@ -33,7 +33,7 @@ export default class PrisonerMoneyPage extends AbstractPage {
     this.heading = page.getByRole('heading', { name: headerText, exact: true })
     this.backLink = page.getByRole('link', { name: 'Back', exact: true })
 
-    this.prisonerInformationHeader = page.locator('.mini-profile')
+    this.profileHeader = page.locator('.mini-profile, .hmpps-profile-banner').first()
 
     this.currentBalanceCard = page.locator('[data-testid="view-prisoner-current-balance-card"]')
     this.totalBalanceCard = page.locator('[data-testid="view-prisoner-total-balance-card"]')

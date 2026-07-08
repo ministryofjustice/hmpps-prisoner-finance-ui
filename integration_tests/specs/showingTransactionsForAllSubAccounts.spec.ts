@@ -75,8 +75,8 @@ test.describe('Showing transactions for all sub accounts', () => {
 
       const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
 
-      await expect(prisonerTransactionsPage.prisonerInformationHeader).toBeVisible()
-      await expect(prisonerTransactionsPage.prisonerInformationHeader).toContainText(`SMITH, JOHN ${prisonNumber}`)
+      await expect(prisonerTransactionsPage.profileHeader).toBeVisible()
+      await expect(prisonerTransactionsPage.profileHeader).toContainText(`SMITH, JOHN ${prisonNumber}`)
     })
 
     test(`Can view current balance of account`, async ({ page }) => {
