@@ -1,4 +1,16 @@
 .prisoner-transactions-page {
+  .moj-filter-layout__content {
+    padding-left: govuk-spacing(3);
+  }
+
+  .moj-filter-layout__filter--small {
+    width: 25%;
+    min-width: 25%;
+    max-width: 385px;
+    margin-right: 0;
+    box-shadow: none;
+  }
+
   .moj-filter__options {
     padding: govuk-spacing(4);
 
@@ -7,11 +19,9 @@
     }
   }
 
-  .moj-filter-layout__content {
-    padding-left: govuk-spacing(2);
-  }
-
   .moj-action-bar__filter {
+    padding-right: govuk-spacing(1);
+
     button {
       &:focus {
         outline: 3px solid transparent;
@@ -19,17 +29,13 @@
       }
     }
 
-    &.moj-action-bar__filter::after {
+    &::after {
       display: none;
       content: none;
       border: none;
     }
 
     border-left: none;
-  }
-
-  .moj-filter-layout__filter--small {
-    max-width: 340px;
   }
 }
 
