@@ -2,6 +2,7 @@ import express, { Express } from 'express'
 import { NotFound } from 'http-errors'
 
 import { randomUUID } from 'crypto'
+import { Session } from 'express-session'
 import routes from '../index'
 import nunjucksSetup from '../../utils/nunjucksSetup'
 import errorHandler from '../../errorHandler'
@@ -29,16 +30,26 @@ export const user: HmppsUser = {
 
 export const flashProvider = jest.fn()
 
-function appSetup(services: Services, production: boolean, userSupplier: () => HmppsUser): Express {
+function appSetup(
+  services: Services,
+  production: boolean,
+  userSupplier: () => HmppsUser,
+  session?: Record<string, unknown>,
+): Express {
   const app = express()
 
   app.set('view engine', 'njk')
 
   nunjucksSetup(app)
-  app.use(setUpWebSession())
+  if (!session) {
+    app.use(setUpWebSession())
+  }
   app.use((req, res, next) => {
     req.user = userSupplier() as Express.User
     req.flash = flashProvider
+    if (session) {
+      req.session = session as unknown as Session
+    }
     res.locals = {
       user: { ...req.user } as HmppsUser,
       cspNonce: '',
@@ -72,10 +83,12 @@ export function appWithAllRoutes({
     featureFlagService: new FeatureFlagService() as jest.Mocked<FeatureFlagService>,
   },
   userSupplier = () => user,
+  session = null,
 }: {
   production?: boolean
   services?: Partial<Services>
   userSupplier?: () => HmppsUser
+  session?: Record<string, unknown>
 }): Express {
-  return appSetup(services as Services, production, userSupplier)
+  return appSetup(services as Services, production, userSupplier, session)
 }

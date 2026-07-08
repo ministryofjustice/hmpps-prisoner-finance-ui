@@ -2,7 +2,7 @@ import type { Express } from 'express'
 import { PrisonerMoneyPermission, PermissionsService } from '@ministryofjustice/hmpps-prison-permissions-lib'
 
 import request from 'supertest'
-import AuditService, { AuditPage } from '../services/auditService'
+import AuditService, { AuditPage, SubjectType } from '../services/auditService'
 import mockPermissions from './testutils/mockPermissions'
 import { appWithAllRoutes, user } from './testutils/appSetup'
 
@@ -52,6 +52,7 @@ describe('/credit-a-prisoner', () => {
         featureFlagService,
       },
       userSupplier: () => user,
+      session: { creditForm: { creditSubAccountId: 'ID', prisonerAccountReference: prisonNumber } },
     })
   })
 
@@ -67,8 +68,13 @@ describe('/credit-a-prisoner', () => {
           .expect('Content-Type', /html/)
           .expect(_ => {
             expect(auditService.logPageView).toHaveBeenCalledWith(
-              AuditPage.CREDIT_TO,
-              expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
+              AuditPage.CREDIT_A_PRISONER_WIZARD_TO,
+              expect.objectContaining({
+                correlationId: expect.any(String),
+                who: user.username,
+                subjectType: SubjectType.PRISONER,
+                subjectId: prisonNumber,
+              }),
             )
           })
       })
@@ -81,8 +87,13 @@ describe('/credit-a-prisoner', () => {
           .get(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-from`)
           .expect(() => {
             expect(auditService.logPageView).toHaveBeenCalledWith(
-              AuditPage.CREDIT_FROM,
-              expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
+              AuditPage.CREDIT_A_PRISONER_WIZARD_FROM,
+              expect.objectContaining({
+                correlationId: expect.any(String),
+                who: user.username,
+                subjectType: SubjectType.PRISONER,
+                subjectId: prisonNumber,
+              }),
             )
           })
       })

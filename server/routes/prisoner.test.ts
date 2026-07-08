@@ -2,7 +2,7 @@ import type { Express } from 'express'
 import request from 'supertest'
 import { PrisonerMoneyPermission, PermissionsService } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import { appWithAllRoutes, user } from './testutils/appSetup'
-import AuditService, { AuditPage } from '../services/auditService'
+import AuditService, { AuditPage, SubjectType } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
 import PrisonerSearchService from '../services/prisonerSearchService'
 import mockPermissions from './testutils/mockPermissions'
@@ -76,15 +76,20 @@ describe('Prisoners', () => {
     jest.resetAllMocks()
   })
 
-  const verifyTransactionPageResponse = async (url: string, headerTitle: string) => {
+  const verifyTransactionPageResponse = async (url: string, headerTitle: string, auditPage: AuditPage) => {
     const balanceResponse = { accountId: '', balanceDateTime: '', amount: 1000 }
     prisonerFinanceService.getTransactionPage.mockResolvedValue([emptyPageTransactionsResponse, balanceResponse])
 
     const response = await request(app).get(url).expect(200).expect('Content-Type', /html/)
 
     expect(auditService.logPageView).toHaveBeenCalledWith(
-      AuditPage.PRISONER_MONEY,
-      expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
+      auditPage,
+      expect.objectContaining({
+        correlationId: expect.any(String),
+        who: user.username,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      }),
     )
     expect(response.text).toContain(headerTitle)
   }
@@ -152,7 +157,11 @@ describe('Prisoners', () => {
 
   describe('/prisoner/:prisonNumber/money', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
-      await verifyTransactionPageResponse(`/prisoner/${prisonNumber}/money`, 'Transactions for all sub accounts')
+      await verifyTransactionPageResponse(
+        `/prisoner/${prisonNumber}/money`,
+        'Transactions for all sub accounts',
+        AuditPage.PRISONER_TRANSACTION_PAGE_ALL,
+      )
     })
 
     it('should handle API errors (e.g. 404 Not Found)', async () => {
@@ -180,8 +189,13 @@ describe('Prisoners', () => {
       await request(app).get(`/prisoner/${prisonNumber}`).expect(200).expect('Content-Type', /html/)
 
       expect(auditService.logPageView).toHaveBeenCalledWith(
-        AuditPage.PRISONER_PROFILE,
-        expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
+        AuditPage.PRISONER_FINANCIAL_PROFILE_PAGE,
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          who: user.username,
+          subjectType: SubjectType.PRISONER,
+          subjectId: prisonNumber,
+        }),
       )
     })
 
@@ -218,7 +232,11 @@ describe('Prisoners', () => {
 
   describe('/prisoner/:prisonNumber/money/private-cash', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
-      await verifyTransactionPageResponse(`/prisoner/${prisonNumber}/money/private-cash`, 'Private cash transactions')
+      await verifyTransactionPageResponse(
+        `/prisoner/${prisonNumber}/money/private-cash`,
+        'Private cash transactions',
+        AuditPage.PRISONER_TRANSACTION_PAGE_CASH,
+      )
     })
 
     it('should handle API errors (e.g. 404 Not Found)', async () => {
@@ -236,7 +254,11 @@ describe('Prisoners', () => {
 
   describe('/prisoner/:prisonNumber/money/spends', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
-      await verifyTransactionPageResponse(`/prisoner/${prisonNumber}/money/spends`, 'Spends transactions')
+      await verifyTransactionPageResponse(
+        `/prisoner/${prisonNumber}/money/spends`,
+        'Spends transactions',
+        AuditPage.PRISONER_TRANSACTION_PAGE_SPENDS,
+      )
     })
 
     it('should handle API errors (e.g. 404 Not Found)', async () => {
@@ -254,7 +276,11 @@ describe('Prisoners', () => {
 
   describe('/prisoner/:prisonNumber/money/savings', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
-      await verifyTransactionPageResponse(`/prisoner/${prisonNumber}/money/savings`, 'Savings transactions')
+      await verifyTransactionPageResponse(
+        `/prisoner/${prisonNumber}/money/savings`,
+        'Savings transactions',
+        AuditPage.PRISONER_TRANSACTION_PAGE_SAVINGS,
+      )
     })
 
     it('should handle API errors (e.g. 404 Not Found)', async () => {

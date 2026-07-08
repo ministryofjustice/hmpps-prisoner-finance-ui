@@ -1,7 +1,7 @@
 import { PermissionsService } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import e, { Request, Response } from 'express'
 import { ApplicationInfo } from '../applicationInfo'
-import AuditService, { AuditPage } from '../services/auditService'
+import AuditService, { AuditPage, SubjectType } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
 import PrisonRegisterService from '../services/prisonRegisterService'
 import PrisonerController from './PrisonerController'
@@ -42,7 +42,11 @@ describe('PrisonerController', () => {
   })
 
   const mockRes: Response = {
-    locals: { user: { username: 'test-user' }, subAccount: 'CASH' },
+    locals: {
+      user: { username: 'test-user' },
+      subAccount: 'CASH',
+      auditPage: AuditPage.PRISONER_TRANSACTION_PAGE_CASH,
+    },
     render: jest.fn(),
     redirect: jest.fn(),
     status: jest.fn().mockReturnThis(),
@@ -168,9 +172,11 @@ describe('PrisonerController', () => {
 
       await prisonerController.getTransactions(mockReq, mockRes, mockNext)
 
-      expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.PRISONER_MONEY, {
+      expect(auditService.logPageView).toHaveBeenCalledWith(mockRes.locals.auditPage, {
         who: mockRes.locals.user.username,
         correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: mockReq.params.prisonNumber,
       })
       expect(prisonerFinanceService.getTransactionPage).toHaveBeenCalledWith({
         prisonNumber: mockReq.params.prisonNumber,

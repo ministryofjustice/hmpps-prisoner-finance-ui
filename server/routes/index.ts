@@ -8,7 +8,10 @@ export default function routes(services: Services): Router {
   const router = Router()
 
   router.get('/', async (req, res) => {
-    await services.auditService.logPageView(AuditPage.INDEX, { who: res.locals.user.username, correlationId: req.id })
+    await services.auditService.logPageView(AuditPage.PRISONER_FINANCE_HOME_PAGE, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+    })
 
     const grantBonusEnabled = req.featureFlags.GRANT_BONUS_TO_PRISONERS_ENABLED
 
