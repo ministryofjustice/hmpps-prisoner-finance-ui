@@ -48,7 +48,15 @@ function appSetup(
     req.user = userSupplier() as Express.User
     req.flash = flashProvider
     if (session) {
-      req.session = session as unknown as Session
+      // immutable test dependency injection for when session is required
+      const sessionCopy = structuredClone(session)
+      req.session = {
+        ...sessionCopy,
+        save: jest.fn(cb => cb && cb()),
+        destroy: jest.fn(cb => cb && cb()),
+        regenerate: jest.fn(cb => cb && cb()),
+        reload: jest.fn(cb => cb && cb()),
+      } as unknown as Session
     }
     res.locals = {
       user: { ...req.user } as HmppsUser,

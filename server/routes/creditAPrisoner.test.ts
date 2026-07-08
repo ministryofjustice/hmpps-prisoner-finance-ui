@@ -99,4 +99,42 @@ describe('/credit-a-prisoner', () => {
       })
     })
   })
+  describe('/credit-amount', () => {
+    describe('GET', () => {
+      it('Should log page view for credit-amount page', async () => {
+        return request(app)
+          .get(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-amount`)
+          .expect(() => {
+            expect(auditService.logPageView).toHaveBeenCalledWith(
+              AuditPage.CREDIT_A_PRISONER_WIZARD_AMOUNT,
+              expect.objectContaining({
+                correlationId: expect.any(String),
+                who: user.username,
+                subjectType: SubjectType.PRISONER,
+                subjectId: prisonNumber,
+              }),
+            )
+          })
+      })
+    })
+  })
+  describe('/credit-confirmation', () => {
+    describe('GET', () => {
+      it('Should log page view for credit-confirmation page', async () => {
+        return request(app)
+          .get(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-confirmation`)
+          .expect(() => {
+            expect(auditService.logPageView).toHaveBeenCalledWith(
+              AuditPage.CREDIT_A_PRISONER_WIZARD_CONFIRMATION,
+              expect.objectContaining({
+                correlationId: expect.any(String),
+                who: user.username,
+                subjectType: SubjectType.PRISONER,
+                subjectId: prisonNumber,
+              }),
+            )
+          })
+      })
+    })
+  })
 })

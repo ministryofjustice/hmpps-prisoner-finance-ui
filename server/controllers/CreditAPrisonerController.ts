@@ -97,6 +97,18 @@ export default class CreditAPrisonerController {
   }
 
   public getCreditAmount = async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.session?.creditForm?.prisonerAccountReference) {
+      res.redirect('./credit-to')
+      return
+    }
+
+    await this.services.auditService.logPageView(AuditPage.CREDIT_A_PRISONER_WIZARD_AMOUNT, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: req.session.creditForm.prisonerAccountReference,
+    })
+
     res.render('pages/creditAPrisoner/creditAmount/creditAmount.njk')
   }
 
@@ -136,7 +148,14 @@ export default class CreditAPrisonerController {
     }
   }
 
-  public getCreditConfirmation = (req: Request, res: Response, next: NextFunction) => {
+  public getCreditConfirmation = async (req: Request, res: Response, next: NextFunction) => {
+    await this.services.auditService.logPageView(AuditPage.CREDIT_A_PRISONER_WIZARD_CONFIRMATION, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: req.session.creditForm.prisonerAccountReference,
+    })
+
     CreditAPrisonerService.clearCreditForm(req.session as SessionData)
 
     res.render('pages/creditAPrisoner/creditConfirmation/creditConfirmation.njk', {
