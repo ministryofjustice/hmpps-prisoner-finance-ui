@@ -43,7 +43,7 @@ export default class PrisonerTransactionsPage extends AbstractPage {
       .locator('.hmpps-balance-card')
       .filter({ has: page.getByRole('heading', { name: 'Total balance', exact: true }) })
 
-    this.transactionList = page.locator('table[data-testid="prisoner-transactions-table"]')
+    this.transactionList = page.locator('.transactions-list')
     this.topPagination = page.locator('#top-pagination')
     this.bottomPagination = page.locator('#bottom-pagination')
 

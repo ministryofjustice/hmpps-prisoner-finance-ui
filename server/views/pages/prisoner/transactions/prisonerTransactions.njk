@@ -2,11 +2,10 @@
 
 {%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
 {%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
-{%- from "govuk/components/table/macro.njk" import govukTable -%}
+{%- from "partials/transactions-list/macro.njk" import transactionsList -%}
 {%- from "govuk/components/checkboxes/macro.njk" import govukCheckboxes -%}
 {%- from "moj/components/filter/macro.njk" import mojFilter -%}
 {%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
-{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
 
 {%- set pageTitle = headerTitle -%}
 {%- set backUrl = "/prisoner/" + prisonNumber -%}
@@ -120,63 +119,19 @@
           <div class="moj-action-bar__filter moj-action-bar__filter--no-actions"></div>
         </div>
 
-        {% set tableRows = [] %}
-        {% for row in transactions %}
-          {% set balance =  row.subAccountBalance  %}
-          {% if displayTotalBalance %}
-            {% set balance =  row.accountBalance  %}
-          {% endif %}
-
-          {%- set balance = balance if balance is defined else null -%}
-          {%- set amount = row.credit if row.credit > 0 else -1 * row.debit -%}
-          {%- set amountClass = "amount-credit" if row.credit > 0 else "amount-debit" -%}
-          {%- set rowData = [
-            { text: row.date | formatDateForView },
-            { text: row.description },
-            { text: amount | penceToPound, format: "numeric", classes: amountClass },
-            { text: (balance | penceToPound) if balance !== null else '-', format: "numeric" },
-            { text: row.accountType | formatPrisonerAccountType },
-            { text: row.location | convertPrisonIdToName(prisonNames)}
-          ] -%}
-          {% set tableRows = (tableRows.push(rowData), tableRows) %}
-        {% endfor %}
-
-        {% if transactions | length > 0 %}
-          <div id="top-pagination">
-            {{ mojPagination(paginationItems) }}
-          </div>
-
-          {{ govukTable({
-            attributes: {
-              "data-testid": "prisoner-transactions-table"
-            },
-            classes: "transaction-table",
-            caption: "",
-            captionClasses: "govuk-table__caption--m",
-            head: [
-              { text: "Date" },
-              { text: "Transaction description" },
-              { text: "Amount", format: "numeric" },
-              { text: "Balance", format: "numeric" },
-              { text: "Account" },
-              { text: "Location" }
-            ],
-            rows: tableRows
-          }) }}
-
-          <div id="bottom-pagination">
-            {{ mojPagination(paginationItems) }}
-          </div>
-
-        {% else %}
-          <p data-testid="no-transactions-message">
-            {% if hasValidationErrors %}
-              Please fix the filter's errors to view transactions
-            {% else %}
-              No transactions to show
-            {% endif %}
-          </p>
-        {% endif %}
+      {% if hasValidationErrors %}
+        <p class="transactions-list__filter-error" data-testid="no-transactions-message">
+          Please fix the filter's errors to view transactions
+        </p>
+      {% else %}
+        {{ transactionsList({
+            transactions: transactions,
+            paginationItems: paginationItems,
+            prisonNames: prisonNames,
+            displayTotalBalance: displayTotalBalance,
+            showLocation: true
+        }) }}
+      {% endif %}
       </div>
     </div>
   </div>

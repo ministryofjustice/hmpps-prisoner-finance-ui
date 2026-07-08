@@ -38,7 +38,7 @@ export default class PrisonerMoneyPage extends AbstractPage {
     this.currentBalanceCard = page.locator('[data-testid="view-prisoner-current-balance-card"]')
     this.totalBalanceCard = page.locator('[data-testid="view-prisoner-total-balance-card"]')
 
-    this.transactionList = page.locator('table[data-testid="prisoner-transactions-table"]')
+    this.transactionList = page.locator('.transactions-list')
     this.topPagination = page.locator('#top-pagination')
     this.bottomPagination = page.locator('#bottom-pagination')
 

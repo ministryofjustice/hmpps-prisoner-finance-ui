@@ -19,11 +19,12 @@
   li {
     display: flex;
     align-items: center;
-    padding: 10px 0;
-    margin: 0 15px;
 
     a {
+      display: block;
+      width: 100%;
       font-weight: 700;
+      padding: 10px 15px;
 
       @media (max-width: 1020px) {
         font-size: 16px;

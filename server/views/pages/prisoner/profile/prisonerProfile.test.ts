@@ -187,17 +187,29 @@ describe('prisoner profile page', () => {
   })
 
   it('should render the transaction table in the summary container', () => {
-    const summaryContainer = $('[data-testid="prisoner-transactions-table-container"]')
+    const summaryContainer = $('.transactions-list-summary')
 
-    expect(summaryContainer.find('.hmpps-summary-container__heading').text().trim()).toBe('All account transactions')
-    expect(summaryContainer.find('.govuk-table').length).not.toBe(0)
+    expect(summaryContainer.find('.hmpps-summary-container__heading').text().trim()).toContain(
+      'All account transactions',
+    )
+    expect(summaryContainer.find('.transactions-list').length).not.toBe(0)
   })
 
   it('should render the transactions table with 5 rows', () => {
-    const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
+    const transactionsList = $('.transactions-list')
 
-    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(5)
-    expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(5)
+    expect(transactionsList.find('.govuk-table__head').text().trim().replace(/\s+/g, ' ')).toBe(
+      'Date Transaction description Amount Balance Account',
+    )
+    expect(transactionsList.find('.govuk-table__body').text().trim().replace(/\s+/g, ' ')).toBe(
+      [
+        '10/03/2026 10:43 -0.10 0.10 Private cash',
+        '10/03/2026 10:43 0.20 0.11 Savings',
+        '10/03/2026 10:43 Cash to Savings Transfer -0.10 0.40 Private cash',
+        '10/03/2026 10:43 Cash to Savings Transfer 0.10 0.30 Savings',
+        '10/03/2026 10:41 Cash to Savings Transfer 0.10 0.33 Savings',
+      ].join(' '),
+    )
   })
 
   it('should render a balance card for Spends, Private cash, Savings', () => {
@@ -228,24 +240,31 @@ describe('prisoner profile page', () => {
   })
 
   it('should render the actions menu', () => {
-    const creditMenu = $('[data-testid="credit-menu"]')
+    const actionMenu = $('.hmpps-actions-block')
+
+    const creditMenu = actionMenu.find('a:contains("Credit account")')
     expect(creditMenu.text()).toBe('Credit account')
     expect(creditMenu.attr('href')).toBe('/prisoner/AB123456/money/credit-a-prisoner/credit-to')
 
-    const debitMenu = $('[data-testid="debit-menu"]')
+    const debitMenu = actionMenu.find('a:contains("Debit account")')
     expect(debitMenu.text()).toBe('Debit account')
+    expect(debitMenu.attr('href')).toBe('#')
 
-    const subAccountMenu = $('[data-testid="subaccount-menu"]')
+    const subAccountMenu = actionMenu.find('a:contains("Sub account transfer")')
     expect(subAccountMenu.text()).toBe('Sub account transfer')
+    expect(subAccountMenu.attr('href')).toBe('#')
 
-    const adjudicationsMenu = $('[data-testid="adjudications-menu"]')
+    const adjudicationsMenu = actionMenu.find('a:contains("Adjudications")')
     expect(adjudicationsMenu.text()).toBe('Adjudications')
+    expect(adjudicationsMenu.attr('href')).toBe('#')
 
-    const exportMenu = $('[data-testid="export-menu"]')
+    const exportMenu = actionMenu.find('a:contains("Export statement")')
     expect(exportMenu.text()).toBe('Export statement')
+    expect(exportMenu.attr('href')).toBe('#')
 
-    const closeMenu = $('[data-testid="close-menu"]')
+    const closeMenu = actionMenu.find('a:contains("Close account")')
     expect(closeMenu.text()).toBe('Close account')
+    expect(closeMenu.attr('href')).toBe('#')
   })
 
   it('should render dash if running balance is null', () => {
@@ -253,12 +272,12 @@ describe('prisoner profile page', () => {
 
     $ = cheerio.load(html)
 
-    const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
+    const transactionsList = $('.transactions-list')
 
-    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(5)
-    expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(5)
+    expect(transactionsList.find('.govuk-table__head .govuk-table__header').length).toBe(5)
+    expect(transactionsList.find('.govuk-table__body .govuk-table__row').length).toBe(5)
 
-    const lastTransactionRunningBalance = transactionsTable.find('tbody tr').last().find('td').eq(3).text().trim()
+    const lastTransactionRunningBalance = transactionsList.find('tbody tr').last().find('td').eq(3).text().trim()
 
     expect(lastTransactionRunningBalance).toBe('-')
   })

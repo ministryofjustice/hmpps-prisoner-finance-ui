@@ -1,0 +1,17 @@
+{#
+ Parameters:
+    transactions = an array of transaction details to be displayed in the table.
+    paginationItems = an array of pagination items to be displayed above and below the table.
+    prisonNames = an array of prison names to be used for converting prison IDs to names.
+    displayTotalBalance = a boolean to determine if the total balance should be displayed (default: true).
+    showLocation = a boolean to determine if the location column should be displayed (default: true).
+#}
+{% macro transactionsList(params) %}
+  {% set transactions = params.transactions | default([]) %}
+  {% set paginationItems = params.paginationItems | default({})  %}
+  {% set prisonNames = params.prisonNames | default([])  %}
+  {% set displayTotalBalance = params.displayTotalBalance | default(true) %}
+  {% set showLocation = params.showLocation | default(true) %}
+
+  {% include "./template.njk" %}
+{% endmacro %}

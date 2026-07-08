@@ -1,5 +1,5 @@
 {% macro summaryContainer(params, caller) %}
-  <div class="hmpps-summary-container" data-testid="{{params.testId}}">
+  <div class="hmpps-summary-container {{params.classes}}" data-testid="{{params.testId}}">
     <div class="hmpps-summary-container__header">
       <h2 class="hmpps-summary-container__heading" data-testid="{{params.testId}}_header">{{ params.heading }}</h2>
     </div>

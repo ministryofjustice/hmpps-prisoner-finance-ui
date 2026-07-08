@@ -1,10 +1,10 @@
 {%- extends "partials/layout-three-quarters.njk" -%}
 
-{%- from "govuk/components/table/macro.njk" import govukTable -%}
-{%- from "components/summaryContainer/summaryContainer.njk" import summaryContainer -%}
 {%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
-{%- from "components/actionBlock/actionBlock.njk" import actionBlock -%}
 {%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
+{%- from "partials/transactions-list/macro.njk" import transactionsList -%}
+{%- from "components/summaryContainer/summaryContainer.njk" import summaryContainer -%}
+{%- from "components/actionBlock/actionBlock.njk" import actionBlock -%}
 
 {%- set pageTitle = "Finances" -%}
 {%- set backUrl = "/prisoner" -%}
@@ -48,44 +48,12 @@
     </ul>
   </div>
 
-  {% set tableRows = [] %}
-  {% for row in transactions %}
-    {%- set balance = row.accountBalance if row.accountBalance is defined else null -%}
-    {%- set amount = row.credit if row.credit > 0 else -1 * row.debit -%}
-    {%- set amountClass = "amount-credit" if row.credit > 0 else "amount-debit" -%}
-    {%- set rowData = [
-      { text: row.date | formatDateForView },
-      { text: row.description },
-      { text: amount | penceToPound, format: "numeric", classes: amountClass },
-      { text: (balance | penceToPound) if balance !== null else '-', format: "numeric" },
-      { text: row.accountType | formatPrisonerAccountType }
-    ] -%}
-    {% set tableRows = (tableRows.push(rowData), tableRows) %}
-  {% endfor %}
-
   {% call summaryContainer({
-    heading : "All account transactions",
-    "testId" : "prisoner-transactions-table-container"
+    heading: "All account transactions",
+    classes: "transactions-list-summary"
   }) %}
     <div class="hmpps-summary-container__table_container">
-      {% if transactions | length > 0 %}
-        {{ govukTable({
-            attributes: {
-              "data-testid": "prisoner-transactions-table"
-            },
-            classes: "transaction-table",
-            head: [
-              { text: "Date" },
-              { text: "Transaction description" },
-              { text: "Amount", format: "numeric" },
-              { text: "Balance", format: "numeric" },
-              { text: "Account" }
-            ],
-            rows: tableRows
-          }) }}
-      {% else %}
-        <p data-testid="no-transactions-message"> No transactions to show </p>
-      {% endif %}
+      {{ transactionsList({ transactions: transactions, showLocation: false }) }}
     </div>
 
     <p class="govuk-body">
@@ -97,12 +65,12 @@
 {% block secondaryContent %}
   {{ actionBlock({
     actions: [
-      {text: "Credit account", 'dataTestId': 'credit-menu', url:"/prisoner/"+prisonNumber+"/money/credit-a-prisoner/credit-to"},
-      {text: "Debit account", 'dataTestId': 'debit-menu'},
-      {text: "Sub account transfer", 'dataTestId': 'subaccount-menu'},
-      {text: "Adjudications", 'dataTestId': 'adjudications-menu'},
-      {text: "Export statement", 'dataTestId': 'export-menu'},
-      {text: "Close account", 'dataTestId': 'close-menu'}
+      {text: "Credit account", url: "/prisoner/"+prisonNumber+"/money/credit-a-prisoner/credit-to"},
+      {text: "Debit account", url: "#" },
+      {text: "Sub account transfer", url: "#" },
+      {text: "Adjudications", url: "#" },
+      {text: "Export statement", url: "#" },
+      {text: "Close account", url: "#" }
     ]
   }) }}
 {% endblock %}

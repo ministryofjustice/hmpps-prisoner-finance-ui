@@ -148,10 +148,10 @@ describe('prisoner transactions page', () => {
     expect(backLink.text()).toContain('Back')
     expect(backLink.attr('href')).toBe(`/prisoner/${prisonNumber}`)
 
-    const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
+    const transactionsList = $('.transactions-list')
 
-    expect(transactionsTable.find('thead tr th').length).toBe(6)
-    expect(transactionsTable.find('tbody tr').length).toBe(payload.length)
+    expect(transactionsList.find('thead tr th').length).toBe(6)
+    expect(transactionsList.find('tbody tr').length).toBe(payload.length)
 
     const balanceCards = $('.hmpps-balance-card')
 
@@ -185,10 +185,10 @@ describe('prisoner transactions page', () => {
       transactions: [],
     })
 
-    const cheerioPage = cheerio.load(html)
-    const noTransactionsMessage = cheerioPage('[data-testid="no-transactions-message"]')
+    const $$ = cheerio.load(html)
+    const noTransactionsMessage = $$('[data-testid="no-transactions-message"]')
 
-    expect(cheerioPage('table[data-testid="prisoner-transactions-table"]').length).toBe(0)
+    expect($$('.transactions-list').length).toBe(0)
     expect(noTransactionsMessage.length).toBe(1)
     expect(noTransactionsMessage.text()).toContain('No transactions to show')
   })
@@ -198,17 +198,12 @@ describe('prisoner transactions page', () => {
 
     $ = cheerio.load(html)
 
-    const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
+    const transactionsList = $('.transactions-list')
 
-    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(6)
-    expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(4)
+    expect(transactionsList.find('.govuk-table__head .govuk-table__header').length).toBe(6)
+    expect(transactionsList.find('.govuk-table__body .govuk-table__row').length).toBe(4)
 
-    const lastTransactionRunningBalance = $('table[data-testid="prisoner-transactions-table"] tbody tr')
-      .last()
-      .find('td')
-      .eq(3)
-      .text()
-      .trim()
+    const lastTransactionRunningBalance = transactionsList.find('tbody tr').last().find('td').eq(3).text().trim()
 
     expect(lastTransactionRunningBalance).toBe('-')
   })
