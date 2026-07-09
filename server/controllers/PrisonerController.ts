@@ -116,7 +116,7 @@ class PrisonerController {
     try {
       const prisonNumber = req.params.prisonNumber.toString()
 
-      await this.services.auditService.logPageView(AuditPage.PRISONER_FINANCIAL_PROFILE_PAGE, {
+      await this.services.auditService.logPageView(AuditPage.PRISONER_FINANCIAL_PROFILE, {
         who: res.locals.user.username,
         correlationId: req.id,
         subjectType: SubjectType.PRISONER,

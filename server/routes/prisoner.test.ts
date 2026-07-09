@@ -189,7 +189,7 @@ describe('Prisoners', () => {
       await request(app).get(`/prisoner/${prisonNumber}`).expect(200).expect('Content-Type', /html/)
 
       expect(auditService.logPageView).toHaveBeenCalledWith(
-        AuditPage.PRISONER_FINANCIAL_PROFILE_PAGE,
+        AuditPage.PRISONER_FINANCIAL_PROFILE,
         expect.objectContaining({
           correlationId: expect.any(String),
           who: user.username,

@@ -8,7 +8,7 @@ export default function routes(services: Services): Router {
   const router = Router()
 
   router.get('/', async (req, res) => {
-    await services.auditService.logPageView(AuditPage.PRISONER_FINANCE_HOME_PAGE, {
+    await services.auditService.logPageView(AuditPage.PRISONER_FINANCE_HOME, {
       who: res.locals.user.username,
       correlationId: req.id,
     })
