@@ -1,7 +1,7 @@
 import { PermissionsService, PrisonerMoneyPermission } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import type { Express } from 'express'
 import request from 'supertest'
-import AuditService, { AuditPage } from '../services/auditService'
+import AuditService, { AuditPage, SubjectType } from '../services/auditService'
 import PrisonerSearchService from '../services/prisonerSearchService'
 import mockPermissions from './testutils/mockPermissions'
 import { appWithAllRoutes, user } from './testutils/appSetup'
@@ -59,6 +59,11 @@ describe('/grant-bonus-to-prisoners', () => {
         prisonApiService,
         featureFlagService,
       },
+      session: {
+        grantBonusForm: {
+          caseloadId: 'MDI',
+        },
+      },
       userSupplier: () => user,
     })
   })
@@ -75,8 +80,50 @@ describe('/grant-bonus-to-prisoners', () => {
           .expect('Content-Type', /html/)
           .expect(_ => {
             expect(auditService.logPageView).toHaveBeenCalledWith(
-              AuditPage.GRANT_BONUS_CASELOAD,
+              AuditPage.GRANT_BONUS_WIZARD_SELECT_CASELOAD,
               expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
+            )
+          })
+      })
+    })
+  })
+
+  describe('/grant-bonus-to-prisoners/amount', () => {
+    describe('GET', () => {
+      it('Should log page view for grant-bonus-to-prisoners page', async () => {
+        return request(app)
+          .get(`/grant-bonus-to-prisoners/amount`)
+          .expect('Content-Type', /html/)
+          .expect(_ => {
+            expect(auditService.logPageView).toHaveBeenCalledWith(
+              AuditPage.GRANT_BONUS_WIZARD_SELECT_AMOUNT,
+              expect.objectContaining({
+                correlationId: expect.any(String),
+                who: user.username,
+                subjectId: 'MDI',
+                subjectType: SubjectType.PRISON,
+              }),
+            )
+          })
+      })
+    })
+  })
+
+  describe('/grant-bonus-to-prisoners/confirmation', () => {
+    describe('GET', () => {
+      it('Should log page view for grant-bonus-to-prisoners page', async () => {
+        return request(app)
+          .get(`/grant-bonus-to-prisoners/confirmation`)
+          .expect('Content-Type', /html/)
+          .expect(_ => {
+            expect(auditService.logPageView).toHaveBeenCalledWith(
+              AuditPage.GRANT_BONUS_WIZARD_CONFIRMATION,
+              expect.objectContaining({
+                correlationId: expect.any(String),
+                who: user.username,
+                subjectId: 'MDI',
+                subjectType: SubjectType.PRISON,
+              }),
             )
           })
       })

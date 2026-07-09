@@ -1,7 +1,7 @@
 import createError from 'http-errors'
 import { NextFunction, Request, Response } from 'express'
 import { Services } from '../services'
-import { AuditPage, SubjectType } from '../services/auditService'
+import { AuditPage, SearchRequest, SubjectType } from '../services/auditService'
 import { buildMojSelectedFilter } from '../utils/mojFilterHelper'
 import { formatValidationErrors, transactionsFilterSchema } from '../validators/transactionsFilterValidator'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
@@ -28,6 +28,13 @@ class PrisonerController {
 
   public postFindPrisoner = async (req: Request, res: Response, next: NextFunction) => {
     const prisonNumber = typeof req.body.prisonNumber === 'string' ? req.body.prisonNumber.trim() : ''
+
+    await this.services.auditService.logSearchRequest(SearchRequest.FIND_PRISONER, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: prisonNumber,
+    })
 
     if (!prisonNumber) {
       res.render('pages/prisoner/find/find', {

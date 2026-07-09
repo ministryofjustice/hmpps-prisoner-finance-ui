@@ -160,7 +160,7 @@ describe('Prisoners', () => {
       await verifyTransactionPageResponse(
         `/prisoner/${prisonNumber}/money`,
         'Transactions for all sub accounts',
-        AuditPage.PRISONER_TRANSACTION_PAGE_ALL,
+        AuditPage.PRISONER_TRANSACTIONS,
       )
     })
 
@@ -235,7 +235,7 @@ describe('Prisoners', () => {
       await verifyTransactionPageResponse(
         `/prisoner/${prisonNumber}/money/private-cash`,
         'Private cash transactions',
-        AuditPage.PRISONER_TRANSACTION_PAGE_CASH,
+        AuditPage.PRISONER_CASH_TRANSACTIONS,
       )
     })
 
@@ -257,7 +257,7 @@ describe('Prisoners', () => {
       await verifyTransactionPageResponse(
         `/prisoner/${prisonNumber}/money/spends`,
         'Spends transactions',
-        AuditPage.PRISONER_TRANSACTION_PAGE_SPENDS,
+        AuditPage.PRISONER_SPENDS_TRANSACTIONS,
       )
     })
 
@@ -279,7 +279,7 @@ describe('Prisoners', () => {
       await verifyTransactionPageResponse(
         `/prisoner/${prisonNumber}/money/savings`,
         'Savings transactions',
-        AuditPage.PRISONER_TRANSACTION_PAGE_SAVINGS,
+        AuditPage.PRISONER_SAVINGS_TRANSACTIONS,
       )
     })
 

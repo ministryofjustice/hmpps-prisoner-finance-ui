@@ -1,7 +1,7 @@
 import { PermissionsService } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import e, { Request, Response } from 'express'
 import { ApplicationInfo } from '../applicationInfo'
-import AuditService, { AuditPage, SubjectType } from '../services/auditService'
+import AuditService, { AuditPage, SearchRequest, SubjectType } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
 import PrisonRegisterService from '../services/prisonRegisterService'
 import PrisonerController from './PrisonerController'
@@ -45,7 +45,7 @@ describe('PrisonerController', () => {
     locals: {
       user: { username: 'test-user' },
       subAccount: 'CASH',
-      auditPage: AuditPage.PRISONER_TRANSACTION_PAGE_CASH,
+      auditPage: AuditPage.PRISONER_CASH_TRANSACTIONS,
     },
     render: jest.fn(),
     redirect: jest.fn(),
@@ -73,12 +73,27 @@ describe('PrisonerController', () => {
         who: mockRes.locals.user.username,
         correlationId: mockReq.id,
       })
+
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/find/find')
       expect(mockNext).not.toHaveBeenCalled()
     })
   })
 
   describe('postFindPrisoner', () => {
+    it('should call the audit service with the prisoner ID', async () => {
+      const prisonNumber = 'ABC123XX'
+      const mockReq = { body: { prisonNumber } } as unknown as Request
+
+      await prisonerController.postFindPrisoner(mockReq, mockRes, mockNext)
+
+      expect(auditService.logSearchRequest).toHaveBeenCalledWith(SearchRequest.FIND_PRISONER, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      })
+    })
+
     it('Should redirect to the prisoner profile for the entered prison number', async () => {
       const mockReq = { body: { prisonNumber: 'ABC123XX' } } as unknown as Request
 
