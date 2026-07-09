@@ -32,8 +32,6 @@ export enum SubjectType {
   PRISON = 'PRISON_ID',
 }
 
-// "subjectType":"SEARCH_TERM", "subjectId":"A9613AZ"
-
 export interface AuditEventDetails {
   who: string
   subjectId?: string
