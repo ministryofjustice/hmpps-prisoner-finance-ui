@@ -2,7 +2,7 @@ import { NextFunction, Response, Request } from 'express'
 import { SessionData } from 'express-session'
 import z from 'zod'
 import { Services } from '../services'
-import { AuditPage } from '../services/auditService'
+import { AuditPage, SubjectType } from '../services/auditService'
 import { mapItemsForRadioButtons } from '../utils/utils'
 import GrantBonusToPrisonersService from '../services/GrantBonusToPrisonersService'
 import creditAmountValidator from '../validators/creditAmountValidator'
@@ -24,7 +24,7 @@ export default class GrantBonusToPrisonersController {
   }
 
   public getGrantBonusToPrisonersSelectCaseload = async (req: Request, res: Response, next: NextFunction) => {
-    await this.services.auditService.logPageView(AuditPage.GRANT_BONUS_CASELOAD, {
+    await this.services.auditService.logPageView(AuditPage.GRANT_BONUS_WIZARD_SELECT_CASELOAD, {
       who: res.locals.user.username,
       correlationId: req.id,
     })
@@ -75,11 +75,14 @@ export default class GrantBonusToPrisonersController {
   }
 
   public getGrantBonusToPrisonersSelectAmount = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      res.render('pages/grantBonusToPrisoners/amount/amount.njk')
-    } catch (e) {
-      next(e)
-    }
+    await this.services.auditService.logPageView(AuditPage.GRANT_BONUS_WIZARD_SELECT_AMOUNT, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISON,
+      subjectId: req.session?.grantBonusForm?.caseloadId,
+    })
+
+    res.render('pages/grantBonusToPrisoners/amount/amount.njk')
   }
 
   public postGrantBonusToPrisonersSelectAmount = async (req: Request, res: Response, next: NextFunction) => {
@@ -133,6 +136,13 @@ export default class GrantBonusToPrisonersController {
   }
 
   public getGrantBonusToPrisonerConfirmation = async (req: Request, res: Response, next: NextFunction) => {
+    await this.services.auditService.logPageView(AuditPage.GRANT_BONUS_WIZARD_CONFIRMATION, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISON,
+      subjectId: req.session?.grantBonusForm?.caseloadId,
+    })
+
     res.render('pages/grantBonusToPrisoners/confirmation/confirmation.njk', {
       transactionNumber: req.query.transactionNumber,
     })

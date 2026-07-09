@@ -39,7 +39,7 @@ describe('GET /', () => {
       .expect('Content-Type', /html/)
       .expect(200)
       .expect(_ => {
-        expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.INDEX, {
+        expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.PRISONER_FINANCE_HOME, {
           who: user.username,
           correlationId: expect.any(String),
         })

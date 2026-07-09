@@ -3,7 +3,7 @@ import { NextFunction, Request, Response } from 'express'
 import z from 'zod'
 import { Services } from '../services'
 import CreditAPrisonerService from '../services/creditAPrisonerService'
-import { AuditPage } from '../services/auditService'
+import { AuditPage, SubjectType } from '../services/auditService'
 import AccountResponse from '../interfaces/AccountResponse'
 import creditAmountValidator from '../validators/creditAmountValidator'
 import descriptionFieldValidator from '../validators/descriptionFieldValidator'
@@ -17,12 +17,14 @@ export default class CreditAPrisonerController {
   }
 
   public getCreditTo = async (req: Request, res: Response, next: NextFunction) => {
-    await this.services.auditService.logPageView(AuditPage.CREDIT_TO, {
+    const prisonerReference = req.params.prisonNumber as string
+
+    await this.services.auditService.logPageView(AuditPage.CREDIT_A_PRISONER_WIZARD_TO, {
       who: res.locals.user.username,
       correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: prisonerReference,
     })
-
-    const prisonerReference = req.params.prisonNumber as string
 
     const { subAccounts } = await this.services.prisonerFinanceService.getAccountByReference(prisonerReference)
 
@@ -52,15 +54,18 @@ export default class CreditAPrisonerController {
   }
 
   public getCreditFrom = async (req: Request, res: Response, next: NextFunction) => {
-    await this.services.auditService.logPageView(AuditPage.CREDIT_FROM, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
-
-    if (!req.session?.creditForm?.creditSubAccountId) {
+    if (!req.session?.creditForm?.creditSubAccountId && !req.session?.creditForm?.prisonerAccountReference) {
       res.redirect('./credit-to')
       return
     }
+
+    await this.services.auditService.logPageView(AuditPage.CREDIT_A_PRISONER_WIZARD_FROM, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: req.session.creditForm.prisonerAccountReference,
+    })
+
     // this will give the prisoner a credit from the current user's selected prison in DPS - we probably need to flag this in the UI
     const caseloads = await this.services.prisonApiService.getUserCaseloads(req.user?.token as string)
     const currentCaseload = caseloads.find(caseload => caseload.currentlyActive)
@@ -92,6 +97,18 @@ export default class CreditAPrisonerController {
   }
 
   public getCreditAmount = async (req: Request, res: Response, next: NextFunction) => {
+    if (!req.session?.creditForm?.prisonerAccountReference) {
+      res.redirect('./credit-to')
+      return
+    }
+
+    await this.services.auditService.logPageView(AuditPage.CREDIT_A_PRISONER_WIZARD_AMOUNT, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: req.session.creditForm.prisonerAccountReference,
+    })
+
     res.render('pages/creditAPrisoner/creditAmount/creditAmount.njk')
   }
 
@@ -131,7 +148,14 @@ export default class CreditAPrisonerController {
     }
   }
 
-  public getCreditConfirmation = (req: Request, res: Response, next: NextFunction) => {
+  public getCreditConfirmation = async (req: Request, res: Response, next: NextFunction) => {
+    await this.services.auditService.logPageView(AuditPage.CREDIT_A_PRISONER_WIZARD_CONFIRMATION, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: req.session.creditForm.prisonerAccountReference,
+    })
+
     CreditAPrisonerService.clearCreditForm(req.session as SessionData)
 
     res.render('pages/creditAPrisoner/creditConfirmation/creditConfirmation.njk', {

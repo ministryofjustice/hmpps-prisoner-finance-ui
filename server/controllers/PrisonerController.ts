@@ -1,7 +1,7 @@
 import createError from 'http-errors'
 import { NextFunction, Request, Response } from 'express'
 import { Services } from '../services'
-import { AuditPage } from '../services/auditService'
+import { AuditPage, SearchRequest, SubjectType } from '../services/auditService'
 import { buildMojSelectedFilter } from '../utils/mojFilterHelper'
 import { formatValidationErrors, transactionsFilterSchema } from '../validators/transactionsFilterValidator'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
@@ -29,6 +29,13 @@ class PrisonerController {
   public postFindPrisoner = async (req: Request, res: Response, next: NextFunction) => {
     const prisonNumber = typeof req.body.prisonNumber === 'string' ? req.body.prisonNumber.trim() : ''
 
+    await this.services.auditService.logSearchRequest(SearchRequest.FIND_PRISONER, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: prisonNumber,
+    })
+
     if (!prisonNumber) {
       res.render('pages/prisoner/find/find', {
         errorMap: {
@@ -43,14 +50,17 @@ class PrisonerController {
 
   public getTransactions = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      await this.services.auditService.logPageView(AuditPage.PRISONER_MONEY, {
+      const { subAccount = null, headerTitle = null } = res.locals
+      const prisonNumber = req.params.prisonNumber.toString()
+
+      await this.services.auditService.logPageView(res.locals.auditPage, {
         who: res.locals.user.username,
         correlationId: req.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
       })
-      const prisonNumber = req.params.prisonNumber.toString()
-      const { subAccount = null, headerTitle = null } = res.locals
-      const { startDate, endDate, credit, debit, page } = req.query as Record<string, string>
 
+      const { startDate, endDate, credit, debit, page } = req.query as Record<string, string>
       const parsedQueries = transactionsFilterSchema.safeParse(req.query)
       const selectedFilters = buildMojSelectedFilter(transactionFilterConfig, req.query)
 
@@ -106,9 +116,11 @@ class PrisonerController {
     try {
       const prisonNumber = req.params.prisonNumber.toString()
 
-      await this.services.auditService.logPageView(AuditPage.PRISONER_PROFILE, {
+      await this.services.auditService.logPageView(AuditPage.PRISONER_FINANCIAL_PROFILE, {
         who: res.locals.user.username,
         correlationId: req.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
       })
 
       const [transactions, subAccountBalances] = await Promise.all([
