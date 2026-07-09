@@ -1,4 +1,6 @@
-{% set formattedName =  prisonerDetails | lastNameCommaFirstName %}
+{% set firstName = prisonerDetails.firstName | capitalize %}
+{% set lastName = prisonerDetails.lastName | capitalize %}
+{% set formattedName = lastName + ", " + firstName %}
 
 <div class="govuk-grid-row">
   <div class="govuk-grid-column-full">
@@ -9,7 +11,7 @@
           <img class="hmpps-profile-photo" src="/prisoner-image/{{ prisonerDetails.prisonerNumber}}" alt="Image of {{ formattedName }}" loading="lazy" data-qa="prisoner-photo"/>
         </div>
 
-        <h2 class="govuk-heading-xl hmpps-profile-prisoner-name" data-testid="prisonerName">
+        <h2 class="govuk-heading-l hmpps-profile-prisoner-name" data-testid="prisonerName">
           {{ formattedName }}
         </h2>
 

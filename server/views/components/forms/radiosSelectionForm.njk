@@ -3,7 +3,7 @@
 {%- from "govuk/components/fieldset/macro.njk" import govukFieldset -%}
 
 {% macro radiosSelectionForm(params) %}
-  <form method="POST" action="{{params.action}}" class="govuk-!-margin-top-5 {{params.additionalClasses}}" data-testid='select-radios-form'>
+  <form method="POST" action="{{params.action}}" class="{{params.additionalClasses}}" data-testid='select-radios-form'>
     <input type="hidden" name="_csrf" value="{{ params.csrfToken }}">
 
     {% call govukFieldset({

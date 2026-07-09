@@ -135,7 +135,7 @@ test.describe('Viewing a prisoners financial profile', () => {
 
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
-      expect(prisonerProfilePage.profileHeader).toContainText('SMITH, JOHN')
+      expect(prisonerProfilePage.profileHeader).toContainText('Smith, John')
       expect(prisonerProfilePage.profileHeader).toContainText(prisonNumber)
     })
 

@@ -6,10 +6,10 @@ import { setUpNunJucksFilters } from '../../../utils/nunjucksSetup'
 describe('Prisoner Finance Component: Data warning banner', () => {
   let njkEnv: nunjucks.Environment
 
-  const renderMacro = (enabled: boolean, isWarning: boolean) => {
+  const renderMacro = (enabled: boolean) => {
     const template = `
       {% from "partials/data-warning-banner/macro.njk" import dataWarningBanner %}
-      {{ dataWarningBanner(${enabled}, ${isWarning}) }}
+      {{ dataWarningBanner(${enabled}) }}
     `
     return njkEnv.renderString(template, {})
   }
@@ -28,7 +28,7 @@ describe('Prisoner Finance Component: Data warning banner', () => {
   })
 
   test('Should show warning banner when it is enabled', () => {
-    const html = renderMacro(true, true)
+    const html = renderMacro(true)
     const $ = cheerio.load(html)
 
     expect($('.data-warning-banner').length).toBe(1)
@@ -37,29 +37,11 @@ describe('Prisoner Finance Component: Data warning banner', () => {
   })
 
   test('Should not show warning banner when it is not enabled', () => {
-    const html = renderMacro(false, true)
+    const html = renderMacro(false)
     const $ = cheerio.load(html)
 
     expect($('.data-warning-banner').length).toBe(0)
     expect($('.moj-alert--warning').length).toBe(0)
     expect($('.moj-alert--information').length).toBe(0)
-  })
-
-  test('Should show information banner when it is enabled', () => {
-    const html = renderMacro(true, false)
-    const $ = cheerio.load(html)
-
-    expect($('.data-warning-banner').length).toBe(1)
-    expect($('.moj-alert--information').length).toBe(1)
-    expect($('.moj-alert--warning').length).toBe(0)
-  })
-
-  test('Should not show information banner when it is not enabled', () => {
-    const html = renderMacro(false, false)
-    const $ = cheerio.load(html)
-
-    expect($('.data-warning-banner').length).toBe(0)
-    expect($('.moj-alert--information').length).toBe(0)
-    expect($('.moj-alert--warning').length).toBe(0)
   })
 })

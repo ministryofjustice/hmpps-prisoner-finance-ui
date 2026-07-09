@@ -75,7 +75,7 @@ describe('Credit A Prisoner - Credit To Page', () => {
     const radioButtons = $("[data-testid='sub-account-radio']")
     expect(radioButtons.length).toBe(3)
 
-    const continueButton = $("[data-testid='continue-button']")
+    const continueButton = $('[type=submit]')
     expect(continueButton.length).toBe(1)
   })
 })

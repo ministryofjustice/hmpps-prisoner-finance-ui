@@ -1,9 +1,8 @@
 {#
  Parameters:
     dataWarningBannerEnabled = a boolean to determine if the banner should be displayed.
-    isWarning = a boolean to determine if the alert should be a warning or information (default: false).
 #}
-{% macro dataWarningBanner(dataWarningBannerEnabled = false, isWarning = false) %}
+{% macro dataWarningBanner(dataWarningBannerEnabled = false) %}
   {%- if dataWarningBannerEnabled -%}
     {% include "./template.njk" %}
   {%- endif -%}

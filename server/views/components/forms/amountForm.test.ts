@@ -57,7 +57,6 @@ describe('View Components - AmountForm', () => {
 
     expect($amountInput.val()).toBe('50.00')
     expect(prefixText).toBe('£')
-    expect($amountInput.attr('data-testid')).toBe('amount-input')
   })
 
   it('should render the description input with value', () => {
@@ -68,15 +67,13 @@ describe('View Components - AmountForm', () => {
     const $descriptionInput = $('#description')
 
     expect($descriptionInput.val()).toBe('Refund for travel')
-    expect($descriptionInput.attr('data-testid')).toBe('description-input')
   })
 
   it('should render the submit button', () => {
     const $ = renderForm({})
 
-    const $button = $('button[data-testid="done-button"]')
+    const $button = $('[type=submit]')
     expect($button.text().trim()).toBe('Done')
-    expect($button.attr('type')).toBe('submit')
   })
 
   it('should render error messages when errorMap is populated', () => {

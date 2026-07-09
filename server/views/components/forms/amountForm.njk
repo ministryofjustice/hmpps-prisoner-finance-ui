@@ -3,7 +3,7 @@
 {%- from "govuk/components/input/macro.njk" import govukInput -%}
 
 {% macro amountForm(params) %}
-  <form method="POST" action="{{params.action}}" class="govuk-!-margin-top-5" data-testid='select-amount'>
+  <form method="POST" action="{{params.action}}" class="{{params.additionalClasses}}" data-testid='select-amount'>
     <input type="hidden" name="_csrf" value="{{ params.csrfToken }}">
 
     {% call govukFieldset({

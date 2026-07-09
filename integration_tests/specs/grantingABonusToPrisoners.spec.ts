@@ -30,7 +30,7 @@ test.describe('Granting a bonus to prisoners', () => {
       const header = page.getByText('Grant bonus to prisoners')
       const radiosTitle = page.locator('[data-testid="radio-group-heading"]')
       const radios = page.getByRole('radio')
-      const continueButton = page.locator('[data-testid="continue-button"]')
+      const continueButton = page.getByRole('button', { name: 'Continue', exact: true })
 
       await expect(header).toBeVisible()
       await expect(radiosTitle).toBeVisible()
@@ -45,7 +45,7 @@ test.describe('Granting a bonus to prisoners', () => {
 
       await radios.first().click()
 
-      const continueButton = page.locator('[data-testid="continue-button"]')
+      const continueButton = page.getByRole('button', { name: 'Continue', exact: true })
       await continueButton.click()
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
@@ -57,7 +57,7 @@ test.describe('Granting a bonus to prisoners', () => {
     test('Should show an error if a caseload has not been selected', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      const continueButton = page.locator('[data-testid="continue-button"]')
+      const continueButton = page.getByRole('button', { name: 'Continue', exact: true })
       await continueButton.click()
 
       await page.waitForURL('/grant-bonus-to-prisoners', { timeout: 1 })
@@ -96,7 +96,7 @@ test.describe('Granting a bonus to prisoners', () => {
 
       await AmountPage.verifyOnPage(page)
 
-      const doneButton = page.locator('[data-testid="done-button"]')
+      const doneButton = page.getByRole('button', { name: 'Done', exact: true })
       await doneButton.click()
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
@@ -117,7 +117,7 @@ test.describe('Granting a bonus to prisoners', () => {
       await amountPage.amountInput.fill('-1.02')
       await amountPage.descriptionInput.fill('test')
 
-      let doneButton = page.locator('[data-testid="done-button"]')
+      let doneButton = page.getByRole('button', { name: 'Done', exact: true })
       await doneButton.click()
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
@@ -128,7 +128,7 @@ test.describe('Granting a bonus to prisoners', () => {
       await amountPage.amountInput.fill('0.00')
       await amountPage.descriptionInput.fill('test')
 
-      doneButton = page.locator('[data-testid="done-button"]')
+      doneButton = page.getByRole('button', { name: 'Done', exact: true })
       await doneButton.click()
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
@@ -148,7 +148,7 @@ test.describe('Granting a bonus to prisoners', () => {
 
       amountPage.amountInput.fill('1.23')
 
-      const doneButton = page.locator('[data-testid="done-button"]')
+      const doneButton = page.getByRole('button', { name: 'Done', exact: true })
       await doneButton.click()
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
@@ -168,7 +168,7 @@ test.describe('Granting a bonus to prisoners', () => {
       await amountPage.amountInput.fill('1.999')
       await amountPage.descriptionInput.fill('Test description')
 
-      const doneButton = page.locator('[data-testid="done-button"]')
+      const doneButton = page.getByRole('button', { name: 'Done', exact: true })
       await doneButton.click()
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
@@ -176,11 +176,11 @@ test.describe('Granting a bonus to prisoners', () => {
       const errorText = page.getByText('Must be a valid number with up to 2 decimal places.')
       await expect(errorText).toBeVisible()
 
-      const persistAmountInput = page.locator('[data-testid="amount-input"]')
+      const persistAmountInput = page.getByLabel('Amount')
       await expect(persistAmountInput).toBeVisible()
       await expect(persistAmountInput).toHaveValue('1.999')
 
-      const persistDescriptionInput = page.locator('[data-testid="description-input"]')
+      const persistDescriptionInput = page.getByLabel('Description')
       await expect(persistDescriptionInput).toBeVisible()
       await expect(persistDescriptionInput).toHaveValue('Test description')
     })
@@ -198,7 +198,7 @@ test.describe('Granting a bonus to prisoners', () => {
       const longDescription = 'a'.repeat(256)
       await amountPage.descriptionInput.fill(longDescription)
 
-      const doneButton = page.locator('[data-testid="done-button"]')
+      const doneButton = page.getByRole('button', { name: 'Done', exact: true })
       await doneButton.click()
 
       await page.waitForURL('/grant-bonus-to-prisoners/amount', { timeout: 3 })
