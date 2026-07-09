@@ -9,7 +9,7 @@
     {% call govukFieldset({
       legend: {
         text: params.headingText,
-        classes: "govuk-fieldset__legend--l",
+        classes: "govuk-fieldset__legend--xl",
         isPageHeading: true
       }
     }) %}
@@ -23,9 +23,6 @@
           text: "£"
         },
         classes: "govuk-input--width-10",
-        attributes: {
-          "data-testid" : "amount-input"
-        },
         errorMessage: { text: params.errorMap.amount } if params.errorMap.amount else null,
         value: params.amountValue
       }) }}
@@ -36,9 +33,6 @@
         },
         id: "description",
         name: "description",
-        attributes: {
-          "data-testid" : "description-input"
-        },
         errorMessage: { text: params.errorMap.description } if params.errorMap.description else null,
         value: params.descriptionValue
       }) }}
@@ -47,9 +41,6 @@
     {{ govukButton({
       text: "Done",
       type: "submit",
-      attributes:{
-        "data-testid" : "done-button"
-      },
       preventDoubleClick: true
     }) }}
   </form>

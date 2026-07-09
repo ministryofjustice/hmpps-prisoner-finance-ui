@@ -9,7 +9,7 @@
     {% call govukFieldset({
       legend: {
         text: params.headingText,
-        classes: "govuk-fieldset__legend--l",
+        classes: "govuk-fieldset__legend--xl",
         isPageHeading: true
       }
     }) %}
@@ -30,9 +30,6 @@
     {{ govukButton({
       text: "Continue",
       type: "submit",
-      attributes:{
-      "data-testid" : "continue-button"
-      },
       preventDoubleClick: true
     }) }}
   </form>
