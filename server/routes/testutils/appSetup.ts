@@ -59,7 +59,10 @@ function appSetup(
       } as unknown as Session
     }
     res.locals = {
+      originalUrl: '',
       user: { ...req.user } as HmppsUser,
+      digitalPrisonServicesUrl: '',
+      prisonerProfileUrl: '',
       cspNonce: '',
       csrfToken: '',
       asset_path: '',

@@ -1,12 +1,15 @@
-{% extends "../partials/layout.njk" %}
+{%- extends "partials/layout-full-width.njk" -%}
 
-{% set pageTitle = applicationName + " - Error" %}
-{% set mainClasses = "govuk-body" %}
+{%- set pageTitle = 'An error has occured' -%}
+{%- set backUrl = "/" -%}
 
-{% block content %}
+{% block innerContent %}
+  <h2 class="govuk-heading-m">
+    {% if status %}
+      <span class="govuk-caption-m" data-testid="error-page-status"><span class="govuk-visually-hidden">Status:</span> {{ status }}</span>
+    {% endif %}
+    {{ message }}
+  </h2>
 
-  <h1 data-testid="error-page-message">{{ message }}</h1>
-  <h2 data-testid="error-page-status">{{ status }}</h2>
-  <pre data-testid="error-page-stack">{{ stack }}</pre>
-
+  <pre class="govuk-body" data-testid="error-page-stack"><code>{{ stack }}</code></pre>
 {% endblock %}

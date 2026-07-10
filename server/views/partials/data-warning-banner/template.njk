@@ -1,0 +1,14 @@
+{%- from "moj/components/alert/macro.njk" import mojAlert -%}
+
+{%- set dataWarningHtml -%}
+  <strong>This web page is for testing only.</strong>
+  <p class="govuk-body">The data you will see is the financial data of real prisoners, but may be inaccurate or incomplete.</p>
+{%- endset -%}
+
+{{ mojAlert({
+  variant: "warning",
+  title: "Test environment",
+  classes: "data-warning-banner",
+  dismissible: false,
+  html: dataWarningHtml
+}) }}

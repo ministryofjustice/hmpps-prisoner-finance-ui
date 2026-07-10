@@ -19,8 +19,8 @@ export default class AbstractPage {
     this.page = page
     this.phaseBanner = page.getByTestId('header-phase-banner')
     this.usersName = page.getByTestId('header-user-name')
-    this.signoutLink = page.getByText('Sign out')
-    this.manageUserDetails = page.getByTestId('manageDetails')
+    this.signoutLink = page.getByRole('link', { name: 'Sign out', exact: true })
+    this.manageUserDetails = page.getByRole('link', { name: 'Manage user details', exact: true })
   }
 
   async signOut() {

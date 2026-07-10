@@ -12,13 +12,22 @@ export default class FindPrisonerPage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Enter a prison number' })
-    this.prisonNumberInput = page.locator('[data-testid="prisoner-number-input"]')
-    this.submitButton = page.locator('[data-testid="submit-button"]')
+    this.heading = page.getByRole('heading', { name: 'View prisoner finances', exact: true })
+
+    this.prisonNumberInput = page.getByLabel('Enter a prison number', { exact: true })
+    this.submitButton = page.getByRole('button', { name: 'Submit', exact: true })
+
     this.errorMessage = page.locator('#prisonNumber-error')
   }
 
+  static async load(page: Page): Promise<FindPrisonerPage> {
+    await page.goto('/prisoner')
+    return this.verifyOnPage(page)
+  }
+
   static async verifyOnPage(page: Page): Promise<FindPrisonerPage> {
+    expect(new URL(page.url()).pathname).toBe('/prisoner')
+
     const findPrisonerPage = new FindPrisonerPage(page)
     await expect(findPrisonerPage.heading).toBeVisible()
     return findPrisonerPage

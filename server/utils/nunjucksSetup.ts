@@ -10,17 +10,23 @@ import {
   createProfileTabsForPrisoner,
   convertPrisonIdToName,
   formatPrisonerAccountType,
+  prisonerProfileBacklink,
 } from './utils'
+import { lastNameCommaFirstName, formatDate } from './formatUtils'
 import config from '../config'
 import logger from '../../logger'
 
 export const setUpNunJucksFilters = (njkEnv: nunjucks.Environment, assetManifest: Record<string, string> = null) => {
+  njkEnv.addGlobal('prisonerProfileBacklink', prisonerProfileBacklink)
+
   if (assetManifest !== null) njkEnv.addFilter('assetMap', (url: string) => assetManifest[url] || url)
   else
     // test setups
     njkEnv.addFilter('assetMap', (_url: string) => '')
 
   njkEnv.addFilter('initialiseName', initialiseName)
+  njkEnv.addFilter('lastNameCommaFirstName', lastNameCommaFirstName)
+  njkEnv.addFilter('formatDate', formatDate)
   njkEnv.addFilter('formatDateForView', formatDateForView)
   njkEnv.addFilter('penceToPound', penceToPound)
   njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
@@ -45,6 +51,12 @@ export default function nunjucksSetup(app: express.Express): void {
       logger.error(e, 'Could not read asset manifest file')
     }
   }
+
+  app.use((_req, res, next) => {
+    res.locals.digitalPrisonServicesUrl = config.serviceUrls.digitalPrison
+    res.locals.prisonerProfileUrl = config.serviceUrls.prisonerProfile
+    return next()
+  })
 
   const njkEnv = nunjucks.configure(
     [

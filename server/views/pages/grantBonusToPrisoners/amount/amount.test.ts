@@ -29,13 +29,13 @@ describe('Credit A Prisoner - Credit To Page', () => {
   })
 
   test('Renders the clickable radio buttons and continue button', () => {
-    const amountInput = $("[data-testid='amount-input']")
+    const amountInput = $("[name='amount']")
     expect(amountInput.length).toBe(1)
 
-    const description = $("[data-testid='description-input']")
+    const description = $("[name='description']")
     expect(description.length).toBe(1)
 
-    const doneButton = $("[data-testid='done-button']")
+    const doneButton = $('[type=submit]')
     expect(doneButton.length).toBe(1)
   })
 })

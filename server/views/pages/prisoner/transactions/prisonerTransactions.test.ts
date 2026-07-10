@@ -97,8 +97,9 @@ describe('prisoner transactions page', () => {
   const params = {
     prisonNumber,
     applicationName: 'Hmpps Prisoner Finance Ui',
+    headerTitle: 'Finance',
     transactions: payload,
-    prisoner: { firstName: 'BOB', lastName: 'Taylor' },
+    prisonerDetails: { firstName: 'BOB', lastName: 'Taylor' },
     currentBalance: 1000,
     holdBalance: 0,
     prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
@@ -107,8 +108,9 @@ describe('prisoner transactions page', () => {
   const paramsWithoutLastRunningBalance = {
     prisonNumber,
     applicationName: 'Hmpps Prisoner Finance Ui',
+    headerTitle: 'Finance',
     transactions: payloadWithoutLastRunningBalance,
-    prisoner: { firstName: 'BOB', lastName: 'Taylor' },
+    prisonerDetails: { firstName: 'BOB', lastName: 'Taylor' },
     currentBalance: 1000,
     holdBalance: 0,
     prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
@@ -133,26 +135,28 @@ describe('prisoner transactions page', () => {
   })
 
   it('should render the page elements correctly', () => {
-    const header = $('#prisonerInformationHeader')
+    const header = $('.mini-profile, .hmpps-profile-banner')
 
     expect(header.length > 0).toBe(true)
 
     const title = $('title')
 
-    expect(title.text()).toContain('Hmpps Prisoner Finance Ui - Finance')
+    expect(title.text()).toContain('Finance - Hmpps Prisoner Finance Ui')
 
-    const backLink = $('#backLink')
+    const backLink = $('.govuk-back-link')
 
     expect(backLink.text()).toContain('Back')
     expect(backLink.attr('href')).toBe(`/prisoner/${prisonNumber}`)
 
-    const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
+    const transactionsList = $('.transactions-list')
 
-    expect(transactionsTable.find('thead tr th').length).toBe(6)
-    expect(transactionsTable.find('tbody tr').length).toBe(payload.length)
+    expect(transactionsList.find('thead tr th').length).toBe(6)
+    expect(transactionsList.find('tbody tr').length).toBe(payload.length)
 
-    expect($('[data-testid="view-prisoner-current-balance-card_header"]').text().trim()).toBe('Current balance')
-    expect($('[data-testid="view-prisoner-current-balance-card_amount"]').text().trim()).toBe('£10.00')
+    const balanceCards = $('.hmpps-balance-card')
+
+    expect($(balanceCards[0]).text()).toContain('Current balance')
+    expect($(balanceCards[0]).text()).toContain('£10.00')
 
     const filterComponent = $('[data-module="moj-filter"]')
     const filterSelected = $('[class="moj-filter__selected"]')
@@ -181,10 +185,10 @@ describe('prisoner transactions page', () => {
       transactions: [],
     })
 
-    const cheerioPage = cheerio.load(html)
-    const noTransactionsMessage = cheerioPage('[data-testid="no-transactions-message"]')
+    const $$ = cheerio.load(html)
+    const noTransactionsMessage = $$('[data-testid="no-transactions-message"]')
 
-    expect(cheerioPage('table[data-testid="prisoner-transactions-table"]').length).toBe(0)
+    expect($$('.transactions-list').length).toBe(0)
     expect(noTransactionsMessage.length).toBe(1)
     expect(noTransactionsMessage.text()).toContain('No transactions to show')
   })
@@ -194,17 +198,12 @@ describe('prisoner transactions page', () => {
 
     $ = cheerio.load(html)
 
-    const transactionsTable = $('table[data-testid="prisoner-transactions-table"]')
+    const transactionsList = $('.transactions-list')
 
-    expect(transactionsTable.find('.govuk-table__head .govuk-table__header').length).toBe(6)
-    expect(transactionsTable.find('.govuk-table__body .govuk-table__row').length).toBe(4)
+    expect(transactionsList.find('.govuk-table__head .govuk-table__header').length).toBe(6)
+    expect(transactionsList.find('.govuk-table__body .govuk-table__row').length).toBe(4)
 
-    const lastTransactionRunningBalance = $('table[data-testid="prisoner-transactions-table"] tbody tr')
-      .last()
-      .find('td')
-      .eq(3)
-      .text()
-      .trim()
+    const lastTransactionRunningBalance = transactionsList.find('tbody tr').last().find('td').eq(3).text().trim()
 
     expect(lastTransactionRunningBalance).toBe('-')
   })

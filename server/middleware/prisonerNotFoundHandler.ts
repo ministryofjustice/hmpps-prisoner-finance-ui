@@ -9,7 +9,7 @@ export default function prisonerNotFoundHandler(
 ): void {
   const status = error.status ?? error.responseStatus
   if (status === 404) {
-    res.status(404).render('pages/prisoner/notFound/notFound')
+    res.status(404).render('pages/prisoner-not-found')
     return
   }
   next(error)

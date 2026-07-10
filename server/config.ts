@@ -118,13 +118,13 @@ export default {
     },
   },
   serviceUrls: {
-    digitalPrison: get('DPS_HOME_PAGE_URL', 'https://dps-dev.prison.service.justice.gov.uk', requiredInProduction),
+    digitalPrison: get('DPS_HOME_PAGE_URL', 'http://localhost:3001', requiredInProduction),
+    prisonerProfile: get('PRISONER_PROFILE_URL', 'http://localhost:3001', requiredInProduction),
   },
   sqs: {
     audit: auditConfig(),
   },
   ingressUrl: get('INGRESS_URL', 'http://localhost:3000', requiredInProduction),
   environmentName: get('ENVIRONMENT_NAME', 'dev'),
-  prisoner_profile_url: get('PRISONER_PROFILE_URL', 'http://localhost:3999', requiredInProduction),
   featureToggleUrl: get('FEATURE_TOGGLE_URL', 'http://localhost:8080', requiredInProduction),
 }

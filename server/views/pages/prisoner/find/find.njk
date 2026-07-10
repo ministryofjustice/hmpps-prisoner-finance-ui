@@ -1,31 +1,24 @@
-{% extends "partials/layout.njk" %}
+{%- extends "partials/layout-two-thirds.njk" -%}
 
-{% from "govuk/components/input/macro.njk" import govukInput %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "components/dataWarningBanner/dataWarningBanner.njk" import dataWarningBanner %}
+{%- from "govuk/components/input/macro.njk" import govukInput -%}
+{%- from "govuk/components/button/macro.njk" import govukButton -%}
+{%- from "govuk/components/fieldset/macro.njk" import govukFieldset -%}
+{%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
 
+{%- set pageTitle = "View prisoner finances" -%}
+{%- set backUrl = "/" -%}
 
-{% set pageTitle = applicationName + " - View prisoner finances" %}
-{% set mainClasses = "govuk-body" %}
-
-{% block beforeContent %}
-  <a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
+{% block contentHeader %}
+  {{ dataWarningBanner(dataWarningBannerEnabled) }}
 {% endblock %}
 
-{% block content %}
+{% block innerContent %}
   <form method="POST" action="/prisoner" data-testid="find-prisoner-form">
-
     <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-
-
-    {% set labelHtml %}
-      <h1 class="govuk-label--xl">Enter a prison number</h1>
-      {{ dataWarningBanner(dataWarningBannerEnabled) }}
-    {% endset %}
 
     {{ govukInput({
       label: {
-        html: labelHtml
+        text: "Enter a prison number"
       },
       id: "prisonNumber",
       name: "prisonNumber",
@@ -43,6 +36,5 @@
         "data-testid": "submit-button"
       }
     }) }}
-
   </form>
 {% endblock %}

@@ -71,7 +71,7 @@ describe('View Components - ConfirmationPanel', () => {
 
     const paragraphText = $('.govuk-body').text().replace(/\s+/g, ' ').trim()
 
-    expect(paragraphText).toBe('You can now view your dashboard')
+    expect(paragraphText).toBe('You can now view your dashboard.')
     expect($('[data-testid="confirmation-message-link"]').attr('href')).toBe('/dashboard')
   })
 })

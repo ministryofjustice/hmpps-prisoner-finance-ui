@@ -22,9 +22,9 @@ class ListFilter {
       bigModeMediaQuery: '(min-width: 40.0625em)',
       startHidden: shouldStartHidden,
       toggleButton: {
-        showText: 'Show filter',
-        hideText: 'Hide filter',
-        classes: 'govuk-button--blue',
+        showText: 'Show filters',
+        hideText: 'Hide filters',
+        classes: '',
       },
       toggleButtonContainer: {
         selector: '.moj-action-bar__filter',

@@ -1,0 +1,109 @@
+import { expect, test } from '@playwright/test'
+import { AxeBuilder } from '@axe-core/playwright'
+import { login, resetStubs } from '../testUtils'
+import IndexPage from '../pages/indexPage'
+import FindPrisonerPage from '../pages/findPrisonerPage'
+import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
+import prisonerSearchApi from '../mockApis/prisonerSearchApi'
+import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
+import prisonApi from '../mockApis/prisonApi'
+
+test.describe('Finding a prisoners financial profile', () => {
+  const prisonNumber = 'A1234BC'
+
+  const stubPrisonerProfile = async () => {
+    await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonApi.stubGetPrisonerImage()
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
+    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS')
+    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
+    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS')
+  }
+
+  test.beforeEach(async ({ page }) => {
+    await resetStubs()
+    await login(page)
+  })
+
+  test('user can reach a prisoner profile by entering a prison number from the home page', async ({ page }) => {
+    await stubPrisonerProfile()
+
+    const index = await IndexPage.verifyOnPage(page)
+    await index.viewPrisonerFinanceCard.click()
+
+    const findPrisonerPage = await FindPrisonerPage.verifyOnPage(page)
+    await findPrisonerPage.findPrisoner(prisonNumber)
+
+    await PrisonerFinancialProfilePage.verifyOnPage(page, prisonNumber)
+  })
+
+  test('shows an error when submitting with no prison number entered', async ({ page }) => {
+    await page.goto('/prisoner')
+    const findPrisonerPage = await FindPrisonerPage.verifyOnPage(page)
+
+    await findPrisonerPage.submitButton.click()
+
+    await expect(findPrisonerPage.errorMessage).toBeVisible()
+    await expect(findPrisonerPage.errorMessage).toContainText('Enter a prison number')
+    await expect(page).toHaveURL('/prisoner')
+  })
+
+  test('shows an error when submitting with only whitespace entered', async ({ page }) => {
+    await page.goto('/prisoner')
+    const findPrisonerPage = await FindPrisonerPage.verifyOnPage(page)
+
+    await findPrisonerPage.findPrisoner('   ')
+
+    await expect(findPrisonerPage.errorMessage).toBeVisible()
+    await expect(findPrisonerPage.errorMessage).toContainText('Enter a prison number')
+    await expect(page).toHaveURL('/prisoner')
+  })
+
+  test('shows a 404 page when submitting an invalid prison number', async ({ page }) => {
+    const invalidPrisonNumber = 'Z9999ZZ'
+    await prisonerSearchApi.stubGetPrisonerNotFound(invalidPrisonNumber)
+
+    await page.goto('/prisoner')
+    const findPrisonerPage = await FindPrisonerPage.verifyOnPage(page)
+
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        resp => resp.url().endsWith(`/prisoner/${invalidPrisonNumber}`) && resp.request().method() === 'GET',
+      ),
+      findPrisonerPage.findPrisoner(invalidPrisonNumber),
+    ])
+    expect(response.status()).toBe(404)
+
+    await expect(page.getByRole('heading', { name: 'Prisoner not found' })).toBeVisible()
+
+    await page.getByRole('link', { name: 'Find a prisoner' }).click()
+    await expect(page).toHaveURL(`/prisoner`)
+  })
+
+  test('find prisoner page should not have any automatically detectable WCAG A or AA violations', async ({ page }) => {
+    await page.goto('/prisoner')
+    await FindPrisonerPage.verifyOnPage(page)
+
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag22a', 'wcag22aa'])
+      .analyze()
+
+    expect(accessibilityScanResults.violations).toEqual([])
+  })
+
+  test('prisoner not found page should not have any automatically detectable WCAG A or AA violations', async ({
+    page,
+  }) => {
+    const invalidPrisonNumber = 'Z9999ZZ'
+    await prisonerSearchApi.stubGetPrisonerNotFound(invalidPrisonNumber)
+
+    await page.goto(`/prisoner/${invalidPrisonNumber}`)
+    await expect(page.getByRole('heading', { name: 'Prisoner not found' })).toBeVisible()
+
+    const accessibilityScanResults = await new AxeBuilder({ page })
+      .withTags(['wcag2a', 'wcag2aa', 'wcag22a', 'wcag22aa'])
+      .analyze()
+
+    expect(accessibilityScanResults.violations).toEqual([])
+  })
+})

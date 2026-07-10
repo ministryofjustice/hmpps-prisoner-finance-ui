@@ -30,8 +30,10 @@ describe('Prisoners', () => {
     prisonerSearchService.getPrisoner.mockResolvedValue({
       firstName: 'BOB',
       lastName: 'TAYLOR',
-      prisonerNumber: 'A9971EC',
+      dateOfBirth: '1990-01-01',
+      prisonerNumber: prisonNumber,
       prisonId: 'MDI',
+      prisonName: 'Moorland (HMP & YOI)',
       status: 'ACTIVE IN',
       cellLocation: 'RECP',
       category: 'C',

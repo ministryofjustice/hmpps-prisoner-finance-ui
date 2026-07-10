@@ -17,7 +17,7 @@ describe('prisonerNotFoundHandler', () => {
     prisonerNotFoundHandler(error as never, {} as Request, res, next)
 
     expect(res.status).toHaveBeenCalledWith(404)
-    expect(res.render).toHaveBeenCalledWith('pages/prisoner/notFound/notFound')
+    expect(res.render).toHaveBeenCalledWith('pages/prisoner-not-found')
     expect(next).not.toHaveBeenCalled()
   })
 

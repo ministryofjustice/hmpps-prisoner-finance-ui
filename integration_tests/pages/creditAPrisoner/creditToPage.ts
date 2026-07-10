@@ -4,7 +4,9 @@ import AbstractPage from '../abstractPage'
 export default class CreditToPage extends AbstractPage {
   readonly heading: Locator
 
-  readonly radioButtons: Locator
+  readonly backLink: Locator
+
+  readonly subAccountList: Locator
 
   readonly continueButton: Locator
 
@@ -12,21 +14,35 @@ export default class CreditToPage extends AbstractPage {
 
   constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Credit to' })
-    this.radioButtons = page.locator('[data-testid="sub-account-radio"]')
-    this.continueButton = page.locator('[data-testid="continue-button"]')
+    this.heading = page.getByRole('heading', { name: 'Credit to', exact: true })
+    this.backLink = page.getByRole('link', { name: 'Back', exact: true })
+
+    this.subAccountList = page.locator('.hmpps-subaccount-select')
+    this.continueButton = page.getByRole('button', { name: 'Continue', exact: true })
+
     this.errorMessage = page.locator('[id="creditTo-error"]')
   }
 
-  static async verifyOnPage(page: Page): Promise<CreditToPage> {
+  static async load(page: Page, prisonNumber: string): Promise<CreditToPage> {
+    await page.goto(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+    return this.verifyOnPage(page, prisonNumber)
+  }
+
+  static async verifyOnPage(page: Page, prisonNumber: string): Promise<CreditToPage> {
+    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}/money/credit-a-prisoner/credit-to`)
+
     const creditToPage = new CreditToPage(page)
     await expect(creditToPage.heading).toBeVisible()
     return creditToPage
   }
 
-  static async completeAndMoveOn(page: Page): Promise<void> {
-    const creditToPage = await this.verifyOnPage(page)
-    await creditToPage.radioButtons.first().click()
-    await creditToPage.continueButton.click()
+  async selectASubAccount(subAccountName: string): Promise<void> {
+    const subAccountOption = await this.getSubAccountOption(subAccountName)
+    await subAccountOption.click()
+    await this.continueButton.click()
+  }
+
+  getSubAccountOption(subAccountName: string): Locator {
+    return this.subAccountList.getByRole('radio', { name: subAccountName })
   }
 }

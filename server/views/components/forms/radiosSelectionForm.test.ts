@@ -104,8 +104,7 @@ describe('View Components - RadiosSelectionForm', () => {
   it('should render the Continue button', () => {
     const $ = renderForm({})
 
-    const $button = $('button[data-testid="continue-button"]')
+    const $button = $('[type=submit]')
     expect($button.text().trim()).toBe('Continue')
-    expect($button.attr('type')).toBe('submit')
   })
 })

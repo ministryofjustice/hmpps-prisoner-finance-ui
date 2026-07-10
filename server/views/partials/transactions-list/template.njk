@@ -1,0 +1,47 @@
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+
+{% if transactions | length > 0 %}
+  {% set rows = [] %}
+  {% for row in transactions %}
+    {%- set balance = row.accountBalance if displayTotalBalance else row.subAccountBalance -%}
+    {%- set balance = balance if balance is defined else null -%}
+    {%- set balance = (balance | penceToPound) if balance !== null else '-' -%}
+    {%- set amount = row.credit if row.credit > 0 else -1 * row.debit -%}
+    {%- set amountClasses = "amount" -%}
+    {%- if row.credit > 0 -%}
+      {%- set amountClasses = amountClasses + " amount-credit" -%}
+    {%- elif row.credit < 0 -%}
+      {%- set amountClasses = amountClasses + " amount-debit" -%}
+    {%- endif -%}
+    {%- set amount = (amount | penceToPound) -%}
+    {% set rowData = [
+      { text: row.date | formatDateForView },
+      { text: row.description },
+      { text: amount, format: "numeric", classes: amountClasses },
+      { text: balance, format: "numeric" },
+      { text: row.accountType | formatPrisonerAccountType }
+    ] %}
+    {% if showLocation %}{% set rowData = (rowData.push({ text: row.location | convertPrisonIdToName(prisonNames)}), rowData) %}{% endif %}
+    {% set rows = (rows.push(rowData), rows) %}
+  {% endfor %}
+
+  <div class="transactions-list">
+    {% if paginationItems %}{{ mojPagination(paginationItems) }}{% endif %}
+    {% set head = [
+      { text: "Date" },
+      { text: "Transaction description" },
+      { text: "Amount", format: "numeric" },
+      { text: "Balance", format: "numeric" },
+      { text: "Account" }
+    ] %}
+    {% if showLocation %}{% set head = (head.push({ text: "Location" }), head) %}{% endif %}
+    {% set rows = (rows.push(rowData), rows) %}
+    {{ govukTable({ classes: "transactions-list__transactions", caption: "", captionClasses: "govuk-table__caption--m", head: head, rows: rows }) }}
+    {% if paginationItems %}{{ mojPagination(paginationItems) }}{% endif %}
+  </div>
+{% else %}
+  <p class="transactions-list__empty-message" data-testid="no-transactions-message">
+    No transactions to show
+  </p>
+{% endif %}

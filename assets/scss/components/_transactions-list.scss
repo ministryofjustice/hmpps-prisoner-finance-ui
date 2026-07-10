@@ -1,0 +1,13 @@
+.transactions-list {
+  .amount {
+    text-align: right;
+
+    &-credit {
+      font-weight: bolder;
+    }
+
+    &-debit {
+      font-weight: normal;
+    }
+  }
+}

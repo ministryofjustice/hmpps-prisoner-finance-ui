@@ -4,23 +4,27 @@ import AbstractPage from '../abstractPage'
 export default class GrantBonusCaseloadPage extends AbstractPage {
   readonly heading: Locator
 
-  readonly radiosTitle: Locator
-
-  readonly radios: Locator
+  readonly caseloadOptions: Locator
 
   readonly continueButton: Locator
 
   constructor(page: Page) {
     super(page)
-    this.heading = page.getByText('Grant bonus to prisoners')
-    this.radiosTitle = page.locator('[data-testid="radio-group-heading"]')
-    this.radios = page.getByRole('radio')
-    this.continueButton = page.locator('[data-testid="continue-button"]')
+    this.heading = page.getByRole('heading', { name: 'Grant bonus to prisoners', exact: true })
+
+    this.caseloadOptions = page.getByRole('radio')
+    this.continueButton = page.getByRole('button', { name: 'Continue', exact: true })
   }
 
   static async verifyOnPage(page: Page): Promise<GrantBonusCaseloadPage> {
     const grantBonusCaseloadPage = new GrantBonusCaseloadPage(page)
     await expect(grantBonusCaseloadPage.heading).toBeVisible()
     return grantBonusCaseloadPage
+  }
+
+  static async completeAndMoveOn(page: Page): Promise<void> {
+    const grantBonusCaseloadPage = await this.verifyOnPage(page)
+    await grantBonusCaseloadPage.caseloadOptions.first().click()
+    await grantBonusCaseloadPage.continueButton.click()
   }
 }

@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import hmppsAuth from '../mockApis/hmppsAuth'
-import prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
+import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import tokenVerification from '../mockApis/tokenVerification'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonApi from '../mockApis/prisonApi'

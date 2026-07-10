@@ -1,8 +1,7 @@
 import { Router } from 'express'
-import { PrisonerMoneyPermission, prisonerPermissionsGuard } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import { Services } from '../services'
 import CreditAPrisonerController from '../controllers/CreditAPrisonerController'
-import getPrisonerData from '../middleware/getPrisonerData'
+import { getPrisonerData, populatePrisonerDetails } from '../middleware/populatePrisonerDetails'
 
 export default function routes(services: Services): Router {
   const creditAPrisonerRouter = Router({ mergeParams: true })
@@ -21,74 +20,23 @@ export default function routes(services: Services): Router {
 
   creditAPrisonerRouter
     .route('/credit-to')
-    .get(
-      prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
-        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-      }),
-
-      getPrisonerData(services),
-      creditAPrisonerController.getCreditTo,
-    )
-    .post(
-      prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
-        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-      }),
-      getPrisonerData(services),
-      creditAPrisonerController.postCreditTo,
-    )
+    .get(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.getCreditTo)
+    .post(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.postCreditTo)
 
   creditAPrisonerRouter
     .route('/credit-from')
-    .get(
-      prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
-        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-      }),
-
-      getPrisonerData(services),
-      creditAPrisonerController.getCreditFrom,
-    )
-    .post(
-      prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
-        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-      }),
-
-      getPrisonerData(services),
-      creditAPrisonerController.postCreditFrom,
-    )
+    .get(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.getCreditFrom)
+    .post(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.postCreditFrom)
 
   creditAPrisonerRouter
     .route('/credit-amount')
-    .get(
-      prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
-        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-      }),
-
-      getPrisonerData(services),
-      creditAPrisonerController.getCreditAmount,
-    )
-    .post(
-      prisonerPermissionsGuard(services.prisonPermissionsService, {
-        requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
-        getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-      }),
-
-      getPrisonerData(services),
-      creditAPrisonerController.postCreditAmount,
-    )
+    .get(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.getCreditAmount)
+    .post(populatePrisonerDetails(services), getPrisonerData, creditAPrisonerController.postCreditAmount)
 
   creditAPrisonerRouter.get(
     '/credit-confirmation',
-    prisonerPermissionsGuard(services.prisonPermissionsService, {
-      requestDependentOn: [PrisonerMoneyPermission.read], // todo wrong permission
-      getPrisonerNumberFunction: req => req.params.prisonNumber as string,
-    }),
-
-    getPrisonerData(services),
+    populatePrisonerDetails(services),
+    getPrisonerData,
     creditAPrisonerController.getCreditConfirmation,
   )
 

@@ -1,19 +1,13 @@
-{% extends "partials/layout.njk" %}
+{%- extends "partials/layout-wizard-step.njk" -%}
 
-{% from "govuk/components/radios/macro.njk" import govukRadios %}
-{% from "govuk/components/button/macro.njk" import govukButton %}
-{% from "govuk/components/fieldset/macro.njk" import govukFieldset %}
-{% from "components/forms/radiosSelectionForm.njk" import radiosSelectionForm %}
+{%- from "components/forms/radiosSelectionForm.njk" import radiosSelectionForm -%}
 
+{%- set pageTitle = "Grant bonus to prisoners" -%}
+{%- set backUrl = "/" -%}
 
-{% set pageTitle = applicationName + " - Grant bonus to prisoners" %}
-{% set mainClasses = "govuk-body" %}
-
-<a href="/" id="backLink" class="govuk-back-link" data-testid="backLink">Back</a>
-
-{% block content %}
-{{
-  radiosSelectionForm({
+{% block innerContent %}
+  {{ radiosSelectionForm({
+    additionalClasses: "hmpps-subaccount-select",
     action: "./grant-bonus-to-prisoners",
     csrfToken: csrfToken,
     headingText: "Grant bonus to prisoners",
@@ -22,6 +16,5 @@
     radiosValue: selectedCaseload,
     radiosItems: caseloads,
     errorMap: errorMap
-  })
-}}
+  }) }}
 {% endblock %}

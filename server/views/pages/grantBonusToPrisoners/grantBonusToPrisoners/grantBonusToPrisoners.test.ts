@@ -66,10 +66,10 @@ describe('Credit A Prisoner - Credit To Page', () => {
     const formCollection = $("[data-testid='select-radios-form']")
     expect(formCollection.length).toBe(1)
 
-    const radioButtons = $("[data-testid='caseload-radio']")
+    const radioButtons = $('[type=radio]')
     expect(radioButtons.length).toBe(3)
 
-    const continueButton = $("[data-testid='continue-button']")
+    const continueButton = $('[type=submit]')
     expect(continueButton.length).toBe(1)
   })
 })

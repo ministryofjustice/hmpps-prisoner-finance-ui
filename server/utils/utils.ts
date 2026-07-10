@@ -51,7 +51,7 @@ type TabContent = {
   href: string
 }
 
-const baseUrlPrisonerProfile = config.prisoner_profile_url
+const baseUrlPrisonerProfile = config.serviceUrls.prisonerProfile
 export const createProfileTabsForPrisoner = ({ prisonNumber }: { prisonNumber: string }): TabContent[] => {
   return [
     { tabName: 'Overview', href: `${baseUrlPrisonerProfile}/prisoner/${prisonNumber}` },
@@ -113,4 +113,13 @@ export const mapItemsForRadioButtons = <T extends object>({
       'data-testid': dataTestId,
     },
   }))
+}
+
+export const prisonerProfileBacklink = (originalUrl: string, personIdentifier: string, suffix: string = '') => {
+  const searchParams = new URLSearchParams({
+    service: 'prisoner-finance',
+    redirectPath: `/prisoner/${personIdentifier}${suffix}`,
+    returnPath: `/${originalUrl.split('/').slice(1).join('/')}`,
+  })
+  return `${config.serviceUrls.prisonerProfile}/save-backlink?${searchParams.toString()}`
 }
