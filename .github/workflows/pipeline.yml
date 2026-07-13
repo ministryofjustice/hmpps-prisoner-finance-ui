@@ -63,7 +63,7 @@ jobs:
     secrets: inherit
     with:
       redis_tag: '7.4'
-      wiremock_port: '9091'
+      wiremock_port: 9091
   helm_lint:
     strategy:
       matrix:
