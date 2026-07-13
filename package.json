@@ -20,7 +20,7 @@
     "security_audit": "npx audit-ci --config audit-ci.json",
     "int-test": "npx playwright test",
     "int-test-ui": "npx playwright test --ui",
-    "int-test-init:ci": "npx playwright install",
+    "int-test-init:ci": "npx playwright install-deps && npx playwright install",
     "clean": "rm -rf dist test_results",
     "rebuild": "npm run clean && npm run setup && npm run build",
     "setup": "npm ci && hmpps-npm-script-run-allowlist"
