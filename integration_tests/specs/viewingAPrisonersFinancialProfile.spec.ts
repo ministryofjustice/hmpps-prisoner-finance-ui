@@ -437,14 +437,14 @@ test.describe('Viewing a prisoners financial profile', () => {
   })
 
   test.describe('Requesting a prisoner profile that is outside of the users caseload', async () => {
-    test('Should redirect to sign-out when prisoner is outside user caseload', async ({ page }) => {
+    test('Should send 404 (prisoner not found) when prisoner is outside user caseload', async ({ page }) => {
       const mismatchedPrisonNumber = 'G1234HH'
 
       await setupPrisonerProfileStubs()
       await prisonerSearchApi.stubGetPrisonerOutsideCaseload(mismatchedPrisonNumber)
 
       await page.goto(`/prisoner/${mismatchedPrisonNumber}`)
-      await expect(page.getByRole('heading')).toHaveText('Sign in')
+      await expect(page.getByRole('heading')).toHaveText('Prisoner not found')
     })
   })
 
