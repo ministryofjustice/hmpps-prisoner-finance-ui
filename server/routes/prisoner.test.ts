@@ -225,8 +225,7 @@ describe('Prisoners', () => {
 
       const response = await request(app).get('/prisoner/A1234BC')
 
-      expect(response.status).toBe(302)
-      expect(response.headers.location).toBe('/sign-out')
+      expect(response.status).toBe(404)
 
       expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).not.toHaveBeenCalled()
     })
