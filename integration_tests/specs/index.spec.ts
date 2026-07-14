@@ -1,12 +1,15 @@
 import { expect, test } from '@playwright/test'
 import { login } from '../testUtils'
 
+import hmppsAuth from '../mockApis/hmppsAuth'
+
 import ServiceHomePage from '../pages/serviceHomePage'
 import GrantBonusToPrisonersCaseloadPage from '../pages/grantBonusToPrisoners/caseloadPage'
 import FindPrisonerFinancialProfile from '../pages/findPrisonerFinancialProfile'
 
 test.describe('Visiting the service home page', () => {
   test('Must be signed in', async ({ page }) => {
+    await hmppsAuth.stubSignInPage()
     await page.goto('/')
 
     await expect(page.getByRole('heading')).toHaveText('Sign in')
