@@ -18,7 +18,7 @@ export default class AbstractPage {
 
   protected constructor(page: Page) {
     this.page = page
-    this.phaseBanner = page.getByTestId('header-phase-banner')
+    this.phaseBanner = page.locator('.govuk-phase-banner')
     this.usersName = page.getByTestId('header-user-name')
     this.signoutLink = page.getByRole('link', { name: 'Sign out', exact: true })
     this.manageUserDetails = page.getByRole('link', { name: 'Manage user details', exact: true })

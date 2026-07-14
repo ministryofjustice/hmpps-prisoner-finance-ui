@@ -26,14 +26,18 @@ export default class ServiceHomePage extends AbstractPage {
       .filter({ has: page.getByRole('heading', { name: 'Grant a bonus to prisoners', exact: true }) })
   }
 
+  static async goto(page: Page): Promise<void> {
+    await page.goto(this.url)
+  }
+
   static async load(page: Page): Promise<ServiceHomePage> {
-    await page.goto(ServiceHomePage.url)
+    await this.goto(page)
 
     return this.verifyOnPage(page)
   }
 
   static async verifyOnPage(page: Page): Promise<ServiceHomePage> {
-    expect(new URL(page.url()).pathname).toEqual(ServiceHomePage.url)
+    expect(new URL(page.url()).pathname).toEqual(this.url)
 
     const pageObject = new ServiceHomePage(page)
     await expect(pageObject.heading).toBeVisible()

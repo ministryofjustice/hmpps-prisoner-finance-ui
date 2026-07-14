@@ -8,20 +8,37 @@ import GrantBonusToPrisonersCaseloadPage from '../pages/grantBonusToPrisoners/ca
 import FindPrisonerFinancialProfile from '../pages/findPrisonerFinancialProfile'
 
 test.describe('Visiting the service home page', () => {
-  test('Must be signed in', async ({ page }) => {
+  test('Unauthenticated user directed to auth', async ({ page }) => {
     await hmppsAuth.stubSignInPage()
-    await page.goto('/')
+    await ServiceHomePage.goto(page)
 
-    await expect(page.getByRole('heading')).toHaveText('Sign in')
+    await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible()
   })
 
-  test('Can visit the homepage', async ({ page }) => {
+  test('User name visible in header', async ({ page }) => {
+    await login(page, { name: 'A TestUser' })
+
+    const indexPage = await ServiceHomePage.load(page)
+    await expect(indexPage.usersName).toHaveText('A. Testuser')
+  })
+
+  test('Phase banner visible in header', async ({ page }) => {
     await login(page)
 
-    await ServiceHomePage.verifyOnPage(page)
+    const indexPage = await ServiceHomePage.load(page)
+    await expect(indexPage.phaseBanner).toBeVisible()
   })
 
-  test('Can begin to grant a bonus to prisoners', async ({ page }) => {
+  test('User can sign out', async ({ page }) => {
+    await login(page)
+
+    const indexPage = await ServiceHomePage.load(page)
+    await indexPage.signOut()
+
+    await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible()
+  })
+
+  test('User can begin to grant a bonus to prisoners', async ({ page }) => {
     await login(page)
 
     const indexPage = await ServiceHomePage.verifyOnPage(page)
@@ -30,7 +47,7 @@ test.describe('Visiting the service home page', () => {
     await GrantBonusToPrisonersCaseloadPage.verifyOnPage(page)
   })
 
-  test('Can begin to find a prisoners financial profile', async ({ page }) => {
+  test('User can begin to find a prisoners financial profile', async ({ page }) => {
     await login(page)
 
     const indexPage = await ServiceHomePage.verifyOnPage(page)
@@ -39,7 +56,7 @@ test.describe('Visiting the service home page', () => {
     await FindPrisonerFinancialProfile.verifyOnPage(page)
   })
 
-  test('Passes automatically detectable WCAG A or AA violations', async ({ page }) => {
+  test('Page passes automatically detectable WCAG A or AA violations', async ({ page }) => {
     await login(page)
 
     const indexPage = await ServiceHomePage.load(page)
