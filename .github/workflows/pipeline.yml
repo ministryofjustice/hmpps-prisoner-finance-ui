@@ -58,7 +58,7 @@ jobs:
   # generic node integration tests using wiremock - feel free to override with local tests if required
   node_integration_tests:
     name: node integration tests
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_integration_tests.yml@v2 # WORKFLOW_VERSION
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_integration_tests.yml@0c1bce5e7061cb4da9b79f9c0af29072e7a4b436 # WORKFLOW_VERSION
     needs: [node_build]
     secrets: inherit
     with:
@@ -69,7 +69,7 @@ jobs:
       matrix:
         environments: ['dev', 'preprod', 'prod']
     name: helm lint
-    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@0c1bce5e7061cb4da9b79f9c0af29072e7a4b436 # WORKFLOW_VERSION
+    uses: ministryofjustice/hmpps-github-actions/.github/workflows/test_helm_lint.yml@v2 # WORKFLOW_VERSION
     secrets: inherit
     with:
       environment: ${{ matrix.environments }}
