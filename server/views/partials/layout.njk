@@ -7,6 +7,17 @@
 
 {%- set mainClasses = "govuk-body" -%}
 
+{# Only output <footer> if any of its child blocks have content. #}
+{% macro _hmppsWrapBlockContents() %}
+  {%- if caller() | trim | length > 0 %}
+    <div class="govuk-grid-row">
+      <div class="govuk-grid-column-full">
+        {{ caller() }}
+      </div>
+    </div>
+  {%- endif %}
+{% endmacro %}
+
 {% block head %}
   <link href="{{ '/assets/css/index.css' | assetMap }}" rel="stylesheet"/>
   {%- for css in feComponents.cssIncludes -%}
@@ -44,7 +55,13 @@
     {{ prisonerInformationPanel(prisonerDetails, originalUrl) }}
   {%- endif -%}
 
-  {% block pageHeader %}{% endblock %}
+  {% call _hmppsWrapBlockContents() %}
+    {% block pageHeader %}{% endblock %}
+  {% endcall %}
+
+  {% call _hmppsWrapBlockContents() %}
+    {% block contentHeader %}{% endblock %}
+  {% endcall %}
 {% endblock %}
 
 {% block footer %}

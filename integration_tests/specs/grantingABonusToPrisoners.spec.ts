@@ -1,13 +1,13 @@
 import { expect, test } from '@playwright/test'
 import { login, resetStubs, getSessionData } from '../testUtils'
-import GrantBonusCaseloadPage from '../pages/grantBonusToPrisoners/grantBonusCaseloadPage'
-import AmountPage from '../pages/grantBonusToPrisoners/amountPage'
+import GrantBonusToPrisonersCaseloadPage from '../pages/grantBonusToPrisoners/caseloadPage'
+import GrantBonusAmountPage from '../pages/grantBonusToPrisoners/grantBonusAmountPage'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import { CreateBatchTransactionFormRequest } from '../../server/interfaces/BatchTransactionFormRequest'
 import CreatedTransactionResponse from '../../server/interfaces/CreatedTransactionResponse'
 import GrantBonusConfirmationPage from '../pages/grantBonusToPrisoners/grantBonusConfirmationPage'
-import IndexPage from '../pages/indexPage'
+import ServiceHomePage from '../pages/serviceHomePage'
 
 test.describe('Granting a bonus to prisoners', () => {
   test.describe('Select a caseload', () => {
@@ -17,11 +17,11 @@ test.describe('Granting a bonus to prisoners', () => {
     })
 
     test('Should navigate to grant a bonus to prisoners page', async ({ page }) => {
-      const indexPage = await IndexPage.load(page)
+      const indexPage = await ServiceHomePage.load(page)
 
       await indexPage.grantBonusToPrisonersCard.click()
 
-      await GrantBonusCaseloadPage.verifyOnPage(page)
+      await GrantBonusToPrisonersCaseloadPage.verifyOnPage(page)
     })
 
     test('Should show the list of caseloads for the user', async ({ page }) => {
@@ -76,11 +76,11 @@ test.describe('Granting a bonus to prisoners', () => {
     test('Should navigate to the amount page', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusCaseloadPage.verifyOnPage(page)
+      await GrantBonusToPrisonersCaseloadPage.verifyOnPage(page)
 
-      await GrantBonusCaseloadPage.completeAndMoveOn(page)
+      await GrantBonusToPrisonersCaseloadPage.completeAndMoveOn(page)
 
-      const amountPage = await AmountPage.verifyOnPage(page)
+      const amountPage = await GrantBonusAmountPage.verifyOnPage(page)
 
       expect(amountPage.amountInput).toBeVisible()
       expect(amountPage.descriptionInput).toBeVisible()
@@ -90,11 +90,11 @@ test.describe('Granting a bonus to prisoners', () => {
     test('Should show an error if an amount has not been entered', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusCaseloadPage.verifyOnPage(page)
+      await GrantBonusToPrisonersCaseloadPage.verifyOnPage(page)
 
-      await GrantBonusCaseloadPage.completeAndMoveOn(page)
+      await GrantBonusToPrisonersCaseloadPage.completeAndMoveOn(page)
 
-      await AmountPage.verifyOnPage(page)
+      await GrantBonusAmountPage.verifyOnPage(page)
 
       const doneButton = page.getByRole('button', { name: 'Done', exact: true })
       await doneButton.click()
@@ -108,11 +108,11 @@ test.describe('Granting a bonus to prisoners', () => {
     test('Should show an error if an amount is negative or zero', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusCaseloadPage.verifyOnPage(page)
+      await GrantBonusToPrisonersCaseloadPage.verifyOnPage(page)
 
-      await GrantBonusCaseloadPage.completeAndMoveOn(page)
+      await GrantBonusToPrisonersCaseloadPage.completeAndMoveOn(page)
 
-      const amountPage = await AmountPage.verifyOnPage(page)
+      const amountPage = await GrantBonusAmountPage.verifyOnPage(page)
 
       await amountPage.amountInput.fill('-1.02')
       await amountPage.descriptionInput.fill('test')
@@ -140,11 +140,11 @@ test.describe('Granting a bonus to prisoners', () => {
     test('Should show an error if a description has not been entered', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusCaseloadPage.verifyOnPage(page)
+      await GrantBonusToPrisonersCaseloadPage.verifyOnPage(page)
 
-      await GrantBonusCaseloadPage.completeAndMoveOn(page)
+      await GrantBonusToPrisonersCaseloadPage.completeAndMoveOn(page)
 
-      const amountPage = await AmountPage.verifyOnPage(page)
+      const amountPage = await GrantBonusAmountPage.verifyOnPage(page)
 
       amountPage.amountInput.fill('1.23')
 
@@ -160,10 +160,10 @@ test.describe('Granting a bonus to prisoners', () => {
     test('Should show an error if the amount format is invalid', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusCaseloadPage.verifyOnPage(page)
-      await GrantBonusCaseloadPage.completeAndMoveOn(page)
+      await GrantBonusToPrisonersCaseloadPage.verifyOnPage(page)
+      await GrantBonusToPrisonersCaseloadPage.completeAndMoveOn(page)
 
-      const amountPage = await AmountPage.verifyOnPage(page)
+      const amountPage = await GrantBonusAmountPage.verifyOnPage(page)
 
       await amountPage.amountInput.fill('1.999')
       await amountPage.descriptionInput.fill('Test description')
@@ -188,10 +188,10 @@ test.describe('Granting a bonus to prisoners', () => {
     test('Should show an error if the description exceeds 255 characters', async ({ page }) => {
       await page.goto('/grant-bonus-to-prisoners')
 
-      await GrantBonusCaseloadPage.verifyOnPage(page)
-      await GrantBonusCaseloadPage.completeAndMoveOn(page)
+      await GrantBonusToPrisonersCaseloadPage.verifyOnPage(page)
+      await GrantBonusToPrisonersCaseloadPage.completeAndMoveOn(page)
 
-      const amountPage = await AmountPage.verifyOnPage(page)
+      const amountPage = await GrantBonusAmountPage.verifyOnPage(page)
 
       await amountPage.amountInput.fill('1.23')
 
@@ -209,10 +209,10 @@ test.describe('Granting a bonus to prisoners', () => {
 
     test('allows form completion if fields are correctly completed', async ({ page, context }) => {
       await page.goto('/grant-bonus-to-prisoners')
-      await GrantBonusCaseloadPage.verifyOnPage(page)
-      await GrantBonusCaseloadPage.completeAndMoveOn(page)
+      await GrantBonusToPrisonersCaseloadPage.verifyOnPage(page)
+      await GrantBonusToPrisonersCaseloadPage.completeAndMoveOn(page)
 
-      const amountPage = await AmountPage.verifyOnPage(page)
+      const amountPage = await GrantBonusAmountPage.verifyOnPage(page)
 
       // TODO: set the prison all the way through
       const prisonNumbers = ['A999912', 'AE22132']
@@ -263,7 +263,7 @@ test.describe('Granting a bonus to prisoners', () => {
       await expect(confirmationPage.confirmationPanel).toContainText(transactionId)
       await confirmationPage.returnHomeLink.click()
 
-      await IndexPage.verifyOnPage(page)
+      await ServiceHomePage.verifyOnPage(page)
     })
   })
 })

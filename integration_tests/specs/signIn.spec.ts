@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import hmppsAuth from '../mockApis/hmppsAuth'
 
 import { login, resetStubs } from '../testUtils'
-import IndexPage from '../pages/indexPage'
+import ServiceHomePage from '../pages/serviceHomePage'
 
 test.describe('SignIn', () => {
   test.beforeEach(async () => {})
@@ -28,7 +28,7 @@ test.describe('SignIn', () => {
   test('User name visible in header', async ({ page }) => {
     await login(page, { name: 'A TestUser' })
 
-    const indexPage = await IndexPage.verifyOnPage(page)
+    const indexPage = await ServiceHomePage.verifyOnPage(page)
 
     await expect(indexPage.usersName).toHaveText('A. Testuser')
   })
@@ -44,7 +44,7 @@ test.describe('SignIn', () => {
   test('User can sign out', async ({ page }) => {
     await login(page)
 
-    const indexPage = await IndexPage.verifyOnPage(page)
+    const indexPage = await ServiceHomePage.verifyOnPage(page)
 
     await indexPage.signOut()
 
@@ -64,7 +64,7 @@ test.describe('SignIn', () => {
 
     await login(page, { name: 'Some OtherTestUser', active: true })
 
-    const indexPage = await IndexPage.verifyOnPage(page)
+    const indexPage = await ServiceHomePage.verifyOnPage(page)
     await expect(indexPage.usersName).toHaveText('S. Othertestuser')
   })
 })

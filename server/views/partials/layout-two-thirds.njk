@@ -1,18 +1,11 @@
 {%- extends "../partials/layout.njk" -%}
 
+{% block pageHeader %}
+  {%- set classes = "" if backUrl else "govuk-!-static-margin-top-8" -%}
+  <h1 class="govuk-heading-xl {{ classes }}">{{ pageTitle }}</h1>
+{% endblock %}
+
 {% block content %}
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-two-thirds">
-      <h1 class="govuk-heading-xl">{{ pageTitle }}</h1>
-    </div>
-  </div>
-
-  <div class="govuk-grid-row">
-    <div class="govuk-grid-column-full">
-      {% block contentHeader %}{% endblock %}
-    </div>
-  </div>
-
   <div class="govuk-grid-row">
     <div class="govuk-grid-column-two-thirds">
       {% block innerContent %}{% endblock %}

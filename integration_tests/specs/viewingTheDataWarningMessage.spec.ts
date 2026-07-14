@@ -4,7 +4,7 @@ import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
-import IndexPage from '../pages/indexPage'
+import ServiceHomePage from '../pages/serviceHomePage'
 import FindPrisonerPage from '../pages/findPrisonerPage'
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import PrisonerTransactionsPage from '../pages/prisonerTransactionsPage'
@@ -47,7 +47,7 @@ const routeCases: RouteCase[] = [
   {
     name: 'Home',
     navigate: async page => {
-      await IndexPage.load(page)
+      await ServiceHomePage.load(page)
     },
   },
   {

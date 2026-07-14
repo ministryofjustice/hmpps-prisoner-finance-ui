@@ -4,6 +4,7 @@
 {%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
 
 {%- set pageTitle = "Prisoner Finance" -%}
+{%- set dataWarningBannerEnabled = true -%}
 
 {% block contentHeader %}
   {{ dataWarningBanner(dataWarningBannerEnabled, true) }}

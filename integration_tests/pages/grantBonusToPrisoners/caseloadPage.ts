@@ -1,7 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test'
 import AbstractPage from '../abstractPage'
 
-export default class GrantBonusCaseloadPage extends AbstractPage {
+export default class GrantBonusToPrisonersCaseloadPage extends AbstractPage {
   readonly heading: Locator
 
   readonly caseloadOptions: Locator
@@ -16,8 +16,8 @@ export default class GrantBonusCaseloadPage extends AbstractPage {
     this.continueButton = page.getByRole('button', { name: 'Continue', exact: true })
   }
 
-  static async verifyOnPage(page: Page): Promise<GrantBonusCaseloadPage> {
-    const grantBonusCaseloadPage = new GrantBonusCaseloadPage(page)
+  static async verifyOnPage(page: Page): Promise<GrantBonusToPrisonersCaseloadPage> {
+    const grantBonusCaseloadPage = new GrantBonusToPrisonersCaseloadPage(page)
     await expect(grantBonusCaseloadPage.heading).toBeVisible()
     return grantBonusCaseloadPage
   }

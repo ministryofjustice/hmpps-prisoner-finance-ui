@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test'
 import { AxeBuilder } from '@axe-core/playwright'
 import { login, resetStubs } from '../testUtils'
-import IndexPage from '../pages/indexPage'
+import ServiceHomePage from '../pages/serviceHomePage'
 import FindPrisonerPage from '../pages/findPrisonerPage'
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
@@ -28,7 +28,7 @@ test.describe('Finding a prisoners financial profile', () => {
   test('user can reach a prisoner profile by entering a prison number from the home page', async ({ page }) => {
     await stubPrisonerProfile()
 
-    const index = await IndexPage.verifyOnPage(page)
+    const index = await ServiceHomePage.verifyOnPage(page)
     await index.viewPrisonerFinanceCard.click()
 
     const findPrisonerPage = await FindPrisonerPage.verifyOnPage(page)
