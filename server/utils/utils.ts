@@ -123,3 +123,27 @@ export const prisonerProfileBacklink = (originalUrl: string, personIdentifier: s
   })
   return `${config.serviceUrls.prisonerProfile}/save-backlink?${searchParams.toString()}`
 }
+
+export const buildUrl = (
+  template: string,
+  params: Record<string, string | number | boolean> = {},
+  query: Record<string, string | number | boolean> = {},
+) => {
+  const parts = template.split('/')
+
+  Object.keys(params).forEach(param => {
+    const index = parts.indexOf(`:${param}`)
+    if (index > -1) {
+      parts[index] = params[param]?.toString() || ''
+    }
+  })
+
+  const uri = parts.join('/')
+
+  const querystring: string[] = []
+  Object.keys(query).forEach(key => {
+    querystring.push(`${key}=${query[key]}`)
+  })
+
+  return `${uri}${querystring.length > 0 ? '?' : ''}${querystring.join('&')}`
+}

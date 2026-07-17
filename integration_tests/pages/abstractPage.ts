@@ -2,6 +2,10 @@ import { expect, type Locator, type Page } from '@playwright/test'
 import { AxeBuilder } from '@axe-core/playwright'
 
 export default class AbstractPage {
+  static url: string = '/prisoner'
+
+  static headingText: string = 'View prisoner finances'
+
   readonly page: Page
 
   /** user name that appear in header */

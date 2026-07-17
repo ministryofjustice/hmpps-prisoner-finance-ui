@@ -53,14 +53,14 @@ const routeCases: RouteCase[] = [
   {
     name: 'Find prisoner',
     navigate: async page => {
-      await FindPrisonerPage.load(page)
+      await FindPrisonerPage.visit(page)
     },
   },
   {
     name: 'Prisoner profile',
     navigate: async page => {
       await stubPrisonerProfile()
-      await PrisonerFinancialProfilePage.load(page, prisonNumber)
+      await PrisonerFinancialProfilePage.visit(page, prisonNumber)
     },
   },
   {
