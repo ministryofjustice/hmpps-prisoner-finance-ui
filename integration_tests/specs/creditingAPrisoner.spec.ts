@@ -59,7 +59,7 @@ test.describe('Crediting a prisoner', () => {
     })
 
     test('Can credit a prisoner', async ({ page }) => {
-      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.visit(page, prisonNumber)
       await prisonerProfilePage.getAction('Credit account').click()
 
       const creditToPage = await CreditToPage.verifyOnPage(page, prisonNumber)

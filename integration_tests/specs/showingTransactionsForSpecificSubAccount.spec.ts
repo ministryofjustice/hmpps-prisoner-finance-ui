@@ -8,7 +8,7 @@ import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import InternalServerErrorPage from '../pages/internalServerErrorPage'
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import SubAccountNotFoundErrorPage from '../pages/subAccountNotFoundErrorPage'
-import IndexPage from '../pages/indexPage'
+import ServiceHomePage from '../pages/serviceHomePage'
 import PrisonerPrivateCashPage from '../pages/prisonerPrivateCashPage'
 import prisonApi from '../mockApis/prisonApi'
 
@@ -176,7 +176,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonerNotFoundErrorPage = await SubAccountNotFoundErrorPage.verifyOnPage(page, prisonNumber, 'savings')
       await prisonerNotFoundErrorPage.backLink.click()
 
-      await IndexPage.verifyOnPage(page)
+      await ServiceHomePage.verifyOnPage(page)
     })
   })
 
@@ -204,7 +204,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       )
       await prisonerNotFoundErrorPage.backLink.click()
 
-      await IndexPage.verifyOnPage(page)
+      await ServiceHomePage.verifyOnPage(page)
     })
   })
 
@@ -229,7 +229,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonerNotFoundErrorPage = await SubAccountNotFoundErrorPage.verifyOnPage(page, prisonNumber, 'spends')
       await prisonerNotFoundErrorPage.backLink.click()
 
-      await IndexPage.verifyOnPage(page)
+      await ServiceHomePage.verifyOnPage(page)
     })
   })
 
@@ -264,7 +264,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       )
       await internalServerErrorPage.backLink.click()
 
-      await IndexPage.verifyOnPage(page)
+      await ServiceHomePage.verifyOnPage(page)
     })
   })
 
