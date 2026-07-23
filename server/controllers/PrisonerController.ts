@@ -131,6 +131,7 @@ class PrisonerController {
       res.render('pages/prisoner/profile/prisonerProfile', {
         prisonNumber,
         transactions: transactions.content.slice(0, 5),
+        actionPanelEnabled: req.featureFlags.ACTION_PANEL_ENABLED,
         subAccountBalances: {
           spends: subAccountBalances.SPENDS,
           privateCash: subAccountBalances.CASH,

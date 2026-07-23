@@ -1,5 +1,6 @@
 import { BooleanEvaluationResponse, FliptClient } from '@flipt-io/flipt-client-js'
 import config from '../config'
+import logger from '../../logger'
 
 export default class FeatureFlagService {
   client: FliptClient
@@ -27,7 +28,8 @@ export default class FeatureFlagService {
       }) as BooleanEvaluationResponse
 
       return response.enabled
-    } catch {
+    } catch (e) {
+      logger.error(`Error occurred while evaluating feature flag '${flag}':`, e)
       return false
     }
   }
@@ -37,6 +39,7 @@ type FeatureFlags = {
   GRANT_BONUS_TO_PRISONERS_ENABLED: boolean
   CREDIT_ACCOUNT_ENABLED: boolean
   DATA_WARNING_BANNER_ENABLED: boolean
+  ACTION_PANEL_ENABLED: boolean
 }
 
 declare module 'express-serve-static-core' {
