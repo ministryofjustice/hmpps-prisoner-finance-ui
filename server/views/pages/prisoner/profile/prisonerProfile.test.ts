@@ -245,7 +245,33 @@ describe('prisoner profile page', () => {
     expect(noTransactionsMessage.text()).toContain('No transactions to show')
   })
 
-  it('should render the actions menu', () => {
+  it('should render dash if running balance is null', () => {
+    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', paramsWithoutLastRunningBalance)
+
+    $ = cheerio.load(html)
+
+    const transactionsList = $('.transactions-list')
+
+    expect(transactionsList.find('.govuk-table__head .govuk-table__header').length).toBe(5)
+    expect(transactionsList.find('.govuk-table__body .govuk-table__row').length).toBe(5)
+
+    const lastTransactionRunningBalance = transactionsList.find('tbody tr').last().find('td').eq(3).text().trim()
+
+    expect(lastTransactionRunningBalance).toBe('-')
+  })
+
+  it('should not render action panel if feature flag is false', () => {
+    const actionPanel = $('.hmpps-actions-block')
+    const fullWidthBalanceCardContainer = $('.govuk-grid-column-full .hmpps-balance-card-group')
+    const threeQuartersBalanceCardContainer = $('.govuk-grid-column-three-quarters .hmpps-balance-card-group')
+
+    expect(actionPanel).toHaveLength(0)
+
+    expect(fullWidthBalanceCardContainer).toHaveLength(1)
+    expect(threeQuartersBalanceCardContainer).toHaveLength(0)
+  })
+
+  it('when the feature flag is true, should render the actions menu', () => {
     const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
       ...paramsWithActionPanel,
       transactions: [],
@@ -254,6 +280,12 @@ describe('prisoner profile page', () => {
     $ = cheerio.load(html)
 
     const actionMenu = $('.hmpps-actions-block')
+
+    const fullWidthBalanceCardContainer = $('.govuk-grid-column-full .hmpps-balance-card-group')
+    const threeQuartersBalanceCardContainer = $('.govuk-grid-column-three-quarters .hmpps-balance-card-group')
+
+    expect(fullWidthBalanceCardContainer).toHaveLength(0)
+    expect(threeQuartersBalanceCardContainer).toHaveLength(1)
 
     const creditMenu = actionMenu.find('a:contains("Credit account")')
     expect(creditMenu.text()).toBe('Credit account')
@@ -278,32 +310,5 @@ describe('prisoner profile page', () => {
     const closeMenu = actionMenu.find('a:contains("Close account")')
     expect(closeMenu.text()).toBe('Close account')
     expect(closeMenu.attr('href')).toBe('#')
-  })
-
-  it('should render dash if running balance is null', () => {
-    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', paramsWithoutLastRunningBalance)
-
-    $ = cheerio.load(html)
-
-    const transactionsList = $('.transactions-list')
-
-    expect(transactionsList.find('.govuk-table__head .govuk-table__header').length).toBe(5)
-    expect(transactionsList.find('.govuk-table__body .govuk-table__row').length).toBe(5)
-
-    const lastTransactionRunningBalance = transactionsList.find('tbody tr').last().find('td').eq(3).text().trim()
-
-    expect(lastTransactionRunningBalance).toBe('-')
-  })
-
-  it('should not render action panel if feature flag is false', () => {
-    const actionPanel = $('.hmpps-actions-block')
-    const fullWidthComponents = $('.govuk-grid-column-full')
-    const threeQuartersComponents = $('.govuk-grid-column-three-quarters')
-
-    expect(actionPanel).toHaveLength(0)
-
-    // Should adjust page layout if feature flag is false
-    expect(fullWidthComponents).toHaveLength(6)
-    expect(threeQuartersComponents).toHaveLength(0)
   })
 })

@@ -1,5 +1,6 @@
 import { BooleanEvaluationResponse, FliptClient } from '@flipt-io/flipt-client-js'
 import config from '../config'
+import logger from '../../logger'
 
 export default class FeatureFlagService {
   client: FliptClient
@@ -26,9 +27,9 @@ export default class FeatureFlagService {
         context: {},
       }) as BooleanEvaluationResponse
 
-      // TODO: Add log?
       return response.enabled
-    } catch {
+    } catch (e) {
+      logger.error(`Error occurred while evaluating feature flag '${flag}':`, e)
       return false
     }
   }
