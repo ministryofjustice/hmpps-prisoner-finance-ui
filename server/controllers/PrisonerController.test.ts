@@ -251,6 +251,7 @@ describe('PrisonerController', () => {
         protocol: 'http',
         get: jest.fn().mockReturnValue('localhost:3000'),
         originalUrl: '/audit',
+        featureFlags: { ACTION_PANEL_ENABLED: false },
       } as unknown as Request
 
       const mockTransactions: PrisonerTransactionResponse[] = [
@@ -299,6 +300,7 @@ describe('PrisonerController', () => {
           privateCash: mockBalancesResponse.CASH,
           savings: mockBalancesResponse.SAVINGS,
         },
+        actionPanelEnabled: false,
       })
     })
 
@@ -309,6 +311,7 @@ describe('PrisonerController', () => {
         protocol: 'http',
         get: jest.fn().mockReturnValue('localhost:3000'),
         originalUrl: '/audit',
+        featureFlags: { ACTION_PANEL_ENABLED: false },
       } as unknown as Request
 
       const mockTransactions: PrisonerTransactionResponse[] = Array.from({ length: 100 }, () => {
@@ -358,6 +361,7 @@ describe('PrisonerController', () => {
           privateCash: mockBalancesResponse.CASH,
           savings: mockBalancesResponse.SAVINGS,
         },
+        actionPanelEnabled: false,
       })
     })
 

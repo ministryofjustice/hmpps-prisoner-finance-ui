@@ -296,8 +296,6 @@ describe('prisoner profile page', () => {
   })
 
   it('should not render action panel if feature flag is false', () => {
-    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', paramsWithoutActionPanel)
-
     const actionPanel = $('.hmpps-actions-block')
     const fullWidthComponents = $('.govuk-grid-column-full')
     const threeQuartersComponents = $('.govuk-grid-column-three-quarters')
