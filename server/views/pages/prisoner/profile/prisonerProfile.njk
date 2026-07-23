@@ -1,4 +1,8 @@
-{%- extends "partials/layout-three-quarters.njk" -%}
+{% if not actionPanelEnabled %}
+  {%- extends "partials/layout-full-width.njk" -%}
+    {% else %}
+  {%- extends "partials/layout-three-quarters.njk" -%}
+{% endif %}
 
 {%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
 {%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
@@ -14,6 +18,7 @@
 {% endblock %}
 
 {% block innerContent %}
+
   <div class="hmpps-balance-card-group">
     <ul class="govuk-grid-row card-group">
       <li class="govuk-grid-column-one-third card-group__item">

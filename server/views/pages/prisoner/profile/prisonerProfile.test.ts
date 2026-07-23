@@ -114,7 +114,7 @@ describe('prisoner profile page', () => {
   let $: cheerio.CheerioAPI
   let njkEnv: nunjucks.Environment
 
-  const params = {
+  const paramsWithoutActionPanel = {
     applicationName: 'Hmpps Prisoner Finance Ui',
     transactions: payload,
     subAccountBalances: {
@@ -137,6 +137,12 @@ describe('prisoner profile page', () => {
       },
     },
     prisonNumber: 'AB123456',
+    actionPanelEnabled: false,
+  }
+
+  const paramsWithActionPanel = {
+    ...paramsWithoutActionPanel,
+    actionPanelEnabled: true,
   }
 
   const paramsWithoutLastRunningBalance = {
@@ -176,7 +182,7 @@ describe('prisoner profile page', () => {
 
     setUpNunJucksFilters(njkEnv)
 
-    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', params)
+    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', paramsWithoutActionPanel)
 
     $ = cheerio.load(html)
   })
@@ -229,7 +235,7 @@ describe('prisoner profile page', () => {
 
   it('should render no transactions', () => {
     const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
-      ...params,
+      ...paramsWithoutActionPanel,
       transactions: [],
     })
 
@@ -240,6 +246,13 @@ describe('prisoner profile page', () => {
   })
 
   it('should render the actions menu', () => {
+    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
+      ...paramsWithActionPanel,
+      transactions: [],
+    })
+
+    $ = cheerio.load(html)
+
     const actionMenu = $('.hmpps-actions-block')
 
     const creditMenu = actionMenu.find('a:contains("Credit account")')
@@ -280,5 +293,19 @@ describe('prisoner profile page', () => {
     const lastTransactionRunningBalance = transactionsList.find('tbody tr').last().find('td').eq(3).text().trim()
 
     expect(lastTransactionRunningBalance).toBe('-')
+  })
+
+  it('should not render action panel if feature flag is false', () => {
+    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', paramsWithoutActionPanel)
+
+    const actionPanel = $('.hmpps-actions-block')
+    const fullWidthComponents = $('.govuk-grid-column-full')
+    const threeQuartersComponents = $('.govuk-grid-column-three-quarters')
+
+    expect(actionPanel).toHaveLength(0)
+
+    // Should adjust page layout if feature flag is false
+    expect(fullWidthComponents).toHaveLength(6)
+    expect(threeQuartersComponents).toHaveLength(0)
   })
 })

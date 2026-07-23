@@ -26,6 +26,7 @@ export default class FeatureFlagService {
         context: {},
       }) as BooleanEvaluationResponse
 
+      // TODO: Add log?
       return response.enabled
     } catch {
       return false
@@ -37,6 +38,7 @@ type FeatureFlags = {
   GRANT_BONUS_TO_PRISONERS_ENABLED: boolean
   CREDIT_ACCOUNT_ENABLED: boolean
   DATA_WARNING_BANNER_ENABLED: boolean
+  ACTION_PANEL_ENABLED: boolean
 }
 
 declare module 'express-serve-static-core' {
