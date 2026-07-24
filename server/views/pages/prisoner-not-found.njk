@@ -1,18 +1,16 @@
 {%- extends "partials/layout-two-thirds.njk" -%}
 
-{%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
+{%- from "govuk/components/button/macro.njk" import govukButton -%}
 
 {%- set pageTitle = "Prisoner not found" -%}
 {%- set backUrl = "/prisoner" -%}
 
-{% block contentHeader %}
-  {{ dataWarningBanner(dataWarningBannerEnabled) }}
-{% endblock %}
-
 {% block innerContent %}
-  <p class="govuk-body">Check the prison number is correct and try again.</p>
+  <p class="govuk-body">If you typed the web address or prison number, check it is correct.</p>
 
-  <p class="govuk-body">
-    <a class="govuk-link" href="/prisoner" data-testid="find-prisoner-link">Find a prisoner</a>
-  </p>
+  <p class="govuk-body">If you pasted the web address or prison number, check you copied it correctly.</p>
+
+  <p class="govuk-body">If the web address or prison number is correct, or you selected a link or button you need to contact your local system administrator.</p>
+
+  {{ govukButton({ text: "Continue", href: "/prisoner", attributes: { "data-testid": "continue-button" } }) }}
 {% endblock %}
