@@ -1,15 +1,16 @@
-{% extends "../partials/layout-full-width.njk" %}
+{%- extends "partials/layout-two-thirds.njk" -%}
 
-{% set pageTitle = "Page not found" %}
+{%- from "govuk/components/button/macro.njk" import govukButton -%}
+
+{%- set pageTitle = "Page not found" -%}
+{%- set backUrl = "/" -%}
 
 {% block innerContent %}
-  <h1 class="govuk-heading-xl">Page not found</h1>
+  <p class="govuk-body">If you typed the web address, check it is correct.</p>
 
-  <p>If you typed the web address, check it is correct.</p>
+  <p class="govuk-body">If you pasted the web address, check you copied it correctly.</p>
 
-  <p>If you pasted the web address, check you copied the entire address.</p>
+  <p class="govuk-body">If the web address is correct, or you selected a link or button you need to contact your local system administrator.</p>
 
-  <p>If the web address is correct or you selected a link or button, contact the DPS helpdesk on 0800 917 5148 or #6598 from inside an establishment. </p>
-
-  <p><a class="govuk-link govuk-link--no-visited-state" href="{{ digitalPrisonServicesUrl }}">Go to digital services home page</a></p>
+  {{ govukButton({ text: "Continue", href: "/", attributes: { "data-testid": "continue-button" } }) }}
 {% endblock %}

@@ -76,7 +76,7 @@ test.describe('Finding a prisoners financial profile', () => {
 
     await expect(page.getByRole('heading', { name: 'Prisoner not found' })).toBeVisible()
 
-    await page.getByRole('link', { name: 'Find a prisoner' }).click()
+    await page.getByRole('button', { name: 'Continue' }).click()
     await expect(page).toHaveURL(`/prisoner`)
   })
 
