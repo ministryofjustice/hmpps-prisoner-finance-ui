@@ -372,7 +372,7 @@ test.describe('Viewing a prisoners financial profile', () => {
     test('Should allow user to find another prisoner', async ({ page }) => {
       await page.goto(`/prisoner/${prisonNumber}`)
       const prisonerNotFoundErrorPage = await PrisonerNotFoundErrorPage.verifyOnPage(page, prisonNumber)
-      await prisonerNotFoundErrorPage.findPrisonerLink.click()
+      await prisonerNotFoundErrorPage.continueButton.click()
 
       await FindPrisonerPage.verifyOnPage(page)
     })
@@ -393,7 +393,7 @@ test.describe('Viewing a prisoners financial profile', () => {
     test('Should allow user to find another prisoner', async ({ page }) => {
       await page.goto(`/prisoner/${prisonNumber}`)
       const prisonerNotFoundErrorPage = await PrisonerNotFoundErrorPage.verifyOnPage(page, prisonNumber)
-      await prisonerNotFoundErrorPage.findPrisonerLink.click()
+      await prisonerNotFoundErrorPage.continueButton.click()
 
       await FindPrisonerPage.verifyOnPage(page)
     })
@@ -414,7 +414,7 @@ test.describe('Viewing a prisoners financial profile', () => {
     test('Should allow user to find another prisoner', async ({ page }) => {
       await page.goto(`/prisoner/${prisonNumber}`)
       const prisonerNotFoundErrorPage = await PrisonerNotFoundErrorPage.verifyOnPage(page, prisonNumber)
-      await prisonerNotFoundErrorPage.findPrisonerLink.click()
+      await prisonerNotFoundErrorPage.continueButton.click()
 
       await FindPrisonerPage.verifyOnPage(page)
     })

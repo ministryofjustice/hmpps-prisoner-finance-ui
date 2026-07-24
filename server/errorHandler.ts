@@ -3,12 +3,18 @@ import type { HTTPError } from 'superagent'
 import logger from '../logger'
 
 export default function createErrorHandler(production: boolean) {
-  return (error: HTTPError, req: Request, res: Response, _next: NextFunction): void => {
+  return (error: HTTPError & { responseStatus?: number }, req: Request, res: Response, _next: NextFunction): void => {
     logger.error(`Error handling request for '${req.originalUrl}', user '${res.locals.user?.username}'`, error)
 
     if (error.status === 401 || error.status === 403) {
       logger.info('Logging user out')
       return res.redirect('/sign-out')
+    }
+
+    // hmpps-rest-client errors expose the upstream status as `responseStatus`; http-errors use `status`.
+    if ((error.status ?? error.responseStatus) === 404) {
+      res.status(404)
+      return res.render('pages/not-found')
     }
 
     res.locals.message = production
