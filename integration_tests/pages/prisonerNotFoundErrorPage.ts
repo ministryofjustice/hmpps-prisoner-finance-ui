@@ -4,12 +4,12 @@ import AbstractPage from './abstractPage'
 export default class PrisonerNotFoundErrorPage extends AbstractPage {
   readonly heading: Locator
 
-  readonly findPrisonerLink: Locator
+  readonly continueButton: Locator
 
   private constructor(page: Page) {
     super(page)
     this.heading = page.getByRole('heading', { name: 'Prisoner not found', exact: true })
-    this.findPrisonerLink = page.getByRole('link', { name: 'Find a prisoner', exact: true })
+    this.continueButton = page.getByRole('button', { name: 'Continue', exact: true })
   }
 
   static async verifyOnPage(page: Page, prisonNumber: string): Promise<PrisonerNotFoundErrorPage> {

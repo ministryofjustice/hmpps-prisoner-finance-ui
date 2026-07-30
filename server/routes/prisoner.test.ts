@@ -100,7 +100,7 @@ describe('Prisoners', () => {
     const error = Object.assign(new Error('Not Found'), { data: { status: 404, userMessage: 'Not Found' } })
     prisonerFinanceService.getTransactionPage.mockRejectedValue(error)
     const res = await request(app).get(url).expect(404)
-    expect(res.text).toContain(error.data.userMessage)
+    expect(res.text).toContain('Page not found')
   }
 
   const verifyTransactionPageHandles500 = async (url: string) => {
@@ -206,6 +206,7 @@ describe('Prisoners', () => {
       prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockRejectedValue(error)
       const res = await request(app).get(`/prisoner/${prisonNumber}`).expect(404)
       expect(res.text).toContain('Prisoner not found')
+      expect(res.text).toContain('If you typed the web address or prison number, check it is correct.')
     })
 
     it('should handle API errors (e.g. 500)', async () => {

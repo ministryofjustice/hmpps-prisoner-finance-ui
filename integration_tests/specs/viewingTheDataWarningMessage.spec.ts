@@ -64,13 +64,6 @@ const routeCases: RouteCase[] = [
     },
   },
   {
-    name: 'Prisoner not found',
-    navigate: async page => {
-      await prisonerSearchApi.stubGetPrisonerNotFound('Z9999ZZ')
-      await page.goto('/prisoner/Z9999ZZ')
-    },
-  },
-  {
     name: 'All transactions',
     navigate: async page => {
       await stubTransactions('')
