@@ -105,9 +105,9 @@ class PrisonerController {
       })
     } catch (error) {
       if (error.responseStatus === 400 && error.data?.userMessage?.includes('Page requested is out of range')) {
-        next(createError(404, error?.data?.userMessage))
+        next(createError(404, error?.data?.userMessage, { cause: error }))
       } else {
-        next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error'))
+        next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error', { cause: error }))
       }
     }
   }
@@ -139,7 +139,7 @@ class PrisonerController {
         },
       })
     } catch (error) {
-      next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error'))
+      next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error', { cause: error }))
     }
   }
 }

@@ -1,0 +1,19 @@
+{%- extends "partials/layout-two-thirds.njk" -%}
+
+{%- from "govuk/components/button/macro.njk" import govukButton -%}
+
+{%- set pageTitle = "Sorry, there is a problem with the service" -%}
+
+{% block innerContent %}
+  <p class="govuk-body">Try again later.</p>
+
+  {{ govukButton({ text: "Continue", href: "/", attributes: { "data-testid": "continue-button" } }) }}
+
+  {% if not production %}
+     <p class="govuk-body"> Status: {{ error.status }}  </p>
+     <p class="govuk-body"> Message: {{error.message }} </p>
+     <p>StackTrace: </p>
+     <pre class="govuk-body" data-testid="error-page-stack"><code>{{ error.stack }}</code></pre>
+  {% endif %}
+
+{% endblock %}

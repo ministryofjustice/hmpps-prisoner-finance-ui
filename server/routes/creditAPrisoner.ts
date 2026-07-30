@@ -10,10 +10,7 @@ export default function routes(services: Services): Router {
 
   creditAPrisonerRouter.use(async (req, res, next) => {
     if (req.featureFlags.CREDIT_ACCOUNT_ENABLED === false) {
-      return res.render('pages/error.njk', {
-        status: '404',
-        message: 'Something went wrong. The error has been logged. Please try again',
-      })
+      return res.status(404).render('pages/not-found.njk')
     }
     return next()
   })

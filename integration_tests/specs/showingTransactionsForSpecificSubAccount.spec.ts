@@ -174,7 +174,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     test('Should allow user to go back to use the service', async ({ page }) => {
       await page.goto(`/prisoner/${prisonNumber}/money/savings`)
       const prisonerNotFoundErrorPage = await SubAccountNotFoundErrorPage.verifyOnPage(page, prisonNumber, 'savings')
-      await prisonerNotFoundErrorPage.backLink.click()
+      await prisonerNotFoundErrorPage.continueButton.click()
 
       await IndexPage.verifyOnPage(page)
     })
@@ -202,7 +202,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
         prisonNumber,
         'private-cash',
       )
-      await prisonerNotFoundErrorPage.backLink.click()
+      await prisonerNotFoundErrorPage.continueButton.click()
 
       await IndexPage.verifyOnPage(page)
     })
@@ -227,7 +227,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     test('Should allow user to go back to use the service', async ({ page }) => {
       await page.goto(`/prisoner/${prisonNumber}/money/spends`)
       const prisonerNotFoundErrorPage = await SubAccountNotFoundErrorPage.verifyOnPage(page, prisonNumber, 'spends')
-      await prisonerNotFoundErrorPage.backLink.click()
+      await prisonerNotFoundErrorPage.continueButton.click()
 
       await IndexPage.verifyOnPage(page)
     })
@@ -262,7 +262,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
         page,
         `/prisoner/${prisonNumber}/money/private-cash`,
       )
-      await internalServerErrorPage.backLink.click()
+      await internalServerErrorPage.continueButton.click()
 
       await IndexPage.verifyOnPage(page)
     })

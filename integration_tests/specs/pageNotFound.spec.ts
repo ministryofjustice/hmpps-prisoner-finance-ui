@@ -17,9 +17,6 @@ test.describe('Page not found', () => {
 
     await PageNotFoundErrorPage.verifyOnPage(page, unknownPath)
 
-    const backLink = page.getByRole('link', { name: 'Back', exact: true })
-    await expect(backLink).toHaveAttribute('href', '/')
-
     await expect(page.getByText('If you typed the web address, check it is correct.')).toBeVisible()
     await expect(page.getByText('If you pasted the web address, check you copied it correctly.')).toBeVisible()
 

@@ -19,7 +19,7 @@ afterEach(() => {
 })
 
 describe('GET 404', () => {
-  it('should render the Page not found page in dev mode without leaking a stack trace', () => {
+  it('should render the Page not found page', () => {
     return request(app)
       .get('/unknown')
       .expect(404)
@@ -27,21 +27,6 @@ describe('GET 404', () => {
       .expect(res => {
         expect(res.text).toContain('Page not found')
         expect(res.text).toContain('If you typed the web address, check it is correct.')
-        expect(res.text).not.toContain('NotFoundError: Not Found')
-        expect(res.text).not.toContain('Something went wrong. The error has been logged. Please try again')
-      })
-  })
-
-  it('should render the Page not found page in production mode', () => {
-    return request(appWithAllRoutes({ production: true }))
-      .get('/unknown')
-      .expect(404)
-      .expect('Content-Type', /html/)
-      .expect(res => {
-        expect(res.text).toContain('Page not found')
-        expect(res.text).toContain('If you typed the web address, check it is correct.')
-        expect(res.text).not.toContain('NotFoundError: Not Found')
-        expect(res.text).not.toContain('Something went wrong. The error has been logged. Please try again')
       })
   })
 
@@ -52,6 +37,38 @@ describe('GET 404', () => {
 
     expect(auditService.logPageView).not.toHaveBeenCalled()
     expect(auditService.logAuditEvent).not.toHaveBeenCalled()
+  })
+})
+
+describe('Shows 500 page for unhandled error', () => {
+  it('should render stacktrace when not production', () => {
+    auditService.logPageView.mockRejectedValue(Error('boom'))
+
+    return request(appWithAllRoutes({ production: false, services: { auditService } }))
+      .get('/')
+      .expect(500)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).toContain('boom')
+        expect(res.text).toContain('Status:')
+        expect(res.text).toContain('Message:')
+        expect(res.text).toContain('StackTrace:')
+      })
+  })
+
+  it('should not render stacktrace when in production', () => {
+    auditService.logPageView.mockRejectedValue(Error('boom'))
+
+    return request(appWithAllRoutes({ production: true, services: { auditService } }))
+      .get('/')
+      .expect(500)
+      .expect('Content-Type', /html/)
+      .expect(res => {
+        expect(res.text).not.toContain('boom')
+        expect(res.text).not.toContain('Status:')
+        expect(res.text).not.toContain('Message:')
+        expect(res.text).not.toContain('StackTrace:')
+      })
   })
 })
 

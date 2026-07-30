@@ -53,7 +53,7 @@ describe('GET /', () => {
       .expect('Content-Type', /html/)
       .expect(500)
       .expect(res => {
-        expect(res.text).toContain('Some problem calling external api!')
+        expect(res.text).toContain('Sorry, there is a problem with the service')
       })
   })
 })
