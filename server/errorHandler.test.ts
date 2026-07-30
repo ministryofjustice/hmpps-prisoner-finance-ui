@@ -196,18 +196,11 @@ describe('500 page rendering', () => {
 
     expect(res.text).toContain('Sorry, there is a problem with the service')
     expect(res.text).toContain('Try again later.')
-    expect(res.text).toContain('Go to the Prisoner Finance home page')
 
     expect(res.text).not.toContain('Your work has not been saved')
     expect(res.text).not.toContain('Some problem calling external api!')
     expect(res.text).not.toContain('error-page-stack')
     expect(res.text).not.toContain('at Object')
-  })
-
-  it('offers a home page link rather than a back link', async () => {
-    const res = await request(appWithFailingHomePage(true)).get('/').expect(500)
-
-    expect(res.text).toContain('data-testid="internal-server-error-home-link"')
-    expect(res.text).not.toContain('govuk-back-link')
+    expect(res.text).toContain('data-testid="continue-button')
   })
 })

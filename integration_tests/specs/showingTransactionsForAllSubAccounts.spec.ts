@@ -179,7 +179,7 @@ test.describe('Showing transactions for all sub accounts', () => {
       await page.goto(`/prisoner/${prisonNumber}/money`)
 
       const prisonerAccountNotFoundErrorPage = await accountNotFoundErrorPage.verifyOnPage(page, prisonNumber)
-      await prisonerAccountNotFoundErrorPage.backLink.click()
+      await prisonerAccountNotFoundErrorPage.continueButton.click()
 
       await IndexPage.verifyOnPage(page)
     })

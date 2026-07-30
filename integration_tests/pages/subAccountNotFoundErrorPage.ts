@@ -4,12 +4,12 @@ import AbstractPage from './abstractPage'
 export default class SubAccountNotFoundErrorPage extends AbstractPage {
   readonly heading: Locator
 
-  readonly backLink: Locator
+  readonly continueButton: Locator
 
   private constructor(page: Page) {
     super(page)
     this.heading = page.getByRole('heading', { name: 'Page not found', exact: true })
-    this.backLink = page.getByRole('link', { name: 'Back', exact: true })
+    this.continueButton = page.getByRole('button', { name: 'Continue', exact: true })
   }
 
   static async verifyOnPage(

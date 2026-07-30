@@ -44,13 +44,11 @@ test.describe('Internal server error', () => {
     await expect(page.locator('.hmpps-profile-banner')).toHaveCount(0)
   })
 
-  test('provides a link back to the home page', async ({ page }) => {
+  test('provides a continue button back to the home page', async ({ page }) => {
     await page.goto(errorPath)
     const internalServerErrorPage = await InternalServerErrorPage.verifyOnPage(page, errorPath)
 
-    await expect(page.getByRole('link', { name: 'Back', exact: true })).toHaveCount(0)
-    await internalServerErrorPage.homeLink.click()
-
+    await internalServerErrorPage.continueButton.click()
     await IndexPage.verifyOnPage(page)
   })
 
