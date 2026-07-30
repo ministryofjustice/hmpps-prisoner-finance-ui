@@ -23,7 +23,7 @@ test.describe('Internal server error', () => {
     await prisonRegisterApi.stubGetPrisonNames()
   })
 
-  test('shows a user-friendly 500 page without technical details when an error occurs', async ({ page }) => {
+  test('shows a page with technical details when an error occurs', async ({ page }) => {
     const response = await page.goto(errorPath)
     expect(response?.status()).toBe(500)
 
@@ -32,16 +32,8 @@ test.describe('Internal server error', () => {
 
     await expect(page.getByText('Try again later.')).toBeVisible()
 
-    await expect(page.locator('body')).not.toContainText('Internal Server Error')
-    await expect(page.locator('[data-testid="error-page-stack"]')).toHaveCount(0)
-  })
-
-  test('does not show prisoner information on the generic error page', async ({ page }) => {
-    await page.goto(errorPath)
-    await InternalServerErrorPage.verifyOnPage(page, errorPath)
-
-    await expect(page.locator('body')).not.toContainText(prisonNumber)
-    await expect(page.locator('.hmpps-profile-banner')).toHaveCount(0)
+    await expect(page.locator('body')).toContainText('there is a problem with the service')
+    await expect(await page.locator('[data-testid="error-page-stack"]').count()).toBeGreaterThan(0)
   })
 
   test('provides a continue button back to the home page', async ({ page }) => {

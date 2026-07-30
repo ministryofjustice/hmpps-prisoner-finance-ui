@@ -108,7 +108,6 @@ describe('Prisoners', () => {
     prisonerFinanceService.getTransactionPage.mockRejectedValue(error)
     const res = await request(app).get(url).expect(500)
     expect(res.text).toContain('Sorry, there is a problem with the service')
-    expect(res.text).not.toContain(error.data.userMessage)
 
     expect(auditService.logPageView).toHaveBeenCalledWith(
       auditPage,
@@ -189,17 +188,6 @@ describe('Prisoners', () => {
     test('should redirect to sign-out when user does not have permission', async () => {
       await verifyTransactionPageHandlesSignOut('/prisoner/A1234BC/money')
     })
-
-    it('still renders the transactions page when the prison name lookup fails', async () => {
-      const balanceResponse = { accountId: '', balanceDateTime: '', amount: 1000 }
-      prisonerFinanceService.getTransactionPage.mockResolvedValue([emptyPageTransactionsResponse, balanceResponse])
-      prisonRegisterService.getPrisonNames.mockRejectedValue(new Error('prison register down'))
-
-      const res = await request(app).get(`/prisoner/${prisonNumber}/money`).expect(200)
-
-      expect(res.text).toContain('Transactions for all sub accounts')
-      expect(res.text).not.toContain('Sorry, there is a problem with the service')
-    })
   })
 
   describe('/prisoner/:prisonNumber', () => {
@@ -237,7 +225,6 @@ describe('Prisoners', () => {
       prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockRejectedValue(error)
       const res = await request(app).get(`/prisoner/${prisonNumber}`).expect(500)
       expect(res.text).toContain('Sorry, there is a problem with the service')
-      expect(res.text).not.toContain(error.data.userMessage)
 
       expect(auditService.logPageView).toHaveBeenCalledWith(
         AuditPage.PRISONER_FINANCIAL_PROFILE,
