@@ -262,7 +262,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
         page,
         `/prisoner/${prisonNumber}/money/private-cash`,
       )
-      await internalServerErrorPage.backLink.click()
+      await internalServerErrorPage.homeLink.click()
 
       await IndexPage.verifyOnPage(page)
     })

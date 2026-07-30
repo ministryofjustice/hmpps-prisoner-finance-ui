@@ -6,7 +6,6 @@ import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTra
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
-import InternalServerErrorPage from '../pages/internalServerErrorPage'
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import accountNotFoundErrorPage from '../pages/accountNotFoundErrorPage'
 import IndexPage from '../pages/indexPage'
@@ -181,41 +180,6 @@ test.describe('Showing transactions for all sub accounts', () => {
 
       const prisonerAccountNotFoundErrorPage = await accountNotFoundErrorPage.verifyOnPage(page, prisonNumber)
       await prisonerAccountNotFoundErrorPage.backLink.click()
-
-      await IndexPage.verifyOnPage(page)
-    })
-  })
-
-  test.describe('Requesting details of an account that has errors', () => {
-    test(`Can see that an error has occured`, async ({ page }) => {
-      const prisonNumber = 'II1234I'
-
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonApi.stubGetPrisonerImage()
-      await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
-      await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
-      await prisonRegisterApi.stubGetPrisonNames()
-
-      await page.goto(`/prisoner/${prisonNumber}/money`)
-      await InternalServerErrorPage.verifyOnPage(page, `/prisoner/${prisonNumber}/money`)
-    })
-
-    test('Should allow user to continue to use the service', async ({ page }) => {
-      const prisonNumber = 'GG1234G'
-
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonApi.stubGetPrisonerImage()
-      await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
-      await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
-      await prisonRegisterApi.stubGetPrisonNames()
-
-      await page.goto(`/prisoner/${prisonNumber}/money`)
-
-      const internalServerErrorPage = await InternalServerErrorPage.verifyOnPage(
-        page,
-        `/prisoner/${prisonNumber}/money`,
-      )
-      await internalServerErrorPage.backLink.click()
 
       await IndexPage.verifyOnPage(page)
     })

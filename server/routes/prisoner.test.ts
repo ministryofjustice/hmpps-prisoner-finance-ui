@@ -103,11 +103,23 @@ describe('Prisoners', () => {
     expect(res.text).toContain('Page not found')
   }
 
-  const verifyTransactionPageHandles500 = async (url: string) => {
+  const verifyTransactionPageHandles500 = async (url: string, auditPage: AuditPage) => {
     const error = Object.assign(new Error('GL error'), { data: { status: 500, userMessage: 'GL Error' } })
     prisonerFinanceService.getTransactionPage.mockRejectedValue(error)
     const res = await request(app).get(url).expect(500)
-    expect(res.text).toContain(error.data.userMessage)
+    expect(res.text).toContain('Sorry, there is a problem with the service')
+    expect(res.text).not.toContain(error.data.userMessage)
+
+    expect(auditService.logPageView).toHaveBeenCalledWith(
+      auditPage,
+      expect.objectContaining({
+        correlationId: expect.any(String),
+        who: user.username,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      }),
+    )
+    expect(res.text).not.toContain(prisonNumber)
   }
 
   const verifyTransactionPageHandlesSignOut = async (url: string) => {
@@ -171,11 +183,22 @@ describe('Prisoners', () => {
     })
 
     it('should handle API errors (e.g. 500)', async () => {
-      await verifyTransactionPageHandles500(`/prisoner/${prisonNumber}/money`)
+      await verifyTransactionPageHandles500(`/prisoner/${prisonNumber}/money`, AuditPage.PRISONER_TRANSACTIONS)
     })
 
     test('should redirect to sign-out when user does not have permission', async () => {
       await verifyTransactionPageHandlesSignOut('/prisoner/A1234BC/money')
+    })
+
+    it('still renders the transactions page when the prison name lookup fails', async () => {
+      const balanceResponse = { accountId: '', balanceDateTime: '', amount: 1000 }
+      prisonerFinanceService.getTransactionPage.mockResolvedValue([emptyPageTransactionsResponse, balanceResponse])
+      prisonRegisterService.getPrisonNames.mockRejectedValue(new Error('prison register down'))
+
+      const res = await request(app).get(`/prisoner/${prisonNumber}/money`).expect(200)
+
+      expect(res.text).toContain('Transactions for all sub accounts')
+      expect(res.text).not.toContain('Sorry, there is a problem with the service')
     })
   })
 
@@ -213,7 +236,19 @@ describe('Prisoners', () => {
       const error = Object.assign(new Error('GL error'), { data: { status: 500, userMessage: 'GL Error' } })
       prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockRejectedValue(error)
       const res = await request(app).get(`/prisoner/${prisonNumber}`).expect(500)
-      expect(res.text).toContain(error.data.userMessage)
+      expect(res.text).toContain('Sorry, there is a problem with the service')
+      expect(res.text).not.toContain(error.data.userMessage)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(
+        AuditPage.PRISONER_FINANCIAL_PROFILE,
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          who: user.username,
+          subjectType: SubjectType.PRISONER,
+          subjectId: prisonNumber,
+        }),
+      )
+      expect(res.text).not.toContain(prisonNumber)
     })
 
     test('should redirect to sign-out when user does not have permission', async () => {
@@ -246,7 +281,10 @@ describe('Prisoners', () => {
     })
 
     it('should handle API errors (e.g. 500)', async () => {
-      await verifyTransactionPageHandles500(`/prisoner/${prisonNumber}/money/private-cash`)
+      await verifyTransactionPageHandles500(
+        `/prisoner/${prisonNumber}/money/private-cash`,
+        AuditPage.PRISONER_CASH_TRANSACTIONS,
+      )
     })
 
     test('should redirect to sign-out when user does not have permission', async () => {
@@ -268,7 +306,10 @@ describe('Prisoners', () => {
     })
 
     it('should handle API errors (e.g. 500)', async () => {
-      await verifyTransactionPageHandles500(`/prisoner/${prisonNumber}/money/spends`)
+      await verifyTransactionPageHandles500(
+        `/prisoner/${prisonNumber}/money/spends`,
+        AuditPage.PRISONER_SPENDS_TRANSACTIONS,
+      )
     })
 
     test('should redirect to sign-out when user does not have permission', async () => {
@@ -290,7 +331,10 @@ describe('Prisoners', () => {
     })
 
     it('should handle API errors (e.g. 500)', async () => {
-      await verifyTransactionPageHandles500(`/prisoner/${prisonNumber}/money/savings`)
+      await verifyTransactionPageHandles500(
+        `/prisoner/${prisonNumber}/money/savings`,
+        AuditPage.PRISONER_SAVINGS_TRANSACTIONS,
+      )
     })
 
     test('should redirect to sign-out when user does not have permission', async () => {

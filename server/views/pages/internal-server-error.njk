@@ -1,0 +1,11 @@
+{%- extends "partials/layout-two-thirds.njk" -%}
+
+{%- set pageTitle = "Sorry, there is a problem with the service" -%}
+
+{% block innerContent %}
+  <p class="govuk-body">Try again later.</p>
+
+  <p class="govuk-body">
+    <a class="govuk-link" href="/" data-testid="internal-server-error-home-link">Go to the Prisoner Finance home page</a>
+  </p>
+{% endblock %}
