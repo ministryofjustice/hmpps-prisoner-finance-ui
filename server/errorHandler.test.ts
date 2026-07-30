@@ -5,7 +5,6 @@ import createErrorHandler from './errorHandler'
 import logger from '../logger'
 import AuditService from './services/auditService'
 import FeatureFlagService from './services/featureFlagService'
-import HmppsAuditClient from './data/hmppsAuditClient'
 
 jest.mock('./services/auditService')
 jest.mock('./services/featureFlagService')
