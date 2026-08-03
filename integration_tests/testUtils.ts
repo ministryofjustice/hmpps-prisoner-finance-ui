@@ -10,7 +10,7 @@ import { createRedisClient, RedisClient } from '../server/data/redisClient'
 
 export { resetStubs }
 
-const DEFAULT_ROLES = ['ROLE_SOME_REQUIRED_ROLE']
+export const DEFAULT_ROLES = ['ROLE_SOME_REQUIRED_ROLE']
 
 export const attemptHmppsAuthLogin = async (page: Page) => {
   await page.goto('/')

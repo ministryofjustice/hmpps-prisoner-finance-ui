@@ -1,4 +1,7 @@
 import jwt from 'jsonwebtoken'
+import { da } from 'zod/v4/locales'
+import { stringify } from 'querystring'
+import { queryObjects } from 'v8'
 import { stubFor, getMatchingRequests } from './wiremock'
 
 export interface UserToken {
@@ -28,6 +31,9 @@ export default {
       urlPath: '/auth/oauth/authorize',
     }).then(data => {
       const { requests } = data.body
+      console.log('hello 1', data.body)
+      console.log('hello 2', { query: data.body.requests[0].queryParams })
+      console.log('hello 3', { query: data.body.requests[0].queryParams.state.values })
       const stateValue = requests[requests.length - 1].queryParams.state.values[0]
       return `/sign-in/callback?code=codexxxx&state=${stateValue}`
     }),

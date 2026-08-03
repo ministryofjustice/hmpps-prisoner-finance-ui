@@ -1,6 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { AxeBuilder } from '@axe-core/playwright'
-import { login, resetStubs } from '../testUtils'
+import { login, resetStubs, DEFAULT_ROLES } from '../testUtils'
 import IndexPage from '../pages/indexPage'
 import FindPrisonerPage from '../pages/findPrisonerPage'
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
@@ -12,6 +12,16 @@ test.describe('Finding a prisoners financial profile', () => {
   const prisonNumber = 'A1234BC'
 
   const stubPrisonerProfile = async () => {
+    await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonApi.stubGetPrisonerImage()
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
+    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS')
+    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
+    await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS')
+  }
+
+  const stubPrisonerProfileOutOfPrison = async () => {
+    // await prisonerSearchApi.stubGetPrisonerOutOfPrison(prisonNumber)
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonApi.stubGetPrisonerImage()
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
@@ -35,6 +45,49 @@ test.describe('Finding a prisoners financial profile', () => {
     await findPrisonerPage.findPrisoner(prisonNumber)
 
     await PrisonerFinancialProfilePage.verifyOnPage(page, prisonNumber)
+  })
+
+  test('user can reach a prisoner profile using role INACTIVE_BOOKINGS when the prisoner is out of prison', async ({
+    page,
+  }) => {
+    const indexPage = await IndexPage.verifyOnPage(page)
+
+    await indexPage.signOut()
+
+    await resetStubs()
+    await login(page)
+
+    await stubPrisonerProfileOutOfPrison() // stubPrisonerProfile() //stubPrisonerProfileOutOfPrison()
+
+    const index = await IndexPage.verifyOnPage(page)
+    await index.viewPrisonerFinanceCard.click()
+
+    const findPrisonerPage = await FindPrisonerPage.verifyOnPage(page)
+    await findPrisonerPage.findPrisoner(prisonNumber)
+
+    await PrisonerFinancialProfilePage.verifyOnPage(page, prisonNumber)
+  })
+
+  test('user cannot reach a prisoner profile without the role INACTIVE_BOOKINGS when the prisoner is out of prison', async ({
+    page,
+  }) => {
+    await stubPrisonerProfileOutOfPrison()
+
+    await page.goto('/prisoner')
+    const findPrisonerPage = await FindPrisonerPage.verifyOnPage(page)
+
+    const [response] = await Promise.all([
+      page.waitForResponse(
+        resp => resp.url().endsWith(`/prisoner/${prisonNumber}`) && resp.request().method() === 'GET',
+      ),
+      findPrisonerPage.findPrisoner(prisonNumber),
+    ])
+    expect(response.status()).toBe(404)
+
+    await expect(page.getByRole('heading', { name: 'Prisoner not found' })).toBeVisible()
+
+    await page.getByRole('button', { name: 'Continue' }).click()
+    await expect(page).toHaveURL(`/prisoner`)
   })
 
   test('shows an error when submitting with no prison number entered', async ({ page }) => {
