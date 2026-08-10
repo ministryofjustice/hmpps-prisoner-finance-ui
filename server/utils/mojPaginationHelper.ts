@@ -29,14 +29,14 @@ type PaginationResult<T> = {
   pageSize: number
 }
 
-type BuildPaginationItemsParams<T> = {
+type BuildPaginationItemsParams<T, TF> = {
   pageNumber: number
   totalPages: number
   totalElements: number
   content: T[]
   isLastPage: boolean
   pageSize: number
-  filters: z.infer<typeof transactionsFilterSchema>
+  filters: z.infer<TF>
 }
 
 const stringifyFilters = (filters: z.infer<typeof transactionsFilterSchema>) =>
@@ -44,7 +44,7 @@ const stringifyFilters = (filters: z.infer<typeof transactionsFilterSchema>) =>
 
 const MAX_VISIBLE_WITHOUT_DOTS = 7
 
-export default function buildPaginationItems<T>({
+export default function buildPaginationItems<T, TF>({
   pageNumber,
   totalPages,
   totalElements,
@@ -52,7 +52,7 @@ export default function buildPaginationItems<T>({
   isLastPage,
   pageSize,
   filters,
-}: BuildPaginationItemsParams<T>): PaginationResult<T> {
+}: BuildPaginationItemsParams<T, TF>): PaginationResult<T> {
   const items = buildPageItems(pageNumber, totalPages, filters)
   const previous = buildPreviousLink(pageNumber, filters)
   const next = buildNextLink(pageNumber, totalPages, filters)

@@ -13,7 +13,7 @@ const isBlank = (str?: string | null): boolean => !str || /^\s*$/.test(str)
  * @param name name to be converted.
  * @returns name converted to proper case.
  */
-const properCaseName = (name: string): string => (isBlank(name) ? '' : name.split('-').map(properCase).join('-'))
+export const properCaseName = (name: string): string => (isBlank(name) ? '' : name.split('-').map(properCase).join('-'))
 
 export const penceToPound = (pence: number): string => {
   if (pence === null || Number.isNaN(pence)) {
@@ -31,8 +31,8 @@ export const penceToPound = (pence: number): string => {
   return `${sign}${pounds}.${pennies}`
 }
 
-export const formatDateForView = (utcString: string): string => {
-  return format(parseISO(utcString), 'dd/MM/yyyy HH:mm').replace(' ', '\n')
+export const formatDateForView = (utcString: string, formatDate: string = 'dd/MM/yyyy HH:mm'): string => {
+  return format(parseISO(utcString), formatDate).replace(' ', '\n')
 }
 
 export const convertToTitleCase = (sentence?: string | null): string =>

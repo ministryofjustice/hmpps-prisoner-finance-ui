@@ -1,6 +1,7 @@
 import { SuperAgentRequest } from 'superagent'
 import { stubFor } from './wiremock'
 import { RestPage, PrisonerSearchResponse } from '../../server/interfaces/PrisonerNumberSearchResponse'
+import { PrisonerSearchContent } from '../../server/interfaces/PrisonerSearchResponse'
 
 export default {
   stubPing: (httpStatus = 200): SuperAgentRequest =>
@@ -81,6 +82,110 @@ export default {
           prisonId: 'ALCATRAZ',
           status: 'ACTIVE IN',
           cellLocation: 'RECP',
+        },
+      },
+    })
+  },
+
+  stubPrisonerSearchReturnsNoResults: (searchTerm: string, prisonId: string) => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath: `/prisoner-search-api/prison/${prisonId}/prisoners`,
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          totalElements: 0,
+          totalPages: 0,
+          size: 0,
+          content: [],
+          number: 0,
+          first: true,
+          last: true,
+          sort: {
+            empty: true,
+            sorted: true,
+            unsorted: true,
+          },
+          numberOfElements: 0,
+          pageable: {
+            offset: 0,
+            sort: {
+              empty: true,
+              sorted: true,
+              unsorted: true,
+            },
+            pageSize: 0,
+            paged: true,
+            pageNumber: 0,
+            unpaged: true,
+          },
+          empty: true,
+        },
+      },
+    })
+  },
+
+  stubPrisonerSearchReturnsResults: ({
+    searchTerm,
+    prisonId,
+    results,
+    pageSize = 25,
+    pageNumber = 0,
+    totalPages = 1,
+  }: {
+    searchTerm: string
+    prisonId: string
+    results: PrisonerSearchContent[]
+    pageSize: number
+    pageNumber: number
+    totalPages: number
+  }) => {
+    return stubFor({
+      request: {
+        method: 'GET',
+        urlPath: `/prisoner-search-api/prison/${prisonId}/prisoners`,
+        queryParameters: {
+          page: {
+            equalTo: pageNumber.toString(),
+          },
+          term: {
+            equalTo: searchTerm,
+          },
+        },
+      },
+      response: {
+        status: 200,
+        headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+        jsonBody: {
+          totalElements: results.length * totalPages,
+          totalPages,
+          size: results.length,
+          content: results,
+          number: pageNumber,
+          first: pageNumber === 0,
+          last: false,
+          sort: {
+            empty: true,
+            sorted: true,
+            unsorted: true,
+          },
+          numberOfElements: results.length * totalPages,
+          pageable: {
+            offset: 0,
+            sort: {
+              empty: true,
+              sorted: true,
+              unsorted: true,
+            },
+            pageSize,
+            paged: true,
+            pageNumber,
+            unpaged: false,
+          },
+          empty: false,
         },
       },
     })

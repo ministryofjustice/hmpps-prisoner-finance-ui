@@ -1,9 +1,11 @@
-{%- extends "partials/layout-two-thirds.njk" -%}
+{%- extends "partials/layout-full-width.njk" -%}
 
 {%- from "govuk/components/input/macro.njk" import govukInput -%}
 {%- from "govuk/components/button/macro.njk" import govukButton -%}
 {%- from "govuk/components/fieldset/macro.njk" import govukFieldset -%}
 {%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
 
 {%- set pageTitle = "View prisoner finances" -%}
 {%- set backUrl = "/" -%}
@@ -13,20 +15,28 @@
 {% endblock %}
 
 {% block innerContent %}
-  <form method="POST" action="/prisoner" data-testid="find-prisoner-form">
-    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+
+<div>
+
+  <form method="GET" action="/prisoner" data-testid="find-prisoner-form" class="prisoner-search__form" >
+    {% set inputHeading %}
+      <h3>Search for a prisoner</h3>
+      <p class="govuk-!-margin-left-2">In {{currentCaseload}}</p>
+      <span>Name or prison number</span>
+    {% endset %}
 
     {{ govukInput({
       label: {
-        text: "Enter a prison number"
+        html: inputHeading
       },
-      id: "prisonNumber",
-      name: "prisonNumber",
+      id: "term",
+      name: "term",
       classes: "govuk-input--width-10",
       attributes: {
         "data-testid": "prisoner-number-input"
       },
-      errorMessage: { text: errorMap.prisonNumber } if errorMap.prisonNumber else null
+      value: term,
+      errorMessage: { text: errorMap.term } if errorMap.term else null
     }) }}
 
     {{ govukButton({
@@ -37,4 +47,63 @@
       }
     }) }}
   </form>
+
+{% if matchingPrisoners | length == 0 and matchingPrisoners != null %}
+  <p>No records found matching search criteria.</p>
+  {% endif %}
+
+{% if matchingPrisoners | length > 0 %}
+ {% set head = [
+      { },
+      { text: "Name" },
+      { text: "Prison number" },
+      { text: "Location"},
+      { text: "Incentive level" },
+      { text: "DoB" }
+    ] %}
+    {% set rows = [] %}
+  {% for row in matchingPrisoners %}
+
+    {% set prisonerLink %}
+      <a href="/prisoner/{{ row.prisonerNumber }}">
+        {{ (row.firstName + ', ' + row.lastName) | convertToTitleCase }}
+      </a>
+    {% endset %}
+
+    {% set prisonerImage %}
+      <img class="mini-profile-person-img" src="/prisoner-image/{{ row.prisonerNumber}}" alt="Image of {{ row.prisonerNumber }}" loading="lazy" data-qa="mini-profile-person-img">
+    {% endset %}
+
+    {% set rowData = [
+      { html: prisonerImage },
+      { html: prisonerLink },
+      { text: row.prisonerNumber },
+      { text: row.cellLocation },
+      { text: row.currentIncentive.level.description },
+      { text: row.dateOfBirth | formatDateForView('dd/MM/yyyy') }
+    ] %}
+    {% set rows = (rows.push(rowData), rows) %}
+  {% endfor %}
+
+  {{ mojPagination({
+    items: paginationItems.items,
+    previous: paginationItems.previous,
+    next: paginationItems.next,
+    results: paginationItems.results,
+    classes: 'top-pagination'
+  }) }}
+
+  {{ govukTable({ classes: "", caption: "", captionClasses: "", head: head, rows: rows }) }}
+
+  {{ mojPagination({
+    items: paginationItems.items,
+    previous: paginationItems.previous,
+    next: paginationItems.next,
+    results: paginationItems.results,
+    classes: 'bottom-pagination'
+  }) }}
+{% endif %}
+
+</div>
+
 {% endblock %}
