@@ -44,6 +44,7 @@ describe('/credit-a-prisoner', () => {
           description: 'Enhanced',
         },
       },
+      bookingId: '123456',
     })
 
     app = appWithAllRoutes({

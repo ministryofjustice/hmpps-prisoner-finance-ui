@@ -3,7 +3,6 @@
 {%- from "govuk/components/breadcrumbs/macro.njk" import govukBreadcrumbs -%}
 {%- from "govuk/components/back-link/macro.njk" import govukBackLink -%}
 {%- from "partials/mini-profile/macro.njk" import miniProfile -%}
-{%- from "partials/prisoner-information-panel/macro.njk" import prisonerInformationPanel -%}
 
 {%- set mainClasses = "govuk-body" -%}
 
@@ -41,7 +40,7 @@
   {%- endif -%}
 
   {%- if prisonerDetails -%}
-    {{ prisonerInformationPanel(prisonerDetails, originalUrl) }}
+    {{ miniProfile(prisonerDetails, originalUrl, prisonerProfileUrl, incentivesUIUrl,categorizationDashboardUrl) }}
   {%- endif -%}
 
   {% block pageHeader %}{% endblock %}

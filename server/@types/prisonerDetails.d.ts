@@ -6,4 +6,8 @@ export default interface PrisonerDetails {
   prisonName?: string | undefined
   cellLocation?: string | undefined
   prisonId?: string
+  bookingId?: string | undefined
+  csra?: string | undefined
+  currentIncentiveLevelDescription?: string | undefined
+  category?: string | undefined
 }

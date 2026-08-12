@@ -15,4 +15,5 @@ export interface Prisoner {
       description: string
     }
   }
+  bookingId: string | undefined
 }

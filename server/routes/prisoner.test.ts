@@ -44,6 +44,7 @@ describe('Prisoners', () => {
           description: 'Enhanced',
         },
       },
+      bookingId: '123456',
     })
 
     prisonRegisterService.getPrisonNames.mockResolvedValue([{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }])
