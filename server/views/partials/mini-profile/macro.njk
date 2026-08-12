@@ -4,6 +4,6 @@
     Can set details into req.middleware.prisonerData with populatePrisonerDetails() middleware,
     then set it into res.locals.prisonerDetails (and cache it into req.journeyData.prisonerDetails if in a journey page).
 #}
-{% macro miniProfile(prisonerDetails, originalUrl) %}
+{% macro miniProfile(prisonerDetails, originalUrl, prisonerProfileUrl, incentivesUIUrl, categorizationDashboardUrl ) %}
     {%- include "./template.njk" -%}
 {% endmacro %}

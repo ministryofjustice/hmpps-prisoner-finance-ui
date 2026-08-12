@@ -17,6 +17,10 @@ export const toPrisonerDetails = (prisoner: Prisoner): PrisonerDetails => ({
   dateOfBirth: prisoner.dateOfBirth,
   prisonName: prisoner.prisonName,
   cellLocation: prisoner.cellLocation,
+  bookingId: prisoner.bookingId,
+  csra: prisoner.csra,
+  currentIncentiveLevelDescription: prisoner.currentIncentive.level?.description,
+  category: prisoner.category,
 })
 
 export const getPrisonerData = (req: Request, res: Response, next: NextFunction): void => {

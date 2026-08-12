@@ -97,25 +97,6 @@ test.describe('Showing transactions for all sub accounts', () => {
       await expect(prisonerTransactionsPage.currentBalanceCard).toContainText('Current balance Total £12.34')
     })
 
-    test.skip(`Can view total balance of account`, async ({ page }) => {
-      const prisonNumber = 'BB1234B'
-
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-      await prisonApi.stubGetPrisonerImage()
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
-      await prisonRegisterApi.stubGetPrisonNames()
-      await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, {
-        accountId: '123456',
-        balanceDateTime: '12:34:56',
-        amount: 5678,
-      })
-
-      const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
-
-      await expect(prisonerTransactionsPage.totalBalanceCard).toBeVisible()
-      await expect(prisonerTransactionsPage.totalBalanceCard).toContainText('Total balance Total £56.78')
-    })
-
     test('Can go back to the prisoners financial profile', async ({ page }) => {
       const prisonNumber = 'CC1234C'
 
