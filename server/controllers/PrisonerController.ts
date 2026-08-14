@@ -25,7 +25,7 @@ class PrisonerController {
     await this.services.auditService.logSearchRequest(SearchRequest.FIND_PRISONER, {
       who: res.locals.user.username,
       correlationId: req.id,
-      subjectType: AuditPage.FIND_PRISONER,
+      subjectType: SubjectType.SEARCH_TERM,
       subjectId: parsedQueries.data?.term ?? 'SearchPageLoaded',
     })
 

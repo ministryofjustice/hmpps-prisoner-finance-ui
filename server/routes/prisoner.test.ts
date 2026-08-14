@@ -200,7 +200,7 @@ describe('Prisoners', () => {
           correlationId: expect.any(String),
           who: user.username,
           subjectId: 'SearchPageLoaded',
-          subjectType: AuditPage.FIND_PRISONER,
+          subjectType: SubjectType.SEARCH_TERM,
         }),
       )
       expect(response.text).toContain('Search for a prisoner')

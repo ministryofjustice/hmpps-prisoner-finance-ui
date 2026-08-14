@@ -109,7 +109,7 @@ describe('PrisonerController', () => {
       expect(auditService.logSearchRequest).toHaveBeenCalledWith(SearchRequest.FIND_PRISONER, {
         who: mockRes.locals.user.username,
         correlationId: mockReq.id,
-        subjectType: AuditPage.FIND_PRISONER,
+        subjectType: SubjectType.SEARCH_TERM,
         subjectId: prisonNumber,
       })
     })
