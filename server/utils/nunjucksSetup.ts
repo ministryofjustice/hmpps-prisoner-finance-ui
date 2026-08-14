@@ -11,6 +11,8 @@ import {
   convertPrisonIdToName,
   formatPrisonerAccountType,
   prisonerProfileBacklink,
+  properCaseName,
+  convertToTitleCase,
 } from './utils'
 import { lastNameCommaFirstName, formatDate } from './formatUtils'
 import config from '../config'
@@ -32,6 +34,8 @@ export const setUpNunJucksFilters = (njkEnv: nunjucks.Environment, assetManifest
   njkEnv.addFilter('createProfileTabsForPrisoner', createProfileTabsForPrisoner)
   njkEnv.addFilter('convertPrisonIdToName', convertPrisonIdToName)
   njkEnv.addFilter('formatPrisonerAccountType', formatPrisonerAccountType)
+  njkEnv.addFilter('properCaseName', properCaseName)
+  njkEnv.addFilter('convertToTitleCase', convertToTitleCase)
 }
 
 export default function nunjucksSetup(app: express.Express): void {

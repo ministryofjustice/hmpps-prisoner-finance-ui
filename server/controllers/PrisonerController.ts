@@ -6,6 +6,8 @@ import { buildMojSelectedFilter } from '../utils/mojFilterHelper'
 import { formatValidationErrors, transactionsFilterSchema } from '../validators/transactionsFilterValidator'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 import buildPaginationItems from '../utils/mojPaginationHelper'
+import { PrisonerSearchContent, PrisonerSearchResult } from '../interfaces/PrisonerSearchResponse'
+import prisonerSearchFilterSchema, { formatSearchFilterValidationErrors } from '../validators/searchFilterSchema'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -18,34 +20,66 @@ class PrisonerController {
   constructor(private readonly services: Services) {}
 
   public getFindPrisoner = async (req: Request, res: Response, next: NextFunction) => {
-    await this.services.auditService.logPageView(AuditPage.FIND_PRISONER, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-    })
+    const parsedQueries = prisonerSearchFilterSchema.safeParse(req.query)
 
-    res.render('pages/prisoner/find/find')
-  }
+    if (parsedQueries.data?.term) {
+      await this.services.auditService.logSearchRequest(SearchRequest.FIND_PRISONER, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SubjectType.SEARCH_TERM,
+        subjectId: parsedQueries.data?.term,
+      })
+    } else {
+      await this.services.auditService.logPageView(AuditPage.FIND_PRISONER, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
+    }
 
-  public postFindPrisoner = async (req: Request, res: Response, next: NextFunction) => {
-    const prisonNumber = typeof req.body.prisonNumber === 'string' ? req.body.prisonNumber.trim() : ''
+    const token = req.user?.token as string
+    const caseloads = await this.services.prisonApiService.getUserCaseloads(token)
+    const currentCaseload = caseloads.find(caseload => caseload.currentlyActive)
 
-    await this.services.auditService.logSearchRequest(SearchRequest.FIND_PRISONER, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-      subjectType: SubjectType.PRISONER,
-      subjectId: prisonNumber,
-    })
-
-    if (!prisonNumber) {
+    if (parsedQueries.error) {
       res.render('pages/prisoner/find/find', {
-        errorMap: {
-          prisonNumber: 'Enter a prison number',
-        },
+        currentCaseload: currentCaseload.description,
+        ...formatSearchFilterValidationErrors(parsedQueries.error),
       })
       return
     }
 
-    res.redirect(`/prisoner/${prisonNumber}`)
+    if (!parsedQueries.data.term) {
+      res.render('pages/prisoner/find/find', {
+        currentCaseload: currentCaseload.description,
+      })
+      return
+    }
+
+    const matchingPrisoners: PrisonerSearchResult = await this.services.prisonerSearchService.getPrisonersBySearchTerm(
+      currentCaseload.caseLoadId,
+      parsedQueries.data.term,
+      (parsedQueries.data.page - 1).toString(), // page start from 0 in this API
+    )
+
+    const { content, ...paginationItems } = buildPaginationItems<
+      PrisonerSearchContent,
+      typeof prisonerSearchFilterSchema
+    >({
+      pageNumber: parsedQueries.data.page,
+      totalPages: matchingPrisoners.totalPages,
+      totalElements: matchingPrisoners.totalElements,
+      content: matchingPrisoners.content,
+      isLastPage: matchingPrisoners.pageable.pageNumber === matchingPrisoners.totalPages - 1,
+      pageSize: matchingPrisoners.pageable.pageSize,
+      filters: parsedQueries.data,
+    })
+
+    res.render('pages/prisoner/find/find', {
+      currentCaseload: currentCaseload.description,
+      matchingPrisoners: matchingPrisoners.content,
+      term: parsedQueries.data.term,
+      paginationItems,
+    })
   }
 
   public getTransactions = async (req: Request, res: Response, next: NextFunction) => {
@@ -81,7 +115,10 @@ class PrisonerController {
       })
 
       const { content, ...paginationItems } = parsedQueries.success
-        ? buildPaginationItems<PrisonerTransactionResponse>({ ...transactionPage, filters: parsedQueries.data })
+        ? buildPaginationItems<PrisonerTransactionResponse, typeof transactionsFilterSchema>({
+            ...transactionPage,
+            filters: parsedQueries.data,
+          })
         : { content: [] as PrisonerTransactionResponse[] }
 
       res.render('pages/prisoner/transactions/prisonerTransactions', {

@@ -13,8 +13,6 @@ export default function routes(services: Services): Router {
 
   prisonerRouter.get('/', prisonerController.getFindPrisoner)
 
-  prisonerRouter.post('/', prisonerController.postFindPrisoner)
-
   prisonerRouter.get(
     '/:prisonNumber/money',
     populatePrisonerDetails(services),

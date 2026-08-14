@@ -10,14 +10,20 @@ export default class FindPrisonerPage extends AbstractPage {
 
   readonly errorMessage: Locator
 
+  readonly topPagination: Locator
+
+  readonly bottomPagination: Locator
+
   private constructor(page: Page) {
     super(page)
     this.heading = page.getByRole('heading', { name: 'View prisoner finances', exact: true })
 
-    this.prisonNumberInput = page.getByLabel('Enter a prison number', { exact: true })
+    this.prisonNumberInput = page.getByLabel('Name or prison number', { exact: false })
     this.submitButton = page.getByRole('button', { name: 'Submit', exact: true })
 
-    this.errorMessage = page.locator('#prisonNumber-error')
+    this.errorMessage = page.locator('#term-error')
+    this.topPagination = page.locator('.top-pagination')
+    this.bottomPagination = page.locator('.bottom-pagination')
   }
 
   static async load(page: Page): Promise<FindPrisonerPage> {

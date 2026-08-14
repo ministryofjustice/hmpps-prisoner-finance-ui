@@ -28,6 +28,7 @@ export enum SearchRequest {
 }
 
 export enum SubjectType {
+  SEARCH_TERM = 'SEARCH_TERM_ID',
   PRISONER = 'PRISONER_ID',
   PRISON = 'PRISON_ID',
 }

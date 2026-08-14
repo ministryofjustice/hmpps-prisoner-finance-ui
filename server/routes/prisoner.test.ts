@@ -2,17 +2,19 @@ import type { Express } from 'express'
 import request from 'supertest'
 import { PrisonerMoneyPermission, PermissionsService } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import { appWithAllRoutes, user } from './testutils/appSetup'
-import AuditService, { AuditPage, SubjectType } from '../services/auditService'
+import AuditService, { AuditPage, SearchRequest, SubjectType } from '../services/auditService'
 import PrisonerFinanceService from '../services/prisonerFinanceService'
 import PrisonerSearchService from '../services/prisonerSearchService'
 import mockPermissions from './testutils/mockPermissions'
 import PrisonRegisterService from '../services/prisonRegisterService'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 import { Page } from '../interfaces/Pageable'
+import PrisonApiService from '../services/prisonApiService'
 
 jest.mock('../services/prisonerFinanceService')
 jest.mock('../services/prisonerSearchService')
 jest.mock('../services/prisonRegisterService')
+jest.mock('../services/prisonApiService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
@@ -20,6 +22,7 @@ const prisonerFinanceService = new PrisonerFinanceService(null) as jest.Mocked<P
 const prisonerSearchService = new PrisonerSearchService(null) as jest.Mocked<PrisonerSearchService>
 const prisonPermissionsService = {} as unknown as PermissionsService
 const prisonRegisterService = new PrisonRegisterService(null) as jest.Mocked<PrisonRegisterService>
+const prisonApiService = new PrisonApiService(null) as jest.Mocked<PrisonApiService>
 
 let app: Express
 
@@ -56,6 +59,7 @@ describe('Prisoners', () => {
         prisonPermissionsService,
         prisonerSearchService,
         prisonRegisterService,
+        prisonApiService,
       },
       userSupplier: () => user,
     })
@@ -126,7 +130,13 @@ describe('Prisoners', () => {
     mockPermissions(undefined, { [PrisonerMoneyPermission.read]: false })
 
     app = appWithAllRoutes({
-      services: { auditService, prisonerFinanceService, prisonPermissionsService, prisonerSearchService },
+      services: {
+        auditService,
+        prisonerFinanceService,
+        prisonPermissionsService,
+        prisonerSearchService,
+        prisonApiService,
+      },
       userSupplier: () => user,
     })
 
@@ -139,31 +149,82 @@ describe('Prisoners', () => {
   }
 
   describe('/prisoner', () => {
+    beforeEach(() => {
+      jest.resetAllMocks()
+      prisonApiService.getUserCaseloads.mockResolvedValue([
+        {
+          caseLoadId: 'ASI',
+          description: 'Ashfield (HMP)',
+          type: 'INST',
+          caseloadFunction: 'GENERAL',
+          currentlyActive: true,
+        },
+      ])
+
+      prisonerSearchService.getPrisonersBySearchTerm.mockResolvedValue({
+        totalElements: 0,
+        totalPages: 0,
+        size: 0,
+        content: [],
+        number: 0,
+        first: true,
+        last: true,
+        sort: {
+          empty: true,
+          sorted: true,
+          unsorted: true,
+        },
+        numberOfElements: 0,
+        pageable: {
+          offset: 0,
+          sort: {
+            empty: true,
+            sorted: true,
+            unsorted: true,
+          },
+          pageSize: 0,
+          paged: true,
+          pageNumber: 0,
+          unpaged: true,
+        },
+        empty: true,
+      })
+    })
+
     it('GET should return a 200, render the find prisoner page and call the audit service', async () => {
       const response = await request(app).get('/prisoner').expect(200).expect('Content-Type', /html/)
 
       expect(auditService.logPageView).toHaveBeenCalledWith(
         AuditPage.FIND_PRISONER,
-        expect.objectContaining({ correlationId: expect.any(String), who: user.username }),
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          who: user.username,
+        }),
       )
-      expect(response.text).toContain('Enter a prison number')
+      expect(response.text).toContain('Search for a prisoner')
     })
 
-    it('POST should redirect to the prisoner profile for the entered prison number', async () => {
-      const response = await request(app).post('/prisoner').send({ prisonNumber: 'A1234BC' })
+    it('GET should return a 200, render the find prisoner page and call the audit service when searching for a term', async () => {
+      const response = await request(app)
+        .get('/prisoner')
+        .query({ term: 'hello' })
+        .expect(200)
+        .expect('Content-Type', /html/)
 
-      expect(response.status).toBe(302)
-      expect(response.headers.location).toBe('/prisoner/A1234BC')
+      expect(auditService.logSearchRequest).toHaveBeenCalledWith(
+        SearchRequest.FIND_PRISONER,
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          who: user.username,
+          subjectId: 'hello',
+          subjectType: SubjectType.SEARCH_TERM,
+        }),
+      )
+      expect(response.text).toContain('Search for a prisoner')
     })
 
-    it('POST should re-render the find prisoner page with an error when no prison number is entered', async () => {
-      const response = await request(app).post('/prisoner').send({ prisonNumber: '' }).expect(200)
-
-      expect(response.text).toContain('Enter a prison number')
-    })
-
-    it('POST should re-render the find prisoner page with an error when only whitespace is entered', async () => {
-      const response = await request(app).post('/prisoner').send({ prisonNumber: '   ' }).expect(200)
+    it('should re-render the find prisoner page with an error when only whitespace is entered', async () => {
+      const response = await request(app).get('/prisoner?term=+++').expect(200)
 
       expect(response.text).toContain('Enter a prison number')
     })
@@ -243,7 +304,13 @@ describe('Prisoners', () => {
       mockPermissions(undefined, { [PrisonerMoneyPermission.read]: false })
 
       app = appWithAllRoutes({
-        services: { auditService, prisonerFinanceService, prisonPermissionsService, prisonerSearchService },
+        services: {
+          auditService,
+          prisonerFinanceService,
+          prisonPermissionsService,
+          prisonerSearchService,
+          prisonApiService,
+        },
         userSupplier: () => user,
       })
 
