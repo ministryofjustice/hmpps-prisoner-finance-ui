@@ -22,12 +22,19 @@ class PrisonerController {
   public getFindPrisoner = async (req: Request, res: Response, next: NextFunction) => {
     const parsedQueries = prisonerSearchFilterSchema.safeParse(req.query)
 
-    await this.services.auditService.logSearchRequest(SearchRequest.FIND_PRISONER, {
-      who: res.locals.user.username,
-      correlationId: req.id,
-      subjectType: SubjectType.SEARCH_TERM,
-      subjectId: parsedQueries.data?.term ?? 'SearchPageLoaded',
-    })
+    if (parsedQueries.data?.term) {
+      await this.services.auditService.logSearchRequest(SearchRequest.FIND_PRISONER, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+        subjectType: SubjectType.SEARCH_TERM,
+        subjectId: parsedQueries.data?.term,
+      })
+    } else {
+      await this.services.auditService.logPageView(AuditPage.FIND_PRISONER, {
+        who: res.locals.user.username,
+        correlationId: req.id,
+      })
+    }
 
     const token = req.user?.token as string
     const caseloads = await this.services.prisonApiService.getUserCaseloads(token)

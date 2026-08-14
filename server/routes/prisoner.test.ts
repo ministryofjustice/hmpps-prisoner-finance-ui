@@ -194,12 +194,29 @@ describe('Prisoners', () => {
     it('GET should return a 200, render the find prisoner page and call the audit service', async () => {
       const response = await request(app).get('/prisoner').expect(200).expect('Content-Type', /html/)
 
+      expect(auditService.logPageView).toHaveBeenCalledWith(
+        AuditPage.FIND_PRISONER,
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          who: user.username,
+        }),
+      )
+      expect(response.text).toContain('Search for a prisoner')
+    })
+
+    it('GET should return a 200, render the find prisoner page and call the audit service when searching for a term', async () => {
+      const response = await request(app)
+        .get('/prisoner')
+        .query({ term: 'hello' })
+        .expect(200)
+        .expect('Content-Type', /html/)
+
       expect(auditService.logSearchRequest).toHaveBeenCalledWith(
         SearchRequest.FIND_PRISONER,
         expect.objectContaining({
           correlationId: expect.any(String),
           who: user.username,
-          subjectId: 'SearchPageLoaded',
+          subjectId: 'hello',
           subjectType: SubjectType.SEARCH_TERM,
         }),
       )
