@@ -22,10 +22,10 @@ generic-service:
     AUDIT_ENABLED: "true"
     FEATURE_TOGGLE_URL: "https://feature-toggles.hmpps.service.justice.gov.uk/"
 
-generic-prometheus-alerts:
-  alertSeverity: hmpps-prisoner-finance-ui-prod
-
-allowlist:
+  allowlist:
   - digital_staff_and_mojo
   - prisons
   - private_prisons
+
+generic-prometheus-alerts:
+  alertSeverity: hmpps-prisoner-finance-ui-prod
