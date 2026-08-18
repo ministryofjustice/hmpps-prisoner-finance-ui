@@ -24,3 +24,8 @@ generic-service:
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-prisoner-finance-ui-prod
+
+allowlist:
+  - digital_staff_and_mojo
+  - prisons
+  - private_prisons
