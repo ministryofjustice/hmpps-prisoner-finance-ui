@@ -27,6 +27,7 @@ generic-service:
     - digital_staff_and_mojo
     - prisons
     - private_prisons
+    - moj_cloud_platform
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-prisoner-finance-ui-prod
