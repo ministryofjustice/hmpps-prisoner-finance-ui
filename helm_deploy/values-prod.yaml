@@ -23,9 +23,10 @@ generic-service:
     FEATURE_TOGGLE_URL: "https://feature-toggles.hmpps.service.justice.gov.uk/"
 
   allowlist:
-  - digital_staff_and_mojo
-  - prisons
-  - private_prisons
+    groups:
+    - digital_staff_and_mojo
+    - prisons
+    - private_prisons
 
 generic-prometheus-alerts:
   alertSeverity: hmpps-prisoner-finance-ui-prod
