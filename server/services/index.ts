@@ -9,6 +9,7 @@ import PrisonerSearchService from './prisonerSearchService'
 import PrisonRegisterService from './prisonRegisterService'
 import PrisonApiService from './prisonApiService'
 import FeatureFlagService from './featureFlagService'
+import PrisonerFinanceHoldsService from './prisonerFinanceHoldsService'
 
 export const services = () => {
   const {
@@ -19,6 +20,7 @@ export const services = () => {
     prisonerSearchApiClient,
     prisonRegisterApiClient,
     prisonApiClient,
+    prisonerFinanceHoldsApiClient,
   } = dataAccess()
 
   const prisonPermissionsService = PrisonPermissionsService.create({
@@ -36,6 +38,7 @@ export const services = () => {
     prisonApiService: new PrisonApiService(prisonApiClient),
     prisonPermissionsService,
     featureFlagService: new FeatureFlagService(),
+    prisonerFinanceHoldsService: new PrisonerFinanceHoldsService(prisonerFinanceHoldsApiClient),
   }
 }
 

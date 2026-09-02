@@ -21,7 +21,17 @@
 
   <div class="hmpps-balance-card-group">
     <ul class="govuk-grid-row card-group">
-      <li class="govuk-grid-column-one-third card-group__item">
+      <li class="govuk-grid-column-one-quarter card-group__item">
+        {{ balanceCard({
+          heading: "Holds",
+          amount: subAccountBalances.holds.amount,
+          link: {
+            href: "/prisoner/"+prisonNumber+"/money/holds",
+            text: "Holds transactions"
+          }
+        }) }}
+      </li>
+      <li class="govuk-grid-column-one-quarter card-group__item">
         {{ balanceCard({
           heading: "Spends",
           amount: subAccountBalances.spends.amount,
@@ -31,7 +41,7 @@
           }
         }) }}
       </li>
-      <li class="govuk-grid-column-one-third card-group__item">
+      <li class="govuk-grid-column-one-quarter card-group__item">
         {{ balanceCard({
           heading: "Private cash",
           amount: subAccountBalances.privateCash.amount,
@@ -41,7 +51,7 @@
           }
         }) }}
       </li>
-      <li class="govuk-grid-column-one-third card-group__item">
+      <li class="govuk-grid-column-one-quarter card-group__item">
         {{ balanceCard({
           heading: "Savings",
           amount: subAccountBalances.savings.amount,

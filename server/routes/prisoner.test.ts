@@ -10,12 +10,14 @@ import PrisonRegisterService from '../services/prisonRegisterService'
 import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionResponse'
 import { Page } from '../interfaces/Pageable'
 import PrisonApiService from '../services/prisonApiService'
+import PrisonerFinanceHoldsService from '../services/prisonerFinanceHoldsService'
 
 jest.mock('../services/prisonerFinanceService')
 jest.mock('../services/prisonerSearchService')
 jest.mock('../services/prisonRegisterService')
 jest.mock('../services/prisonApiService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
+jest.mock('../services/prisonerFinanceHoldsService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerFinanceService = new PrisonerFinanceService(null) as jest.Mocked<PrisonerFinanceService>
@@ -23,6 +25,7 @@ const prisonerSearchService = new PrisonerSearchService(null) as jest.Mocked<Pri
 const prisonPermissionsService = {} as unknown as PermissionsService
 const prisonRegisterService = new PrisonRegisterService(null) as jest.Mocked<PrisonRegisterService>
 const prisonApiService = new PrisonApiService(null) as jest.Mocked<PrisonApiService>
+const prisonerFinanceHoldsService = new PrisonerFinanceHoldsService(null) as jest.Mocked<PrisonerFinanceHoldsService>
 
 let app: Express
 
@@ -60,6 +63,7 @@ describe('Prisoners', () => {
         prisonerSearchService,
         prisonRegisterService,
         prisonApiService,
+        prisonerFinanceHoldsService,
       },
       userSupplier: () => user,
     })

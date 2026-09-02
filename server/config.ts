@@ -116,6 +116,15 @@ export default {
       },
       agent: new AgentConfig(Number(get('PRISON_REGISTER_API_TIMEOUT_RESPONSE', 5000))),
     },
+    prisonerFinanceHoldsApi: {
+      url: get('PRISONER_FINANCE_HOLDS_API_URL', 'http://localhost:8082', requiredInProduction),
+      healthPath: '/health/ping',
+      timeout: {
+        response: Number(get('PRISONER_FINANCE_HOLDS_API_TIMEOUT_RESPONSE', 5000)),
+        deadline: Number(get('PRISONER_FINANCE_HOLDS_API_TIMEOUT_DEADLINE', 5000)),
+      },
+      agent: new AgentConfig(Number(get('PRISONER_FINANCE_HOLDS_API_TIMEOUT_RESPONSE', 5000))),
+    },
   },
   serviceUrls: {
     digitalPrison: get('DPS_HOME_PAGE_URL', 'http://localhost:3001', requiredInProduction),

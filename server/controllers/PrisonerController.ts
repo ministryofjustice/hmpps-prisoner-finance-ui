@@ -160,9 +160,10 @@ class PrisonerController {
         subjectId: prisonNumber,
       })
 
-      const [transactions, subAccountBalances] = await Promise.all([
+      const [transactions, subAccountBalances, holdBalance] = await Promise.all([
         this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber({ prisonNumber, page: '1' }),
         this.services.prisonerFinanceService.getSubAccountBalances(prisonNumber),
+        this.services.prisonerFinanceHoldsService.getHoldsBalance(prisonNumber),
       ])
 
       res.render('pages/prisoner/profile/prisonerProfile', {
@@ -173,6 +174,7 @@ class PrisonerController {
           spends: subAccountBalances.SPENDS,
           privateCash: subAccountBalances.CASH,
           savings: subAccountBalances.SAVINGS,
+          holds: holdBalance,
         },
       })
     } catch (error) {

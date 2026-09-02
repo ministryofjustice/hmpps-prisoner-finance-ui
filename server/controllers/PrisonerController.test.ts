@@ -12,6 +12,8 @@ import { Page } from '../interfaces/Pageable'
 import { SubAccountBalanceResponse } from '../interfaces/SubAccountBalanceResponse'
 import PrisonApiService from '../services/prisonApiService'
 import FeatureFlagService from '../services/featureFlagService'
+import PrisonerFinanceHoldsService from '../services/prisonerFinanceHoldsService'
+import { PrisonerHoldsBalanceResponse } from '../interfaces/PrisonerHoldsBalanceResponse'
 
 jest.mock('../applicationInfo')
 jest.mock('../services/auditService')
@@ -20,6 +22,7 @@ jest.mock('../services/prisonerSearchService')
 jest.mock('../services/prisonRegisterService')
 jest.mock('../services/prisonApiService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
+jest.mock('../services/prisonerFinanceHoldsService')
 
 describe('PrisonerController', () => {
   const applicationInfo = {} as unknown as jest.Mocked<ApplicationInfo>
@@ -30,6 +33,7 @@ describe('PrisonerController', () => {
   const prisonPermissionsService = {} as unknown as jest.Mocked<PermissionsService>
   const prisonApiService = new PrisonApiService(null) as jest.Mocked<PrisonApiService>
   const featureFlagService = {} as unknown as jest.Mocked<FeatureFlagService>
+  const prisonerFinanceHoldsService = new PrisonerFinanceHoldsService(null) as jest.Mocked<PrisonerFinanceHoldsService>
 
   const prisonerController: PrisonerController = new PrisonerController({
     applicationInfo,
@@ -40,6 +44,7 @@ describe('PrisonerController', () => {
     prisonPermissionsService,
     prisonApiService,
     featureFlagService,
+    prisonerFinanceHoldsService,
   })
 
   const mockRes: Response = {
@@ -300,8 +305,12 @@ describe('PrisonerController', () => {
         CASH: mockSubAccountBalance,
       }
 
+      const mockHoldResponse: PrisonerHoldsBalanceResponse = { amount: 0, balanceDateTime: '' }
+
       prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
       prisonerFinanceService.getSubAccountBalances.mockResolvedValue(mockBalancesResponse)
+
+      prisonerFinanceHoldsService.getHoldsBalance.mockResolvedValue(mockHoldResponse)
 
       await prisonerController.getProfile(mockReq, mockRes, mockNext)
 
@@ -317,6 +326,7 @@ describe('PrisonerController', () => {
           spends: mockBalancesResponse.SPENDS,
           privateCash: mockBalancesResponse.CASH,
           savings: mockBalancesResponse.SAVINGS,
+          holds: mockHoldResponse,
         },
         actionPanelEnabled: false,
       })
@@ -360,8 +370,12 @@ describe('PrisonerController', () => {
         CASH: mockSubAccountBalance,
       }
 
+      const mockHoldResponse: PrisonerHoldsBalanceResponse = { amount: 0, balanceDateTime: '' }
+
       prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
       prisonerFinanceService.getSubAccountBalances.mockResolvedValue(mockBalancesResponse)
+
+      prisonerFinanceHoldsService.getHoldsBalance.mockResolvedValue(mockHoldResponse)
 
       await prisonerController.getProfile(mockReq, mockRes, mockNext)
 
@@ -378,6 +392,7 @@ describe('PrisonerController', () => {
           spends: mockBalancesResponse.SPENDS,
           privateCash: mockBalancesResponse.CASH,
           savings: mockBalancesResponse.SAVINGS,
+          holds: mockHoldResponse,
         },
         actionPanelEnabled: false,
       })
