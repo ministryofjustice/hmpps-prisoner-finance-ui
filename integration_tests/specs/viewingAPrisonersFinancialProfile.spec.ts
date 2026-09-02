@@ -22,6 +22,7 @@ test.describe('Viewing a prisoners financial profile', () => {
   const transactionPayload: Array<PrisonerTransactionResponse> = [
     {
       date: '2026-03-10T10:48:28.094Z',
+      legacyTransactionId: 1,
       description: 'test',
       credit: 0,
       debit: 10,
@@ -32,6 +33,7 @@ test.describe('Viewing a prisoners financial profile', () => {
     },
     {
       date: '2026-03-11T10:47:28.094Z',
+      legacyTransactionId: 2,
       description: '',
       credit: 20,
       debit: 0,
@@ -42,6 +44,7 @@ test.describe('Viewing a prisoners financial profile', () => {
     },
     {
       date: '2026-03-10T10:46:28.094Z',
+      legacyTransactionId: 3,
       description: 'Cash to Savings Transfer',
       credit: 0,
       debit: 10,
@@ -52,6 +55,7 @@ test.describe('Viewing a prisoners financial profile', () => {
     },
     {
       date: '2026-03-10T10:45:28.194Z',
+      legacyTransactionId: 4,
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -62,6 +66,7 @@ test.describe('Viewing a prisoners financial profile', () => {
     },
     {
       date: '2026-03-10T10:44:28.194Z',
+      legacyTransactionId: 5,
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -72,6 +77,7 @@ test.describe('Viewing a prisoners financial profile', () => {
     },
     {
       date: '2026-03-10T10:43:28.194Z',
+      legacyTransactionId: 6,
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -236,15 +242,15 @@ test.describe('Viewing a prisoners financial profile', () => {
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
       await expect(prisonerProfilePage.recentTransactionsList).toBeVisible()
       await expect(prisonerProfilePage.recentTransactionsList).toContainText(
-        ['Date', 'Transaction description', 'Amount', 'Balance', 'Account'].join(' '),
+        ['Date', 'Transaction ID', 'Transaction description', 'Amount', 'Balance', 'Account'].join(' '),
       )
 
       await expect(prisonerProfilePage.recentTransactionsList).toContainText(
-        ['10/03/2026\n10:48', transactionPayload[0].description, '-0.10', '0.11', 'Private cash'].join(' '),
+        ['10/03/2026\n10:48', 1, transactionPayload[0].description, '-0.10', '0.11', 'Private cash'].join(' '),
       )
 
       await expect(prisonerProfilePage.recentTransactionsList).toContainText(
-        ['11/03/2026\n10:47', transactionPayload[1].description, '0.20', '10.00', 'Savings'].join(' '),
+        ['11/03/2026\n10:47', 2, transactionPayload[1].description, '0.20', '10.00', 'Savings'].join(' '),
       )
     })
 

@@ -8,6 +8,7 @@ describe('prisoner transactions page', () => {
   const payload: Array<PrisonerTransactionResponse> = [
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: 123,
       description: '',
       credit: 0,
       debit: 10,
@@ -18,6 +19,7 @@ describe('prisoner transactions page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: 124,
       description: '',
       credit: 20,
       debit: 0,
@@ -28,6 +30,7 @@ describe('prisoner transactions page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: 125,
       description: 'Cash to Savings Transfer',
       credit: 0,
       debit: 10,
@@ -38,6 +41,7 @@ describe('prisoner transactions page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: 126,
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -51,6 +55,7 @@ describe('prisoner transactions page', () => {
   const payloadWithoutLastRunningBalance: Array<PrisonerTransactionResponse> = [
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: 123,
       description: '',
       credit: 0,
       debit: 10,
@@ -61,6 +66,7 @@ describe('prisoner transactions page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: 124,
       description: '',
       credit: 20,
       debit: 0,
@@ -71,6 +77,7 @@ describe('prisoner transactions page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: 125,
       description: 'Cash to Savings Transfer',
       credit: 0,
       debit: 10,
@@ -81,6 +88,7 @@ describe('prisoner transactions page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: 126,
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -150,7 +158,7 @@ describe('prisoner transactions page', () => {
 
     const transactionsList = $('.transactions-list')
 
-    expect(transactionsList.find('thead tr th').length).toBe(6)
+    expect(transactionsList.find('thead tr th').length).toBe(7)
     expect(transactionsList.find('tbody tr').length).toBe(payload.length)
 
     const balanceCards = $('.hmpps-balance-card')
@@ -200,10 +208,10 @@ describe('prisoner transactions page', () => {
 
     const transactionsList = $('.transactions-list')
 
-    expect(transactionsList.find('.govuk-table__head .govuk-table__header').length).toBe(6)
+    expect(transactionsList.find('.govuk-table__head .govuk-table__header').length).toBe(7)
     expect(transactionsList.find('.govuk-table__body .govuk-table__row').length).toBe(4)
 
-    const lastTransactionRunningBalance = transactionsList.find('tbody tr').last().find('td').eq(3).text().trim()
+    const lastTransactionRunningBalance = transactionsList.find('tbody tr').last().find('td').eq(4).text().trim()
 
     expect(lastTransactionRunningBalance).toBe('-')
   })

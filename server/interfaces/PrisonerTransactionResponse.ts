@@ -7,4 +7,5 @@ export interface PrisonerTransactionResponse {
   accountType: string
   subAccountBalance: number | null
   accountBalance: number | null
+  legacyTransactionId: number | null
 }

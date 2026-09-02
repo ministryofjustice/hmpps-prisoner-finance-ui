@@ -28,6 +28,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
       const expectedResponse: Array<PrisonerTransactionResponse> = [
         {
           date: '2026-03-10T10:43:28.094Z',
+          legacyTransactionId: 123,
           description: 'test',
           credit: 0,
           debit: 0,
@@ -74,6 +75,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
       const expectedResponse: Array<PrisonerTransactionResponse> = [
         {
           date: '2026-03-10T10:43:28.094Z',
+          legacyTransactionId: 123,
           description: 'test',
           credit: 0,
           debit: 0,
@@ -138,6 +140,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
       const expectedResponse: Array<PrisonerTransactionResponse> = [
         {
           date: '2026-03-10T10:43:28.094Z',
+          legacyTransactionId: 123,
           description: 'test',
           credit: 0,
           debit: 0,
