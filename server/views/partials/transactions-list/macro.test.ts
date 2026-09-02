@@ -46,6 +46,7 @@ describe('Prisoner Finance Component: Transactions list', () => {
       transactions: [
         {
           date: '2023-06-01',
+          legacyTransactionId: 123,
           description: 'Transaction 1',
           credit: 1000,
           debit: 0,

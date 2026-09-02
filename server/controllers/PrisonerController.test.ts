@@ -187,6 +187,7 @@ describe('PrisonerController', () => {
       const mockTransactions: PrisonerTransactionResponse[] = [
         {
           date: '10-10-2010',
+          legacyTransactionId: 123,
           description: 'Canteen transaction',
           credit: 10,
           debit: 10,
@@ -280,6 +281,7 @@ describe('PrisonerController', () => {
       const mockTransactions: PrisonerTransactionResponse[] = [
         {
           date: '10-10-2010',
+          legacyTransactionId: 123,
           description: 'Canteen transaction',
           credit: 10,
           debit: 10,
@@ -345,6 +347,7 @@ describe('PrisonerController', () => {
       const mockTransactions: PrisonerTransactionResponse[] = Array.from({ length: 100 }, () => {
         return {
           date: '10-10-2010',
+          legacyTransactionId: 123,
           description: 'Canteen transaction',
           credit: 10,
           debit: 10,

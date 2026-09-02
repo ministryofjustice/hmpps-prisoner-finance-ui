@@ -8,6 +8,7 @@ describe('prisoner profile page', () => {
   const payload: Array<PrisonerTransactionResponse> = [
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: 123,
       description: '',
       credit: 0,
       debit: 10,
@@ -18,6 +19,7 @@ describe('prisoner profile page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: null,
       description: '',
       credit: 20,
       debit: 0,
@@ -28,6 +30,7 @@ describe('prisoner profile page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: null,
       description: 'Cash to Savings Transfer',
       credit: 0,
       debit: 10,
@@ -38,6 +41,7 @@ describe('prisoner profile page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: null,
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -48,6 +52,7 @@ describe('prisoner profile page', () => {
     },
     {
       date: '2026-03-10T10:41:28.094Z',
+      legacyTransactionId: null,
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -61,6 +66,7 @@ describe('prisoner profile page', () => {
   const payloadWithoutLastRunningBalance: Array<PrisonerTransactionResponse> = [
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: 123,
       description: '',
       credit: 0,
       debit: 10,
@@ -71,6 +77,7 @@ describe('prisoner profile page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: null,
       description: '',
       credit: 20,
       debit: 0,
@@ -81,6 +88,7 @@ describe('prisoner profile page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: null,
       description: 'Cash to Savings Transfer',
       credit: 0,
       debit: 10,
@@ -91,6 +99,7 @@ describe('prisoner profile page', () => {
     },
     {
       date: '2026-03-10T10:43:28.094Z',
+      legacyTransactionId: null,
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -101,6 +110,7 @@ describe('prisoner profile page', () => {
     },
     {
       date: '2026-03-10T10:41:28.094Z',
+      legacyTransactionId: null,
       description: 'Cash to Savings Transfer',
       credit: 10,
       debit: 0,
@@ -207,15 +217,15 @@ describe('prisoner profile page', () => {
     const transactionsList = $('.transactions-list')
 
     expect(transactionsList.find('.govuk-table__head').text().trim().replace(/\s+/g, ' ')).toBe(
-      'Date Transaction description Amount Balance Account',
+      'Date Transaction ID Transaction description Amount Balance Account',
     )
     expect(transactionsList.find('.govuk-table__body').text().trim().replace(/\s+/g, ' ')).toBe(
       [
-        '10/03/2026 10:43 -0.10 0.10 Private cash',
-        '10/03/2026 10:43 0.20 0.11 Savings',
-        '10/03/2026 10:43 Cash to Savings Transfer -0.10 0.40 Private cash',
-        '10/03/2026 10:43 Cash to Savings Transfer 0.10 0.30 Savings',
-        '10/03/2026 10:41 Cash to Savings Transfer 0.10 0.33 Savings',
+        '10/03/2026 10:43 123 -0.10 0.10 Private cash',
+        '10/03/2026 10:43 No data 0.20 0.11 Savings',
+        '10/03/2026 10:43 No data Cash to Savings Transfer -0.10 0.40 Private cash',
+        '10/03/2026 10:43 No data Cash to Savings Transfer 0.10 0.30 Savings',
+        '10/03/2026 10:41 No data Cash to Savings Transfer 0.10 0.33 Savings',
       ].join(' '),
     )
   })
@@ -257,10 +267,10 @@ describe('prisoner profile page', () => {
 
     const transactionsList = $('.transactions-list')
 
-    expect(transactionsList.find('.govuk-table__head .govuk-table__header').length).toBe(5)
+    expect(transactionsList.find('.govuk-table__head .govuk-table__header').length).toBe(6)
     expect(transactionsList.find('.govuk-table__body .govuk-table__row').length).toBe(5)
 
-    const lastTransactionRunningBalance = transactionsList.find('tbody tr').last().find('td').eq(3).text().trim()
+    const lastTransactionRunningBalance = transactionsList.find('tbody tr').last().find('td').eq(4).text().trim()
 
     expect(lastTransactionRunningBalance).toBe('-')
   })

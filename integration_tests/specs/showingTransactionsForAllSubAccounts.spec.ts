@@ -17,6 +17,7 @@ test.describe('Showing transactions for all sub accounts', () => {
   const transactionPayload: PrisonerTransactionResponse[] = [
     {
       date: '2026-03-10T10:48:28.094Z',
+      legacyTransactionId: 1,
       description: 'test',
       credit: 0,
       debit: 10,
@@ -27,6 +28,7 @@ test.describe('Showing transactions for all sub accounts', () => {
     },
     {
       date: '2026-03-10T10:47:28.094Z',
+      legacyTransactionId: 2,
       description: '',
       credit: 20,
       debit: 0,
@@ -37,6 +39,7 @@ test.describe('Showing transactions for all sub accounts', () => {
     },
     {
       date: '2026-03-10T10:46:28.094Z',
+      legacyTransactionId: 3,
       description: 'Cash to Savings Transfer',
       credit: 0,
       debit: 10,
@@ -47,6 +50,7 @@ test.describe('Showing transactions for all sub accounts', () => {
     },
     {
       date: '2026-03-10T10:45:28.194Z',
+      legacyTransactionId: 4,
       description: 'Transaction in secret prison',
       credit: 10,
       debit: 0,
@@ -196,11 +200,11 @@ test.describe('Showing transactions for all sub accounts', () => {
       await expect(prisonerTransactionsPage.transactionList).toBeVisible()
       await expect(prisonerTransactionsPage.transactionList).toContainText(
         [
-          'Date Transaction description Amount Balance Account Location',
-          '10/03/2026\n10:48 test -0.10 0.30 Private cash Leeds (HMP)',
-          '10/03/2026\n10:47 0.20 0.30 Savings Moorland (HMP & YOI)',
-          '10/03/2026\n10:46 Cash to Savings Transfer -0.10 0.10 Private cash ',
-          '10/03/2026\n10:45 Transaction in secret prison 0.10 - Savings XXX',
+          'Date Transaction ID Transaction description Amount Balance Account Location',
+          '10/03/2026\n10:48 1 test -0.10 0.30 Private cash Leeds (HMP)',
+          '10/03/2026\n10:47 2 0.20 0.30 Savings Moorland (HMP & YOI)',
+          '10/03/2026\n10:46 3 Cash to Savings Transfer -0.10 0.10 Private cash ',
+          '10/03/2026\n10:45 4 Transaction in secret prison 0.10 - Savings XXX',
         ].join('\n'),
       )
     })
