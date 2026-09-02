@@ -264,6 +264,10 @@ describe('Prisoners', () => {
         CASH: { subAccountId: '', balanceDateTime: '', amount: 1 },
         SAVINGS: { subAccountId: '', balanceDateTime: '', amount: 1 },
       })
+      prisonerFinanceHoldsService.getHoldsBalance.mockResolvedValue({
+        amount: 10,
+        balanceDateTime: '',
+      })
 
       await request(app).get(`/prisoner/${prisonNumber}`).expect(200).expect('Content-Type', /html/)
 
@@ -314,6 +318,7 @@ describe('Prisoners', () => {
           prisonPermissionsService,
           prisonerSearchService,
           prisonApiService,
+          prisonerFinanceHoldsService,
         },
         userSupplier: () => user,
       })
