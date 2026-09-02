@@ -9,6 +9,7 @@ import CreditConfirmationPage from '../pages/creditAPrisoner/creditConfirmationP
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import InternalServerErrorPage from '../pages/internalServerErrorPage'
 import prisonApi from '../mockApis/prisonApi'
+import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
 
 test.describe('Crediting a prisoner', () => {
   const prisonNumber = 'ABC123XZ'
@@ -28,6 +29,7 @@ test.describe('Crediting a prisoner', () => {
     test.beforeEach(async () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
       await prisonApi.stubGetPrisonerImage()
+      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
 
       await prisonerFinanceApi.stubGetPrisonerAccountByReference(prisonNumber, [

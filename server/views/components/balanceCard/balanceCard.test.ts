@@ -41,7 +41,7 @@ describe('View Components - BalanceCard', () => {
     })
 
     const balanceCards = $('.hmpps-balance-card').first()
-    expect(balanceCards.text()).toContain('Total')
+    expect(balanceCards.text()).toContain('Account total')
   })
 
   it('should render link to subaccount page if provided', () => {

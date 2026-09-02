@@ -3,6 +3,7 @@ import { AxeBuilder } from '@axe-core/playwright'
 import { login, resetStubs } from '../testUtils'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
+import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import InternalServerErrorPage from '../pages/internalServerErrorPage'
@@ -84,6 +85,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
       await prisonApi.stubGetPrisonerImage()
+      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
       })
@@ -97,7 +99,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       const prisonerPrivateCashPage = await PrisonerPrivateCashPage.load(page, prisonNumber)
 
       await expect(prisonerPrivateCashPage.currentBalanceCard).toBeVisible()
-      await expect(prisonerPrivateCashPage.currentBalanceCard).toContainText('Current balance Total £12.34')
+      await expect(prisonerPrivateCashPage.currentBalanceCard).toContainText('Current balance Account total £12.34')
     })
 
     test('Can go back to the prisoners financial profile', async ({ page }) => {
@@ -112,6 +114,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await prisonRegisterApi.stubGetPrisonNames()
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
+      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
 
       const prisonerPrivateCashPage = await PrisonerPrivateCashPage.load(page, prisonNumber)
 
