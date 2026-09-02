@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test'
 import { login, resetStubs } from '../testUtils'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
+import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import IndexPage from '../pages/indexPage'
@@ -23,6 +24,7 @@ const stubPrisonerProfile = async () => {
   await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', zeroSubAccountBalance)
   await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', zeroSubAccountBalance)
   await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', zeroSubAccountBalance)
+  await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
 }
 
 const stubTransactions = async (subAccountReference: string) => {

@@ -1,9 +1,20 @@
 import { PrisonerHoldsBalanceResponse } from '../../server/interfaces/PrisonerHoldsBalanceResponse'
 import { stubFor } from './wiremock'
 
-/* eslint-disable import/prefer-default-export */
-
 const API_PREFIX = '/prisoner-finance-holds-api'
+
+const stubPing = () =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPattern: `${API_PREFIX}/health/ping`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: { status: 'UP' },
+    },
+  })
 
 const stubGetHoldsBalance = (prisonNumber: string) =>
   stubFor({
@@ -21,4 +32,4 @@ const stubGetHoldsBalance = (prisonNumber: string) =>
     },
   })
 
-export { stubGetHoldsBalance }
+export { stubGetHoldsBalance, stubPing }

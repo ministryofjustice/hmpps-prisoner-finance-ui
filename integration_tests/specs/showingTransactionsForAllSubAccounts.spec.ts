@@ -3,6 +3,7 @@ import { AxeBuilder } from '@axe-core/playwright'
 import { login, resetStubs } from '../testUtils'
 import PrisonerTransactionsPage from '../pages/prisonerTransactionsPage'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
+import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
@@ -83,6 +84,7 @@ test.describe('Showing transactions for all sub accounts', () => {
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
       await prisonApi.stubGetPrisonerImage()
+      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
       await prisonRegisterApi.stubGetPrisonNames()
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, {
@@ -94,7 +96,7 @@ test.describe('Showing transactions for all sub accounts', () => {
       const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
 
       await expect(prisonerTransactionsPage.currentBalanceCard).toBeVisible()
-      await expect(prisonerTransactionsPage.currentBalanceCard).toContainText('Current balance Total £12.34')
+      await expect(prisonerTransactionsPage.currentBalanceCard).toContainText('Current balance Account total £12.34')
     })
 
     test('Can go back to the prisoners financial profile', async ({ page }) => {
@@ -105,6 +107,7 @@ test.describe('Showing transactions for all sub accounts', () => {
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
       await prisonRegisterApi.stubGetPrisonNames()
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
+      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
 
       const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
 
