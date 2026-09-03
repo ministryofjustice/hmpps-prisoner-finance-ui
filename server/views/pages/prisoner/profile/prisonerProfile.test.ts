@@ -221,11 +221,11 @@ describe('prisoner profile page', () => {
     )
     expect(transactionsList.find('.govuk-table__body').text().trim().replace(/\s+/g, ' ')).toBe(
       [
-        '10/03/2026 10:43 123 -0.10 0.10 Private cash',
-        '10/03/2026 10:43 No data 0.20 0.11 Savings',
-        '10/03/2026 10:43 No data Cash to Savings Transfer -0.10 0.40 Private cash',
-        '10/03/2026 10:43 No data Cash to Savings Transfer 0.10 0.30 Savings',
-        '10/03/2026 10:41 No data Cash to Savings Transfer 0.10 0.33 Savings',
+        '10/03/202610:43 123 -0.10 0.10 Private cash',
+        '10/03/202610:43 No data 0.20 0.11 Savings',
+        '10/03/202610:43 No data Cash to Savings Transfer -0.10 0.40 Private cash',
+        '10/03/202610:43 No data Cash to Savings Transfer 0.10 0.30 Savings',
+        '10/03/202610:41 No data Cash to Savings Transfer 0.10 0.33 Savings',
       ].join(' '),
     )
   })

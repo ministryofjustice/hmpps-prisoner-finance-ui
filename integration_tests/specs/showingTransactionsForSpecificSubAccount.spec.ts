@@ -284,10 +284,10 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await expect(prisonerPrivateCashPage.transactionList).toContainText(
         [
           'Date Transaction ID Transaction description Amount Balance Account Location',
-          '10/03/2026 10:48 1 test -0.10 0.10 Private cash Leeds (HMP)',
-          '10/03/2026 10:47 2 0.20 0.20 Savings Moorland (HMP & YOI)',
-          '10/03/2026 10:46 3 Cash to Savings Transfer -0.10 0.30 Private cash ',
-          '10/03/2026 10:45 4 Transaction in secret prison 0.10 - Savings XXX',
+          '10/03/202610:48 1 test -0.10 0.10 Private cash Leeds (HMP)',
+          '10/03/202610:47 2 0.20 0.20 Savings Moorland (HMP & YOI)',
+          '10/03/202610:46 3 Cash to Savings Transfer -0.10 0.30 Private cash ',
+          '10/03/202610:45 4 Transaction in secret prison 0.10 - Savings XXX',
         ].join('\n'),
       )
     })

@@ -28,7 +28,7 @@ describe('penceToPound', () => {
 
 describe('formatDate', () => {
   it('Convert to date to correct format', () => {
-    expect(formatDateForView('2026-03-10T10:43:28.094Z')).toBe('10/03/2026\n10:43')
+    expect(formatDateForView('2026-03-10T10:43:28.094Z')).toBe('10/03/2026<br>10:43')
   })
 })
 
