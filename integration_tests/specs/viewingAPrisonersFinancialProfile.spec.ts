@@ -246,11 +246,11 @@ test.describe('Viewing a prisoners financial profile', () => {
       )
 
       await expect(prisonerProfilePage.recentTransactionsList).toContainText(
-        ['10/03/2026\n10:48', 1, transactionPayload[0].description, '-0.10', '0.11', 'Private cash'].join(' '),
+        ['10/03/202610:48', 1, transactionPayload[0].description, '-0.10', '0.11', 'Private cash'].join(' '),
       )
 
       await expect(prisonerProfilePage.recentTransactionsList).toContainText(
-        ['11/03/2026\n10:47', 2, transactionPayload[1].description, '0.20', '10.00', 'Savings'].join(' '),
+        ['11/03/202610:47', 2, transactionPayload[1].description, '0.20', '10.00', 'Savings'].join(' '),
       )
     })
 

@@ -16,7 +16,7 @@
     {%- endif -%}
     {%- set amount = (amount | penceToPound) -%}
     {% set rowData = [
-      { text: row.date | formatDateForView },
+      { text: row.date| formatDateForView | safe},
       { text: row.legacyTransactionId | default("No data", true)},
       { text: row.description },
       { text: amount, format: "numeric", classes: amountClasses },
