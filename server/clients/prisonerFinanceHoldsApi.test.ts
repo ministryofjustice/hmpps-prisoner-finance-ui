@@ -79,6 +79,7 @@ describe('Prison Finance Holds Api', () => {
           path: `/holds/A123BCD`,
           query: {
             pageNumber: '1',
+            pageSize: '25',
           },
         },
         asSystem(),

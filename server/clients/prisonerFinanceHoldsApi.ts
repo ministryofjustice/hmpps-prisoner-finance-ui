@@ -26,6 +26,7 @@ export default class PrisonerFinanceHoldsApiClient extends RestClient {
         path: `/holds/${prisonNumber}`,
         query: {
           pageNumber,
+          pageSize: '25',
         },
       },
       asSystem(),

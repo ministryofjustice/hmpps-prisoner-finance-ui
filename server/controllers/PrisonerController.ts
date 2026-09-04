@@ -86,14 +86,8 @@ class PrisonerController {
 
   public getHolds = async (req: Request, res: Response, next: NextFunction) => {
     const prisonNumber = req.params.prisonNumber.toString()
-    const { page } = req.query as Record<string, string>
 
     const parsedQueries = holdsFilterSchema.safeParse(req.query)
-
-    let zodErrors = {}
-    if (!parsedQueries.success) {
-      zodErrors = formatHoldsValidationErrors(parsedQueries.error)
-    }
 
     await this.services.auditService.logPageView(res.locals.auditPage, {
       who: res.locals.user.username,
@@ -102,9 +96,11 @@ class PrisonerController {
       subjectId: prisonNumber,
     })
 
+    const pageNumber = parsedQueries.data.page.toString()
+
     const pagedHolds = await this.services.prisonerFinanceHoldsService.getHolds(
       prisonNumber,
-      page,
+      pageNumber,
       !parsedQueries.success,
     )
 

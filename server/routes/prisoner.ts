@@ -69,7 +69,6 @@ export default function routes(services: Services): Router {
     getPrisonerData,
     getPrisonNames(services),
     (req: Request, res: Response, next: NextFunction) => {
-      console.log('HELLO WORLD')
       res.locals.headerTitle = 'Holds'
       res.locals.auditPage = AuditPage.PRISONER_HOLDS
       return prisonerController.getHolds(req, res, next)
