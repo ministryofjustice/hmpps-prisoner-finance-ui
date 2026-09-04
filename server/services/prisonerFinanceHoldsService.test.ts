@@ -1,4 +1,6 @@
 import PrisonerFinanceHoldsApiClient from '../clients/prisonerFinanceHoldsApi'
+import { Page } from '../interfaces/Pageable'
+import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 import { PrisonerHoldsBalanceResponse } from '../interfaces/PrisonerHoldsBalanceResponse'
 import PrisonerFinanceHoldsService from './prisonerFinanceHoldsService'
 
@@ -30,6 +32,43 @@ describe('PrisonerFinanceHoldsService', () => {
       await service.getHoldsBalance(prisonNumber)
 
       expect(apiClient.getHoldsBalance).toHaveBeenCalledWith(prisonNumber)
+    })
+  })
+
+  describe('getHolds', () => {
+    it('should call the API client', async () => {
+      const prisonNumber = 'A123BCD'
+
+      const hold: PrisonerHoldResponse = {
+        id: '',
+        prisonNumber: 'A1234CD',
+        legacyHoldNumber: 1,
+        subAccountRef: 'CASH',
+        createdAt: '',
+        createdBy: 'TEST',
+        holdFromDate: '',
+        holdUntilDate: '',
+        isReleased: false,
+        description: 'TEST',
+        holdType: 'HOA',
+        amount: 1000,
+        holdLocation: 'LEI',
+      }
+
+      const pagedResponse: Page<PrisonerHoldResponse> = {
+        content: [hold],
+        totalElements: 1,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 25,
+        isLastPage: true,
+      }
+
+      apiClient.getHolds.mockResolvedValue(pagedResponse)
+
+      await service.getHolds(prisonNumber, '1')
+
+      expect(apiClient.getHolds).toHaveBeenCalledWith(prisonNumber, '1')
     })
   })
 })

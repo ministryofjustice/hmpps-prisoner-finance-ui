@@ -14,6 +14,7 @@ import PrisonApiService from '../services/prisonApiService'
 import FeatureFlagService from '../services/featureFlagService'
 import PrisonerFinanceHoldsService from '../services/prisonerFinanceHoldsService'
 import { PrisonerHoldsBalanceResponse } from '../interfaces/PrisonerHoldsBalanceResponse'
+import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 
 jest.mock('../applicationInfo')
 jest.mock('../services/auditService')
@@ -46,17 +47,6 @@ describe('PrisonerController', () => {
     featureFlagService,
     prisonerFinanceHoldsService,
   })
-
-  const mockRes: Response = {
-    locals: {
-      user: { username: 'test-user' },
-      subAccount: 'CASH',
-      auditPage: AuditPage.PRISONER_CASH_TRANSACTIONS,
-    },
-    render: jest.fn(),
-    redirect: jest.fn(),
-    status: jest.fn().mockReturnThis(),
-  } as unknown as Response
 
   const mockNext: e.NextFunction = jest.fn()
 
@@ -105,6 +95,17 @@ describe('PrisonerController', () => {
   })
 
   describe('getFindPrisoner', () => {
+    const mockRes: Response = {
+      locals: {
+        user: { username: 'test-user' },
+        subAccount: 'CASH',
+        auditPage: AuditPage.FIND_PRISONER,
+      },
+      render: jest.fn(),
+      redirect: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    } as unknown as Response
+
     it('should call the audit service with the prisoner ID', async () => {
       const prisonNumber = 'ABC123XX'
       const mockReq = { query: { term: 'ABC123XX' } } as unknown as Request
@@ -169,6 +170,16 @@ describe('PrisonerController', () => {
   })
 
   describe('getTransactions', () => {
+    const mockRes: Response = {
+      locals: {
+        user: { username: 'test-user' },
+        subAccount: 'CASH',
+        auditPage: AuditPage.PRISONER_HOLDS,
+      },
+      render: jest.fn(),
+      redirect: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    } as unknown as Response
     it('Should call getTransactionPage', async () => {
       const startDate = '10/10/2010'
       const endDate = '10/10/2020'
@@ -268,6 +279,17 @@ describe('PrisonerController', () => {
   })
 
   describe('getProfile', () => {
+    const mockRes: Response = {
+      locals: {
+        user: { username: 'test-user' },
+        subAccount: 'CASH',
+        auditPage: AuditPage.PRISONER_FINANCIAL_PROFILE,
+      },
+      render: jest.fn(),
+      redirect: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    } as unknown as Response
+
     it('Should  call getTransaction and getSubAccountBalances', async () => {
       const mockReq = {
         id: 'req-id-123',
@@ -418,6 +440,61 @@ describe('PrisonerController', () => {
 
       expect(mockRes.render).not.toHaveBeenCalled()
       expect(mockNext).toHaveBeenCalled()
+    })
+  })
+
+  describe('getHolds', () => {
+    const mockRes: Response = {
+      locals: {
+        user: { username: 'test-user' },
+        auditPage: AuditPage.PRISONER_HOLDS,
+      },
+      render: jest.fn(),
+      redirect: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    } as unknown as Response
+
+    it('Should call getHolds and log Audit', async () => {
+      const prisonNumber = 'ABC123KK'
+      const mockReq = {
+        id: 'req-id-123',
+        params: { prisonNumber },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+        query: {
+          page: '1',
+        },
+      } as unknown as Request
+
+      const prisonerHolds: PrisonerHoldResponse[] = []
+
+      const mockHoldsPage: Page<PrisonerHoldResponse> = {
+        content: prisonerHolds,
+        totalElements: prisonerHolds.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      prisonerFinanceHoldsService.getHolds.mockResolvedValue(mockHoldsPage)
+
+      await prisonerController.getHolds(mockReq, mockRes, mockNext)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.PRISONER_HOLDS, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      })
+
+      expect(prisonerFinanceHoldsService.getHolds).toHaveBeenCalledWith(mockReq.params.prisonNumber, '1')
+
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/holds/holds', {
+        prisonNumber: mockReq.params.prisonNumber,
+        holds: prisonerHolds,
+      })
     })
   })
 })

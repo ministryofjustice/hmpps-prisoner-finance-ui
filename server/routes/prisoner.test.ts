@@ -11,6 +11,7 @@ import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionRe
 import { Page } from '../interfaces/Pageable'
 import PrisonApiService from '../services/prisonApiService'
 import PrisonerFinanceHoldsService from '../services/prisonerFinanceHoldsService'
+import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 
 jest.mock('../services/prisonerFinanceService')
 jest.mock('../services/prisonerSearchService')
@@ -83,6 +84,15 @@ describe('Prisoners', () => {
     isLastPage: true,
   }
 
+  const emptyPageHoldsResponse: Page<PrisonerHoldResponse> = {
+    content: [],
+    totalElements: 0,
+    totalPages: 1,
+    pageNumber: 1,
+    pageSize: 99,
+    isLastPage: true,
+  }
+
   afterEach(() => {
     jest.resetAllMocks()
   })
@@ -90,6 +100,23 @@ describe('Prisoners', () => {
   const verifyTransactionPageResponse = async (url: string, headerTitle: string, auditPage: AuditPage) => {
     const balanceResponse = { accountId: '', balanceDateTime: '', amount: 1000 }
     prisonerFinanceService.getTransactionPage.mockResolvedValue([emptyPageTransactionsResponse, balanceResponse])
+
+    const response = await request(app).get(url).expect(200).expect('Content-Type', /html/)
+
+    expect(auditService.logPageView).toHaveBeenCalledWith(
+      auditPage,
+      expect.objectContaining({
+        correlationId: expect.any(String),
+        who: user.username,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      }),
+    )
+    expect(response.text).toContain(headerTitle)
+  }
+
+  const verifyHoldsPageResponse = async (url: string, headerTitle: string, auditPage: AuditPage) => {
+    prisonerFinanceHoldsService.getHolds.mockResolvedValue(emptyPageHoldsResponse)
 
     const response = await request(app).get(url).expect(200).expect('Content-Type', /html/)
 
@@ -130,7 +157,25 @@ describe('Prisoners', () => {
     expect(res.text).not.toContain(prisonNumber)
   }
 
-  const verifyTransactionPageHandlesSignOut = async (url: string) => {
+  const verifyHoldsPageHandles500 = async (url: string, auditPage: AuditPage) => {
+    const error = Object.assign(new Error('GL error'), { data: { status: 500, userMessage: 'GL Error' } })
+    prisonerFinanceHoldsService.getHolds.mockRejectedValue(error)
+    const res = await request(app).get(url).expect(500)
+    expect(res.text).toContain('Sorry, there is a problem with the service')
+
+    expect(auditService.logPageView).toHaveBeenCalledWith(
+      AuditPage.PRISONER_HOLDS,
+      expect.objectContaining({
+        correlationId: expect.any(String),
+        who: user.username,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      }),
+    )
+    expect(res.text).not.toContain(prisonNumber)
+  }
+
+  const verifyPageHandlesSignOutOnPrisonerMoneyPermissionFalse = async (url: string) => {
     mockPermissions(undefined, { [PrisonerMoneyPermission.read]: false })
 
     app = appWithAllRoutes({
@@ -148,8 +193,6 @@ describe('Prisoners', () => {
 
     expect(response.status).toBe(302)
     expect(response.headers.location).toBe('/sign-out')
-
-    expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).not.toHaveBeenCalled()
   }
 
   describe('/prisoner', () => {
@@ -252,7 +295,7 @@ describe('Prisoners', () => {
     })
 
     test('should redirect to sign-out when user does not have permission', async () => {
-      await verifyTransactionPageHandlesSignOut('/prisoner/A1234BC/money')
+      await verifyPageHandlesSignOutOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/money')
     })
   })
 
@@ -331,6 +374,20 @@ describe('Prisoners', () => {
     })
   })
 
+  describe('/prisoner/:prisonNumber/money/holds', () => {
+    it('should return a 200, render the correct page and call the audit service', async () => {
+      await verifyHoldsPageResponse(`/prisoner/${prisonNumber}/money/holds`, 'Holds', AuditPage.PRISONER_HOLDS)
+    })
+
+    it('should handle API errors (e.g. 500)', async () => {
+      await verifyHoldsPageHandles500(`/prisoner/${prisonNumber}/money/holds`, AuditPage.PRISONER_HOLDS)
+    })
+
+    test('should redirect to sign-out when user does not have permission', async () => {
+      await verifyPageHandlesSignOutOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/money/holds')
+    })
+  })
+
   describe('/prisoner/:prisonNumber/money/private-cash', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
       await verifyTransactionPageResponse(
@@ -352,7 +409,7 @@ describe('Prisoners', () => {
     })
 
     test('should redirect to sign-out when user does not have permission', async () => {
-      await verifyTransactionPageHandlesSignOut('/prisoner/A1234BC/money/private-cash')
+      await verifyPageHandlesSignOutOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/money/private-cash')
     })
   })
 
@@ -377,7 +434,7 @@ describe('Prisoners', () => {
     })
 
     test('should redirect to sign-out when user does not have permission', async () => {
-      await verifyTransactionPageHandlesSignOut('/prisoner/A1234BC/money/spends')
+      await verifyPageHandlesSignOutOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/money/spends')
     })
   })
 
@@ -402,7 +459,7 @@ describe('Prisoners', () => {
     })
 
     test('should redirect to sign-out when user does not have permission', async () => {
-      await verifyTransactionPageHandlesSignOut('/prisoner/A1234BC/money/savings')
+      await verifyPageHandlesSignOutOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/money/savings')
     })
   })
 })

@@ -82,6 +82,31 @@ class PrisonerController {
     })
   }
 
+  public getHolds = async (req: Request, res: Response, next: NextFunction) => {
+    console.log('HELLO WORLD 1')
+
+    const prisonNumber = req.params.prisonNumber.toString()
+    const { page } = req.query as Record<string, string>
+
+    await this.services.auditService.logPageView(res.locals.auditPage, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: prisonNumber,
+    })
+    console.log('HELLO WORLD 2')
+
+    const pagedHolds = await this.services.prisonerFinanceHoldsService.getHolds(prisonNumber, page)
+    console.log('HELLO WORLD 3')
+
+    res.render('pages/prisoner/holds/holds', {
+      prisonNumber,
+      holds: pagedHolds.content,
+    })
+
+    console.log('HELLO WORLD 4')
+  }
+
   public getTransactions = async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { subAccount = null, headerTitle = null } = res.locals

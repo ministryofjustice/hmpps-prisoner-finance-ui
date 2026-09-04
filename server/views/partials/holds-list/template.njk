@@ -1,0 +1,36 @@
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+
+{% if holds | length > 0 %}
+  {% set rows = [] %}
+  {% for row in holds %}
+    {% set rowData = [
+      { text: row.subAccountRef },
+      { text: row.holdType },
+      { text: row.legacyHoldNumber },
+      { text: row.holdUntilDate | formatDate },
+      { text: row.description },
+      { text: row.amount, format: "numeric" },
+      { text: row.location | convertPrisonIdToName(prisonNames) }
+    ] %}
+    {% set rows = (rows.push(rowData), rows) %}
+  {% endfor %}
+
+  <div class="holds-list">
+    {% set head = [
+      { text: "Account" },
+      { text: "Hold type"},
+      { text: "Hold number" },
+      { text: "Hold until"},
+      { text: "Description"},
+      { text: "Amount" },
+      { text: "Location" }
+    ] %}
+    {{ govukTable({ classes: "hold-list__holds", caption: "", captionClasses: "govuk-table__caption--m", head: head, rows: rows }) }}
+    {% if paginationItems %}{{ mojPagination(paginationItems) }}{% endif %}
+  </div>
+{% else %}
+  <p class="holds-list__empty-message" data-testid="no-holds-message">
+    No holds to show
+  </p>
+{% endif %}

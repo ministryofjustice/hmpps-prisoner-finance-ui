@@ -1,0 +1,13 @@
+{#
+ Parameters:
+    holds = an array of holds details to be displayed in the table.
+    paginationItems = an array of pagination items to be displayed below the table.
+    prisonNames = an array of prison names to be used for converting prison IDs to names.
+#}
+{% macro holdsList(params) %}
+  {% set holds = params.holds | default([]) %}
+  {% set paginationItems = params.paginationItems | default({})  %}
+  {% set prisonNames = params.prisonNames | default([])  %}
+
+  {% include "./template.njk" %}
+{% endmacro %}
