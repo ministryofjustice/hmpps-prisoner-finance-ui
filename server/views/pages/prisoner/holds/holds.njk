@@ -1,1 +1,39 @@
-<p>Holds</p>
+{%- extends "partials/layout-full-width.njk" -%}
+
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+{%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
+{%- from "partials/holds-list/macro.njk" import holdsList -%}
+
+{%- set pageTitle = headerTitle -%}
+{%- set backUrl = "/prisoner/" + prisonNumber -%}
+
+
+{% block contentHeader %}
+  {{ dataWarningBanner(dataWarningBannerEnabled) }}
+{% endblock %}
+
+{% block innerContent %}
+
+{% set holdsTable %}
+    {{ holdsList({
+        holds: holds,
+        paginationItems: paginationItems,
+        prisonNames: prisonNames
+    }) }}
+{% endset %}
+
+{{ govukTabs({
+  items: [
+    {
+      label: "All hold types",
+      id: "all-holds",
+      panel: {
+        html: holdsTable
+      }
+    }
+  ]
+}) }}
+
+
+
+{% endblock %}

@@ -489,11 +489,33 @@ describe('PrisonerController', () => {
         subjectId: prisonNumber,
       })
 
-      expect(prisonerFinanceHoldsService.getHolds).toHaveBeenCalledWith(mockReq.params.prisonNumber, '1')
+      expect(prisonerFinanceHoldsService.getHolds).toHaveBeenCalledWith(mockReq.params.prisonNumber, '1', false)
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/holds/holds', {
         prisonNumber: mockReq.params.prisonNumber,
         holds: prisonerHolds,
+        paginationItems: {
+          isLastPage: true,
+          items: [
+            {
+              href: '?page=1',
+              selected: true,
+              text: '1',
+            },
+          ],
+          next: null,
+          pageNumber: 1,
+          pageSize: 99,
+          previous: null,
+          results: {
+            count: 0,
+            from: 0,
+            text: ' results',
+            to: 0,
+          },
+          totalElements: 0,
+          totalPages: 1,
+        },
       })
     })
   })

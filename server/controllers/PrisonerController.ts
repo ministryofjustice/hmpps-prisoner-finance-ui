@@ -8,6 +8,8 @@ import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionRe
 import buildPaginationItems from '../utils/mojPaginationHelper'
 import { PrisonerSearchContent, PrisonerSearchResult } from '../interfaces/PrisonerSearchResponse'
 import prisonerSearchFilterSchema, { formatSearchFilterValidationErrors } from '../validators/searchFilterSchema'
+import holdsFilterSchema, { formatHoldsValidationErrors } from '../validators/holdsFilterValidator'
+import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -83,10 +85,15 @@ class PrisonerController {
   }
 
   public getHolds = async (req: Request, res: Response, next: NextFunction) => {
-    console.log('HELLO WORLD 1')
-
     const prisonNumber = req.params.prisonNumber.toString()
     const { page } = req.query as Record<string, string>
+
+    const parsedQueries = holdsFilterSchema.safeParse(req.query)
+
+    let zodErrors = {}
+    if (!parsedQueries.success) {
+      zodErrors = formatHoldsValidationErrors(parsedQueries.error)
+    }
 
     await this.services.auditService.logPageView(res.locals.auditPage, {
       who: res.locals.user.username,
@@ -94,17 +101,25 @@ class PrisonerController {
       subjectType: SubjectType.PRISONER,
       subjectId: prisonNumber,
     })
-    console.log('HELLO WORLD 2')
 
-    const pagedHolds = await this.services.prisonerFinanceHoldsService.getHolds(prisonNumber, page)
-    console.log('HELLO WORLD 3')
+    const pagedHolds = await this.services.prisonerFinanceHoldsService.getHolds(
+      prisonNumber,
+      page,
+      !parsedQueries.success,
+    )
+
+    const { content, ...paginationItems } = parsedQueries.success
+      ? buildPaginationItems<PrisonerHoldResponse, typeof holdsFilterSchema>({
+          ...pagedHolds,
+          filters: parsedQueries.data,
+        })
+      : { content: [] as PrisonerTransactionResponse[] }
 
     res.render('pages/prisoner/holds/holds', {
       prisonNumber,
+      paginationItems,
       holds: pagedHolds.content,
     })
-
-    console.log('HELLO WORLD 4')
   }
 
   public getTransactions = async (req: Request, res: Response, next: NextFunction) => {

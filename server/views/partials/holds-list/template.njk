@@ -8,10 +8,10 @@
       { text: row.subAccountRef },
       { text: row.holdType },
       { text: row.legacyHoldNumber },
-      { text: row.holdUntilDate | formatDate },
+      { text: row.holdUntilDate | formatDate("dd/MM/yy") },
       { text: row.description },
-      { text: row.amount, format: "numeric" },
-      { text: row.location | convertPrisonIdToName(prisonNames) }
+      { text: row.amount | penceToPound, format: "numeric" },
+      { text: row.holdLocation | convertPrisonIdToName(prisonNames) }
     ] %}
     {% set rows = (rows.push(rowData), rows) %}
   {% endfor %}
@@ -23,7 +23,7 @@
       { text: "Hold number" },
       { text: "Hold until"},
       { text: "Description"},
-      { text: "Amount" },
+      { text: "Amount" , format: "numeric" },
       { text: "Location" }
     ] %}
     {{ govukTable({ classes: "hold-list__holds", caption: "", captionClasses: "govuk-table__caption--m", head: head, rows: rows }) }}
