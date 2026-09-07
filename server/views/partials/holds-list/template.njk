@@ -3,15 +3,15 @@
 
 {% if holds | length > 0 %}
   {% set rows = [] %}
-  {% for row in holds %}
+  {% for hold in holds %}
     {% set rowData = [
-      { text: row.subAccountRef },
-      { text: row.holdType },
-      { text: row.legacyHoldNumber },
-      { text: row.holdUntilDate | formatDate("dd/MM/yy") },
-      { text: row.description },
-      { text: row.amount | penceToPound, format: "numeric" },
-      { text: row.holdLocation | convertPrisonIdToName(prisonNames) }
+      { text: hold.subAccountRef },
+      { text: hold.holdType },
+      { text: hold.legacyHoldNumber },
+      { text: hold.holdUntilDate | formatDate("dd/MM/yy") },
+      { text: hold.description },
+      { text: hold.amount | penceToPound, format: "numeric" },
+      { text: hold.holdLocation | convertPrisonIdToName(prisonNames) }
     ] %}
     {% set rows = (rows.push(rowData), rows) %}
   {% endfor %}
@@ -27,7 +27,9 @@
       { text: "Location" }
     ] %}
     {{ govukTable({ classes: "hold-list__holds", caption: "", captionClasses: "govuk-table__caption--m", head: head, rows: rows }) }}
-    {% if paginationItems %}{{ mojPagination(paginationItems) }}{% endif %}
+    {% if paginationItems %}
+      {{ mojPagination(paginationItems) }}
+    {% endif %}
   </div>
 {% else %}
   <p class="holds-list__empty-message" data-testid="no-holds-message">
