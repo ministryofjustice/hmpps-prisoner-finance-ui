@@ -8,6 +8,8 @@ import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionRe
 import buildPaginationItems from '../utils/mojPaginationHelper'
 import { PrisonerSearchContent, PrisonerSearchResult } from '../interfaces/PrisonerSearchResponse'
 import prisonerSearchFilterSchema, { formatSearchFilterValidationErrors } from '../validators/searchFilterSchema'
+import holdsFilterSchema from '../validators/holdsFilterValidator'
+import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -79,6 +81,40 @@ class PrisonerController {
       matchingPrisoners: matchingPrisoners.content,
       term: parsedQueries.data.term,
       paginationItems,
+    })
+  }
+
+  public getHolds = async (req: Request, res: Response, next: NextFunction) => {
+    const prisonNumber = req.params.prisonNumber.toString()
+
+    const parsedQueries = holdsFilterSchema.safeParse(req.query)
+
+    await this.services.auditService.logPageView(res.locals.auditPage, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: prisonNumber,
+    })
+
+    const pageNumber = parsedQueries.data.page.toString()
+
+    const pagedHolds = await this.services.prisonerFinanceHoldsService.getHolds(
+      prisonNumber,
+      pageNumber,
+      !parsedQueries.success,
+    )
+
+    const { content, ...paginationItems } = parsedQueries.success
+      ? buildPaginationItems<PrisonerHoldResponse, typeof holdsFilterSchema>({
+          ...pagedHolds,
+          filters: parsedQueries.data,
+        })
+      : { content: [] as PrisonerTransactionResponse[] }
+
+    res.render('pages/prisoner/holds/holds', {
+      prisonNumber,
+      paginationItems,
+      holds: pagedHolds.content,
     })
   }
 

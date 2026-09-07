@@ -64,6 +64,18 @@ export default function routes(services: Services): Router {
   )
 
   prisonerRouter.get(
+    '/:prisonNumber/money/holds',
+    populatePrisonerDetails(services),
+    getPrisonerData,
+    getPrisonNames(services),
+    (req: Request, res: Response, next: NextFunction) => {
+      res.locals.headerTitle = 'Holds'
+      res.locals.auditPage = AuditPage.PRISONER_HOLDS
+      return prisonerController.getHolds(req, res, next)
+    },
+  )
+
+  prisonerRouter.get(
     '/:prisonNumber',
     populatePrisonerDetails(services),
     getPrisonerData,
