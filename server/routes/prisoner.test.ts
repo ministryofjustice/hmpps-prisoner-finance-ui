@@ -164,7 +164,7 @@ describe('Prisoners', () => {
     expect(res.text).toContain('Sorry, there is a problem with the service')
 
     expect(auditService.logPageView).toHaveBeenCalledWith(
-      AuditPage.PRISONER_HOLDS,
+      auditPage,
       expect.objectContaining({
         correlationId: expect.any(String),
         who: user.username,

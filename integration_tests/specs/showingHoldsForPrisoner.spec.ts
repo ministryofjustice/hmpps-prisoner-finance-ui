@@ -1,4 +1,4 @@
-import { test } from '@playwright/test'
+import { expect, test } from '@playwright/test'
 import PrisonerHoldsPage from '../pages/prisonerHoldsPage'
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 
@@ -93,6 +93,54 @@ test.describe('Show holds for prisoner', () => {
     { subAccountId: '', balanceDateTime: '', amount: 0 },
   ]
 
+  const holdsPayload: PrisonerHoldResponse[] = [
+    {
+      id: '',
+      prisonNumber: 'A9971EC',
+      legacyHoldNumber: 1,
+      subAccountRef: 'CASH',
+      createdAt: '2026-03-10T10:43:28.194Z',
+      createdBy: 'TEST',
+      holdFromDate: '2026-03-10T10:43:28.194Z',
+      holdUntilDate: '2027-03-10T10:43:28.194Z',
+      isReleased: false,
+      description: 'TEST',
+      holdType: 'HOA',
+      amount: 123,
+      holdLocation: 'LEI',
+    },
+    {
+      id: '',
+      prisonNumber: 'A9971EC',
+      legacyHoldNumber: 2,
+      subAccountRef: 'SPENDS',
+      createdAt: '2026-03-12T10:43:28.194Z',
+      createdBy: 'TEST',
+      holdFromDate: '2026-03-10T10:43:28.194Z',
+      holdUntilDate: '2027-05-10T10:43:28.194Z',
+      isReleased: false,
+      description: 'TEST',
+      holdType: 'HOA',
+      amount: 121,
+      holdLocation: 'LEI',
+    },
+    {
+      id: '',
+      prisonNumber: 'A9971EC',
+      legacyHoldNumber: 4,
+      subAccountRef: 'SPENDS',
+      createdAt: '2026-03-19T10:43:28.194Z',
+      createdBy: 'TEST',
+      holdFromDate: '2026-03-10T10:43:28.194Z',
+      holdUntilDate: '2027-02-10T10:43:28.194Z',
+      isReleased: false,
+      description: 'TEST',
+      holdType: 'HOA',
+      amount: 121,
+      holdLocation: 'LEI',
+    },
+  ]
+
   const setupPrisonerProfileStubs = async () => {
     await prisonerSearchApi.stubGetPrisoner(prisonNumber)
     await prisonApi.stubGetPrisonerImage()
@@ -104,8 +152,18 @@ test.describe('Show holds for prisoner', () => {
     await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
   }
 
-  const setupGetHoldsStubs = async (payload: PrisonerHoldResponse[] = []) => {
-    await prisonerFinanceHoldsApi.stubGetHolds(prisonNumber, [])
+  const setupGetHoldsStubs = async (
+    payload: PrisonerHoldResponse[] = [],
+    options: { pageNumber: number; pageSize: string; totalPages: number } = {
+      pageNumber: 1,
+      pageSize: '25',
+      totalPages: 2,
+    },
+  ) => {
+    await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonApi.stubGetPrisonerImage()
+    await prisonRegisterApi.stubGetPrisonNames()
+    await prisonerFinanceHoldsApi.stubGetHolds(prisonNumber, payload, options)
   }
 
   test.beforeEach(async ({ page }) => {
@@ -126,5 +184,149 @@ test.describe('Show holds for prisoner', () => {
     await holdCardLink.click()
 
     PrisonerHoldsPage.verifyOnPage(page, prisonNumber)
+  })
+
+  test('Should display holds when page is loaded', async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload)
+
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+
+    expect(prisonerHoldsPage.holdsList).toBeVisible()
+    expect(prisonerHoldsPage.holdsList).toContainText(
+      [
+        'Account Hold type Hold number Hold until Description Amount Location',
+        'CASH HOA 1 10/03/27 TEST 1.23 Leeds (HMP)',
+        'SPENDS HOA 2 10/05/27 TEST 1.21 Leeds (HMP)',
+        'SPENDS HOA 4 10/02/27 TEST 1.21 Leeds (HMP)',
+      ].join('\n'),
+    )
+  })
+
+  test('Should display no holds when the user does not have any holds', async ({ page }) => {
+    await setupGetHoldsStubs([])
+
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+
+    expect(prisonerHoldsPage.holdsList).not.toBeVisible()
+
+    const noHoldsMessage = page.locator('[data-testid="no-holds-message"]')
+    await expect(noHoldsMessage).toBeVisible()
+    await expect(noHoldsMessage).toHaveText('No holds to show')
+  })
+
+  test(`Should render pagination component and allow progression`, async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload, {
+      pageNumber: 1,
+      pageSize: '25',
+      totalPages: 2,
+    })
+
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+
+    await expect(prisonerHoldsPage.pagination).toBeVisible()
+
+    const bottomNavButton = prisonerHoldsPage.pagination.locator("[aria-label='Page 2']")
+    await expect(bottomNavButton).toBeVisible()
+    expect(await bottomNavButton.getAttribute('href')).toContain('page=2')
+
+    await setupGetHoldsStubs(holdsPayload, {
+      pageNumber: 2,
+      pageSize: '25',
+      totalPages: 2,
+    })
+
+    await bottomNavButton.click()
+
+    expect(page.url()).toContain('page=2')
+
+    const resultText = prisonerHoldsPage.page.locator('.moj-pagination__results')
+    await expect(resultText.first()).toBeVisible()
+
+    expect(await resultText.first().innerText()).toBe('Showing 4 to 3 of 3 total results')
+
+    const topCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const topCurrentPageA = topCurrentPageLi.locator('a')
+    expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await topCurrentPageA.innerText()).toBe('2')
+
+    const bottomCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
+    expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await bottomCurrentPageA.innerText()).toBe('2')
+  })
+
+  test(`Should allow progression with next button`, async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload, {
+      pageNumber: 1,
+      pageSize: '25',
+      totalPages: 2,
+    })
+
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+
+    await expect(prisonerHoldsPage.pagination).toBeVisible()
+
+    const nextNavButton = prisonerHoldsPage.pagination.locator("[rel='next']")
+    await expect(nextNavButton).toBeVisible()
+    expect(await nextNavButton.getAttribute('href')).toContain('page=2')
+
+    await setupGetHoldsStubs(holdsPayload, {
+      pageNumber: 2,
+      pageSize: '25',
+      totalPages: 2,
+    })
+    await nextNavButton.click()
+
+    expect(page.url()).toContain('page=2')
+
+    const topCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const topCurrentPageA = topCurrentPageLi.locator('a')
+    expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await topCurrentPageA.innerText()).toBe('2')
+
+    const bottomCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
+    expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await bottomCurrentPageA.innerText()).toBe('2')
+  })
+
+  test(`Should allow progression with previous button`, async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload, {
+      pageNumber: 2,
+      pageSize: '25',
+      totalPages: 2,
+    })
+
+    await page.goto(`/prisoner/${prisonNumber}/money/holds?page=2`)
+    const prisonerHoldsPage = await PrisonerHoldsPage.verifyOnPage(page, prisonNumber)
+
+    await expect(prisonerHoldsPage.pagination).toBeVisible()
+
+    await expect(prisonerHoldsPage.pagination).toBeVisible()
+    await expect(prisonerHoldsPage.pagination).toBeVisible()
+
+    const prevNavButton = prisonerHoldsPage.pagination.locator("[rel='prev']")
+    await expect(prevNavButton).toBeVisible()
+    expect(await prevNavButton.getAttribute('href')).toContain('page=1')
+
+    await setupGetHoldsStubs(holdsPayload, {
+      pageNumber: 1,
+      pageSize: '25',
+      totalPages: 2,
+    })
+
+    await prevNavButton.click()
+
+    expect(page.url()).toContain('page=1')
+
+    const topCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const topCurrentPageA = topCurrentPageLi.locator('a')
+    expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await topCurrentPageA.innerText()).toBe('1')
+
+    const bottomCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
+    expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
+    expect(await bottomCurrentPageA.innerText()).toBe('1')
   })
 })

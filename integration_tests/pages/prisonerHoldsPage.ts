@@ -10,7 +10,7 @@ export default class PrisonerHoldsPage extends AbstractPage {
 
   readonly profileHeader: Locator
 
-  readonly bottomPagination: Locator
+  readonly pagination: Locator
 
   private constructor(page: Page, headerText: string) {
     super(page)
@@ -19,8 +19,8 @@ export default class PrisonerHoldsPage extends AbstractPage {
 
     this.profileHeader = page.locator('.mini-profile, .hmpps-profile-banner').first()
 
-    this.holdsList = page.locator('.holds-list')
-    this.bottomPagination = page.locator('#bottom-pagination')
+    this.holdsList = page.locator('.hold-list__holds')
+    this.pagination = page.locator('.govuk-pagination')
   }
 
   static async load(page: Page, prisonNumber: string): Promise<PrisonerHoldsPage> {

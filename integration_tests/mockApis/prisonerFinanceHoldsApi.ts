@@ -38,9 +38,10 @@ const stubGetHoldsBalance = (prisonNumber: string) =>
 const stubGetHolds = (
   prisonNumber: string,
   payload: PrisonerHoldResponse[],
-  options: { pageNumber: string; pageSize: string } = {
-    pageNumber: '1',
+  options: { pageNumber: number; pageSize: string; totalPages: number } = {
+    pageNumber: 1,
     pageSize: '25',
+    totalPages: 2,
   },
 ) =>
   stubFor({
@@ -48,7 +49,8 @@ const stubGetHolds = (
       method: 'GET',
       urlPathPattern: `${API_PREFIX}/holds/${prisonNumber}`,
       queryParameters: {
-        pageNumber: options && options.pageNumber ? { equalTo: options.pageNumber } : { equalTo: '1' },
+        pageNumber:
+          options && options.pageNumber.toString() ? { equalTo: options.pageNumber.toString() } : { equalTo: '1' },
         pageSize: options && options.pageSize ? { equalTo: options.pageSize } : { equalTo: '25' },
       },
     },
@@ -58,10 +60,10 @@ const stubGetHolds = (
       jsonBody: {
         content: payload,
         totalElements: payload.length,
-        totalPages: 1,
-        pageNumber: 1,
+        totalPages: options.totalPages,
+        pageNumber: options.pageNumber,
         pageSize: payload.length,
-        isLastPage: true,
+        isLastPage: options.pageNumber === options.totalPages,
       } as Page<PrisonerHoldResponse>,
     },
   })

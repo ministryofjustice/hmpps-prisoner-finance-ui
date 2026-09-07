@@ -210,6 +210,23 @@ test.describe('Showing transactions for all sub accounts', () => {
     })
   })
 
+  test(`Should display no transactions`, async ({ page }) => {
+    const prisonNumber = 'EE1234E'
+
+    await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+    await prisonApi.stubGetPrisonerImage()
+    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [], {})
+    await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
+    await prisonRegisterApi.stubGetPrisonNames()
+
+    const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
+    await expect(prisonerTransactionsPage.transactionList).not.toBeVisible()
+
+    const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
+    await expect(noTransactionsMessage).toBeVisible()
+    await expect(noTransactionsMessage).toHaveText('No transactions to show')
+  })
+
   /*
 
   test(`Should handle page out of bound and redirect to a 404`, async ({ page }) => {
@@ -239,20 +256,7 @@ test.describe('Showing transactions for all sub accounts', () => {
     expect(accessibilityScanResults.violations).toEqual([])
   })
 
-  test(`Should display no transactions`, async ({ page }) => {
-    await prisonerSearchApi.stubGetPrisoner(prisonNumber)
-    await prisonApi.stubGetPrisonerImage()
-    await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [], {})
-    await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
-    await prisonRegisterApi.stubGetPrisonNames()
 
-    const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
-    await expect(prisonerTransactionsPage.transactionList).not.toBeVisible()
-
-    const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
-    await expect(noTransactionsMessage).toBeVisible()
-    await expect(noTransactionsMessage).toHaveText('No transactions to show')
-  })
 
   test(`Should display the filter`, async ({ page }) => {
     await baseStubs()

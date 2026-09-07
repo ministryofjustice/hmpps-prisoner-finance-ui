@@ -8,7 +8,7 @@ import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionRe
 import buildPaginationItems from '../utils/mojPaginationHelper'
 import { PrisonerSearchContent, PrisonerSearchResult } from '../interfaces/PrisonerSearchResponse'
 import prisonerSearchFilterSchema, { formatSearchFilterValidationErrors } from '../validators/searchFilterSchema'
-import holdsFilterSchema, { formatHoldsValidationErrors } from '../validators/holdsFilterValidator'
+import holdsFilterSchema from '../validators/holdsFilterValidator'
 import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 
 const transactionFilterConfig = {
