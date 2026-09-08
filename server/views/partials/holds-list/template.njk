@@ -5,10 +5,10 @@
   {% set rows = [] %}
   {% for hold in holds %}
     {% set rowData = [
-      { text: hold.subAccountRef },
+      { text: hold.subAccountRef | formatPrisonerAccountType  },
       { text: hold.holdType },
       { text: hold.legacyHoldNumber },
-      { text: hold.holdUntilDate | formatDate("dd/MM/yy") },
+      { text: hold.holdUntilDate | formatDate("dd/MM/yy") | default('No data')},
       { text: hold.description },
       { text: hold.amount | penceToPound, format: "numeric" },
       { text: hold.holdLocation | convertPrisonIdToName(prisonNames) }
@@ -26,10 +26,9 @@
       { text: "Amount" , format: "numeric" },
       { text: "Location" }
     ] %}
+    {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
     {{ govukTable({ classes: "hold-list__holds", caption: "", captionClasses: "govuk-table__caption--m", head: head, rows: rows }) }}
-    {% if paginationItems %}
-      {{ mojPagination(paginationItems) }}
-    {% endif %}
+    {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
   </div>
 {% else %}
   <p class="holds-list__empty-message" data-testid="no-holds-message">
