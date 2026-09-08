@@ -6,7 +6,7 @@ export interface PrisonerHoldResponse {
   createdAt: string
   createdBy: string
   holdFromDate: string
-  holdUntilDate: string
+  holdUntilDate: string | null
   isReleased: boolean
   description: string | null
   holdType: string

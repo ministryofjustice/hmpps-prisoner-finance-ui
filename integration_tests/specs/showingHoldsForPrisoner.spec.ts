@@ -139,6 +139,36 @@ test.describe('Show holds for prisoner', () => {
       amount: 121,
       holdLocation: 'LEI',
     },
+    {
+      id: '',
+      prisonNumber: 'A9971EC',
+      legacyHoldNumber: 4,
+      subAccountRef: 'SAVINGS',
+      createdAt: '2026-03-19T10:43:28.194Z',
+      createdBy: 'TEST',
+      holdFromDate: '2026-03-10T10:43:28.194Z',
+      holdUntilDate: '2027-02-10T10:43:28.194Z',
+      isReleased: false,
+      description: 'TEST',
+      holdType: 'HOA',
+      amount: 121,
+      holdLocation: 'LEI',
+    },
+    {
+      id: '',
+      prisonNumber: 'A9971EC',
+      legacyHoldNumber: 4,
+      subAccountRef: 'SAVINGS',
+      createdAt: '2026-03-19T10:43:28.194Z',
+      createdBy: 'TEST',
+      holdFromDate: '2026-03-10T10:43:28.194Z',
+      holdUntilDate: null, // will show as "No data" in ui
+      isReleased: false,
+      description: 'TEST',
+      holdType: 'HOA',
+      amount: 121,
+      holdLocation: 'LEI',
+    },
   ]
 
   const setupPrisonerProfileStubs = async () => {
@@ -195,9 +225,11 @@ test.describe('Show holds for prisoner', () => {
     expect(prisonerHoldsPage.holdsList).toContainText(
       [
         'Account Hold type Hold number Hold until Description Amount Location',
-        'CASH HOA 1 10/03/27 TEST 1.23 Leeds (HMP)',
-        'SPENDS HOA 2 10/05/27 TEST 1.21 Leeds (HMP)',
-        'SPENDS HOA 4 10/02/27 TEST 1.21 Leeds (HMP)',
+        'Private cash HOA 1 10/03/27 TEST 1.23 Leeds (HMP)',
+        'Spends HOA 2 10/05/27 TEST 1.21 Leeds (HMP)',
+        'Spends HOA 4 10/02/27 TEST 1.21 Leeds (HMP)',
+        'Savings HOA 4 10/02/27 TEST 1.21 Leeds (HMP)',
+        'Savings HOA 4 No data TEST 1.21 Leeds (HMP)',
       ].join('\n'),
     )
   })
@@ -223,9 +255,10 @@ test.describe('Show holds for prisoner', () => {
 
     const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
 
-    await expect(prisonerHoldsPage.pagination).toBeVisible()
+    await expect(prisonerHoldsPage.topPagination).toBeVisible()
+    await expect(prisonerHoldsPage.bottomPagination).toBeVisible()
 
-    const bottomNavButton = prisonerHoldsPage.pagination.locator("[aria-label='Page 2']")
+    const bottomNavButton = prisonerHoldsPage.topPagination.locator("[aria-label='Page 2']")
     await expect(bottomNavButton).toBeVisible()
     expect(await bottomNavButton.getAttribute('href')).toContain('page=2')
 
@@ -242,14 +275,14 @@ test.describe('Show holds for prisoner', () => {
     const resultText = prisonerHoldsPage.page.locator('.moj-pagination__results')
     await expect(resultText.first()).toBeVisible()
 
-    expect(await resultText.first().innerText()).toBe('Showing 4 to 3 of 3 total results')
+    expect(await resultText.first().innerText()).toBe('Showing 6 to 5 of 5 total results')
 
-    const topCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const topCurrentPageLi = prisonerHoldsPage.topPagination.locator('.govuk-pagination__item--current')
     const topCurrentPageA = topCurrentPageLi.locator('a')
     expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
     expect(await topCurrentPageA.innerText()).toBe('2')
 
-    const bottomCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const bottomCurrentPageLi = prisonerHoldsPage.topPagination.locator('.govuk-pagination__item--current')
     const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
     expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
     expect(await bottomCurrentPageA.innerText()).toBe('2')
@@ -264,9 +297,10 @@ test.describe('Show holds for prisoner', () => {
 
     const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
 
-    await expect(prisonerHoldsPage.pagination).toBeVisible()
+    await expect(prisonerHoldsPage.topPagination).toBeVisible()
+    await expect(prisonerHoldsPage.bottomPagination).toBeVisible()
 
-    const nextNavButton = prisonerHoldsPage.pagination.locator("[rel='next']")
+    const nextNavButton = prisonerHoldsPage.topPagination.locator("[rel='next']")
     await expect(nextNavButton).toBeVisible()
     expect(await nextNavButton.getAttribute('href')).toContain('page=2')
 
@@ -279,12 +313,12 @@ test.describe('Show holds for prisoner', () => {
 
     expect(page.url()).toContain('page=2')
 
-    const topCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const topCurrentPageLi = prisonerHoldsPage.topPagination.locator('.govuk-pagination__item--current')
     const topCurrentPageA = topCurrentPageLi.locator('a')
     expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
     expect(await topCurrentPageA.innerText()).toBe('2')
 
-    const bottomCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const bottomCurrentPageLi = prisonerHoldsPage.topPagination.locator('.govuk-pagination__item--current')
     const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
     expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
     expect(await bottomCurrentPageA.innerText()).toBe('2')
@@ -300,12 +334,10 @@ test.describe('Show holds for prisoner', () => {
     await page.goto(`/prisoner/${prisonNumber}/money/holds?page=2`)
     const prisonerHoldsPage = await PrisonerHoldsPage.verifyOnPage(page, prisonNumber)
 
-    await expect(prisonerHoldsPage.pagination).toBeVisible()
+    await expect(prisonerHoldsPage.topPagination).toBeVisible()
+    await expect(prisonerHoldsPage.bottomPagination).toBeVisible()
 
-    await expect(prisonerHoldsPage.pagination).toBeVisible()
-    await expect(prisonerHoldsPage.pagination).toBeVisible()
-
-    const prevNavButton = prisonerHoldsPage.pagination.locator("[rel='prev']")
+    const prevNavButton = prisonerHoldsPage.topPagination.locator("[rel='prev']")
     await expect(prevNavButton).toBeVisible()
     expect(await prevNavButton.getAttribute('href')).toContain('page=1')
 
@@ -319,12 +351,12 @@ test.describe('Show holds for prisoner', () => {
 
     expect(page.url()).toContain('page=1')
 
-    const topCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const topCurrentPageLi = prisonerHoldsPage.topPagination.locator('.govuk-pagination__item--current')
     const topCurrentPageA = topCurrentPageLi.locator('a')
     expect(await topCurrentPageA.getAttribute('aria-current')).toBe('page')
     expect(await topCurrentPageA.innerText()).toBe('1')
 
-    const bottomCurrentPageLi = prisonerHoldsPage.pagination.locator('.govuk-pagination__item--current')
+    const bottomCurrentPageLi = prisonerHoldsPage.topPagination.locator('.govuk-pagination__item--current')
     const bottomCurrentPageA = bottomCurrentPageLi.locator('a')
     expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
     expect(await bottomCurrentPageA.innerText()).toBe('1')
