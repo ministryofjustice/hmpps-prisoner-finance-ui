@@ -162,7 +162,7 @@ test.describe('Show holds for prisoner', () => {
       createdAt: '2026-03-19T10:43:28.194Z',
       createdBy: 'TEST',
       holdFromDate: '2026-03-10T10:43:28.194Z',
-      holdUntilDate: '', // will show as "No data" in ui
+      holdUntilDate: null, // will show as "No data" in ui
       isReleased: false,
       description: 'TEST',
       holdType: 'HOA',
