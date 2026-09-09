@@ -1,5 +1,3 @@
-// todo this file
-
 import { Router } from 'express'
 import GrantBonusToPrisonersController from '../controllers/GrantBonusToPrisonersController'
 import { Services } from '../services'

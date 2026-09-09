@@ -12,6 +12,7 @@ import { Page } from '../interfaces/Pageable'
 import PrisonApiService from '../services/prisonApiService'
 import PrisonerFinanceHoldsService from '../services/prisonerFinanceHoldsService'
 import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
+import FeatureFlagService from '../services/featureFlagService'
 
 jest.mock('../services/prisonerFinanceService')
 jest.mock('../services/prisonerSearchService')
@@ -19,6 +20,8 @@ jest.mock('../services/prisonRegisterService')
 jest.mock('../services/prisonApiService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 jest.mock('../services/prisonerFinanceHoldsService')
+
+const featureFlagService = new FeatureFlagService() as jest.Mocked<FeatureFlagService>
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerFinanceService = new PrisonerFinanceService(null) as jest.Mocked<PrisonerFinanceService>
@@ -32,6 +35,8 @@ let app: Express
 
 describe('Prisoners', () => {
   beforeEach(() => {
+    featureFlagService.isFeatureEnabled.mockReturnValue(Promise.resolve(true))
+
     mockPermissions(undefined, { [PrisonerMoneyPermission.read]: true })
 
     prisonerSearchService.getPrisoner.mockResolvedValue({
@@ -64,6 +69,7 @@ describe('Prisoners', () => {
         prisonerSearchService,
         prisonRegisterService,
         prisonApiService,
+        featureFlagService,
         prisonerFinanceHoldsService,
       },
       userSupplier: () => user,
@@ -185,6 +191,7 @@ describe('Prisoners', () => {
         prisonPermissionsService,
         prisonerSearchService,
         prisonApiService,
+        featureFlagService,
       },
       userSupplier: () => user,
     })

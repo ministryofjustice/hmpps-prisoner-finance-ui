@@ -212,6 +212,7 @@ class PrisonerController {
           savings: subAccountBalances.SAVINGS,
           holds: holdBalance,
         },
+        holdsEnabled: req.featureFlags.HOLDS_ENABLED,
       })
     } catch (error) {
       next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error', { cause: error }))
