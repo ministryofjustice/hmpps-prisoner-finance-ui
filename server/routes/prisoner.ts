@@ -63,6 +63,13 @@ export default function routes(services: Services): Router {
     },
   )
 
+  prisonerRouter.use('/:prisonNumber/money/holds', (req, res, next) => {
+    if (req.featureFlags.HOLDS_ENABLED === false) {
+      return res.status(404).render('pages/not-found.njk')
+    }
+    return next()
+  })
+
   prisonerRouter.get(
     '/:prisonNumber/money/holds',
     populatePrisonerDetails(services),

@@ -151,9 +151,10 @@ describe('prisoner profile page', () => {
     actionPanelEnabled: false,
   }
 
-  const paramsWithActionPanel = {
+  const paramsWithFeatureFlags = {
     ...paramsWithoutActionPanel,
     actionPanelEnabled: true,
+    holdsEnabled: true,
   }
 
   const paramsWithoutLastRunningBalance = {
@@ -230,7 +231,13 @@ describe('prisoner profile page', () => {
     )
   })
 
-  it('should render a balance card for Spends, Private cash, Savings', () => {
+  it('should render a balance card for Holds, Spends, Private cash, Savings', () => {
+    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
+      ...paramsWithFeatureFlags,
+      transactions: [],
+    })
+    $ = cheerio.load(html)
+
     const balanceCards = $('.hmpps-balance-card')
 
     expect(balanceCards.length).toEqual(4)
@@ -288,7 +295,7 @@ describe('prisoner profile page', () => {
 
   it('when the feature flag is true, should render the actions menu', () => {
     const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
-      ...paramsWithActionPanel,
+      ...paramsWithFeatureFlags,
       transactions: [],
     })
 

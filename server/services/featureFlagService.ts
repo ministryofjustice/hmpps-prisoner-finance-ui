@@ -40,6 +40,7 @@ type FeatureFlags = {
   CREDIT_ACCOUNT_ENABLED: boolean
   DATA_WARNING_BANNER_ENABLED: boolean
   ACTION_PANEL_ENABLED: boolean
+  HOLDS_ENABLED: boolean
 }
 
 declare module 'express-serve-static-core' {
