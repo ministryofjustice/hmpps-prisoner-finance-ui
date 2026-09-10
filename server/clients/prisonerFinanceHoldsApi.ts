@@ -20,6 +20,15 @@ export default class PrisonerFinanceHoldsApiClient extends RestClient {
     )
   }
 
+  async getHoldsBalanceForSubAccount(prisonNumber: string, subAccount: string): Promise<PrisonerHoldsBalanceResponse> {
+    return this.get(
+      {
+        path: `/holds/${prisonNumber}/balance/${subAccount}`,
+      },
+      asSystem(),
+    )
+  }
+
   async getHolds(prisonNumber: string, pageNumber: string): Promise<Page<PrisonerHoldResponse>> {
     return this.get(
       {

@@ -150,6 +150,11 @@ class PrisonerController {
         hasValidationErrors: !parsedQueries.success,
       })
 
+      const holdBalance = await this.services.prisonerFinanceHoldsService.getHoldsBalanceForSubAccount(
+        prisonNumber,
+        subAccount,
+      )
+
       const { content, ...paginationItems } = parsedQueries.success
         ? buildPaginationItems<PrisonerTransactionResponse, typeof transactionsFilterSchema>({
             ...transactionPage,
@@ -164,7 +169,8 @@ class PrisonerController {
         transactions: content,
         paginationItems,
         currentBalance: accountBalance.amount,
-        holdBalance: 0,
+        holdBalance: holdBalance.amount,
+        totalBalance: holdBalance.amount + accountBalance.amount,
         filters: {
           startDate,
           endDate,
@@ -175,6 +181,7 @@ class PrisonerController {
         hasValidationErrors: !parsedQueries.success,
         ...zodErrors,
         displayTotalBalance: !subAccount,
+        holdsEnabled: res.locals.showHolds,
       })
     } catch (error) {
       if (error.responseStatus === 400 && error.data?.userMessage?.includes('Page requested is out of range')) {

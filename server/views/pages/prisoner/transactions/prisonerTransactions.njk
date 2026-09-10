@@ -23,7 +23,21 @@
           amount: currentBalance
         }) }}
       </li>
-    </ul>
+     {% if holdsEnabled %}
+      <li class="govuk-grid-column-one-quarter card-group__item">
+        {{ balanceCard({
+          heading: "Hold balance",
+          amount: holdBalance
+        }) }}
+      </li>
+      <li class="govuk-grid-column-one-quarter card-group__item">
+        {{ balanceCard({
+          heading: "Total balance",
+          amount: totalBalance
+        }) }}
+      </li>
+      {% endif %}
+      </ul>
 
     <div class="govuk-grid-row moj-filter-layout">
       <div class="govuk-grid-column-one-quarter moj-filter-layout__filter moj-filter-layout__filter--small"

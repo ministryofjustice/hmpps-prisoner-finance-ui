@@ -104,6 +104,8 @@ test.describe('Showing all transactions for a specific sub account', () => {
 
       await expect(prisonerPrivateCashPage.currentBalanceCard).toBeVisible()
       await expect(prisonerPrivateCashPage.currentBalanceCard).toContainText('Current balance Account total £12.34')
+
+      // expect hold card and total to be visible
     })
 
     test('Can go back to the prisoners financial profile', async ({ page }) => {

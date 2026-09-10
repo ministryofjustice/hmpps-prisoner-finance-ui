@@ -107,6 +107,11 @@ describe('Prisoners', () => {
     const balanceResponse = { accountId: '', balanceDateTime: '', amount: 1000 }
     prisonerFinanceService.getTransactionPage.mockResolvedValue([emptyPageTransactionsResponse, balanceResponse])
 
+    prisonerFinanceHoldsService.getHoldsBalanceForSubAccount.mockResolvedValue({
+      amount: 10,
+      balanceDateTime: '',
+    })
+
     const response = await request(app).get(url).expect(200).expect('Content-Type', /html/)
 
     expect(auditService.logPageView).toHaveBeenCalledWith(

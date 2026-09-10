@@ -175,6 +175,7 @@ describe('PrisonerController', () => {
         user: { username: 'test-user' },
         subAccount: 'CASH',
         auditPage: AuditPage.PRISONER_HOLDS,
+        showHolds: true,
       },
       render: jest.fn(),
       redirect: jest.fn(),
@@ -220,6 +221,11 @@ describe('PrisonerController', () => {
 
       prisonerFinanceService.getTransactionPage.mockResolvedValue([mockTransactionsPage, mockBalance])
 
+      prisonerFinanceHoldsService.getHoldsBalanceForSubAccount.mockResolvedValue({
+        amount: 0,
+        balanceDateTime: '',
+      })
+
       await prisonerController.getTransactions(mockReq, mockRes, mockNext)
 
       expect(auditService.logPageView).toHaveBeenCalledWith(mockRes.locals.auditPage, {
@@ -245,6 +251,7 @@ describe('PrisonerController', () => {
         transactions: mockTransactions,
         currentBalance: mockBalance.amount,
         holdBalance: 0,
+        totalBalance: mockBalance.amount,
         paginationItems: expect.anything(),
         hasValidationErrors: false,
         filters: {
@@ -255,6 +262,7 @@ describe('PrisonerController', () => {
           selectedFilters: expect.anything(),
         },
         displayTotalBalance: false,
+        holdsEnabled: true,
       })
     })
 

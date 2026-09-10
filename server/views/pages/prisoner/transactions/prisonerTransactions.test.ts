@@ -215,4 +215,8 @@ describe('prisoner transactions page', () => {
 
     expect(lastTransactionRunningBalance).toBe('-')
   })
+
+  // Add test here to prove that we do render the card for spends, cash template
+
+  // Add test here to prove that we dont render the card for savings template
 })
