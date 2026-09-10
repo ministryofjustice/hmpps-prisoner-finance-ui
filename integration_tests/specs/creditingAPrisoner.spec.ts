@@ -10,6 +10,7 @@ import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import InternalServerErrorPage from '../pages/internalServerErrorPage'
 import prisonApi from '../mockApis/prisonApi'
 import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
+import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 
 test.describe('Crediting a prisoner', () => {
   const prisonNumber = 'ABC123XZ'
@@ -17,6 +18,7 @@ test.describe('Crediting a prisoner', () => {
   test.beforeEach(async ({ page }) => {
     await resetStubs()
     await login(page)
+    await prisonRegisterApi.stubGetPrisonNames()
   })
 
   test.describe('Crediting a prisoner', () => {

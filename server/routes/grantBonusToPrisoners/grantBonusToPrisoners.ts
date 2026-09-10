@@ -1,6 +1,6 @@
 import { Router } from 'express'
-import GrantBonusToPrisonersController from '../controllers/GrantBonusToPrisonersController'
-import { Services } from '../services'
+import GrantBonusToPrisonersController from '../../controllers/GrantBonusToPrisonersController'
+import { Services } from '../../services'
 
 export default function routes(services: Services): Router {
   const grantBonusRouter = Router({ mergeParams: true })

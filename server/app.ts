@@ -20,7 +20,7 @@ import setUpFeatureFlags from './middleware/setUpFeatureFlags'
 import logger from '../logger'
 import config from './config'
 
-import routes from './routes'
+import routes from './routes/index'
 import type { Services } from './services'
 
 export default function createApp(services: Services): express.Application {
