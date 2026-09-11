@@ -1,11 +1,10 @@
-import { Router, NextFunction, Request, Response } from 'express'
+import { Router } from 'express'
 import { Services } from '../../services'
 import PrisonerController from '../../controllers/PrisonerController'
 import { getPrisonerData, populatePrisonerDetails } from '../../middleware/populatePrisonerDetails'
 import getPrisonNames from '../../middleware/getPrisonNames'
 import prisonerNotFoundHandler from '../../middleware/prisonerNotFoundHandler'
 import creditAPrisonerRouter from '../creditAPrisoner/creditAPrisoner'
-import { AuditPage } from '../../services/auditService'
 import prisonerTransactionsRouter from './transactions/prisonerTransactions'
 import prisonerHoldsRouter from './holds/prisonerHolds'
 
