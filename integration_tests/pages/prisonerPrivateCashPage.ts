@@ -12,6 +12,8 @@ export default class PrisonerPrivateCashPage extends AbstractPage {
 
   readonly totalBalanceCard: Locator
 
+  readonly holdsBalanceCard: Locator
+
   readonly profileHeader: Locator
 
   readonly topPagination: Locator
@@ -42,6 +44,10 @@ export default class PrisonerPrivateCashPage extends AbstractPage {
     this.totalBalanceCard = page
       .locator('.hmpps-balance-card')
       .filter({ has: page.getByRole('heading', { name: 'Total balance', exact: true }) })
+
+    this.holdsBalanceCard = page
+      .locator('.hmpps-balance-card')
+      .filter({ has: page.getByRole('heading', { name: 'Hold balance', exact: true }) })
 
     this.transactionList = page.locator('.transactions-list')
     this.topPagination = page.locator('#top-pagination')

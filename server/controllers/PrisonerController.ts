@@ -150,10 +150,18 @@ class PrisonerController {
         hasValidationErrors: !parsedQueries.success,
       })
 
-      const holdBalance = await this.services.prisonerFinanceHoldsService.getHoldsBalanceForSubAccount(
-        prisonNumber,
-        subAccount,
-      )
+      let holdBalance = null
+
+      if (holdBalance != null) {
+        holdBalance = await this.services.prisonerFinanceHoldsService.getHoldsBalanceForSubAccount(
+          prisonNumber,
+          subAccount,
+        )
+      } else {
+        holdBalance = {
+          amount: 0,
+        }
+      }
 
       const { content, ...paginationItems } = parsedQueries.success
         ? buildPaginationItems<PrisonerTransactionResponse, typeof transactionsFilterSchema>({

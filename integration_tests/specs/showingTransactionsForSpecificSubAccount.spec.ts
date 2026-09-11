@@ -90,6 +90,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
       await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
       })
@@ -105,7 +106,8 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await expect(prisonerPrivateCashPage.currentBalanceCard).toBeVisible()
       await expect(prisonerPrivateCashPage.currentBalanceCard).toContainText('Current balance Account total £12.34')
 
-      // expect hold card and total to be visible
+      await expect(prisonerPrivateCashPage.holdsBalanceCard).toBeVisible()
+      await expect(prisonerPrivateCashPage.totalBalanceCard).toBeVisible()
     })
 
     test('Can go back to the prisoners financial profile', async ({ page }) => {
@@ -121,6 +123,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
 
       const prisonerPrivateCashPage = await PrisonerPrivateCashPage.load(page, prisonNumber)
 

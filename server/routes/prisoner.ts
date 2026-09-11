@@ -20,6 +20,7 @@ export default function routes(services: Services): Router {
     getPrisonNames(services),
     (req: Request, res: Response, next: NextFunction) => {
       res.locals.auditPage = AuditPage.PRISONER_TRANSACTIONS
+      res.locals.showHolds = false
       return prisonerController.getTransactions(req, res, next)
     },
   )

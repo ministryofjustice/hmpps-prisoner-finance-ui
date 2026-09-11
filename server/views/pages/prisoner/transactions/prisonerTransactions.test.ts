@@ -109,8 +109,10 @@ describe('prisoner transactions page', () => {
     transactions: payload,
     prisonerDetails: { firstName: 'BOB', lastName: 'Taylor' },
     currentBalance: 1000,
+    totalBalance: 1000,
     holdBalance: 0,
     prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
+    holdsEnabled: true,
   }
 
   const paramsWithoutLastRunningBalance = {
@@ -125,7 +127,20 @@ describe('prisoner transactions page', () => {
     displayTotalBalance: false,
   }
 
-  beforeAll(() => {
+  const paramsWithoutHoldsBalanceEnabled = {
+    prisonNumber,
+    applicationName: 'Hmpps Prisoner Finance Ui',
+    headerTitle: 'Finance',
+    transactions: payload,
+    prisonerDetails: { firstName: 'BOB', lastName: 'Taylor' },
+    currentBalance: 1000,
+    totalBalance: 1000,
+    holdBalance: 0,
+    prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
+    holdsEnabled: false,
+  }
+
+  beforeEach(() => {
     njkEnv = nunjucks.configure(
       ['server/views', 'node_modules/govuk-frontend/dist', 'node_modules/@ministryofjustice/frontend/'],
       {
@@ -216,7 +231,105 @@ describe('prisoner transactions page', () => {
     expect(lastTransactionRunningBalance).toBe('-')
   })
 
-  // Add test here to prove that we do render the card for spends, cash template
+  it('should render the page elements correctly when holds enabled', () => {
+    const header = $('.mini-profile, .hmpps-profile-banner')
 
-  // Add test here to prove that we dont render the card for savings template
+    expect(header.length > 0).toBe(true)
+
+    const title = $('title')
+
+    expect(title.text()).toContain('Finance - Hmpps Prisoner Finance Ui')
+
+    const backLink = $('.govuk-back-link')
+
+    expect(backLink.text()).toContain('Back')
+
+    const transactionsList = $('.transactions-list')
+
+    expect(transactionsList.find('thead tr th').length).toBe(7)
+    expect(transactionsList.find('tbody tr').length).toBe(payload.length)
+
+    const balanceCards = $('.hmpps-balance-card')
+
+    expect(balanceCards.length).toBe(3)
+
+    expect($(balanceCards[0]).text()).toContain('Current balance')
+    expect($(balanceCards[0]).text()).toContain('£10.00')
+
+    expect($(balanceCards[1]).text()).toContain('Hold balance')
+    expect($(balanceCards[1]).text()).toContain('£0.00')
+
+    expect($(balanceCards[2]).text()).toContain('Total balance')
+    expect($(balanceCards[2]).text()).toContain('£10.00')
+
+    const filterComponent = $('[data-module="moj-filter"]')
+    const filterSelected = $('[class="moj-filter__selected"]')
+    const filterOptions = $('[class="moj-filter__options"]')
+
+    expect(filterSelected.length).toBe(1)
+    expect(filterComponent.length).toBe(1)
+    expect(filterOptions.length).toBe(1)
+
+    const endDateFilterComponent = $('[id="endDate"]')
+    const startDateFilterComponent = $('[id="startDate"]')
+
+    expect(endDateFilterComponent.length).toBe(1)
+    expect(startDateFilterComponent.length).toBe(1)
+
+    const creditFilterComponent = $('[id="creditFilter"]')
+    const debitFilterComponent = $('[id="debitFilter"]')
+
+    expect(creditFilterComponent.length).toBe(1)
+    expect(debitFilterComponent.length).toBe(1)
+  })
+
+  it('should render the page elements correctly when holds disabled', () => {
+    const html = njkEnv.render('pages/prisoner/transactions/prisonerTransactions.njk', paramsWithoutHoldsBalanceEnabled)
+
+    $ = cheerio.load(html)
+
+    const header = $('.mini-profile, .hmpps-profile-banner')
+
+    expect(header.length > 0).toBe(true)
+
+    const title = $('title')
+
+    expect(title.text()).toContain('Finance - Hmpps Prisoner Finance Ui')
+
+    const backLink = $('.govuk-back-link')
+
+    expect(backLink.text()).toContain('Back')
+
+    const transactionsList = $('.transactions-list')
+
+    expect(transactionsList.find('thead tr th').length).toBe(7)
+    expect(transactionsList.find('tbody tr').length).toBe(payload.length)
+
+    const balanceCards = $('.hmpps-balance-card')
+
+    expect(balanceCards.length).toBe(1)
+
+    expect($(balanceCards[0]).text()).toContain('Current balance')
+    expect($(balanceCards[0]).text()).toContain('£10.00')
+
+    const filterComponent = $('[data-module="moj-filter"]')
+    const filterSelected = $('[class="moj-filter__selected"]')
+    const filterOptions = $('[class="moj-filter__options"]')
+
+    expect(filterSelected.length).toBe(1)
+    expect(filterComponent.length).toBe(1)
+    expect(filterOptions.length).toBe(1)
+
+    const endDateFilterComponent = $('[id="endDate"]')
+    const startDateFilterComponent = $('[id="startDate"]')
+
+    expect(endDateFilterComponent.length).toBe(1)
+    expect(startDateFilterComponent.length).toBe(1)
+
+    const creditFilterComponent = $('[id="creditFilter"]')
+    const debitFilterComponent = $('[id="debitFilter"]')
+
+    expect(creditFilterComponent.length).toBe(1)
+    expect(debitFilterComponent.length).toBe(1)
+  })
 })
