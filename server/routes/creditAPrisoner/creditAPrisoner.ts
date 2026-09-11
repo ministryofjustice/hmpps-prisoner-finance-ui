@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import createError from 'http-errors'
 import { Services } from '../../services'
 import CreditAPrisonerController from '../../controllers/CreditAPrisonerController'
 
@@ -9,7 +10,7 @@ export default function routes(services: Services): Router {
 
   creditAPrisonerRouter.use(async (req, res, next) => {
     if (req.featureFlags.CREDIT_ACCOUNT_ENABLED === false) {
-      return res.status(404).render('pages/not-found.njk')
+      return next(createError(404, 'Not found'))
     }
     return next()
   })
