@@ -7,6 +7,7 @@ import prisonerNotFoundHandler from '../../middleware/prisonerNotFoundHandler'
 import creditAPrisonerRouter from '../creditAPrisoner/creditAPrisoner'
 import { AuditPage } from '../../services/auditService'
 import prisonerTransactionsRouter from './transactions/prisonerTransactions'
+import prisonerHoldsRouter from './holds/prisonerHolds'
 
 export default function routes(services: Services): Router {
   const prisonerRouter = Router()
@@ -24,19 +25,7 @@ export default function routes(services: Services): Router {
   )
 
   prisonerRouter.use('/:prisonNumber/money', prisonerTransactionsRouter(services))
-
-  prisonerRouter.use('/:prisonNumber/money/holds', (req, res, next) => {
-    if (req.featureFlags.HOLDS_ENABLED === false) {
-      return res.status(404).render('pages/not-found.njk')
-    }
-    return next()
-  })
-
-  prisonerRouter.get('/:prisonNumber/money/holds', (req: Request, res: Response, next: NextFunction) => {
-    res.locals.headerTitle = 'Holds'
-    res.locals.auditPage = AuditPage.PRISONER_HOLDS
-    return prisonerController.getHolds(req, res, next)
-  })
+  prisonerRouter.use('/:prisonNumber/money', prisonerHoldsRouter(services))
 
   prisonerRouter.get('/:prisonNumber', prisonerController.getProfile)
 
