@@ -2,21 +2,24 @@ import type { Express } from 'express'
 import { PrisonerMoneyPermission, PermissionsService } from '@ministryofjustice/hmpps-prison-permissions-lib'
 
 import request from 'supertest'
-import AuditService, { AuditPage, SubjectType } from '../services/auditService'
-import mockPermissions from './testutils/mockPermissions'
-import { appWithAllRoutes, user } from './testutils/appSetup'
+import AuditService, { AuditPage, SubjectType } from '../../services/auditService'
+import mockPermissions from '../testutils/mockPermissions'
+import { appWithAllRoutes, user } from '../testutils/appSetup'
 
-import PrisonerSearchService from '../services/prisonerSearchService'
-import FeatureFlagService from '../services/featureFlagService'
+import FeatureFlagService from '../../services/featureFlagService'
+import PrisonerSearchService from '../../services/prisonerSearchService'
+import PrisonRegisterService from '../../services/prisonRegisterService'
 
-jest.mock('../services/auditService')
-jest.mock('../services/prisonerSearchService')
+jest.mock('../../services/auditService')
+jest.mock('../../services/prisonerSearchService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
+jest.mock('../../services/prisonRegisterService')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>
 const prisonerSearchService = new PrisonerSearchService(null) as jest.Mocked<PrisonerSearchService>
 const prisonPermissionsService = {} as unknown as PermissionsService
 const featureFlagService = new FeatureFlagService() as jest.Mocked<FeatureFlagService>
+const prisonRegisterService = new PrisonRegisterService(null) as jest.Mocked<PrisonRegisterService>
 
 let app: Express
 
@@ -26,6 +29,7 @@ describe('/credit-a-prisoner', () => {
     featureFlagService.isFeatureEnabled.mockReturnValue(Promise.resolve(true))
 
     mockPermissions(undefined, { [PrisonerMoneyPermission.read]: true })
+    prisonRegisterService.getPrisonNames.mockResolvedValue([{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }])
 
     prisonerSearchService.getPrisoner.mockResolvedValue({
       firstName: 'BOB',
@@ -53,6 +57,7 @@ describe('/credit-a-prisoner', () => {
         prisonPermissionsService,
         prisonerSearchService,
         featureFlagService,
+        prisonRegisterService,
       },
       userSupplier: () => user,
       session: { creditForm: { creditSubAccountId: 'ID', prisonerAccountReference: prisonNumber } },
