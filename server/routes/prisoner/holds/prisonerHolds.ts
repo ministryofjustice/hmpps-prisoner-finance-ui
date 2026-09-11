@@ -1,4 +1,5 @@
 import { Router, NextFunction, Request, Response } from 'express'
+import createError from 'http-errors'
 import PrisonerController from '../../../controllers/PrisonerController'
 import { AuditPage } from '../../../services/auditService'
 import { Services } from '../../../services'
@@ -9,7 +10,7 @@ export default function routes(services: Services): Router {
 
   prisonerHoldsRouter.use('/holds', (req, res, next) => {
     if (req.featureFlags.HOLDS_ENABLED === false) {
-      return res.status(404).render('pages/not-found.njk')
+      return next(createError(404, 'Not found'))
     }
     return next()
   })
