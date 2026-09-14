@@ -15,6 +15,9 @@ import FeatureFlagService from '../services/featureFlagService'
 import PrisonerFinanceHoldsService from '../services/prisonerFinanceHoldsService'
 import { PrisonerHoldsBalanceResponse } from '../interfaces/PrisonerHoldsBalanceResponse'
 import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
+import PrisonerFinanceAdvancesService from '../services/prisonerFinanceAdvancesService'
+import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
+import { PrisonerAdvanceBalanceResponse } from '../interfaces/PrisonerAdvanceBalanceResponse'
 
 jest.mock('../applicationInfo')
 jest.mock('../services/auditService')
@@ -24,6 +27,7 @@ jest.mock('../services/prisonRegisterService')
 jest.mock('../services/prisonApiService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 jest.mock('../services/prisonerFinanceHoldsService')
+jest.mock('../services/prisonerFinanceAdvancesService')
 
 describe('PrisonerController', () => {
   const applicationInfo = {} as unknown as jest.Mocked<ApplicationInfo>
@@ -35,6 +39,9 @@ describe('PrisonerController', () => {
   const prisonApiService = new PrisonApiService(null) as jest.Mocked<PrisonApiService>
   const featureFlagService = {} as unknown as jest.Mocked<FeatureFlagService>
   const prisonerFinanceHoldsService = new PrisonerFinanceHoldsService(null) as jest.Mocked<PrisonerFinanceHoldsService>
+  const prisonerFinanceAdvancesService = new PrisonerFinanceAdvancesService(
+    null,
+  ) as jest.Mocked<PrisonerFinanceAdvancesService>
 
   const prisonerController: PrisonerController = new PrisonerController({
     applicationInfo,
@@ -46,6 +53,7 @@ describe('PrisonerController', () => {
     prisonApiService,
     featureFlagService,
     prisonerFinanceHoldsService,
+    prisonerFinanceAdvancesService,
   })
 
   const mockNext: e.NextFunction = jest.fn()
@@ -805,6 +813,92 @@ describe('PrisonerController', () => {
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/holds/holds', {
         prisonNumber: mockReq.params.prisonNumber,
         holds: prisonerHolds,
+        paginationItems: {
+          isLastPage: true,
+          items: [
+            {
+              href: '?page=1',
+              selected: true,
+              text: '1',
+            },
+          ],
+          next: null,
+          pageNumber: 1,
+          pageSize: 99,
+          previous: null,
+          results: {
+            count: 0,
+            from: 0,
+            text: ' results',
+            to: 0,
+          },
+          totalElements: 0,
+          totalPages: 1,
+        },
+      })
+    })
+  })
+
+  describe('getAdvances', () => {
+    const mockRes: Response = {
+      locals: {
+        user: { username: 'test-user' },
+        auditPage: AuditPage.PRISONER_ADVANCES,
+      },
+      render: jest.fn(),
+      redirect: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    } as unknown as Response
+
+    it('Should call get advances, balances, and log Audit', async () => {
+      const prisonNumber = 'ABC123KK'
+      const mockReq = {
+        id: 'req-id-123',
+        params: { prisonNumber },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+        query: {
+          page: '1',
+        },
+      } as unknown as Request
+
+      const advanceBalances: PrisonerAdvanceBalanceResponse = {
+        balanceDateTime: '',
+        amount: 100,
+        outstandingAmount: 10,
+        weeklyAmount: 1,
+      }
+      const prisonerAdvances: PrisonerAdvanceResponse[] = []
+
+      const mockAdvancesPage: Page<PrisonerAdvanceResponse> = {
+        content: prisonerAdvances,
+        totalElements: prisonerAdvances.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      prisonerFinanceAdvancesService.getAdvances.mockResolvedValue(mockAdvancesPage)
+      prisonerFinanceAdvancesService.getAdvanceBalances.mockResolvedValue(advanceBalances)
+
+      await prisonerController.getAdvances(mockReq, mockRes, mockNext)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.PRISONER_ADVANCES, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      })
+
+      expect(prisonerFinanceAdvancesService.getAdvances).toHaveBeenCalledWith(mockReq.params.prisonNumber, '1', false)
+      expect(prisonerFinanceAdvancesService.getAdvanceBalances).toHaveBeenCalledWith(prisonNumber)
+
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/advances/advances', {
+        prisonNumber: mockReq.params.prisonNumber,
+        advances: prisonerAdvances,
+        advanceBalances,
         paginationItems: {
           isLastPage: true,
           items: [
