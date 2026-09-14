@@ -10,6 +10,7 @@ import PrisonRegisterApiClient from '../clients/prisonRegisterApiClient'
 import PrisonApiClient from '../clients/prisonApiClient'
 import FeatureFlagService from '../services/featureFlagService'
 import PrisonerFinanceHoldsApiClient from '../clients/prisonerFinanceHoldsApi'
+import PrisonerFinanceAdvancesApiClient from '../clients/prisonerFinanceAdvancesApi'
 
 const applicationInfo = applicationInfoSupplier()
 
@@ -30,6 +31,7 @@ export const dataAccess = () => {
     prisonApiClient: new PrisonApiClient(hmppsAuthClient),
     featureFlagService: new FeatureFlagService(),
     prisonerFinanceHoldsApiClient: new PrisonerFinanceHoldsApiClient(hmppsAuthClient),
+    prisonerFinanceAdvancesApiClient: new PrisonerFinanceAdvancesApiClient(hmppsAuthClient),
   }
 }
 

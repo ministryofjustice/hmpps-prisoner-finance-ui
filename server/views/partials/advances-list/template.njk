@@ -1,0 +1,52 @@
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+{%- from "govuk/components/tag/macro.njk" import govukTag -%}
+
+{% if advances | length > 0 %}
+  {% set rows = [] %}
+  {% for advance in advances %}
+
+    {% set advanceStatus %}
+      {{ govukTag({
+        text: advance.status
+      }) }}
+    {% endset %}
+
+    {% set advanceAmount %}
+      <a href='/prisoner/{{prisonNumber}}/money/advances/detail/{{advance.id}}'>
+        {{advance.advanceAmount | penceToPound }}
+      </a>
+    {% endset %}
+    {% set rowData = [
+      { text: advance.date | formatDateForView | safe },
+      { html: advanceAmount, format: "numeric" },
+      { text: advance.paymentAmount | penceToPound, format: "numeric"  },
+      { text: advance.startPayments | formatDate("dd/MM/yyyy")  },
+      { text: advance.reference },
+      { text: advance.createdBy },
+      { text: advance.advanceLocation | convertPrisonIdToName(prisonNames)   },
+      { html: advanceStatus}
+      ] %}
+    {% set rows = (rows.push(rowData), rows) %}
+  {% endfor %}
+
+  <div class="advance-list">
+    {% set head = [
+      { text: "Date" },
+      { text: "Advance amount", format: "numeric" },
+      { text: "Payment amount", format: "numeric" },
+      { text: "Start payments" },
+      { text: "Reference" },
+      { text: "Created by" },
+      { text: "Location" },
+      { text: "Status" }
+    ] %}
+    {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
+    {{ govukTable({ classes: "advances-list__advances", caption: "", captionClasses: "govuk-table__caption--m", head: head, rows: rows }) }}
+    {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
+  </div>
+{% else %}
+  <p class="advances-list__empty-message" data-testid="no-advances-message">
+    No advances to show
+  </p>
+{% endif %}

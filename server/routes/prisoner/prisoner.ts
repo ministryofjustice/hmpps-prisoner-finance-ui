@@ -7,6 +7,7 @@ import prisonerNotFoundHandler from '../../middleware/prisonerNotFoundHandler'
 import creditAPrisonerRouter from '../creditAPrisoner/creditAPrisoner'
 import prisonerTransactionsRouter from './transactions/prisonerTransactions'
 import prisonerHoldsRouter from './holds/prisonerHolds'
+import prisonerAdvancesRouter from './advances/prisonerAdvances'
 
 export default function routes(services: Services): Router {
   const prisonerRouter = Router()
@@ -25,6 +26,7 @@ export default function routes(services: Services): Router {
 
   prisonerRouter.use('/:prisonNumber/money', prisonerTransactionsRouter(services))
   prisonerRouter.use('/:prisonNumber/money', prisonerHoldsRouter(services))
+  prisonerRouter.use('/:prisonNumber/money', prisonerAdvancesRouter(services))
 
   prisonerRouter.get('/:prisonNumber', prisonerController.getProfile)
 

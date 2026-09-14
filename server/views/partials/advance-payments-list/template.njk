@@ -1,0 +1,33 @@
+{%- from "moj/components/pagination/macro.njk" import mojPagination -%}
+{%- from "govuk/components/table/macro.njk" import govukTable -%}
+{%- from "govuk/components/tag/macro.njk" import govukTag -%}
+
+{% if advancePayments | length > 0 %}
+  {% set rows = [] %}
+  {% for payment in advancePayments %}
+
+    {% set rowData = [
+      { text: payment.date | formatDateForView | safe },
+      { text: payment.paymentAmount | penceToPound, format: "numeric"  },
+      { text: payment.createdBy },
+      { text: payment.advanceLocation | convertPrisonIdToName(prisonNames)}
+      ] %}
+    {% set rows = (rows.push(rowData), rows) %}
+  {% endfor %}
+
+  <div class="advance-payments-list">
+    {% set head = [
+      { text: "Date" },
+      { text: "Payment amount", format: "numeric" },
+      { text: "Created by" },
+      { text: "Location" }
+    ] %}
+    {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
+    {{ govukTable({ classes: "advance-payments-list__advance-payments", caption: "", captionClasses: "govuk-table__caption--m", head: head, rows: rows }) }}
+    {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
+  </div>
+{% else %}
+  <p class="advance-payments-list__empty-message" data-testid="no-advance-payments-message">
+    No payments to show
+  </p>
+{% endif %}

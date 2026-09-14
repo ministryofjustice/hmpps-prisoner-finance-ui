@@ -8,6 +8,7 @@ import prisonApi from '../mockApis/prisonApi'
 import { resetStubs } from '../testUtils'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
+import * as prisonerFinanceAdvancesApi from '../mockApis/prisonerFinanceAdvancesApi'
 
 test.describe('Health', () => {
   test.afterEach(async () => {
@@ -22,6 +23,7 @@ test.describe('Health', () => {
         tokenVerification.stubPing(),
         prisonerSearchApi.stubPing(),
         prisonRegisterApi.stubPing(),
+        prisonerFinanceAdvancesApi.stubPing(),
         prisonApi.stubPing(),
         prisonerFinanceHoldsApi.stubPing(),
       ])
@@ -52,6 +54,7 @@ test.describe('Health', () => {
         hmppsAuth.stubPing(),
         prisonerFinanceApi.stubPing(),
         prisonerFinanceHoldsApi.stubPing(),
+        prisonerFinanceAdvancesApi.stubPing(),
         tokenVerification.stubPing(500),
       ])
     })
@@ -63,6 +66,7 @@ test.describe('Health', () => {
       expect(payload.components.hmppsAuth.status).toBe('UP')
       expect(payload.components.prisonerFinanceApi.status).toBe('UP')
       expect(payload.components.prisonerFinanceHoldsApi.status).toBe('UP')
+      expect(payload.components.prisonerFinanceAdvancesApi.status).toBe('UP')
       expect(payload.components.tokenVerification.status).toBe('DOWN')
       expect(payload.components.tokenVerification.details.status).toBe(500)
       expect(payload.components.tokenVerification.details.attempts).toBe(3)

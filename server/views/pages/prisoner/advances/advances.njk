@@ -1,0 +1,66 @@
+{%- extends "partials/layout-full-width.njk" -%}
+
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+{%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
+{%- from "partials/advances-list/macro.njk" import advancesList -%}
+{%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
+
+{%- set pageTitle = headerTitle -%}
+{%- set backUrl = "/prisoner/" + prisonNumber -%}
+
+
+{% block contentHeader %}
+  {{ dataWarningBanner(dataWarningBannerEnabled) }}
+{% endblock %}
+
+{% block innerContent %}
+
+
+<ul class="govuk-grid-row card-group">
+    <li class="govuk-grid-column-one-quarter card-group__item">
+      {{ balanceCard({
+        heading: "Current advances",
+        subHeading: 'Total',
+        amount: advanceBalances.amount
+      }) }}
+    </li>
+    <li class="govuk-grid-column-one-quarter card-group__item">
+      {{ balanceCard({
+        heading: "Balance outstanding",
+        subHeading: 'Total',
+        amount: advanceBalances.outstandingAmount
+      }) }}
+    </li>
+    <li class="govuk-grid-column-one-quarter card-group__item">
+      {{ balanceCard({
+        heading: "Weekly payments",
+        subHeading: 'Total',
+        amount: advanceBalances.weeklyAmount
+      }) }}
+    </li>
+</ul>
+
+
+{% set advancesTable %}
+    {{ advancesList({
+        advances: advances,
+        paginationItems: paginationItems,
+        prisonNames: prisonNames,
+        prisonNumber: prisonNumber
+    }) }}
+{% endset %}
+
+{{ govukTabs({
+  items: [
+    {
+      label: "All advance types",
+      id: "all-advance-types",
+      panel: {
+        html: advancesTable
+      }
+    }
+  ]
+}) }}
+
+
+{% endblock %}
