@@ -43,8 +43,6 @@ const stubTransactions = async (subAccountReference: string) => {
   }
 }
 
-const stubHoldsBalance = async () => {}
-
 type RouteCase = {
   name: string
   navigate: (page: Page) => Promise<void>
