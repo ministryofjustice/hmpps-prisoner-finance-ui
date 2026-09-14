@@ -1,0 +1,253 @@
+import type { Express } from 'express'
+import request from 'supertest'
+import { PrisonerMoneyPermission, PermissionsService } from '@ministryofjustice/hmpps-prison-permissions-lib'
+import { appWithAllRoutes, user } from '../testutils/appSetup'
+import AuditService, { AuditPage, SearchRequest, SubjectType } from '../../services/auditService'
+import PrisonerFinanceService from '../../services/prisonerFinanceService'
+import PrisonerSearchService from '../../services/prisonerSearchService'
+import mockPermissions from '../testutils/mockPermissions'
+import PrisonRegisterService from '../../services/prisonRegisterService'
+import { PrisonerTransactionResponse } from '../../interfaces/PrisonerTransactionResponse'
+import { Page } from '../../interfaces/Pageable'
+import PrisonApiService from '../../services/prisonApiService'
+import PrisonerFinanceHoldsService from '../../services/prisonerFinanceHoldsService'
+import { PrisonerHoldResponse } from '../../interfaces/PrisonerHoldResponse'
+import FeatureFlagService from '../../services/featureFlagService'
+
+jest.mock('../../services/prisonerFinanceService')
+jest.mock('../../services/prisonerSearchService')
+jest.mock('../../services/prisonRegisterService')
+jest.mock('../../services/prisonApiService')
+jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
+jest.mock('../../services/prisonerFinanceHoldsService')
+
+const featureFlagService = new FeatureFlagService() as jest.Mocked<FeatureFlagService>
+
+const auditService = new AuditService(null) as jest.Mocked<AuditService>
+const prisonerFinanceService = new PrisonerFinanceService(null) as jest.Mocked<PrisonerFinanceService>
+const prisonerSearchService = new PrisonerSearchService(null) as jest.Mocked<PrisonerSearchService>
+const prisonPermissionsService = {} as unknown as PermissionsService
+const prisonRegisterService = new PrisonRegisterService(null) as jest.Mocked<PrisonRegisterService>
+const prisonApiService = new PrisonApiService(null) as jest.Mocked<PrisonApiService>
+const prisonerFinanceHoldsService = new PrisonerFinanceHoldsService(null) as jest.Mocked<PrisonerFinanceHoldsService>
+
+let app: Express
+
+describe('Prisoners', () => {
+  beforeEach(() => {
+    featureFlagService.isFeatureEnabled.mockReturnValue(Promise.resolve(true))
+
+    mockPermissions(undefined, { [PrisonerMoneyPermission.read]: true })
+
+    prisonerSearchService.getPrisoner.mockResolvedValue({
+      firstName: 'BOB',
+      lastName: 'TAYLOR',
+      dateOfBirth: '1990-01-01',
+      prisonerNumber: prisonNumber,
+      prisonId: 'MDI',
+      prisonName: 'Moorland (HMP & YOI)',
+      status: 'ACTIVE IN',
+      cellLocation: 'RECP',
+      category: 'C',
+      csra: 'Standard',
+      currentIncentive: {
+        level: {
+          code: 'STD',
+          description: 'Enhanced',
+        },
+      },
+      bookingId: '123456',
+    })
+
+    prisonRegisterService.getPrisonNames.mockResolvedValue([{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }])
+
+    app = appWithAllRoutes({
+      services: {
+        auditService,
+        prisonerFinanceService,
+        prisonPermissionsService,
+        prisonerSearchService,
+        prisonRegisterService,
+        prisonApiService,
+        featureFlagService,
+        prisonerFinanceHoldsService,
+      },
+      userSupplier: () => user,
+    })
+  })
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
+  const prisonNumber = 'A9971EC'
+  const emptyPageTransactionsResponse: Page<PrisonerTransactionResponse> = {
+    content: [],
+    totalElements: 0,
+    totalPages: 1,
+    pageNumber: 1,
+    pageSize: 99,
+    isLastPage: true,
+  }
+
+  afterEach(() => {
+    jest.resetAllMocks()
+  })
+
+  describe('/prisoner', () => {
+    beforeEach(() => {
+      jest.resetAllMocks()
+      prisonApiService.getUserCaseloads.mockResolvedValue([
+        {
+          caseLoadId: 'ASI',
+          description: 'Ashfield (HMP)',
+          type: 'INST',
+          caseloadFunction: 'GENERAL',
+          currentlyActive: true,
+        },
+      ])
+
+      prisonerSearchService.getPrisonersBySearchTerm.mockResolvedValue({
+        totalElements: 0,
+        totalPages: 0,
+        size: 0,
+        content: [],
+        number: 0,
+        first: true,
+        last: true,
+        sort: {
+          empty: true,
+          sorted: true,
+          unsorted: true,
+        },
+        numberOfElements: 0,
+        pageable: {
+          offset: 0,
+          sort: {
+            empty: true,
+            sorted: true,
+            unsorted: true,
+          },
+          pageSize: 0,
+          paged: true,
+          pageNumber: 0,
+          unpaged: true,
+        },
+        empty: true,
+      })
+    })
+
+    it('GET should return a 200, render the find prisoner page and call the audit service', async () => {
+      const response = await request(app).get('/prisoner').expect(200).expect('Content-Type', /html/)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(
+        AuditPage.FIND_PRISONER,
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          who: user.username,
+        }),
+      )
+      expect(response.text).toContain('Search for a prisoner')
+    })
+
+    it('GET should return a 200, render the find prisoner page and call the audit service when searching for a term', async () => {
+      const response = await request(app)
+        .get('/prisoner')
+        .query({ term: 'hello' })
+        .expect(200)
+        .expect('Content-Type', /html/)
+
+      expect(auditService.logSearchRequest).toHaveBeenCalledWith(
+        SearchRequest.FIND_PRISONER,
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          who: user.username,
+          subjectId: 'hello',
+          subjectType: SubjectType.SEARCH_TERM,
+        }),
+      )
+      expect(response.text).toContain('Search for a prisoner')
+    })
+
+    it('should re-render the find prisoner page with an error when only whitespace is entered', async () => {
+      const response = await request(app).get('/prisoner?term=+++').expect(200)
+
+      expect(response.text).toContain('Enter a prison number')
+    })
+  })
+
+  describe('/prisoner/:prisonNumber', () => {
+    it('should return a 200, render the correct page and call the audit service', async () => {
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(emptyPageTransactionsResponse)
+      prisonerFinanceService.getSubAccountBalances.mockResolvedValue({
+        SPENDS: { subAccountId: '', balanceDateTime: '', amount: 1 },
+        CASH: { subAccountId: '', balanceDateTime: '', amount: 1 },
+        SAVINGS: { subAccountId: '', balanceDateTime: '', amount: 1 },
+      })
+      prisonerFinanceHoldsService.getHoldsBalance.mockResolvedValue({
+        amount: 10,
+        balanceDateTime: '',
+      })
+
+      await request(app).get(`/prisoner/${prisonNumber}`).expect(200).expect('Content-Type', /html/)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(
+        AuditPage.PRISONER_FINANCIAL_PROFILE,
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          who: user.username,
+          subjectType: SubjectType.PRISONER,
+          subjectId: prisonNumber,
+        }),
+      )
+    })
+
+    it('should handle API errors (e.g. 404 Not Found)', async () => {
+      const error = Object.assign(new Error('Not Found'), { data: { status: 404, userMessage: 'Not Found' } })
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockRejectedValue(error)
+      const res = await request(app).get(`/prisoner/${prisonNumber}`).expect(404)
+      expect(res.text).toContain('not found')
+      expect(res.text).toContain('If you typed the web address, check it is correct.')
+    })
+
+    it('should handle API errors (e.g. 500)', async () => {
+      const error = Object.assign(new Error('GL error'), { data: { status: 500, userMessage: 'GL Error' } })
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockRejectedValue(error)
+      const res = await request(app).get(`/prisoner/${prisonNumber}`).expect(500)
+      expect(res.text).toContain('Sorry, there is a problem with the service')
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(
+        AuditPage.PRISONER_FINANCIAL_PROFILE,
+        expect.objectContaining({
+          correlationId: expect.any(String),
+          who: user.username,
+          subjectType: SubjectType.PRISONER,
+          subjectId: prisonNumber,
+        }),
+      )
+      expect(res.text).not.toContain(prisonNumber)
+    })
+
+    test('should not found when user does not have permission', async () => {
+      mockPermissions(undefined, { [PrisonerMoneyPermission.read]: false })
+
+      app = appWithAllRoutes({
+        services: {
+          auditService,
+          prisonerFinanceService,
+          prisonPermissionsService,
+          prisonerSearchService,
+          prisonApiService,
+          prisonerFinanceHoldsService,
+        },
+        userSupplier: () => user,
+      })
+
+      const response = await request(app).get('/prisoner/A1234BC')
+
+      expect(response.status).toBe(404)
+
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).not.toHaveBeenCalled()
+    })
+  })
+})

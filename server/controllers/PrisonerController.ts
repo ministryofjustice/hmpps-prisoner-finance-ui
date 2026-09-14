@@ -152,7 +152,7 @@ class PrisonerController {
 
       let holdBalance = null
 
-      if (holdBalance != null) {
+      if (subAccount != null && res.locals.showHolds) {
         holdBalance = await this.services.prisonerFinanceHoldsService.getHoldsBalanceForSubAccount(
           prisonNumber,
           subAccount,

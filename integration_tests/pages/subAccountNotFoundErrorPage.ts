@@ -8,8 +8,8 @@ export default class SubAccountNotFoundErrorPage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Page not found', exact: true })
-    this.continueButton = page.getByRole('button', { name: 'Continue', exact: true })
+    this.heading = page.getByRole('heading', { name: 'Prisoner not found', exact: true })
+    this.continueButton = page.locator('[data-testid="continue-button"]')
   }
 
   static async verifyOnPage(

@@ -1,8 +1,8 @@
 import { Router } from 'express'
 import type { Services } from '../services'
 import { AuditPage } from '../services/auditService'
-import prisonerRouter from './prisoner'
-import grantBonusRouter from './grantBonusToPrisoners'
+import prisonerRouter from './prisoner/prisoner'
+import grantBonusRouter from './grantBonusToPrisoners/grantBonusToPrisoners'
 import PrisonerImageRoutes from './prisonerImageRoutes'
 
 export default function routes(services: Services): Router {

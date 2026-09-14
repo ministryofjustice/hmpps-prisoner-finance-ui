@@ -1,16 +1,16 @@
 import { PermissionsService, PrisonerMoneyPermission } from '@ministryofjustice/hmpps-prison-permissions-lib'
 import type { Express } from 'express'
 import request from 'supertest'
-import AuditService, { AuditPage, SubjectType } from '../services/auditService'
-import PrisonerSearchService from '../services/prisonerSearchService'
-import mockPermissions from './testutils/mockPermissions'
-import { appWithAllRoutes, user } from './testutils/appSetup'
-import PrisonApiService from '../services/prisonApiService'
-import FeatureFlagService from '../services/featureFlagService'
+import AuditService, { AuditPage, SubjectType } from '../../services/auditService'
+import PrisonerSearchService from '../../services/prisonerSearchService'
+import mockPermissions from '../testutils/mockPermissions'
+import { appWithAllRoutes, user } from '../testutils/appSetup'
+import PrisonApiService from '../../services/prisonApiService'
+import FeatureFlagService from '../../services/featureFlagService'
 
-jest.mock('../services/auditService')
-jest.mock('../services/prisonerSearchService')
-jest.mock('../services/prisonApiService')
+jest.mock('../../services/auditService')
+jest.mock('../../services/prisonerSearchService')
+jest.mock('../../services/prisonApiService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 
 const auditService = new AuditService(null) as jest.Mocked<AuditService>

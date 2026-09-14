@@ -8,10 +8,10 @@ import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
-import accountNotFoundErrorPage from '../pages/accountNotFoundErrorPage'
-import IndexPage from '../pages/indexPage'
 import prisonApi from '../mockApis/prisonApi'
 import componentsApi from '../mockApis/componentsApi'
+import FindPrisonerPage from '../pages/findPrisonerPage'
+import AccountNotFoundErrorPage from '../pages/accountNotFoundErrorPage'
 
 test.describe('Showing transactions for all sub accounts', () => {
   const transactionPayload: PrisonerTransactionResponse[] = [
@@ -64,6 +64,7 @@ test.describe('Showing transactions for all sub accounts', () => {
   test.beforeEach(async ({ page }) => {
     await resetStubs()
     await login(page)
+    await prisonRegisterApi.stubGetPrisonNames()
   })
 
   test.describe('Viewing a prisoners account details', () => {
@@ -144,7 +145,7 @@ test.describe('Showing transactions for all sub accounts', () => {
     test(`Should explain that the account cannot be found`, async ({ page }) => {
       const prisonNumber = 'FF1234F'
 
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonerSearchApi.stubGetPrisonerNotFound(prisonNumber)
       await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(prisonNumber)
@@ -152,13 +153,13 @@ test.describe('Showing transactions for all sub accounts', () => {
 
       await page.goto(`/prisoner/${prisonNumber}/money`)
 
-      await accountNotFoundErrorPage.verifyOnPage(page, prisonNumber)
+      await AccountNotFoundErrorPage.verifyOnPage(page, prisonNumber)
     })
 
     test('Should allow user to continue to use the service', async ({ page }) => {
       const prisonNumber = 'GG1234G'
 
-      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonerSearchApi.stubGetPrisonerNotFound(prisonNumber)
       await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumberNotFound(prisonNumber)
@@ -166,22 +167,24 @@ test.describe('Showing transactions for all sub accounts', () => {
 
       await page.goto(`/prisoner/${prisonNumber}/money`)
 
-      const prisonerAccountNotFoundErrorPage = await accountNotFoundErrorPage.verifyOnPage(page, prisonNumber)
+      const prisonerAccountNotFoundErrorPage = await AccountNotFoundErrorPage.verifyOnPage(page, prisonNumber)
       await prisonerAccountNotFoundErrorPage.continueButton.click()
 
-      await IndexPage.verifyOnPage(page)
+      await FindPrisonerPage.verifyOnPage(page)
     })
   })
 
   test.describe('Requesting details of an account outside the caseload', () => {
-    test(`Can sign in with different credentials`, async ({ page }) => {
+    test('Should redirect to prisoner not found page when user does not have the right permission for the caseload', async ({
+      page,
+    }) => {
       const prisonNumber = 'HH1234H'
 
       await prisonerSearchApi.stubGetPrisonerOutsideCaseload(prisonNumber)
 
       await page.goto(`/prisoner/${prisonNumber}/money`)
 
-      await expect(page).toHaveURL(/.*\/sign-out/)
+      await AccountNotFoundErrorPage.verifyOnPage(page, prisonNumber)
     })
   })
 

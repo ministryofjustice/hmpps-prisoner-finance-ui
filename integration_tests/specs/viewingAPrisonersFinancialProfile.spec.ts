@@ -8,7 +8,6 @@ import { AccountBalanceResponse } from '../../server/interfaces/AccountBalanceRe
 
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
-import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import prisonApi from '../mockApis/prisonApi'
 import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
 
@@ -17,6 +16,7 @@ import PrisonerMoneyPage from '../pages/prisonerMoneyPage'
 import FindPrisonerPage from '../pages/findPrisonerPage'
 import PrisonerNotFoundErrorPage from '../pages/prisonerNotFoundErrorPage'
 import InternalServerErrorPage from '../pages/internalServerErrorPage'
+import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 
 test.describe('Viewing a prisoners financial profile', () => {
   const transactionPayload: Array<PrisonerTransactionResponse> = [
@@ -104,6 +104,7 @@ test.describe('Viewing a prisoners financial profile', () => {
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', balancePayload[2])
     await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+    await prisonRegisterApi.stubGetPrisonNames()
   }
 
   const setupPrisonerMoniesStubs = async () => {
@@ -274,6 +275,7 @@ test.describe('Viewing a prisoners financial profile', () => {
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', balancePayload[2])
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonRegisterApi.stubGetPrisonNames()
 
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
       expect(prisonerProfilePage.recentTransactionsList).not.toBeVisible()
@@ -330,6 +332,7 @@ test.describe('Viewing a prisoners financial profile', () => {
         amount: 5800,
       } as SubAccountBalanceResponse)
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonRegisterApi.stubGetPrisonNames()
 
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
@@ -353,6 +356,7 @@ test.describe('Viewing a prisoners financial profile', () => {
         amount: 5800,
       } as SubAccountBalanceResponse)
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonRegisterApi.stubGetPrisonNames()
 
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
@@ -376,6 +380,7 @@ test.describe('Viewing a prisoners financial profile', () => {
       } as SubAccountBalanceResponse)
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SAVINGS')
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonRegisterApi.stubGetPrisonNames()
 
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
@@ -449,6 +454,7 @@ test.describe('Viewing a prisoners financial profile', () => {
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SPENDS', balancePayload[0])
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', balancePayload[2])
+      await prisonRegisterApi.stubGetPrisonNames()
 
       await page.goto(`/prisoner/${prisonNumber}`)
 

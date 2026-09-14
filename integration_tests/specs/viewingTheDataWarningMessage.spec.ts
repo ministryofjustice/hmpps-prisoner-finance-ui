@@ -25,6 +25,7 @@ const stubPrisonerProfile = async () => {
   await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', zeroSubAccountBalance)
   await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', zeroSubAccountBalance)
   await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+  await prisonRegisterApi.stubGetPrisonNames()
 }
 
 const stubTransactions = async (subAccountReference: string) => {

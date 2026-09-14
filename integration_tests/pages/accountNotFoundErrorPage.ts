@@ -8,7 +8,7 @@ export default class AccountNotFoundErrorPage extends AbstractPage {
 
   private constructor(page: Page) {
     super(page)
-    this.heading = page.getByRole('heading', { name: 'Page not found', exact: true })
+    this.heading = page.getByRole('heading', { name: 'Prisoner not found', exact: true })
     this.continueButton = page.getByRole('button', { name: 'Continue', exact: true })
   }
 
