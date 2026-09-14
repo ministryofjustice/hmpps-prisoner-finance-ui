@@ -10,6 +10,8 @@ import FindPrisonerPage from '../pages/findPrisonerPage'
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import PrisonerTransactionsPage from '../pages/prisonerTransactionsPage'
 import PrisonerPrivateCashPage from '../pages/prisonerPrivateCashPage'
+import PrisonerSavingsPage from '../pages/prisonerSavingsPage'
+import PrisonerSpendsPage from '../pages/prisonerSpendsPage'
 
 const prisonNumber = 'ABC123XZ'
 
@@ -70,14 +72,31 @@ const routeCases: RouteCase[] = [
     name: 'All transactions',
     navigate: async page => {
       await stubTransactions('')
+      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
       await PrisonerTransactionsPage.load(page, prisonNumber)
     },
   },
   {
-    name: 'Sub account transactions',
+    name: 'Sub account cash transactions',
     navigate: async page => {
       await stubTransactions('CASH')
+      await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
       await PrisonerPrivateCashPage.load(page, prisonNumber)
+    },
+  },
+  {
+    name: 'Sub account spends transactions',
+    navigate: async page => {
+      await stubTransactions('SPENDS')
+      await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'SPENDS')
+      await PrisonerSpendsPage.load(page, prisonNumber)
+    },
+  },
+  {
+    name: 'Sub account savings transactions',
+    navigate: async page => {
+      await stubTransactions('SAVINGS')
+      await PrisonerSavingsPage.load(page, prisonNumber)
     },
   },
 ]

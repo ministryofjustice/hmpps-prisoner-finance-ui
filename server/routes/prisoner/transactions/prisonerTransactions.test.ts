@@ -93,9 +93,27 @@ describe('Prisoners', () => {
     jest.resetAllMocks()
   })
 
-  const verifyTransactionPageResponse = async (url: string, headerTitle: string, auditPage: AuditPage) => {
+  const verifyTransactionPageResponse = async (
+    url: string,
+    headerTitle: string,
+    auditPage: AuditPage,
+    isSubAccountPage: boolean,
+    showHolds: boolean,
+  ) => {
     const balanceResponse = { accountId: '', balanceDateTime: '', amount: 1000 }
     prisonerFinanceService.getTransactionPage.mockResolvedValue([emptyPageTransactionsResponse, balanceResponse])
+
+    if (isSubAccountPage && showHolds) {
+      prisonerFinanceHoldsService.getHoldsBalanceForSubAccount.mockResolvedValue({
+        amount: 10,
+        balanceDateTime: '',
+      })
+    } else if (!isSubAccountPage) {
+      prisonerFinanceHoldsService.getHoldsBalance.mockResolvedValue({
+        amount: 10,
+        balanceDateTime: '',
+      })
+    }
 
     const response = await request(app).get(url).expect(200).expect('Content-Type', /html/)
 
@@ -162,6 +180,8 @@ describe('Prisoners', () => {
         `/prisoner/${prisonNumber}/money`,
         'Transactions for all sub accounts',
         AuditPage.PRISONER_TRANSACTIONS,
+        false,
+        null,
       )
     })
 
@@ -184,6 +204,8 @@ describe('Prisoners', () => {
         `/prisoner/${prisonNumber}/money/private-cash`,
         'Private cash transactions',
         AuditPage.PRISONER_CASH_TRANSACTIONS,
+        true,
+        true,
       )
     })
 
@@ -209,6 +231,8 @@ describe('Prisoners', () => {
         `/prisoner/${prisonNumber}/money/spends`,
         'Spends transactions',
         AuditPage.PRISONER_SPENDS_TRANSACTIONS,
+        true,
+        true,
       )
     })
 
@@ -234,6 +258,8 @@ describe('Prisoners', () => {
         `/prisoner/${prisonNumber}/money/savings`,
         'Savings transactions',
         AuditPage.PRISONER_SAVINGS_TRANSACTIONS,
+        true,
+        false,
       )
     })
 

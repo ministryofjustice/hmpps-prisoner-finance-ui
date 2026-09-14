@@ -1,7 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test'
 import AbstractPage from './abstractPage'
 
-export default class PrisonerPrivateCashPage extends AbstractPage {
+export default class PrisonerSpendsPage extends AbstractPage {
   readonly heading: Locator
 
   readonly backLink: Locator
@@ -60,16 +60,16 @@ export default class PrisonerPrivateCashPage extends AbstractPage {
     this.applyFilterButton = page.getByRole('button', { name: 'Apply filters', exact: true })
   }
 
-  static async load(page: Page, prisonNumber: string): Promise<PrisonerPrivateCashPage> {
-    await page.goto(`/prisoner/${prisonNumber}/money/private-cash`)
+  static async load(page: Page, prisonNumber: string): Promise<PrisonerSpendsPage> {
+    await page.goto(`/prisoner/${prisonNumber}/money/spends`)
     return this.verifyOnPage(page, prisonNumber)
   }
 
-  static async verifyOnPage(page: Page, prisonNumber: string): Promise<PrisonerPrivateCashPage> {
-    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}/money/private-cash`)
+  static async verifyOnPage(page: Page, prisonNumber: string): Promise<PrisonerSpendsPage> {
+    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}/money/spends`)
 
-    const prisonerPrivateCashPage = new PrisonerPrivateCashPage(page, 'Private cash transactions')
-    await expect(prisonerPrivateCashPage.heading).toBeVisible()
-    return prisonerPrivateCashPage
+    const prisonerSpendsPage = new PrisonerSpendsPage(page, 'Spends transactions')
+    await expect(prisonerSpendsPage.heading).toBeVisible()
+    return prisonerSpendsPage
   }
 }

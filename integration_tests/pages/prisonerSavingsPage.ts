@@ -1,7 +1,7 @@
 import { expect, type Locator, type Page } from '@playwright/test'
 import AbstractPage from './abstractPage'
 
-export default class PrisonerPrivateCashPage extends AbstractPage {
+export default class PrisonerSavingsPage extends AbstractPage {
   readonly heading: Locator
 
   readonly backLink: Locator
@@ -9,10 +9,6 @@ export default class PrisonerPrivateCashPage extends AbstractPage {
   readonly transactionList: Locator
 
   readonly currentBalanceCard: Locator
-
-  readonly totalBalanceCard: Locator
-
-  readonly holdsBalanceCard: Locator
 
   readonly profileHeader: Locator
 
@@ -41,14 +37,6 @@ export default class PrisonerPrivateCashPage extends AbstractPage {
       .locator('.hmpps-balance-card')
       .filter({ has: page.getByRole('heading', { name: 'Current balance', exact: true }) })
 
-    this.totalBalanceCard = page
-      .locator('.hmpps-balance-card')
-      .filter({ has: page.getByRole('heading', { name: 'Total balance', exact: true }) })
-
-    this.holdsBalanceCard = page
-      .locator('.hmpps-balance-card')
-      .filter({ has: page.getByRole('heading', { name: 'Hold balance', exact: true }) })
-
     this.transactionList = page.locator('.transactions-list')
     this.topPagination = page.locator('#top-pagination')
     this.bottomPagination = page.locator('#bottom-pagination')
@@ -60,16 +48,16 @@ export default class PrisonerPrivateCashPage extends AbstractPage {
     this.applyFilterButton = page.getByRole('button', { name: 'Apply filters', exact: true })
   }
 
-  static async load(page: Page, prisonNumber: string): Promise<PrisonerPrivateCashPage> {
-    await page.goto(`/prisoner/${prisonNumber}/money/private-cash`)
+  static async load(page: Page, prisonNumber: string): Promise<PrisonerSavingsPage> {
+    await page.goto(`/prisoner/${prisonNumber}/money/savings`)
     return this.verifyOnPage(page, prisonNumber)
   }
 
-  static async verifyOnPage(page: Page, prisonNumber: string): Promise<PrisonerPrivateCashPage> {
-    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}/money/private-cash`)
+  static async verifyOnPage(page: Page, prisonNumber: string): Promise<PrisonerSavingsPage> {
+    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}/money/savings`)
 
-    const prisonerPrivateCashPage = new PrisonerPrivateCashPage(page, 'Private cash transactions')
-    await expect(prisonerPrivateCashPage.heading).toBeVisible()
-    return prisonerPrivateCashPage
+    const prisonerSavingsPage = new PrisonerSavingsPage(page, 'Savings transactions')
+    await expect(prisonerSavingsPage.heading).toBeVisible()
+    return prisonerSavingsPage
   }
 }

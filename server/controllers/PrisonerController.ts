@@ -10,6 +10,7 @@ import { PrisonerSearchContent, PrisonerSearchResult } from '../interfaces/Priso
 import prisonerSearchFilterSchema, { formatSearchFilterValidationErrors } from '../validators/searchFilterSchema'
 import holdsFilterSchema from '../validators/holdsFilterValidator'
 import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
+import { PrisonerHoldsBalanceResponse } from '../interfaces/PrisonerHoldsBalanceResponse'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -150,6 +151,19 @@ class PrisonerController {
         hasValidationErrors: !parsedQueries.success,
       })
 
+      let holdBalance: PrisonerHoldsBalanceResponse = { amount: 0, balanceDateTime: '' }
+
+      if (res.locals.showHolds) {
+        if (subAccount != null) {
+          holdBalance = await this.services.prisonerFinanceHoldsService.getHoldsBalanceForSubAccount(
+            prisonNumber,
+            subAccount,
+          )
+        } else {
+          holdBalance = await this.services.prisonerFinanceHoldsService.getHoldsBalance(prisonNumber)
+        }
+      }
+
       const { content, ...paginationItems } = parsedQueries.success
         ? buildPaginationItems<PrisonerTransactionResponse, typeof transactionsFilterSchema>({
             ...transactionPage,
@@ -164,7 +178,8 @@ class PrisonerController {
         transactions: content,
         paginationItems,
         currentBalance: accountBalance.amount,
-        holdBalance: 0,
+        holdBalance: holdBalance.amount,
+        totalBalance: holdBalance.amount + accountBalance.amount,
         filters: {
           startDate,
           endDate,
@@ -175,6 +190,7 @@ class PrisonerController {
         hasValidationErrors: !parsedQueries.success,
         ...zodErrors,
         displayTotalBalance: !subAccount,
+        holdsEnabled: res.locals.showHolds,
       })
     } catch (error) {
       if (error.responseStatus === 400 && error.data?.userMessage?.includes('Page requested is out of range')) {

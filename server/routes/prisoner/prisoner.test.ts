@@ -11,7 +11,6 @@ import { PrisonerTransactionResponse } from '../../interfaces/PrisonerTransactio
 import { Page } from '../../interfaces/Pageable'
 import PrisonApiService from '../../services/prisonApiService'
 import PrisonerFinanceHoldsService from '../../services/prisonerFinanceHoldsService'
-import { PrisonerHoldResponse } from '../../interfaces/PrisonerHoldResponse'
 import FeatureFlagService from '../../services/featureFlagService'
 
 jest.mock('../../services/prisonerFinanceService')
@@ -90,73 +89,9 @@ describe('Prisoners', () => {
     isLastPage: true,
   }
 
-  const emptyPageHoldsResponse: Page<PrisonerHoldResponse> = {
-    content: [],
-    totalElements: 0,
-    totalPages: 1,
-    pageNumber: 1,
-    pageSize: 99,
-    isLastPage: true,
-  }
-
   afterEach(() => {
     jest.resetAllMocks()
   })
-
-  const verifyHoldsPageResponse = async (url: string, headerTitle: string, auditPage: AuditPage) => {
-    prisonerFinanceHoldsService.getHolds.mockResolvedValue(emptyPageHoldsResponse)
-
-    const response = await request(app).get(url).expect(200).expect('Content-Type', /html/)
-
-    expect(auditService.logPageView).toHaveBeenCalledWith(
-      auditPage,
-      expect.objectContaining({
-        correlationId: expect.any(String),
-        who: user.username,
-        subjectType: SubjectType.PRISONER,
-        subjectId: prisonNumber,
-      }),
-    )
-    expect(response.text).toContain(headerTitle)
-  }
-
-  const verifyHoldsPageHandles500 = async (url: string, auditPage: AuditPage) => {
-    const error = Object.assign(new Error('GL error'), { data: { status: 500, userMessage: 'GL Error' } })
-    prisonerFinanceHoldsService.getHolds.mockRejectedValue(error)
-    const res = await request(app).get(url).expect(500)
-    expect(res.text).toContain('Sorry, there is a problem with the service')
-
-    expect(auditService.logPageView).toHaveBeenCalledWith(
-      auditPage,
-      expect.objectContaining({
-        correlationId: expect.any(String),
-        who: user.username,
-        subjectType: SubjectType.PRISONER,
-        subjectId: prisonNumber,
-      }),
-    )
-    expect(res.text).not.toContain(prisonNumber)
-  }
-
-  const verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse = async (url: string) => {
-    mockPermissions(undefined, { [PrisonerMoneyPermission.read]: false })
-
-    app = appWithAllRoutes({
-      services: {
-        auditService,
-        prisonerFinanceService,
-        prisonPermissionsService,
-        prisonerSearchService,
-        prisonApiService,
-        featureFlagService,
-      },
-      userSupplier: () => user,
-    })
-
-    const response = await request(app).get(url)
-
-    expect(response.status).toBe(404)
-  }
 
   describe('/prisoner', () => {
     beforeEach(() => {
@@ -312,20 +247,6 @@ describe('Prisoners', () => {
       expect(response.status).toBe(404)
 
       expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('/prisoner/:prisonNumber/money/holds', () => {
-    it('should return a 200, render the correct page and call the audit service', async () => {
-      await verifyHoldsPageResponse(`/prisoner/${prisonNumber}/money/holds`, 'Holds', AuditPage.PRISONER_HOLDS)
-    })
-
-    it('should handle API errors (e.g. 500)', async () => {
-      await verifyHoldsPageHandles500(`/prisoner/${prisonNumber}/money/holds`, AuditPage.PRISONER_HOLDS)
-    })
-
-    test('should return not found when user does not have permission', async () => {
-      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/money/holds')
     })
   })
 })

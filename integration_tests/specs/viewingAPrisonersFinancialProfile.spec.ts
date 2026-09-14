@@ -125,6 +125,9 @@ test.describe('Viewing a prisoners financial profile', () => {
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
       subAccountReference: subAccountRef,
     })
+    if (subAccountRef === 'CASH' || subAccountRef === 'SPENDS') {
+      await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, subAccountRef)
+    }
     await prisonRegisterApi.stubGetPrisonNames()
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, subAccountRef, {
       subAccountId: '',

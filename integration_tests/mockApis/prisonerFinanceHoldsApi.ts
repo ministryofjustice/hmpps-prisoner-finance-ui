@@ -35,6 +35,22 @@ const stubGetHoldsBalance = (prisonNumber: string) =>
     },
   })
 
+const stubGetHoldsBalanceForSubAccount = (prisonNumber: string, subAccountRef: string) =>
+  stubFor({
+    request: {
+      method: 'GET',
+      urlPathPattern: `${API_PREFIX}/holds/${prisonNumber}/balance/${subAccountRef}`,
+    },
+    response: {
+      status: 200,
+      headers: { 'Content-Type': 'application/json;charset=UTF-8' },
+      jsonBody: {
+        amount: 10,
+        balanceDateTime: '',
+      } as PrisonerHoldsBalanceResponse,
+    },
+  })
+
 const stubGetHolds = (
   prisonNumber: string,
   payload: PrisonerHoldResponse[],
@@ -68,4 +84,4 @@ const stubGetHolds = (
     },
   })
 
-export { stubGetHoldsBalance, stubGetHolds, stubPing }
+export { stubGetHoldsBalance, stubGetHolds, stubPing, stubGetHoldsBalanceForSubAccount }

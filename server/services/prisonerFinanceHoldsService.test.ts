@@ -19,7 +19,7 @@ describe('PrisonerFinanceHoldsService', () => {
   })
 
   describe('getHoldsBalance', () => {
-    it('should call the API client', async () => {
+    it('should call the API for get holds balance', async () => {
       const prisonNumber = 'A123BCD'
 
       const expectedResponse: PrisonerHoldsBalanceResponse = {
@@ -32,6 +32,21 @@ describe('PrisonerFinanceHoldsService', () => {
       await service.getHoldsBalance(prisonNumber)
 
       expect(apiClient.getHoldsBalance).toHaveBeenCalledWith(prisonNumber)
+    })
+
+    it('should call the API for get holds balance per sub account', async () => {
+      const prisonNumber = 'A123BCD'
+
+      const expectedResponse: PrisonerHoldsBalanceResponse = {
+        amount: 100,
+        balanceDateTime: '',
+      }
+
+      apiClient.getHoldsBalance.mockResolvedValue(expectedResponse)
+
+      await service.getHoldsBalanceForSubAccount(prisonNumber, 'SPENDS')
+
+      expect(apiClient.getHoldsBalanceForSubAccount).toHaveBeenCalledWith(prisonNumber, 'SPENDS')
     })
   })
 

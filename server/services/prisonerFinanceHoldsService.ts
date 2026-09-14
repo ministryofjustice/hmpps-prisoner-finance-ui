@@ -19,6 +19,10 @@ export default class PrisonerFinanceHoldsService {
     return this.prisonerFinanceHoldsApiClient.getHoldsBalance(prisonNumber)
   }
 
+  getHoldsBalanceForSubAccount(prisonNumber: string, subAccount: string): Promise<PrisonerHoldsBalanceResponse> {
+    return this.prisonerFinanceHoldsApiClient.getHoldsBalanceForSubAccount(prisonNumber, subAccount)
+  }
+
   getHolds(
     prisonNumber: string,
     pageNumber: string,

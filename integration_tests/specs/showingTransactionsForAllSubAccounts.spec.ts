@@ -78,6 +78,8 @@ test.describe('Showing transactions for all sub accounts', () => {
       await prisonRegisterApi.stubGetPrisonNames()
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
 
+      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+
       const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
 
       await expect(prisonerTransactionsPage.profileHeader).toBeVisible()
@@ -130,6 +132,8 @@ test.describe('Showing transactions for all sub accounts', () => {
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
       await prisonRegisterApi.stubGetPrisonNames()
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
+
+      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
 
       await PrisonerTransactionsPage.load(page, prisonNumber)
 
@@ -198,6 +202,8 @@ test.describe('Showing transactions for all sub accounts', () => {
       await prisonRegisterApi.stubGetPrisonNames()
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
 
+      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+
       const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
 
       await expect(prisonerTransactionsPage.transactionList).toBeVisible()
@@ -221,6 +227,8 @@ test.describe('Showing transactions for all sub accounts', () => {
     await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [], {})
     await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
     await prisonRegisterApi.stubGetPrisonNames()
+
+    await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
 
     const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
     await expect(prisonerTransactionsPage.transactionList).not.toBeVisible()
