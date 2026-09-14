@@ -1,4 +1,5 @@
 import express from 'express'
+import { telemetryMiddleware } from '@ministryofjustice/hmpps-azure-telemetry'
 
 import createError from 'http-errors'
 
@@ -57,6 +58,8 @@ export default function createApp(services: Services): express.Application {
       prisonApiConfig: config.apis.prisonApi,
     }),
   )
+  // For prison users, register the `addUserMetadataToTelemetry` middleware after middleware that retrieves caseload data.
+  app.use(telemetryMiddleware.addUserMetadataToTelemetry())
 
   app.use(routes(services))
 
