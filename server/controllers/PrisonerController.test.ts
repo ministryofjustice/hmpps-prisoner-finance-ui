@@ -170,18 +170,20 @@ describe('PrisonerController', () => {
   })
 
   describe('getTransactions', () => {
-    const mockRes: Response = {
-      locals: {
-        user: { username: 'test-user' },
-        subAccount: 'CASH',
-        auditPage: AuditPage.PRISONER_HOLDS,
-        showHolds: true,
-      },
-      render: jest.fn(),
-      redirect: jest.fn(),
-      status: jest.fn().mockReturnThis(),
-    } as unknown as Response
-    it('Should call getTransactionPage', async () => {
+    it('Should call get transaction page for cash', async () => {
+      const mockRes: Response = {
+        locals: {
+          user: { username: 'test-user' },
+          subAccount: 'CASH',
+          auditPage: AuditPage.PRISONER_HOLDS,
+          showHolds: true,
+          headerTitle: 'Private cash transactions',
+        },
+        render: jest.fn(),
+        redirect: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+      } as unknown as Response
+
       const startDate = '10/10/2010'
       const endDate = '10/10/2020'
       const debit = 'false'
@@ -222,7 +224,7 @@ describe('PrisonerController', () => {
       prisonerFinanceService.getTransactionPage.mockResolvedValue([mockTransactionsPage, mockBalance])
 
       prisonerFinanceHoldsService.getHoldsBalanceForSubAccount.mockResolvedValue({
-        amount: 0,
+        amount: 10,
         balanceDateTime: '',
       })
 
@@ -246,7 +248,201 @@ describe('PrisonerController', () => {
       })
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerTransactions', {
         prisonNumber: mockReq.params.prisonNumber,
-        headerTitle: 'Transactions for all sub accounts',
+        headerTitle: 'Private cash transactions',
+        applicationName: 'Transactions',
+        transactions: mockTransactions,
+        currentBalance: mockBalance.amount,
+        holdBalance: 10,
+        totalBalance: mockBalance.amount + 10,
+        paginationItems: expect.anything(),
+        hasValidationErrors: false,
+        filters: {
+          startDate,
+          endDate,
+          debit,
+          credit,
+          selectedFilters: expect.anything(),
+        },
+        displayTotalBalance: false,
+        holdsEnabled: true,
+      })
+    })
+
+    it('Should call get transaction page for spends', async () => {
+      const mockRes: Response = {
+        locals: {
+          user: { username: 'test-user' },
+          subAccount: 'SPENDS',
+          auditPage: AuditPage.PRISONER_HOLDS,
+          showHolds: true,
+          headerTitle: 'Spends transactions',
+        },
+        render: jest.fn(),
+        redirect: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+      } as unknown as Response
+
+      const startDate = '10/10/2010'
+      const endDate = '10/10/2020'
+      const debit = 'false'
+      const credit = 'true'
+
+      const mockReq = {
+        id: 'req-id-123',
+        query: { startDate, endDate, debit, credit, page: '1' },
+        params: { prisonNumber: 'ABC123XX' },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+      } as unknown as Request
+
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '10-10-2010',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'SPENDS',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      prisonerFinanceService.getTransactionPage.mockResolvedValue([mockTransactionsPage, mockBalance])
+
+      prisonerFinanceHoldsService.getHoldsBalanceForSubAccount.mockResolvedValue({
+        amount: 15,
+        balanceDateTime: '',
+      })
+
+      await prisonerController.getTransactions(mockReq, mockRes, mockNext)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(mockRes.locals.auditPage, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: mockReq.params.prisonNumber,
+      })
+      expect(prisonerFinanceService.getTransactionPage).toHaveBeenCalledWith({
+        prisonNumber: mockReq.params.prisonNumber,
+        startDate,
+        endDate,
+        page: '1',
+        debit,
+        credit,
+        subAccountReference: mockRes.locals.subAccount,
+        hasValidationErrors: false,
+      })
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerTransactions', {
+        prisonNumber: mockReq.params.prisonNumber,
+        headerTitle: 'Spends transactions',
+        applicationName: 'Transactions',
+        transactions: mockTransactions,
+        currentBalance: mockBalance.amount,
+        holdBalance: 15,
+        totalBalance: mockBalance.amount + 15,
+        paginationItems: expect.anything(),
+        hasValidationErrors: false,
+        filters: {
+          startDate,
+          endDate,
+          debit,
+          credit,
+          selectedFilters: expect.anything(),
+        },
+        displayTotalBalance: false,
+        holdsEnabled: true,
+      })
+    })
+
+    it('Should call get transaction page for savings', async () => {
+      const mockRes: Response = {
+        locals: {
+          user: { username: 'test-user' },
+          subAccount: 'SAVINGS',
+          auditPage: AuditPage.PRISONER_HOLDS,
+          showHolds: false,
+          headerTitle: 'Savings transactions',
+        },
+        render: jest.fn(),
+        redirect: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+      } as unknown as Response
+
+      const startDate = '10/10/2010'
+      const endDate = '10/10/2020'
+      const debit = 'false'
+      const credit = 'true'
+
+      const mockReq = {
+        id: 'req-id-123',
+        query: { startDate, endDate, debit, credit, page: '1' },
+        params: { prisonNumber: 'ABC123XX' },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+      } as unknown as Request
+
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '10-10-2010',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'SPENDS',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      prisonerFinanceService.getTransactionPage.mockResolvedValue([mockTransactionsPage, mockBalance])
+
+      await prisonerController.getTransactions(mockReq, mockRes, mockNext)
+
+      expect(prisonerFinanceHoldsService.getHoldsBalanceForSubAccount).toHaveBeenCalledTimes(0)
+      expect(prisonerFinanceHoldsService.getHoldsBalance).toHaveBeenCalledTimes(0)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(mockRes.locals.auditPage, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: mockReq.params.prisonNumber,
+      })
+      expect(prisonerFinanceService.getTransactionPage).toHaveBeenCalledWith({
+        prisonNumber: mockReq.params.prisonNumber,
+        startDate,
+        endDate,
+        page: '1',
+        debit,
+        credit,
+        subAccountReference: mockRes.locals.subAccount,
+        hasValidationErrors: false,
+      })
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerTransactions', {
+        prisonNumber: mockReq.params.prisonNumber,
+        headerTitle: 'Savings transactions',
         applicationName: 'Transactions',
         transactions: mockTransactions,
         currentBalance: mockBalance.amount,
@@ -262,6 +458,101 @@ describe('PrisonerController', () => {
           selectedFilters: expect.anything(),
         },
         displayTotalBalance: false,
+        holdsEnabled: false,
+      })
+    })
+
+    it('Should call get transaction page for all sub-accounts', async () => {
+      const mockRes: Response = {
+        locals: {
+          user: { username: 'test-user' },
+          subAccount: null,
+          auditPage: AuditPage.PRISONER_HOLDS,
+          showHolds: true,
+        },
+        render: jest.fn(),
+        redirect: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+      } as unknown as Response
+
+      const startDate = '10/10/2010'
+      const endDate = '10/10/2020'
+      const debit = 'false'
+      const credit = 'true'
+
+      const mockReq = {
+        id: 'req-id-123',
+        query: { startDate, endDate, debit, credit, page: '1' },
+        params: { prisonNumber: 'ABC123XX' },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+      } as unknown as Request
+
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '10-10-2010',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'SPENDS',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      prisonerFinanceService.getTransactionPage.mockResolvedValue([mockTransactionsPage, mockBalance])
+      prisonerFinanceHoldsService.getHoldsBalance.mockResolvedValue({ amount: 99, balanceDateTime: '' })
+
+      await prisonerController.getTransactions(mockReq, mockRes, mockNext)
+
+      expect(prisonerFinanceHoldsService.getHoldsBalanceForSubAccount).toHaveBeenCalledTimes(0)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(mockRes.locals.auditPage, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: mockReq.params.prisonNumber,
+      })
+      expect(prisonerFinanceService.getTransactionPage).toHaveBeenCalledWith({
+        prisonNumber: mockReq.params.prisonNumber,
+        startDate,
+        endDate,
+        page: '1',
+        debit,
+        credit,
+        subAccountReference: mockRes.locals.subAccount,
+        hasValidationErrors: false,
+      })
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerTransactions', {
+        prisonNumber: mockReq.params.prisonNumber,
+        headerTitle: 'Transactions for all sub accounts',
+        applicationName: 'Transactions',
+        transactions: mockTransactions,
+        currentBalance: mockBalance.amount,
+        holdBalance: 99,
+        totalBalance: mockBalance.amount + 99,
+        paginationItems: expect.anything(),
+        hasValidationErrors: false,
+        filters: {
+          startDate,
+          endDate,
+          debit,
+          credit,
+          selectedFilters: expect.anything(),
+        },
+        displayTotalBalance: true,
         holdsEnabled: true,
       })
     })
@@ -274,6 +565,18 @@ describe('PrisonerController', () => {
         get: jest.fn().mockReturnValue('localhost:3000'),
         originalUrl: '/audit',
       } as unknown as Request
+
+      const mockRes: Response = {
+        locals: {
+          user: { username: 'test-user' },
+          subAccount: null,
+          auditPage: AuditPage.PRISONER_HOLDS,
+          showHolds: true,
+        },
+        render: jest.fn(),
+        redirect: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+      } as unknown as Response
 
       auditService.logPageView.mockImplementation(() => {
         throw new Error('Expected error')

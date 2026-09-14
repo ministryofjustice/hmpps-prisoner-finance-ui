@@ -77,6 +77,9 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
       })
+
+      await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
+
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
 
       const prisonerPrivateCashPage = await PrisonerPrivateCashPage.load(page, prisonNumber)
@@ -102,6 +105,8 @@ test.describe('Showing all transactions for a specific sub account', () => {
         amount: 1234,
       })
 
+      await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
+
       const prisonerPrivateCashPage = await PrisonerPrivateCashPage.load(page, prisonNumber)
 
       await expect(prisonerPrivateCashPage.currentBalanceCard).toBeVisible()
@@ -119,13 +124,13 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
       })
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
-      await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
-      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
       await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
-
       const prisonerPrivateCashPage = await PrisonerPrivateCashPage.load(page, prisonNumber)
+
+      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
+      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
 
       await expect(prisonerPrivateCashPage.backLink).toBeVisible()
       await prisonerPrivateCashPage.backLink.click()
@@ -142,6 +147,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
         subAccountReference: 'CASH',
       })
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
+      await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
 
       await PrisonerPrivateCashPage.load(page, prisonNumber)
 
@@ -271,8 +277,8 @@ test.describe('Showing all transactions for a specific sub account', () => {
     })
   })
 
-  test.describe('Viewing a list of all the prisoners transactions', () => {
-    test('Can view all sub account transactions', async ({ page }) => {
+  test.describe('Viewing a list of the sub-account transactions', () => {
+    test('Can view all cash sub account transactions', async ({ page }) => {
       const prisonNumber = 'EE1234E'
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
@@ -280,8 +286,10 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
       })
+
       await prisonRegisterApi.stubGetPrisonNames()
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
+      await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
+      await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
 
       const prisonerPrivateCashPage = await PrisonerPrivateCashPage.load(page, prisonNumber)
 
@@ -298,8 +306,8 @@ test.describe('Showing all transactions for a specific sub account', () => {
     })
   })
 
-  test.describe('Viewing a list of all the prisoners transactions when none have been recorded', () => {
-    test('Can view all sub account transactions', async ({ page }) => {
+  test.describe('Viewing a list of all the sub-accounts transactions when none have been recorded', () => {
+    test('Can view the sub account transactions when empty', async ({ page }) => {
       const prisonNumber = 'EE1234E'
 
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
@@ -308,7 +316,9 @@ test.describe('Showing all transactions for a specific sub account', () => {
         subAccountReference: 'CASH',
       })
       await prisonRegisterApi.stubGetPrisonNames()
-      await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH')
+      await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
+      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
 
       await PrisonerPrivateCashPage.load(page, prisonNumber)
 

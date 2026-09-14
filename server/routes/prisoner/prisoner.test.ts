@@ -11,7 +11,6 @@ import { PrisonerTransactionResponse } from '../../interfaces/PrisonerTransactio
 import { Page } from '../../interfaces/Pageable'
 import PrisonApiService from '../../services/prisonApiService'
 import PrisonerFinanceHoldsService from '../../services/prisonerFinanceHoldsService'
-import { PrisonerHoldResponse } from '../../interfaces/PrisonerHoldResponse'
 import FeatureFlagService from '../../services/featureFlagService'
 
 jest.mock('../../services/prisonerFinanceService')

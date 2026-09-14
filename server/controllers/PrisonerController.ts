@@ -10,6 +10,7 @@ import { PrisonerSearchContent, PrisonerSearchResult } from '../interfaces/Priso
 import prisonerSearchFilterSchema, { formatSearchFilterValidationErrors } from '../validators/searchFilterSchema'
 import holdsFilterSchema from '../validators/holdsFilterValidator'
 import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
+import { PrisonerHoldsBalanceResponse } from '../interfaces/PrisonerHoldsBalanceResponse'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -150,16 +151,16 @@ class PrisonerController {
         hasValidationErrors: !parsedQueries.success,
       })
 
-      let holdBalance = null
+      let holdBalance: PrisonerHoldsBalanceResponse = { amount: 0, balanceDateTime: '' }
 
-      if (subAccount != null && res.locals.showHolds) {
-        holdBalance = await this.services.prisonerFinanceHoldsService.getHoldsBalanceForSubAccount(
-          prisonNumber,
-          subAccount,
-        )
-      } else {
-        holdBalance = {
-          amount: 0,
+      if (res.locals.showHolds) {
+        if (subAccount != null) {
+          holdBalance = await this.services.prisonerFinanceHoldsService.getHoldsBalanceForSubAccount(
+            prisonNumber,
+            subAccount,
+          )
+        } else {
+          holdBalance = await this.services.prisonerFinanceHoldsService.getHoldsBalance(prisonNumber)
         }
       }
 
