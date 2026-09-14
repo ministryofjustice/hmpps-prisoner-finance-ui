@@ -23,7 +23,7 @@ const stubGetAdvancesBalance = (prisonNumber: string) =>
   stubFor({
     request: {
       method: 'GET',
-      urlPathPattern: `${API_PREFIX}/holds/${prisonNumber}/balance`,
+      urlPathPattern: `${API_PREFIX}/advances/${prisonNumber}/balance`,
     },
     response: {
       status: 200,
@@ -49,7 +49,7 @@ const stubGetAdvances = (
   stubFor({
     request: {
       method: 'GET',
-      urlPathPattern: `${API_PREFIX}/holds/${prisonNumber}`,
+      urlPathPattern: `${API_PREFIX}/advances/${prisonNumber}`,
       queryParameters: {
         pageNumber:
           options && options.pageNumber.toString() ? { equalTo: options.pageNumber.toString() } : { equalTo: '1' },

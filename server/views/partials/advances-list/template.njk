@@ -5,10 +5,10 @@
   {% set rows = [] %}
   {% for advance in advances %}
     {% set rowData = [
-      { text: advance.date | formatDate("dd/MM/yy")  },
-      { text: advance.advanceAmount | penceToPound, format: "numeric"   },
+      { text: advance.date | formatDateForView | safe },
+      { text: advance.advanceAmount | penceToPound, format: "numeric"  },
       { text: advance.paymentAmount | penceToPound, format: "numeric"  },
-      { text: advance.startPayments | formatDate("dd/MM/yy")  },
+      { text: advance.startPayments | formatDate("dd/MM/yyyy")  },
       { text: advance.reference },
       { text: advance.createdBy },
       { text: advance.advanceLocation | convertPrisonIdToName(prisonNames)   },
