@@ -12,10 +12,19 @@ export default class PrisonerFinanceAdvancesApiClient extends RestClient {
     super('Prisoner Finance Advances API', config.apis.prisonerFinanceAdvancesApi, logger, authenticationClient)
   }
 
-  async getAdvanceBalance(prisonNumber: string): Promise<PrisonerAdvanceBalanceResponse> {
+  async getAdvancesBalance(prisonNumber: string): Promise<PrisonerAdvanceBalanceResponse> {
     return this.get(
       {
         path: `/advances/${prisonNumber}/balance`,
+      },
+      asSystem(),
+    )
+  }
+
+  async getAdvanceBalance(prisonNumber: string, advanceId: string): Promise<PrisonerAdvanceBalanceResponse> {
+    return this.get(
+      {
+        path: `/advances/${prisonNumber}/balance/${advanceId}`,
       },
       asSystem(),
     )
@@ -29,15 +38,6 @@ export default class PrisonerFinanceAdvancesApiClient extends RestClient {
           pageNumber,
           pageSize: '25',
         },
-      },
-      asSystem(),
-    )
-  }
-
-  async getAdvance(prisonNumber: string, advanceId: string): Promise<PrisonerAdvanceResponse> {
-    return this.get(
-      {
-        path: `/advances/${prisonNumber}/${advanceId}`,
       },
       asSystem(),
     )

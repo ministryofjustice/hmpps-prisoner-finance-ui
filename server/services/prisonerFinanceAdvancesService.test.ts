@@ -19,7 +19,7 @@ describe('PrisonerFinanceAdvancesService', () => {
     jest.resetAllMocks()
   })
 
-  describe('getAdvanceBalance', () => {
+  describe('getAdvancesBalance', () => {
     it('should call the API client', async () => {
       const prisonNumber = 'A123BCD'
 
@@ -28,13 +28,37 @@ describe('PrisonerFinanceAdvancesService', () => {
         weeklyAmount: 1,
         outstandingAmount: 90,
         balanceDateTime: '',
+        paymentsRemaining: 4,
+        nextPaymentDate: '',
+      }
+
+      apiClient.getAdvancesBalance.mockResolvedValue(expectedResponse)
+
+      await service.getAdvancesBalances(prisonNumber)
+
+      expect(apiClient.getAdvancesBalance).toHaveBeenCalledWith(prisonNumber)
+    })
+  })
+
+  describe('getAdvanceBalance', () => {
+    it('should call the API client', async () => {
+      const prisonNumber = 'A123BCD'
+      const advanceId = '1'
+
+      const expectedResponse: PrisonerAdvanceBalanceResponse = {
+        amount: 100,
+        weeklyAmount: 1,
+        outstandingAmount: 90,
+        balanceDateTime: '',
+        paymentsRemaining: 4,
+        nextPaymentDate: '',
       }
 
       apiClient.getAdvanceBalance.mockResolvedValue(expectedResponse)
 
-      await service.getAdvanceBalances(prisonNumber)
+      await service.getAdvanceBalance(prisonNumber, advanceId)
 
-      expect(apiClient.getAdvanceBalance).toHaveBeenCalledWith(prisonNumber)
+      expect(apiClient.getAdvanceBalance).toHaveBeenCalledWith(prisonNumber, advanceId)
     })
   })
 
@@ -105,33 +129,6 @@ describe('PrisonerFinanceAdvancesService', () => {
       await service.getAdvances(prisonNumber, '1', true)
 
       expect(apiClient.getAdvances).not.toHaveBeenCalled()
-    })
-  })
-
-  describe('getAdvance', () => {
-    it('should call the API client', async () => {
-      const prisonNumber = 'A123BCD'
-
-      const advance: PrisonerAdvanceResponse = {
-        id: '',
-        prisonNumber,
-        legacyAdvanceNumber: 123,
-        createdAt: '',
-        createdBy: '',
-        date: '',
-        advanceAmount: 110,
-        paymentAmount: 11,
-        startPayments: '',
-        reference: '',
-        advanceLocation: 'LEI',
-        status: 'ACTIVE',
-      }
-
-      apiClient.getAdvance.mockResolvedValue(advance)
-
-      await service.getAdvance(prisonNumber, '1')
-
-      expect(apiClient.getAdvance).toHaveBeenCalledWith(prisonNumber, '1')
     })
   })
 

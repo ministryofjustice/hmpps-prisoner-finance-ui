@@ -869,6 +869,8 @@ describe('PrisonerController', () => {
         amount: 100,
         outstandingAmount: 10,
         weeklyAmount: 1,
+        paymentsRemaining: 4,
+        nextPaymentDate: '',
       }
       const prisonerAdvances: PrisonerAdvanceResponse[] = []
 
@@ -882,7 +884,7 @@ describe('PrisonerController', () => {
       }
 
       prisonerFinanceAdvancesService.getAdvances.mockResolvedValue(mockAdvancesPage)
-      prisonerFinanceAdvancesService.getAdvanceBalances.mockResolvedValue(advanceBalances)
+      prisonerFinanceAdvancesService.getAdvancesBalances.mockResolvedValue(advanceBalances)
 
       await prisonerController.getAdvances(mockReq, mockRes, mockNext)
 
@@ -894,7 +896,7 @@ describe('PrisonerController', () => {
       })
 
       expect(prisonerFinanceAdvancesService.getAdvances).toHaveBeenCalledWith(mockReq.params.prisonNumber, '1', false)
-      expect(prisonerFinanceAdvancesService.getAdvanceBalances).toHaveBeenCalledWith(prisonNumber)
+      expect(prisonerFinanceAdvancesService.getAdvancesBalances).toHaveBeenCalledWith(prisonNumber)
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/advances/advances', {
         prisonNumber: mockReq.params.prisonNumber,
@@ -951,19 +953,13 @@ describe('PrisonerController', () => {
         },
       } as unknown as Request
 
-      const mockAdvance: PrisonerAdvanceResponse = {
-        id: '',
-        prisonNumber,
-        legacyAdvanceNumber: 123,
-        createdAt: '',
-        createdBy: '',
-        date: '',
-        advanceAmount: 110,
-        paymentAmount: 11,
-        startPayments: '',
-        reference: '',
-        advanceLocation: 'LEI',
-        status: 'ACTIVE',
+      const mockAdvanceBalance: PrisonerAdvanceBalanceResponse = {
+        balanceDateTime: '',
+        amount: 100,
+        outstandingAmount: 10,
+        weeklyAmount: 1,
+        paymentsRemaining: 4,
+        nextPaymentDate: '',
       }
 
       const prisonerAdvancePayments: PrisonerAdvancePaymentsResponse[] = []
@@ -977,7 +973,7 @@ describe('PrisonerController', () => {
         isLastPage: true,
       }
 
-      prisonerFinanceAdvancesService.getAdvance.mockResolvedValue(mockAdvance)
+      prisonerFinanceAdvancesService.getAdvanceBalance.mockResolvedValue(mockAdvanceBalance)
       prisonerFinanceAdvancesService.getAdvancePayments.mockResolvedValue(mockAdvancePaymentsPage)
 
       await prisonerController.getAdvanceDetail(mockReq, mockRes, mockNext)
@@ -989,7 +985,10 @@ describe('PrisonerController', () => {
         subjectId: prisonNumber,
       })
 
-      expect(prisonerFinanceAdvancesService.getAdvance).toHaveBeenCalledWith(mockReq.params.prisonNumber, advanceId)
+      expect(prisonerFinanceAdvancesService.getAdvanceBalance).toHaveBeenCalledWith(
+        mockReq.params.prisonNumber,
+        advanceId,
+      )
       expect(prisonerFinanceAdvancesService.getAdvancePayments).toHaveBeenCalledWith(
         prisonNumber,
         advanceId,
@@ -1000,7 +999,7 @@ describe('PrisonerController', () => {
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/advances/advanceDetail', {
         prisonNumber: mockReq.params.prisonNumber,
         advancePayments: mockAdvancePaymentsPage.content,
-        advanceDetails: mockAdvance,
+        advanceBalance: mockAdvanceBalance,
         paginationItems: {
           isLastPage: true,
           items: [

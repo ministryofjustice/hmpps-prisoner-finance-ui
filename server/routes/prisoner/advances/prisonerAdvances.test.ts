@@ -66,6 +66,8 @@ describe('Prisoners', () => {
       amount: 100,
       outstandingAmount: 10,
       weeklyAmount: 1,
+      paymentsRemaining: 4,
+      nextPaymentDate: '',
     }
     const prisonerAdvances: PrisonerAdvanceResponse[] = []
 
@@ -79,7 +81,7 @@ describe('Prisoners', () => {
     }
 
     prisonerFinanceAdvancesService.getAdvances.mockResolvedValue(mockAdvancesPage)
-    prisonerFinanceAdvancesService.getAdvanceBalances.mockResolvedValue(advanceBalances)
+    prisonerFinanceAdvancesService.getAdvancesBalances.mockResolvedValue(advanceBalances)
 
     prisonRegisterService.getPrisonNames.mockResolvedValue([{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }])
 

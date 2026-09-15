@@ -6,7 +6,7 @@
 {%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
 
 {%- set pageTitle = headerTitle -%}
-{%- set backUrl = "/prisoner/" + prisonNumber -%}
+{%- set backUrl = "/prisoner/" + prisonNumber + '/advances' -%}
 
 
 {% block contentHeader %}
@@ -20,36 +20,36 @@
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ balanceCard({
         heading: "This advance",
-        amount: advanceDetail.amount
+        amount: advanceBalance.amount
       }) }}
     </li>
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ balanceCard({
         heading: "Balance outstanding",
-        amount: advanceDetail.outstandingAmount
+        amount: advanceBalance.outstandingAmount
       }) }}
     </li>
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ balanceCard({
         heading: "Weekly payments",
-        amount: advanceDetail.weeklyAmount
+        amount: advanceBalance.weeklyAmount
       }) }}
     </li>
     <li class="govuk-grid-column-one-quarter card-group__item">
         {% set footer%}
-        <b>Next: {{advanceDetail.nextDate | formatDate('DD M YYYY')}}</b>
+        <b>Next: {{advanceBalance.nextDate | formatDate('DD M YYYY')}}</b>
         {% endset %}
 
       {{ balanceCard({
         heading: "Payments remaining",
-        amount: advanceDetail.remaining
+        amount: advanceBalance.paymentsRemaining,
         footer: footer
       }) }}
     </li>
 </ul>
 
 {{ advancePaymentsList({
-    advancePayaments: advancePayments,
+    advancePayments: advancePayments,
     paginationItems: paginationItems,
     prisonNames: prisonNames,
     prisonNumber: prisonNumber

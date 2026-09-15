@@ -25,8 +25,12 @@ const emptyPagePayments: Page<PrisonerAdvancePaymentsResponse> = {
 export default class PrisonerFinanceAdvancesService {
   constructor(private readonly prisonerFinanceAdvancesApiClient: PrisonerFinanceAdvancesApiClient) {}
 
-  getAdvanceBalances(prisonNumber: string): Promise<PrisonerAdvanceBalanceResponse> {
-    return this.prisonerFinanceAdvancesApiClient.getAdvanceBalance(prisonNumber)
+  getAdvancesBalances(prisonNumber: string): Promise<PrisonerAdvanceBalanceResponse> {
+    return this.prisonerFinanceAdvancesApiClient.getAdvancesBalance(prisonNumber)
+  }
+
+  getAdvanceBalance(prisonNumber: string, advanceId: string): Promise<PrisonerAdvanceBalanceResponse> {
+    return this.prisonerFinanceAdvancesApiClient.getAdvanceBalance(prisonNumber, advanceId)
   }
 
   getAdvances(
@@ -37,10 +41,6 @@ export default class PrisonerFinanceAdvancesService {
     return !hasValidationErrors
       ? this.prisonerFinanceAdvancesApiClient.getAdvances(prisonNumber, pageNumber)
       : Promise.resolve(emptyPageAdvances)
-  }
-
-  getAdvance(prisonNumber: string, advanceId: string): Promise<PrisonerAdvanceResponse> {
-    return this.prisonerFinanceAdvancesApiClient.getAdvance(prisonNumber, advanceId)
   }
 
   getAdvancePayments(

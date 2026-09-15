@@ -22,23 +22,50 @@ describe('Prison Finance Advances Api', () => {
     jest.resetAllMocks()
   })
 
-  describe('getHoldBalance', () => {
+  describe('getAdvancesBalance', () => {
     it('should call the API', async () => {
       const expectedResponse: PrisonerAdvanceBalanceResponse = {
         amount: 100,
         weeklyAmount: 1,
         outstandingAmount: 90,
         balanceDateTime: '',
+        paymentsRemaining: 4,
+        nextPaymentDate: '',
       }
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
 
-      const response = await client.getAdvanceBalance('A123BCD')
+      const response = await client.getAdvancesBalance('A123BCD')
 
       expect(response).toEqual(expectedResponse)
       expect(getSpy).toHaveBeenCalledWith(
         {
           path: `/advances/A123BCD/balance`,
+        },
+        asSystem(),
+      )
+    })
+  })
+
+  describe('getAdvanceBalance', () => {
+    it('should call the API', async () => {
+      const expectedResponse: PrisonerAdvanceBalanceResponse = {
+        amount: 100,
+        weeklyAmount: 1,
+        outstandingAmount: 90,
+        balanceDateTime: '',
+        paymentsRemaining: 4,
+        nextPaymentDate: '',
+      }
+
+      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
+
+      const response = await client.getAdvanceBalance('A123BCD', '123')
+
+      expect(response).toEqual(expectedResponse)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/advances/A123BCD/balance/123`,
         },
         asSystem(),
       )
@@ -83,37 +110,6 @@ describe('Prison Finance Advances Api', () => {
             pageNumber: '1',
             pageSize: '25',
           },
-        },
-        asSystem(),
-      )
-    })
-  })
-
-  describe('getAdvance', () => {
-    it('should call the API', async () => {
-      const advance: PrisonerAdvanceResponse = {
-        id: '1',
-        prisonNumber: 'A123BCD',
-        legacyAdvanceNumber: 1,
-        createdAt: '',
-        createdBy: 'TEST',
-        date: '',
-        advanceAmount: 10,
-        paymentAmount: 1,
-        startPayments: '',
-        reference: '',
-        advanceLocation: 'LEI',
-        status: 'Active',
-      }
-
-      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(advance)
-
-      const response = await client.getAdvance('A123BCD', '1')
-
-      expect(response).toEqual(advance)
-      expect(getSpy).toHaveBeenCalledWith(
-        {
-          path: `/advances/A123BCD/1`,
         },
         asSystem(),
       )

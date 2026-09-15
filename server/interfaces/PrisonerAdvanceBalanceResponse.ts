@@ -3,4 +3,6 @@ export interface PrisonerAdvanceBalanceResponse {
   amount: number
   outstandingAmount: number
   weeklyAmount: number
+  paymentsRemaining: number
+  nextPaymentDate: string
 }
