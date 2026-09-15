@@ -18,6 +18,7 @@ import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 import PrisonerFinanceAdvancesService from '../services/prisonerFinanceAdvancesService'
 import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
 import { PrisonerAdvanceBalanceResponse } from '../interfaces/PrisonerAdvanceBalanceResponse'
+import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 
 jest.mock('../applicationInfo')
 jest.mock('../services/auditService')
@@ -899,6 +900,107 @@ describe('PrisonerController', () => {
         prisonNumber: mockReq.params.prisonNumber,
         advances: prisonerAdvances,
         advanceBalances,
+        paginationItems: {
+          isLastPage: true,
+          items: [
+            {
+              href: '?page=1',
+              selected: true,
+              text: '1',
+            },
+          ],
+          next: null,
+          pageNumber: 1,
+          pageSize: 99,
+          previous: null,
+          results: {
+            count: 0,
+            from: 0,
+            text: ' results',
+            to: 0,
+          },
+          totalElements: 0,
+          totalPages: 1,
+        },
+      })
+    })
+  })
+
+  describe('getAdvanceDetail', () => {
+    const mockRes: Response = {
+      locals: {
+        user: { username: 'test-user' },
+        auditPage: AuditPage.PRISONER_ADVANCE_DETAIL,
+      },
+      render: jest.fn(),
+      redirect: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    } as unknown as Response
+
+    it('Should call get advance, payments, and log Audit', async () => {
+      const prisonNumber = 'ABC123KK'
+      const advanceId = '123'
+      const mockReq = {
+        id: 'req-id-123',
+        params: { prisonNumber, advanceId },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+        query: {
+          page: '1',
+        },
+      } as unknown as Request
+
+      const mockAdvance: PrisonerAdvanceResponse = {
+        id: '',
+        prisonNumber,
+        legacyAdvanceNumber: 123,
+        createdAt: '',
+        createdBy: '',
+        date: '',
+        advanceAmount: 110,
+        paymentAmount: 11,
+        startPayments: '',
+        reference: '',
+        advanceLocation: 'LEI',
+        status: 'ACTIVE',
+      }
+
+      const prisonerAdvancePayments: PrisonerAdvancePaymentsResponse[] = []
+
+      const mockAdvancePaymentsPage: Page<PrisonerAdvancePaymentsResponse> = {
+        content: prisonerAdvancePayments,
+        totalElements: prisonerAdvancePayments.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      prisonerFinanceAdvancesService.getAdvance.mockResolvedValue(mockAdvance)
+      prisonerFinanceAdvancesService.getAdvancePayments.mockResolvedValue(mockAdvancePaymentsPage)
+
+      await prisonerController.getAdvanceDetail(mockReq, mockRes, mockNext)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.PRISONER_ADVANCE_DETAIL, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      })
+
+      expect(prisonerFinanceAdvancesService.getAdvance).toHaveBeenCalledWith(mockReq.params.prisonNumber, advanceId)
+      expect(prisonerFinanceAdvancesService.getAdvancePayments).toHaveBeenCalledWith(
+        prisonNumber,
+        advanceId,
+        '1',
+        false,
+      )
+
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/advances/advanceDetail', {
+        prisonNumber: mockReq.params.prisonNumber,
+        advancePayments: mockAdvancePaymentsPage.content,
+        advanceDetails: mockAdvance,
         paginationItems: {
           isLastPage: true,
           items: [

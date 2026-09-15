@@ -15,6 +15,12 @@ export default function routes(services: Services): Router {
     return next()
   })
 
+  prisonerAdvancesRouter.get('/advances/detail/:advanceId', (req: Request, res: Response, next: NextFunction) => {
+    res.locals.headerTitle = 'Advance detail'
+    res.locals.auditPage = AuditPage.PRISONER_ADVANCE_DETAIL
+    return prisonerController.getAdvanceDetail(req, res, next)
+  })
+
   prisonerAdvancesRouter.get('/advances', (req: Request, res: Response, next: NextFunction) => {
     res.locals.headerTitle = 'Advances'
     res.locals.auditPage = AuditPage.PRISONER_ADVANCES

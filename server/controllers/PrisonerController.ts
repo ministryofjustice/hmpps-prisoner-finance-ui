@@ -13,6 +13,8 @@ import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 import { PrisonerHoldsBalanceResponse } from '../interfaces/PrisonerHoldsBalanceResponse'
 import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
 import advancesFilterSchema from '../validators/advancesFilterValidator'
+import advancePaymentsFilterSchema from '../validators/advancePaymentsFilterValidator'
+import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -84,6 +86,46 @@ class PrisonerController {
       matchingPrisoners: matchingPrisoners.content,
       term: parsedQueries.data.term,
       paginationItems,
+    })
+  }
+
+  public getAdvanceDetail = async (req: Request, res: Response, next: NextFunction) => {
+    const prisonNumber = req.params.prisonNumber.toString()
+    const advanceId = req.params.advanceId.toString()
+
+    const parsedQueries = advancePaymentsFilterSchema.safeParse(req.query)
+
+    await this.services.auditService.logPageView(res.locals.auditPage, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: prisonNumber,
+    })
+
+    const pageNumber = parsedQueries.data.page.toString()
+
+    const [advanceDetails, pagedAdvancePayments] = await Promise.all([
+      this.services.prisonerFinanceAdvancesService.getAdvance(prisonNumber, advanceId),
+      this.services.prisonerFinanceAdvancesService.getAdvancePayments(
+        prisonNumber,
+        advanceId,
+        pageNumber,
+        !parsedQueries.success,
+      ),
+    ])
+
+    const { content, ...paginationItems } = parsedQueries.success
+      ? buildPaginationItems<PrisonerAdvancePaymentsResponse, typeof advancePaymentsFilterSchema>({
+          ...pagedAdvancePayments,
+          filters: parsedQueries.data,
+        })
+      : { content: [] as PrisonerAdvancePaymentsResponse[] }
+
+    res.render('pages/prisoner/advances/advanceDetail', {
+      prisonNumber,
+      paginationItems,
+      advancePayments: pagedAdvancePayments.content,
+      advanceDetails,
     })
   }
 

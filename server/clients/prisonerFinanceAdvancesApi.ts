@@ -34,7 +34,7 @@ export default class PrisonerFinanceAdvancesApiClient extends RestClient {
     )
   }
 
-  async getAdvance(prisonNumber: string, advanceId: number): Promise<PrisonerAdvanceResponse> {
+  async getAdvance(prisonNumber: string, advanceId: string): Promise<PrisonerAdvanceResponse> {
     return this.get(
       {
         path: `/advances/${prisonNumber}/${advanceId}`,
@@ -45,7 +45,7 @@ export default class PrisonerFinanceAdvancesApiClient extends RestClient {
 
   async getAdvancePayments(
     prisonNumber: string,
-    advanceId: number,
+    advanceId: string,
     pageNumber: string,
   ): Promise<Page<PrisonerAdvancePaymentsResponse>> {
     return this.get(

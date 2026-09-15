@@ -1,6 +1,5 @@
 import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients'
 import { asSystem } from '@ministryofjustice/hmpps-rest-client'
-import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 import { Page } from '../interfaces/Pageable'
 import PrisonerFinanceAdvancesApiClient from './prisonerFinanceAdvancesApi'
 import { PrisonerAdvanceBalanceResponse } from '../interfaces/PrisonerAdvanceBalanceResponse'
@@ -109,7 +108,7 @@ describe('Prison Finance Advances Api', () => {
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(advance)
 
-      const response = await client.getAdvance('A123BCD', 1)
+      const response = await client.getAdvance('A123BCD', '1')
 
       expect(response).toEqual(advance)
       expect(getSpy).toHaveBeenCalledWith(
@@ -145,7 +144,7 @@ describe('Prison Finance Advances Api', () => {
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(pagedResponse)
 
-      const response = await client.getAdvancePayments('A123BCD', 1, '1')
+      const response = await client.getAdvancePayments('A123BCD', '1', '1')
 
       expect(response).toEqual(pagedResponse)
       expect(getSpy).toHaveBeenCalledWith(
