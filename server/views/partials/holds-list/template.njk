@@ -27,7 +27,7 @@
       { text: "Location" }
     ] %}
     {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
-    {{ govukTable({ classes: "hold-list__holds", caption: "", captionClasses: "govuk-table__caption--m", head: head, rows: rows }) }}
+    {{ govukTable({ classes: "holds-list__holds", caption: "", captionClasses: "govuk-table__caption--m", head: head, rows: rows }) }}
     {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
   </div>
 {% else %}
