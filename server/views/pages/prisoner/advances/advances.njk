@@ -20,18 +20,21 @@
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ balanceCard({
         heading: "Current advances",
+        subHeading: 'Total',
         amount: advanceBalances.amount
       }) }}
     </li>
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ balanceCard({
         heading: "Balance outstanding",
+        subHeading: 'Total',
         amount: advanceBalances.outstandingAmount
       }) }}
     </li>
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ balanceCard({
         heading: "Weekly payments",
+        subHeading: 'Total',
         amount: advanceBalances.weeklyAmount
       }) }}
     </li>

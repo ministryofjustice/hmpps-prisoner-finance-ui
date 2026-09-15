@@ -30,6 +30,7 @@ describe('View Components - BalanceCard', () => {
 
     const balanceCards = $('.hmpps-balance-card').first()
     expect(balanceCards.text()).toContain('Test')
+    expect(balanceCards.text()).toContain('Account total')
     expect(balanceCards.text()).toContain('£10.00')
   })
 
@@ -38,10 +39,12 @@ describe('View Components - BalanceCard', () => {
       heading: 'Test',
       amount: 1000,
       showSubHeading: true,
+      subHeading: 'Custom Sub Heading',
     })
 
     const balanceCards = $('.hmpps-balance-card').first()
-    expect(balanceCards.text()).toContain('Account total')
+    expect(balanceCards.text()).not.toContain('Account total')
+    expect(balanceCards.text()).toContain('Custom Sub Heading')
   })
 
   it('should render link to subaccount page if provided', () => {
@@ -58,24 +61,5 @@ describe('View Components - BalanceCard', () => {
     const balanceCards = $('.hmpps-balance-card')
     expect($(balanceCards[0]).text()).toContain('private cash transactions')
     expect($(balanceCards[0]).find('a').attr('href')).toContain('private-cash')
-  })
-
-  it('should render the footer if provided', () => {
-    const macroString = `
-      {% from "components/balanceCard/balanceCard.njk" import balanceCard %}
-       {% set footer %}
-           <p>Hello world</p>
-       {% endset %}
-      {{ balanceCard({
-      heading: 'Test',
-      amount: 1000,
-      testId: 'privateCash',
-      footer: footer
-    }) }}
-    `
-    const output = njkEnv.renderString(macroString, {})
-    const $ = cheerio.load(output)
-
-    expect($('p').text()).toContain('Hello world')
   })
 })

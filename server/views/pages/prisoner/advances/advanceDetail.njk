@@ -4,6 +4,7 @@
 {%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
 {%- from "partials/advance-payments-list/macro.njk" import advancePaymentsList -%}
 {%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
+{%- from "components/advancePaymentsRemainingCard/advancePaymentsRemainingCard.njk" import advancePaymentsRemainingCard -%}
 
 {%- set pageTitle = headerTitle -%}
 {%- set backUrl = "/prisoner/" + prisonNumber + '/advances' -%}
@@ -20,30 +21,30 @@
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ balanceCard({
         heading: "This advance",
+        subHeading: 'Total',
         amount: advanceBalance.amount
       }) }}
     </li>
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ balanceCard({
         heading: "Balance outstanding",
+        subHeading: 'Total',
         amount: advanceBalance.outstandingAmount
       }) }}
     </li>
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ balanceCard({
         heading: "Weekly payments",
+        subHeading: 'Total',
         amount: advanceBalance.weeklyAmount
       }) }}
     </li>
     <li class="govuk-grid-column-one-quarter card-group__item">
-        {% set footer%}
-        <b>Next: {{advanceBalance.nextDate | formatDate('DD M YYYY')}}</b>
-        {% endset %}
-
-      {{ balanceCard({
+      {{ advancePaymentsRemainingCard({
         heading: "Payments remaining",
-        amount: advanceBalance.paymentsRemaining,
-        footer: footer
+        subHeading: 'Total',
+        paymentsRemaining: advanceBalance.paymentsRemaining,
+        nextPaymentDate: advanceBalance.nextPaymentDate
       }) }}
     </li>
 </ul>
