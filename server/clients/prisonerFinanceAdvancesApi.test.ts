@@ -4,6 +4,8 @@ import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 import { Page } from '../interfaces/Pageable'
 import PrisonerFinanceAdvancesApiClient from './prisonerFinanceAdvancesApi'
 import { PrisonerAdvanceBalanceResponse } from '../interfaces/PrisonerAdvanceBalanceResponse'
+import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
+import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 
 describe('Prison Finance Advances Api', () => {
   let client: PrisonerFinanceAdvancesApiClient
@@ -46,24 +48,23 @@ describe('Prison Finance Advances Api', () => {
 
   describe('getAdvances', () => {
     it('should call the API', async () => {
-      const hold: PrisonerHoldResponse = {
-        id: '',
-        prisonNumber: 'A1234CD',
-        legacyHoldNumber: 1,
-        subAccountRef: 'CASH',
+      const advance: PrisonerAdvanceResponse = {
+        id: '1',
+        prisonNumber: 'A123ABC',
+        legacyAdvanceNumber: 1,
         createdAt: '',
         createdBy: 'TEST',
-        holdFromDate: '',
-        holdUntilDate: '',
-        isReleased: false,
-        description: 'TEST',
-        holdType: 'HOA',
-        amount: 1000,
-        holdLocation: 'LEI',
+        date: '',
+        advanceAmount: 10,
+        paymentAmount: 1,
+        startPayments: '',
+        reference: '',
+        advanceLocation: 'LEI',
+        status: 'Active',
       }
 
-      const pagedResponse: Page<PrisonerHoldResponse> = {
-        content: [hold],
+      const pagedResponse: Page<PrisonerAdvanceResponse> = {
+        content: [advance],
         totalElements: 1,
         totalPages: 1,
         pageNumber: 1,
@@ -79,6 +80,77 @@ describe('Prison Finance Advances Api', () => {
       expect(getSpy).toHaveBeenCalledWith(
         {
           path: `/advances/A123BCD`,
+          query: {
+            pageNumber: '1',
+            pageSize: '25',
+          },
+        },
+        asSystem(),
+      )
+    })
+  })
+
+  describe('getAdvance', () => {
+    it('should call the API', async () => {
+      const advance: PrisonerAdvanceResponse = {
+        id: '1',
+        prisonNumber: 'A123BCD',
+        legacyAdvanceNumber: 1,
+        createdAt: '',
+        createdBy: 'TEST',
+        date: '',
+        advanceAmount: 10,
+        paymentAmount: 1,
+        startPayments: '',
+        reference: '',
+        advanceLocation: 'LEI',
+        status: 'Active',
+      }
+
+      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(advance)
+
+      const response = await client.getAdvance('A123BCD', 1)
+
+      expect(response).toEqual(advance)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/advances/A123BCD/1`,
+        },
+        asSystem(),
+      )
+    })
+  })
+
+  describe('getAdvancePayments', () => {
+    it('should call the API', async () => {
+      const advancePayment: PrisonerAdvancePaymentsResponse = {
+        id: '1',
+        prisonNumber: 'A123BCD',
+        legacyAdvanceNumber: 1,
+        createdAt: '',
+        createdBy: 'TEST',
+        date: '',
+        paymentAmount: 10,
+        advanceLocation: 'LEI',
+      }
+
+      const pagedResponse: Page<PrisonerAdvancePaymentsResponse> = {
+        content: [advancePayment],
+        totalElements: 1,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 25,
+        isLastPage: true,
+      }
+
+      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(pagedResponse)
+
+      const response = await client.getAdvancePayments('A123BCD', 1, '1')
+
+      expect(response).toEqual(pagedResponse)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/advances/A123BCD/1/payments`,
           query: {
             pageNumber: '1',
             pageSize: '25',

@@ -1,0 +1,58 @@
+{%- extends "partials/layout-full-width.njk" -%}
+
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+{%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
+{%- from "partials/advance-payments-list/macro.njk" import advancePaymentsList -%}
+{%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
+
+{%- set pageTitle = headerTitle -%}
+{%- set backUrl = "/prisoner/" + prisonNumber -%}
+
+
+{% block contentHeader %}
+  {{ dataWarningBanner(dataWarningBannerEnabled) }}
+{% endblock %}
+
+{% block innerContent %}
+
+
+<ul class="govuk-grid-row card-group">
+    <li class="govuk-grid-column-one-quarter card-group__item">
+      {{ balanceCard({
+        heading: "This advance",
+        amount: advanceDetail.amount
+      }) }}
+    </li>
+    <li class="govuk-grid-column-one-quarter card-group__item">
+      {{ balanceCard({
+        heading: "Balance outstanding",
+        amount: advanceDetail.outstandingAmount
+      }) }}
+    </li>
+    <li class="govuk-grid-column-one-quarter card-group__item">
+      {{ balanceCard({
+        heading: "Weekly payments",
+        amount: advanceDetail.weeklyAmount
+      }) }}
+    </li>
+    <li class="govuk-grid-column-one-quarter card-group__item">
+        {% set footer%}
+        <b>Next: {{advanceDetail.nextDate | formatDate('DD M YYYY')}}</b>
+        {% endset %}
+
+      {{ balanceCard({
+        heading: "Payments remaining",
+        amount: advanceDetail.remaining
+        footer: footer
+      }) }}
+    </li>
+</ul>
+
+{{ advancePaymentsList({
+    advancePayaments: advancePayments,
+    paginationItems: paginationItems,
+    prisonNames: prisonNames,
+    prisonNumber: prisonNumber
+}) }}
+
+{% endblock %}

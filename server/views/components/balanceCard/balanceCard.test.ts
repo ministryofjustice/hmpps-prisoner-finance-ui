@@ -59,4 +59,23 @@ describe('View Components - BalanceCard', () => {
     expect($(balanceCards[0]).text()).toContain('private cash transactions')
     expect($(balanceCards[0]).find('a').attr('href')).toContain('private-cash')
   })
+
+  it('should render the footer if provided', () => {
+    const macroString = `
+      {% from "components/balanceCard/balanceCard.njk" import balanceCard %}
+       {% set footer %}
+           <p>Hello world</p>
+       {% endset %}
+      {{ balanceCard({
+      heading: 'Test',
+      amount: 1000,
+      testId: 'privateCash',
+      footer: footer
+    }) }}
+    `
+    const output = njkEnv.renderString(macroString, {})
+    const $ = cheerio.load(output)
+
+    expect($('p').text()).toContain('Hello world')
+  })
 })

@@ -1,0 +1,14 @@
+{#
+ Parameters:
+    advancePayments = an array of advance payments details to be displayed in the table.
+    paginationItems = an array of pagination items to be displayed below the table.
+    prisonNames = an array of prison names to be used for converting prison IDs to names.
+    prisonNumber = Nomis prisonNumber.
+#}
+{% macro advancePaymentsList(params) %}
+  {% set advancePayments = params.advancePayments | default([]) %}
+  {% set paginationItems = params.paginationItems | default({})  %}
+  {% set prisonNames = params.prisonNames | default([])  %}
+  {% set prisonNumber = params.prisonNumber  %}
+  {% include "./template.njk" %}
+{% endmacro %}

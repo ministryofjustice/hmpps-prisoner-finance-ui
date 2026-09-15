@@ -5,6 +5,7 @@ import logger from '../../logger'
 import { Page } from '../interfaces/Pageable'
 import { PrisonerAdvanceBalanceResponse } from '../interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
+import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 
 export default class PrisonerFinanceAdvancesApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -24,6 +25,32 @@ export default class PrisonerFinanceAdvancesApiClient extends RestClient {
     return this.get(
       {
         path: `/advances/${prisonNumber}`,
+        query: {
+          pageNumber,
+          pageSize: '25',
+        },
+      },
+      asSystem(),
+    )
+  }
+
+  async getAdvance(prisonNumber: string, advanceId: number): Promise<PrisonerAdvanceResponse> {
+    return this.get(
+      {
+        path: `/advances/${prisonNumber}/${advanceId}`,
+      },
+      asSystem(),
+    )
+  }
+
+  async getAdvancePayments(
+    prisonNumber: string,
+    advanceId: number,
+    pageNumber: string,
+  ): Promise<Page<PrisonerAdvancePaymentsResponse>> {
+    return this.get(
+      {
+        path: `/advances/${prisonNumber}/${advanceId}/payments`,
         query: {
           pageNumber,
           pageSize: '25',

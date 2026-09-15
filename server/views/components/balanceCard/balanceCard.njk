@@ -11,6 +11,10 @@
         <a class="govuk-link card__link govuk-link--no-visited-state" href="{{params.link.href}}">{{params.link.text}}</a>
       </p>
     {% endif %}
+
+    {% if params.footer %}
+      {{params.footer | safe }}
+    {% endif %}
     </div>
   </div>
 {%- endmacro -%}
