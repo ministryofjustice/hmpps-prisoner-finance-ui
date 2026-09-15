@@ -1,18 +1,31 @@
 {%- from "moj/components/pagination/macro.njk" import mojPagination -%}
 {%- from "govuk/components/table/macro.njk" import govukTable -%}
+{%- from "govuk/components/tag/macro.njk" import govukTag -%}
 
 {% if advances | length > 0 %}
   {% set rows = [] %}
   {% for advance in advances %}
+
+    {% set advanceStatus %}
+      {{ govukTag({
+        text: advance.status
+      }) }}
+    {% endset %}
+
+    {% set advanceAmount %}
+      <a href='/prisoner/{{prisonNumber}}/money/advances/detail/{{advance.id}}'>
+        {{advance.advanceAmount | penceToPound }}
+      </a>
+    {% endset %}
     {% set rowData = [
       { text: advance.date | formatDateForView | safe },
-      { text: advance.advanceAmount | penceToPound, format: "numeric"  },
+      { html: advanceAmount, format: "numeric" },
       { text: advance.paymentAmount | penceToPound, format: "numeric"  },
       { text: advance.startPayments | formatDate("dd/MM/yyyy")  },
       { text: advance.reference },
       { text: advance.createdBy },
       { text: advance.advanceLocation | convertPrisonIdToName(prisonNames)   },
-      { text: advance.status }
+      { html: advanceStatus}
       ] %}
     {% set rows = (rows.push(rowData), rows) %}
   {% endfor %}

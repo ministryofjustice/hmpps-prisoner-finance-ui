@@ -15,7 +15,7 @@ test.describe('Show advances for prisoner', () => {
 
   const advancesPayload: PrisonerAdvanceResponse[] = [
     {
-      id: '',
+      id: '1',
       prisonNumber: 'AB123XZ',
       legacyAdvanceNumber: 11,
       createdAt: '',
@@ -29,7 +29,7 @@ test.describe('Show advances for prisoner', () => {
       status: 'Active',
     },
     {
-      id: '',
+      id: '2',
       prisonNumber: 'AB123XZ',
       legacyAdvanceNumber: 13,
       createdAt: '',
@@ -43,7 +43,7 @@ test.describe('Show advances for prisoner', () => {
       status: 'Inactive',
     },
     {
-      id: '',
+      id: '3',
       prisonNumber: 'AB123XZ',
       legacyAdvanceNumber: 14,
       createdAt: '',
@@ -57,7 +57,7 @@ test.describe('Show advances for prisoner', () => {
       status: 'Active',
     },
     {
-      id: '',
+      id: '4',
       prisonNumber: 'AB123XZ',
       legacyAdvanceNumber: 18,
       createdAt: '',
@@ -71,7 +71,7 @@ test.describe('Show advances for prisoner', () => {
       status: 'Active',
     },
     {
-      id: '',
+      id: '5',
       prisonNumber: 'AB123XZ',
       legacyAdvanceNumber: 19,
       createdAt: '',
