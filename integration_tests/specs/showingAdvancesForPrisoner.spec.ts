@@ -251,4 +251,14 @@ test.describe('Show advances for prisoner', () => {
     expect(await bottomCurrentPageA.getAttribute('aria-current')).toBe('page')
     expect(await bottomCurrentPageA.innerText()).toBe('1')
   })
+
+  test(`Should click back button and go back to prisoner profile page`, async ({ page }) => {
+    await setupGetAdvancesStubs(advancesPayload)
+
+    const prisonerAdvancesPage = await PrisonerAdvancesPage.load(page, prisonNumber)
+
+    await prisonerAdvancesPage.backLink.click()
+
+    await expect(page).toHaveURL(new RegExp(`.*/prisoner/${prisonNumber}$`))
+  })
 })
