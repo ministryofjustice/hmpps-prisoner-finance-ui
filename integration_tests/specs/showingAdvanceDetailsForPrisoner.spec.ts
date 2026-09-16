@@ -101,6 +101,7 @@ test.describe('Show advances for prisoner', () => {
     expect(prisonerAdvancesPage.advancePaymentsList).toBeVisible()
     expect(prisonerAdvancesPage.advancePaymentsList).toContainText(
       [
+        'Date Payment amount Created by Location',
         '10/10/202611:48 0.10 TEST Leeds (HMP)',
         '11/10/202611:48 1.00 Billy Leeds (HMP)',
         '16/10/202611:48 0.01 TEST Leeds (HMP)',
