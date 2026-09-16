@@ -62,6 +62,8 @@ jobs:
     uses: ministryofjustice/hmpps-github-actions/.github/workflows/node_integration_tests.yml@1b3b938084ba0e0803b045918aca69b8fb45c668 # WORKFLOW_VERSION
     needs: [node_build]
     secrets: inherit
+    env:
+      TZ: 'Europe/London'
     with:
       redis_tag: '7.4'
       wiremock_port: 9091
