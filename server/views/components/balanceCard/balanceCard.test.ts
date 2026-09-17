@@ -30,6 +30,7 @@ describe('View Components - BalanceCard', () => {
 
     const balanceCards = $('.hmpps-balance-card').first()
     expect(balanceCards.text()).toContain('Test')
+    expect(balanceCards.text()).toContain('Account total')
     expect(balanceCards.text()).toContain('£10.00')
   })
 
@@ -38,10 +39,12 @@ describe('View Components - BalanceCard', () => {
       heading: 'Test',
       amount: 1000,
       showSubHeading: true,
+      subHeading: 'Custom Sub Heading',
     })
 
     const balanceCards = $('.hmpps-balance-card').first()
-    expect(balanceCards.text()).toContain('Account total')
+    expect(balanceCards.text()).not.toContain('Account total')
+    expect(balanceCards.text()).toContain('Custom Sub Heading')
   })
 
   it('should render link to subaccount page if provided', () => {

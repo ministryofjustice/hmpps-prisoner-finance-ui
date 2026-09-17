@@ -4,7 +4,7 @@
       {%- if params.href %}
         <a class="govuk-link govuk-link--no-visited-state card__link" href="{{ params.href }}">{{ params.heading | safe }}</a>
       {%- else %}
-        {{ params.heading }}
+        <h2>{{ params.heading }}</h2>
       {%- endif %}
     </h2>
     {%- if params.description %}

@@ -21,7 +21,7 @@ export default class PrisonerHoldsPage extends AbstractPage {
 
     this.profileHeader = page.locator('.mini-profile, .hmpps-profile-banner').first()
 
-    this.holdsList = page.locator('.hold-list__holds')
+    this.holdsList = page.locator('.holds-list__holds')
     this.topPagination = page.getByRole('navigation', { name: 'Pagination' }).nth(0)
     this.bottomPagination = page.getByRole('navigation', { name: 'Pagination' }).nth(1)
   }
