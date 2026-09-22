@@ -242,17 +242,17 @@ describe('prisoner profile page', () => {
 
     expect(balanceCards.length).toEqual(4)
 
-    expect($(balanceCards[0]).text()).toContain('Holds')
-    expect($(balanceCards[0]).text()).toContain('£0.10')
+    expect($(balanceCards[0]).text()).toContain('Spends')
+    expect($(balanceCards[0]).text()).toContain('£12.34')
 
-    expect($(balanceCards[1]).text()).toContain('Spends')
-    expect($(balanceCards[1]).text()).toContain('£12.34')
+    expect($(balanceCards[1]).text()).toContain('Private cash')
+    expect($(balanceCards[1]).text()).toContain('£34.56')
 
-    expect($(balanceCards[2]).text()).toContain('Private cash')
-    expect($(balanceCards[2]).text()).toContain('£34.56')
+    expect($(balanceCards[2]).text()).toContain('Savings')
+    expect($(balanceCards[2]).text()).toContain('£0.00')
 
-    expect($(balanceCards[3]).text()).toContain('Savings')
-    expect($(balanceCards[3]).text()).toContain('£0.00')
+    expect($(balanceCards[3]).text()).toContain('Holds')
+    expect($(balanceCards[3]).text()).toContain('£0.10')
   })
 
   it('should render no transactions', () => {

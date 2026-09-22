@@ -21,18 +21,6 @@
 
   <div class="hmpps-balance-card-group">
     <ul class="govuk-grid-row card-group">
-      {% if holdsEnabled %}
-      <li class="govuk-grid-column-one-quarter card-group__item">
-        {{ balanceCard({
-          heading: "Holds",
-          amount: subAccountBalances.holds.amount,
-          link: {
-            href: "/prisoner/"+prisonNumber+"/money/holds",
-            text: "Holds transactions"
-          }
-        }) }}
-      </li>
-      {% endif %}
       <li class="govuk-grid-column-one-quarter card-group__item">
         {{ balanceCard({
           heading: "Spends",
@@ -62,6 +50,19 @@
             text: "Savings transactions"
           }
         }) }}
+      </li>
+      {% if holdsEnabled %}
+        <li class="govuk-grid-column-one-quarter card-group__item">
+          {{ balanceCard({
+            heading: "Holds",
+            amount: subAccountBalances.holds.amount,
+            link: {
+              href: "/prisoner/"+prisonNumber+"/money/holds",
+              text: "Holds transactions"
+            }
+          }) }}
+        </li>
+      {% endif %}
     </ul>
   </div>
 
