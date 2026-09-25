@@ -28,6 +28,7 @@ export default class PrisonerFinanceService {
     endDate,
     debit,
     credit,
+    description,
   }: {
     prisonNumber: string
     subAccountReference?: string
@@ -36,6 +37,7 @@ export default class PrisonerFinanceService {
     endDate?: string
     debit?: string
     credit?: string
+    description?: string
   }): Promise<Page<PrisonerTransactionResponse>> {
     return this.prisonerFinanceApiClient.getPrisonerTransactionsByPrisonNumber({
       prisonNumber,
@@ -45,6 +47,7 @@ export default class PrisonerFinanceService {
       page,
       debit,
       credit,
+      description,
     })
   }
 
@@ -85,6 +88,7 @@ export default class PrisonerFinanceService {
     endDate,
     credit,
     debit,
+    description,
     hasValidationErrors,
   }: {
     prisonNumber: string
@@ -94,6 +98,7 @@ export default class PrisonerFinanceService {
     endDate?: string
     credit?: string
     debit?: string
+    description?: string
     hasValidationErrors: boolean
   }): Promise<[Page<PrisonerTransactionResponse>, AccountBalanceResponse | SubAccountBalanceResponse]> {
     const transactionsPromise = !hasValidationErrors
@@ -105,6 +110,7 @@ export default class PrisonerFinanceService {
           endDate,
           credit,
           debit,
+          description,
         })
       : Promise.resolve(emptyPage)
 
