@@ -200,6 +200,9 @@ describe('prisoner transactions page', () => {
 
     expect(creditFilterComponent.length).toBe(1)
     expect(debitFilterComponent.length).toBe(1)
+
+    const descriptionFilterComponent = $('[id="descriptionFilter"]')
+    expect(descriptionFilterComponent.length).toBe(1)
   })
 
   it('Should render no transactions', () => {

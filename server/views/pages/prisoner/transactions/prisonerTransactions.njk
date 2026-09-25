@@ -4,6 +4,7 @@
 {%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
 {%- from "partials/transactions-list/macro.njk" import transactionsList -%}
 {%- from "govuk/components/checkboxes/macro.njk" import govukCheckboxes -%}
+{%- from "govuk/components/input/macro.njk" import govukInput -%}
 {%- from "moj/components/filter/macro.njk" import mojFilter -%}
 {%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
 
@@ -47,6 +48,21 @@
         <div class="moj-filter">
           <form method="get" action="#filterForm" id="filterForm">
             {%- set filterOptionsHtml %}
+              <legend class="govuk-fieldset__legend govuk-fieldset__legend--m">Filter by</legend>
+
+              {{ govukInput({
+                label: {
+                  text: "Search",
+                  classes: "govuk-fieldset__legend--s",
+                  isPageHeading: true
+                },
+                hint: {
+                  text: "For example, Library."
+                },
+                id: "descriptionFilter",
+                name: "description"
+              }) }}
+
               <legend class="govuk-fieldset__legend govuk-fieldset__legend--s">Date range</legend>
 
               {{ mojDatePicker({
