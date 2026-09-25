@@ -462,8 +462,103 @@ describe('PrisonerController', () => {
       })
     })
 
-    it('Should call get transaction when description filter is set CASH', async () => {
-      // test for the transaction coming back when the description is filtered
+    it.each([
+      { page: 'CASH', headerTitle: 'Private cash transactions' },
+      { page: 'SPENDS', headerTitle: 'Spends transactions' },
+      { page: 'SAVINGS', headerTitle: 'Savings transactions' },
+    ])('Should call get transaction when description filter is set $page', async testValues => {
+      const mockRes: Response = {
+        locals: {
+          user: { username: 'test-user' },
+          subAccount: testValues.page,
+          auditPage: AuditPage.PRISONER_HOLDS,
+          showHolds: true,
+          headerTitle: testValues.headerTitle,
+        },
+        render: jest.fn(),
+        redirect: jest.fn(),
+        status: jest.fn().mockReturnThis(),
+      } as unknown as Response
+
+      const description = 'MARS BAR'
+
+      const mockReq = {
+        id: 'req-id-123',
+        query: { description, page: '1' },
+        params: { prisonNumber: 'ABC123XX' },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: '/audit',
+      } as unknown as Request
+
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '10-10-2010',
+          legacyTransactionId: 123,
+          description,
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      prisonerFinanceService.getTransactionPage.mockResolvedValue([mockTransactionsPage, mockBalance])
+
+      prisonerFinanceHoldsService.getHoldsBalanceForSubAccount.mockResolvedValue({
+        amount: 10,
+        balanceDateTime: '',
+      })
+
+      await prisonerController.getTransactions(mockReq, mockRes, mockNext)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(mockRes.locals.auditPage, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: mockReq.params.prisonNumber,
+      })
+
+      expect(prisonerFinanceService.getTransactionPage).toHaveBeenCalledWith({
+        prisonNumber: mockReq.params.prisonNumber,
+        description,
+        page: '1',
+        startDate: undefined,
+        endDate: undefined,
+        credit: undefined,
+        debit: undefined,
+        subAccountReference: mockRes.locals.subAccount,
+        hasValidationErrors: false,
+      })
+
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerTransactions', {
+        prisonNumber: mockReq.params.prisonNumber,
+        headerTitle: testValues.headerTitle,
+        applicationName: 'Transactions',
+        transactions: mockTransactions,
+        currentBalance: mockBalance.amount,
+        holdBalance: 10,
+        totalBalance: mockBalance.amount + 10,
+        paginationItems: expect.anything(),
+        hasValidationErrors: false,
+        filters: {
+          description,
+          selectedFilters: expect.anything(),
+        },
+        displayTotalBalance: false,
+        holdsEnabled: true,
+      })
     })
 
     it('Should call get transaction page for all sub-accounts', async () => {

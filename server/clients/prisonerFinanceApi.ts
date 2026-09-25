@@ -47,6 +47,7 @@ export default class PrisonerFinanceApiClient extends RestClient {
     endDate,
     debit,
     credit,
+    description,
   }: {
     prisonNumber: string
     subAccountReference?: string
@@ -55,6 +56,7 @@ export default class PrisonerFinanceApiClient extends RestClient {
     endDate?: string
     debit?: string
     credit?: string
+    description?: string
   }): Promise<Page<PrisonerTransactionResponse>> {
     return this.get(
       {
@@ -66,6 +68,7 @@ export default class PrisonerFinanceApiClient extends RestClient {
           pageSize: '25',
           ...(debit && { debit }),
           ...(credit && { credit }),
+          ...(description && { description }),
           ...(subAccountReference && { subAccountReference }),
         },
       },

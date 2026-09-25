@@ -70,70 +70,77 @@ describe('PrisonerFinanceSyncApiClient', () => {
       { case: 'Just debit is defined', debit: 'true' },
       { case: 'Just credit is defined', credit: 'true' },
       { case: 'Both debit and credit are defined', debit: 'true', credit: 'true' },
-    ])('Should  call the api when $case', async ({ startDate, startDateIso, endDate, endDateIso, debit, credit }) => {
-      const prisonNumber = 'ABC123AC'
-      const expectedResponse: Array<PrisonerTransactionResponse> = [
-        {
-          date: '2026-03-10T10:43:28.094Z',
-          legacyTransactionId: 123,
-          description: 'test',
-          credit: 0,
-          debit: 0,
-          location: 'LEI',
-          accountType: 'PRISONER',
-          subAccountBalance: 0,
-          accountBalance: 0,
-        },
-      ]
-
-      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
-
-      const response = await client.getPrisonerTransactionsByPrisonNumber({
-        prisonNumber,
-        startDate,
-        endDate,
-        page: '1',
-        debit,
-        credit,
-      })
-
-      expect(response).toEqual(expectedResponse)
-      expect(getSpy).toHaveBeenCalledWith(
-        {
-          path: `/prisoners/${prisonNumber}/money/transactions`,
-          query: {
-            startDate: startDateIso,
-            endDate: endDateIso,
-            debit,
-            credit,
-            pageNumber: '1',
-            pageSize: '25',
+      { case: 'Just description is defined', description: 'Desc' },
+    ])(
+      'Should  call the api when $case',
+      async ({ startDate, startDateIso, endDate, endDateIso, debit, credit, description }) => {
+        const prisonNumber = 'ABC123AC'
+        const expectedResponse: Array<PrisonerTransactionResponse> = [
+          {
+            date: '2026-03-10T10:43:28.094Z',
+            legacyTransactionId: 123,
+            description: 'test',
+            credit: 0,
+            debit: 0,
+            location: 'LEI',
+            accountType: 'PRISONER',
+            subAccountBalance: 0,
+            accountBalance: 0,
           },
-        },
-        {
-          tokenType: 'SYSTEM_TOKEN',
-          user: {},
-        },
-      )
-      expect(response).toEqual(expectedResponse)
-      expect(getSpy).toHaveBeenCalledWith(
-        {
-          path: `/prisoners/${prisonNumber}/money/transactions`,
-          query: {
-            startDate: startDateIso,
-            endDate: endDateIso,
-            debit,
-            credit,
-            pageNumber: '1',
-            pageSize: '25',
+        ]
+
+        const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
+
+        const response = await client.getPrisonerTransactionsByPrisonNumber({
+          prisonNumber,
+          startDate,
+          endDate,
+          page: '1',
+          debit,
+          credit,
+          description,
+        })
+
+        expect(response).toEqual(expectedResponse)
+        expect(getSpy).toHaveBeenCalledWith(
+          {
+            path: `/prisoners/${prisonNumber}/money/transactions`,
+            query: {
+              startDate: startDateIso,
+              endDate: endDateIso,
+              debit,
+              credit,
+              pageNumber: '1',
+              pageSize: '25',
+              description,
+            },
           },
-        },
-        {
-          tokenType: 'SYSTEM_TOKEN',
-          user: {},
-        },
-      )
-    })
+          {
+            tokenType: 'SYSTEM_TOKEN',
+            user: {},
+          },
+        )
+        expect(response).toEqual(expectedResponse)
+        expect(getSpy).toHaveBeenCalledWith(
+          {
+            path: `/prisoners/${prisonNumber}/money/transactions`,
+            query: {
+              startDate: startDateIso,
+              endDate: endDateIso,
+              debit,
+              credit,
+              description,
+              pageNumber: '1',
+              pageSize: '25',
+            },
+          },
+          {
+            tokenType: 'SYSTEM_TOKEN',
+            user: {},
+          },
+        )
+      },
+    )
 
     it('should call the API with subAccount only', async () => {
       const prisonNumber = 'ABC123AC'
