@@ -462,6 +462,10 @@ describe('PrisonerController', () => {
       })
     })
 
+    it('Should call get transaction when description filter is set CASH', async () => {
+      // test for the transaction coming back when the description is filtered
+    })
+
     it('Should call get transaction page for all sub-accounts', async () => {
       const mockRes: Response = {
         locals: {
