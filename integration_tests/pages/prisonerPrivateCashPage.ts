@@ -30,6 +30,8 @@ export default class PrisonerPrivateCashPage extends AbstractPage {
 
   readonly debitFilter: Locator
 
+  readonly searchDescriptionFilter: Locator
+
   private constructor(page: Page, headerText: string) {
     super(page)
     this.heading = page.getByRole('heading', { name: headerText, exact: true })
@@ -57,6 +59,7 @@ export default class PrisonerPrivateCashPage extends AbstractPage {
     this.endDateFilter = page.getByLabel('To', { exact: true })
     this.creditFilter = page.getByLabel('Credit', { exact: true })
     this.debitFilter = page.getByLabel('Debit', { exact: true })
+    this.searchDescriptionFilter = page.getByLabel('Search', { exact: true })
     this.applyFilterButton = page.getByRole('button', { name: 'Apply filters', exact: true })
   }
 

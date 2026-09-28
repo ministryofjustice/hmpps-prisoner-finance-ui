@@ -328,6 +328,37 @@ test.describe('Showing all transactions for a specific sub account', () => {
     })
   })
 
+  test.describe('Filter interaction', () => {
+    test('should display "Description" in the selected filter tabs if Description search is applied', async ({
+      page,
+    }) => {
+      const prisonNumber = 'EE1234E'
+
+      await prisonerSearchApi.stubGetPrisoner(prisonNumber)
+      await prisonApi.stubGetPrisonerImage()
+      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
+        subAccountReference: 'CASH',
+      })
+
+      await prisonRegisterApi.stubGetPrisonNames()
+      await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
+      await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
+
+      const prisonerPrivateCashPage = await PrisonerPrivateCashPage.load(page, prisonNumber)
+
+      // User searches for test, as the server is mocked, we won't check content returned.
+      await prisonerPrivateCashPage.searchDescriptionFilter.fill('test')
+      await prisonerPrivateCashPage.applyFilterButton.click()
+
+      // Early expect to verify the url has been updated correctly before waiting
+      expect(page.url()).toContain('?description=test')
+
+      await page.locator('.moj-filter__tag').waitFor({ state: 'visible' })
+
+      expect(await page.locator('.moj-filter__tag').textContent()).toContain('Description')
+    })
+  })
+
   /*
 
   test(`Should handle page out of bound and redirect to a 404`, async ({ page }) => {

@@ -17,6 +17,7 @@ const transactionFilterConfig = {
   endDate: { label: 'End date', category: 'Date' },
   credit: { label: 'Credit', category: 'Credit or debit' },
   debit: { label: 'Debit', category: 'Credit or debit' },
+  description: { label: 'Description', category: 'Description' },
 }
 
 class PrisonerController {

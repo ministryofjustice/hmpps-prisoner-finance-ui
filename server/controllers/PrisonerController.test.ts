@@ -554,7 +554,7 @@ describe('PrisonerController', () => {
         hasValidationErrors: false,
         filters: {
           description,
-          selectedFilters: expect.anything(),
+          selectedFilters: expect.arrayContaining([expect.objectContaining({ heading: { text: 'Description' } })]),
         },
         displayTotalBalance: false,
         holdsEnabled: true,

@@ -354,7 +354,35 @@ describe('prisoner transactions page', () => {
     $ = cheerio.load(html)
 
     const actualDescription = $('[id="descriptionFilter"]').val()
-
     expect(actualDescription).toBe(expectedDescription)
+  })
+
+  it('should display the "clear filter" button if selected', () => {
+    const displayParams = {
+      filters: {
+        description: '',
+        selectedFilters: [
+          {
+            heading: {
+              text: '',
+            },
+            items: [
+              {
+                href: '',
+                text: 'Description',
+              },
+            ],
+          },
+        ],
+      },
+      ...params,
+    }
+
+    const html = njkEnv.render('pages/prisoner/transactions/prisonerTransactions.njk', displayParams)
+
+    $ = cheerio.load(html)
+
+    const firstFilterTagContent = $('.moj-filter__tag').first().text()
+    expect(firstFilterTagContent).toContain('Description')
   })
 })
