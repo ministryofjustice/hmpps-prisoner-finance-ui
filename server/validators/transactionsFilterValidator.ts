@@ -25,6 +25,8 @@ export const transactionsFilterSchema = z
       message: 'End date must be a real date, like 18/01/2026',
     }),
 
+    description: z.string().trim().optional(),
+
     page: z.coerce.number().optional(),
 
     credit: booleanFromQuery('Credit must be true or false\n'),
