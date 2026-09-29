@@ -17,6 +17,7 @@ const transactionFilterConfig = {
   endDate: { label: 'End date', category: 'Date' },
   credit: { label: 'Credit', category: 'Credit or debit' },
   debit: { label: 'Debit', category: 'Credit or debit' },
+  description: { label: 'Description', category: 'Description' },
 }
 
 class PrisonerController {
@@ -131,7 +132,7 @@ class PrisonerController {
         subjectId: prisonNumber,
       })
 
-      const { startDate, endDate, credit, debit, page } = req.query as Record<string, string>
+      const { startDate, endDate, credit, debit, page, description } = req.query as Record<string, string>
       const parsedQueries = transactionsFilterSchema.safeParse(req.query)
       const selectedFilters = buildMojSelectedFilter(transactionFilterConfig, req.query)
 
@@ -148,6 +149,7 @@ class PrisonerController {
         endDate,
         credit,
         debit,
+        description,
         hasValidationErrors: !parsedQueries.success,
       })
 
@@ -185,6 +187,7 @@ class PrisonerController {
           endDate,
           credit,
           debit,
+          description,
           selectedFilters,
         },
         hasValidationErrors: !parsedQueries.success,

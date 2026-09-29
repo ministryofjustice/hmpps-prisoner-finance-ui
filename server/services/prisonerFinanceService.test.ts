@@ -38,6 +38,7 @@ describe('AuditHistoryService', () => {
       const page = '1'
       const debit = 'true'
       const credit = 'false'
+      const description = 'desc'
 
       await service.getPrisonerTransactionsByPrisonNumber({
         prisonNumber,
@@ -47,6 +48,7 @@ describe('AuditHistoryService', () => {
         endDate,
         debit,
         credit,
+        description,
       })
 
       expect(apiClient.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
@@ -57,6 +59,7 @@ describe('AuditHistoryService', () => {
         endDate,
         debit,
         credit,
+        description,
       })
     })
   })
@@ -135,11 +138,14 @@ describe('AuditHistoryService', () => {
       const startDate = '10/10/2010'
       const endDate = '10/10/2020'
       const page = '1'
+      const description = 'Mars Bar'
+
       const result = await service.getTransactionPage({
         prisonNumber,
         page,
         startDate,
         endDate,
+        description,
         hasValidationErrors: false,
       })
 
@@ -149,6 +155,7 @@ describe('AuditHistoryService', () => {
         page,
         startDate,
         endDate,
+        description,
       })
 
       expect(result).toEqual([emptyPageTransactionsResponse, mockResponse])

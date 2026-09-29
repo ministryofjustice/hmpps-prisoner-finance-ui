@@ -200,6 +200,9 @@ describe('prisoner transactions page', () => {
 
     expect(creditFilterComponent.length).toBe(1)
     expect(debitFilterComponent.length).toBe(1)
+
+    const descriptionFilterComponent = $('[id="descriptionFilter"]')
+    expect(descriptionFilterComponent.length).toBe(1)
   })
 
   it('Should render no transactions', () => {
@@ -281,6 +284,9 @@ describe('prisoner transactions page', () => {
 
     expect(creditFilterComponent.length).toBe(1)
     expect(debitFilterComponent.length).toBe(1)
+
+    const descriptionFilterComponent = $('[id="descriptionFilter"]')
+    expect(descriptionFilterComponent.length).toBe(1)
   })
 
   it('should render the page elements correctly when holds disabled', () => {
@@ -331,5 +337,52 @@ describe('prisoner transactions page', () => {
 
     expect(creditFilterComponent.length).toBe(1)
     expect(debitFilterComponent.length).toBe(1)
+  })
+
+  it('should display the description property if it has been populated', () => {
+    const expectedDescription = 'Hello world'
+
+    const displayParams = {
+      filters: {
+        description: expectedDescription,
+      },
+      ...params,
+    }
+
+    const html = njkEnv.render('pages/prisoner/transactions/prisonerTransactions.njk', displayParams)
+
+    $ = cheerio.load(html)
+
+    const actualDescription = $('[id="descriptionFilter"]').val()
+    expect(actualDescription).toBe(expectedDescription)
+  })
+
+  it('should display the "clear filter" button if selected', () => {
+    const displayParams = {
+      filters: {
+        description: '',
+        selectedFilters: [
+          {
+            heading: {
+              text: '',
+            },
+            items: [
+              {
+                href: '',
+                text: 'Description',
+              },
+            ],
+          },
+        ],
+      },
+      ...params,
+    }
+
+    const html = njkEnv.render('pages/prisoner/transactions/prisonerTransactions.njk', displayParams)
+
+    $ = cheerio.load(html)
+
+    const firstFilterTagContent = $('.moj-filter__tag').first().text()
+    expect(firstFilterTagContent).toContain('Description')
   })
 })
