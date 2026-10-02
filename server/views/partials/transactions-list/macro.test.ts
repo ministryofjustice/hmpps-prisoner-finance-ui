@@ -37,7 +37,7 @@ describe('Prisoner Finance Component: Transactions list', () => {
     const html = renderMacro()
     const $ = cheerio.load(html)
 
-    expect($('.transactions-list__empty-message').text()).toContain('No transactions to show')
+    expect($('.transactions-list__empty-message').text()).toContain('No transactions found')
     expect($('.transactions').length).toBe(0)
   })
 

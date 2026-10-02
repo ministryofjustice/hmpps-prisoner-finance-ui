@@ -32,7 +32,7 @@
     {% set head = [
       { text: "Date" },
       { text: "Transaction ID"},
-      { text: "Transaction description" },
+      { text: "Description" },
       { text: "Amount", format: "numeric" },
       { text: "Balance", format: "numeric" },
       { text: "Account" }
@@ -44,6 +44,6 @@
   </div>
 {% else %}
   <p class="transactions-list__empty-message" data-testid="no-transactions-message">
-    No transactions to show
+    No transactions found
   </p>
 {% endif %}
