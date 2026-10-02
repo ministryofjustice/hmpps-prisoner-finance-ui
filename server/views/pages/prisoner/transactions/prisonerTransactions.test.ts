@@ -216,7 +216,7 @@ describe('prisoner transactions page', () => {
 
     expect($$('.transactions-list').length).toBe(0)
     expect(noTransactionsMessage.length).toBe(1)
-    expect(noTransactionsMessage.text()).toContain('No transactions to show')
+    expect(noTransactionsMessage.text()).toContain('No transactions found')
   })
 
   it('should render dash if running balance is null', () => {

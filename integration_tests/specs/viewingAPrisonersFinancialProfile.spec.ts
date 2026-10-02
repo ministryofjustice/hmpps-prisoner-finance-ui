@@ -246,7 +246,7 @@ test.describe('Viewing a prisoners financial profile', () => {
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
       await expect(prisonerProfilePage.recentTransactionsList).toBeVisible()
       await expect(prisonerProfilePage.recentTransactionsList).toContainText(
-        ['Date', 'Transaction ID', 'Transaction description', 'Amount', 'Balance', 'Account'].join(' '),
+        ['Date', 'Transaction ID', 'Description', 'Amount', 'Balance', 'Account'].join(' '),
       )
 
       await expect(prisonerProfilePage.recentTransactionsList).toContainText(
@@ -285,7 +285,7 @@ test.describe('Viewing a prisoners financial profile', () => {
 
       const noTransactionsMessage = page.locator('[data-testid="no-transactions-message"]')
       await expect(noTransactionsMessage).toBeVisible()
-      await expect(noTransactionsMessage).toContainText('No transactions to show')
+      await expect(noTransactionsMessage).toContainText('No transactions found')
     })
   })
 

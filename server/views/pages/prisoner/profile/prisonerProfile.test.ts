@@ -218,7 +218,7 @@ describe('prisoner profile page', () => {
     const transactionsList = $('.transactions-list')
 
     expect(transactionsList.find('.govuk-table__head').text().trim().replace(/\s+/g, ' ')).toBe(
-      'Date Transaction ID Transaction description Amount Balance Account',
+      'Date Transaction ID Description Amount Balance Account',
     )
     expect(transactionsList.find('.govuk-table__body').text().trim().replace(/\s+/g, ' ')).toBe(
       [
@@ -264,7 +264,7 @@ describe('prisoner profile page', () => {
     const cheerioPage = cheerio.load(html)
     const noTransactionsMessage = cheerioPage('[data-testid="no-transactions-message"]')
     expect(noTransactionsMessage.length).not.toBe(0)
-    expect(noTransactionsMessage.text()).toContain('No transactions to show')
+    expect(noTransactionsMessage.text()).toContain('No transactions found')
   })
 
   it('should render dash if running balance is null', () => {
