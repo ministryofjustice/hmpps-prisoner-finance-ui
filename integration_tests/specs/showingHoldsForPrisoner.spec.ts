@@ -167,7 +167,7 @@ test.describe('Show holds for prisoner', () => {
       description: 'TEST',
       holdType: 'HOA',
       amount: 121,
-      holdLocation: 'LEI',
+      holdLocation: 'XXX', // not included in get prisonNames from register, testing if returns default caseloadId
     },
   ]
 
@@ -229,7 +229,7 @@ test.describe('Show holds for prisoner', () => {
         'Spends HOA 2 10/05/27 TEST 1.21 Leeds (HMP)',
         'Spends HOA 4 10/02/27 TEST 1.21 Leeds (HMP)',
         'Savings HOA 4 10/02/27 TEST 1.21 Leeds (HMP)',
-        'Savings HOA 4 No data TEST 1.21 Leeds (HMP)',
+        'Savings HOA 4 No data TEST 1.21 XXX',
       ].join('\n'),
     )
   })

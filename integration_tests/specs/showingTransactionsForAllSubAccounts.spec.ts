@@ -54,7 +54,7 @@ test.describe('Showing transactions for all sub accounts', () => {
       description: 'Transaction in secret prison',
       credit: 10,
       debit: 0,
-      location: 'XXX',
+      location: 'XXX', // not included in get prisonNames from register, testing if returns default caseloadId
       accountType: 'SAVINGS',
       subAccountBalance: null,
       accountBalance: null,
