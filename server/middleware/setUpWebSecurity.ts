@@ -14,6 +14,13 @@ export default function setUpWebSecurity(): Router {
     res.locals.cspNonce = crypto.randomBytes(16).toString('hex')
     next()
   })
+
+  const appInsightDirective = [
+    "'self'",
+    'https://northeurope-0.in.applicationinsights.azure.com',
+    'https://js.monitor.azure.com',
+  ]
+
   router.use(
     helmet({
       contentSecurityPolicy: {
@@ -36,6 +43,7 @@ export default function setUpWebSecurity(): Router {
           fontSrc: ["'self'"],
           formAction: [`'self' ${config.apis.hmppsAuth.externalUrl}`],
           ...(config.production ? {} : { upgradeInsecureRequests: null }),
+          connectSrc: appInsightDirective,
         },
       },
       crossOriginEmbedderPolicy: true,
