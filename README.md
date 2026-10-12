@@ -149,3 +149,13 @@ git cherry-pick $LATEST_COMMIT_MAIN^..$LATEST_CHERRY_PICK
 echo LATEST_COMMIT_MAIN > .last_template_commit_cherry_pick
 ```
 make sure you've updated `.last_template_commit_cherry_pick` once merged
+
+## AppInsights
+
+AppInsights logs on the client sid by loading a js script from the layout.njk a variable is reqiured in the .env called :-
+
+`APPLICATIONINSIGHTS_CONNECTION_STRING`
+
+In the deployment environment it is set on the secret :-
+
+`hmpps-prisoner-finance-ui-application-insights`

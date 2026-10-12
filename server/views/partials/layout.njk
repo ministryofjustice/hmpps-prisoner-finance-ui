@@ -7,6 +7,8 @@
 {%- set mainClasses = "govuk-body" -%}
 
 {% block head %}
+  {%- include "../partials/analytics.njk" %}
+
   <link href="{{ '/assets/css/index.css' | assetMap }}" rel="stylesheet"/>
   {%- for css in feComponents.cssIncludes -%}
   <link href="{{ css }}" nonce="{{ cspNonce }}" rel="stylesheet" />
