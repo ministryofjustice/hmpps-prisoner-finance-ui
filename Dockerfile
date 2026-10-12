@@ -19,7 +19,7 @@ WORKDIR /app
 
 RUN npm install -g npm@12.0.2
 
-COPY package*.json .allowed-scripts.mjs .npmrc ./
+COPY package*.json .npmrc ./
 RUN NPM_CONFIG_AUDIT=false NPM_CONFIG_FUND=false npm run setup
 ENV NODE_ENV='production'
 
