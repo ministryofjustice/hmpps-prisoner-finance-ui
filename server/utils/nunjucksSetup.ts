@@ -45,6 +45,8 @@ export default function nunjucksSetup(app: express.Express): void {
   app.locals.applicationName = 'HMPPS Prisoner Finance Ui'
   app.locals.environmentName = config.environmentName
   app.locals.environmentNameColour = config.environmentName === 'PRE-PRODUCTION' ? 'govuk-tag--green' : ''
+  app.locals.appInsightsConnectionString = config.appInsightsConnectionString
+
   let assetManifest: Record<string, string> = {}
 
   try {
