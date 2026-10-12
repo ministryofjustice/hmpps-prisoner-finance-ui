@@ -65,10 +65,8 @@ export const buildMojSelectedFilter = (
     }
   })
 
-  return Object.entries(selectedMap).map(
-    ([category, items]): SelectedFilterCategory => ({
-      heading: { text: category },
-      items,
-    }),
-  )
+  return Object.entries(selectedMap).map(([category, items]): SelectedFilterCategory => ({
+    heading: { text: category },
+    items,
+  }))
 }
