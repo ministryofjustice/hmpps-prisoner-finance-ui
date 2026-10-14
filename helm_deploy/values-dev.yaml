@@ -25,6 +25,3 @@ generic-service:
 
     ENVIRONMENT_NAME: DEV
     AUDIT_ENABLED: "true"
-
-generic-prometheus-alerts:
-  alertSeverity: hmpps-prisoner-finance-ui-dev
