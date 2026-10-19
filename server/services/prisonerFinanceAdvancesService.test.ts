@@ -1,6 +1,9 @@
 import PrisonerFinanceAdvancesApiClient from '../clients/prisonerFinanceAdvancesApi'
 import { Page } from '../interfaces/Pageable'
-import { PrisonerAdvanceBalanceResponse } from '../interfaces/PrisonerAdvanceBalanceResponse'
+import {
+  PrisonerAdvanceBalanceResponse,
+  PrisonerAdvancesBalanceResponse,
+} from '../interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
 import PrisonerFinanceAdvancesService from './prisonerFinanceAdvancesService'
@@ -23,13 +26,11 @@ describe('PrisonerFinanceAdvancesService', () => {
     it('should call the API client', async () => {
       const prisonNumber = 'A123BCD'
 
-      const expectedResponse: PrisonerAdvanceBalanceResponse = {
-        amount: 100,
-        weeklyAmount: 1,
-        outstandingAmount: 90,
+      const expectedResponse: PrisonerAdvancesBalanceResponse = {
+        advancesAmount: 100,
+        weeklyPaymentAmount: 1,
+        balancesOutstanding: 90,
         balanceDateTime: '',
-        paymentsRemaining: 4,
-        nextPaymentDate: '',
       }
 
       apiClient.getAdvancesBalance.mockResolvedValue(expectedResponse)
@@ -46,11 +47,11 @@ describe('PrisonerFinanceAdvancesService', () => {
       const advanceId = '1'
 
       const expectedResponse: PrisonerAdvanceBalanceResponse = {
-        amount: 100,
-        weeklyAmount: 1,
-        outstandingAmount: 90,
+        advanceAmount: 100,
+        weeklyPaymentAmount: 1,
+        balanceOutstanding: 90,
         balanceDateTime: '',
-        paymentsRemaining: 4,
+        remainingPayments: 4,
         nextPaymentDate: '',
       }
 
@@ -68,17 +69,20 @@ describe('PrisonerFinanceAdvancesService', () => {
 
       const advance: PrisonerAdvanceResponse = {
         id: '',
-        prisonNumber,
-        legacyAdvanceNumber: 123,
-        createdAt: '',
-        createdBy: '',
-        date: '',
-        advanceAmount: 110,
-        paymentAmount: 11,
-        startPayments: '',
+        legacyPaymentProfileId: 123,
+        legacyInformationNumber: '123444',
+        prisonNumber: 'A123XS',
+        prisonID: 'LEI',
+        amount: 10000,
+        createdOn: '',
+        repaymentStartDate: '',
+        repaymentAmount: 10,
         reference: '',
-        advanceLocation: 'LEI',
+        comment: '',
+        createdBy: '',
         status: 'ACTIVE',
+        updatedAt: '',
+        generalLedgerUUID: '',
       }
 
       const pagedResponse: Page<PrisonerAdvanceResponse> = {
@@ -102,17 +106,20 @@ describe('PrisonerFinanceAdvancesService', () => {
 
       const advance: PrisonerAdvanceResponse = {
         id: '',
-        prisonNumber,
-        legacyAdvanceNumber: 123,
-        createdAt: '',
-        createdBy: '',
-        date: '',
-        advanceAmount: 110,
-        paymentAmount: 11,
-        startPayments: '',
+        legacyPaymentProfileId: 123,
+        legacyInformationNumber: '123444',
+        prisonNumber: 'A123XS',
+        prisonID: 'LEI',
+        amount: 10000,
+        createdOn: '',
+        repaymentStartDate: '',
+        repaymentAmount: 10,
         reference: '',
-        advanceLocation: 'LEI',
+        comment: '',
+        createdBy: '',
         status: 'ACTIVE',
+        updatedAt: '',
+        generalLedgerUUID: '',
       }
 
       const pagedResponse: Page<PrisonerAdvanceResponse> = {
@@ -126,7 +133,9 @@ describe('PrisonerFinanceAdvancesService', () => {
 
       apiClient.getAdvances.mockResolvedValue(pagedResponse)
 
-      await service.getAdvances(prisonNumber, '1', true)
+      const pageNumber = '1'
+      const hasValidationErrors = true
+      await service.getAdvances(prisonNumber, pageNumber, hasValidationErrors)
 
       expect(apiClient.getAdvances).not.toHaveBeenCalled()
     })
@@ -135,6 +144,7 @@ describe('PrisonerFinanceAdvancesService', () => {
   describe('getAdvancePayments', () => {
     const advancePayment: PrisonerAdvancePaymentsResponse = {
       id: '1',
+      transactionId: '',
       prisonNumber: 'AB123XS',
       legacyAdvanceNumber: 1,
       createdAt: '',

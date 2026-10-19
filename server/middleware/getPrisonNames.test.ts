@@ -10,6 +10,7 @@ import getPrisonNames from './getPrisonNames'
 import FeatureFlagService from '../services/featureFlagService'
 import PrisonerFinanceHoldsService from '../services/prisonerFinanceHoldsService'
 import prisonNamesCache from './prisonNamesCache'
+import PrisonerFinanceAdvancesService from '../services/prisonerFinanceAdvancesService'
 
 jest.mock('../services/prisonRegisterService')
 jest.mock('./prisonNamesCache')
@@ -24,6 +25,7 @@ describe('getPrisonNames', () => {
   const prisonPermissionsService = null as undefined as PermissionsService
   const featureFlagService = null as undefined as FeatureFlagService
   const prisonerFinanceHoldsService = null as undefined as PrisonerFinanceHoldsService
+  const prisonerFinanceAdvancesService = null as undefined as PrisonerFinanceAdvancesService
 
   let mockReq: Request
   let mockRes: Response
@@ -39,6 +41,7 @@ describe('getPrisonNames', () => {
     prisonPermissionsService,
     featureFlagService,
     prisonerFinanceHoldsService,
+    prisonerFinanceAdvancesService,
   }
 
   beforeEach(() => {

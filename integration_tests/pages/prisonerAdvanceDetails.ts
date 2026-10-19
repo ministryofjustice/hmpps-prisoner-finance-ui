@@ -14,13 +14,13 @@ export default class PrisonerAdvanceDetailPage extends AbstractPage {
 
   readonly bottomPagination: Locator
 
-  readonly ThisAdvanceBalanceCard: Locator
+  readonly thisAdvanceBalanceCard: Locator
 
-  readonly OutstandingBalanceCard: Locator
+  readonly outstandingBalanceCard: Locator
 
-  readonly WeeklyPaymentsBalanceCard: Locator
+  readonly weeklyPaymentsBalanceCard: Locator
 
-  readonly PaymentsRemainingBalanceCard: Locator
+  readonly paymentsRemainingBalanceCard: Locator
 
   private constructor(page: Page, headerText: string) {
     super(page)
@@ -33,19 +33,19 @@ export default class PrisonerAdvanceDetailPage extends AbstractPage {
     this.topPagination = page.getByRole('navigation', { name: 'Pagination' }).nth(0)
     this.bottomPagination = page.getByRole('navigation', { name: 'Pagination' }).nth(1)
 
-    this.ThisAdvanceBalanceCard = page
+    this.thisAdvanceBalanceCard = page
       .locator('.hmpps-balance-card')
       .filter({ has: page.getByRole('heading', { name: 'This advance', exact: true }) })
 
-    this.OutstandingBalanceCard = page
+    this.outstandingBalanceCard = page
       .locator('.hmpps-balance-card')
       .filter({ has: page.getByRole('heading', { name: 'Balance outstanding', exact: true }) })
 
-    this.WeeklyPaymentsBalanceCard = page
+    this.weeklyPaymentsBalanceCard = page
       .locator('.hmpps-balance-card')
       .filter({ has: page.getByRole('heading', { name: 'Weekly payments', exact: true }) })
 
-    this.PaymentsRemainingBalanceCard = page
+    this.paymentsRemainingBalanceCard = page
       .locator('.hmpps-balance-card')
       .filter({ has: page.getByRole('heading', { name: 'Payments remaining', exact: true }) })
   }

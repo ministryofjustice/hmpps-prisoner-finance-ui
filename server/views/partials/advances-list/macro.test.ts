@@ -22,17 +22,20 @@ describe('Prisoner Finance Component: Advances list', () => {
 
   const advance: PrisonerAdvanceResponse = {
     id: '',
-    prisonNumber: 'AB123XZ',
-    legacyAdvanceNumber: 11,
-    createdAt: '',
-    createdBy: 'TEST',
-    date: '2026-03-10T10:48:28.094Z',
-    advanceAmount: 10,
-    paymentAmount: 1,
-    startPayments: '2026-03-10T10:48:28.094Z',
+    legacyPaymentProfileId: 123,
+    legacyInformationNumber: '12344',
+    prisonNumber: 'AX123DS',
+    prisonID: 'LEI',
+    amount: 1000,
+    createdOn: '2024-06-18T00:00:00.000000',
+    repaymentStartDate: '2024-06-18T00:00:00.000000',
+    repaymentAmount: 10,
     reference: '',
-    advanceLocation: 'LEI',
-    status: 'Active',
+    comment: '',
+    createdBy: '',
+    status: 'ACTIVE',
+    updatedAt: '2024-06-18T00:00:00.000000',
+    generalLedgerUUID: '',
   }
 
   beforeAll(() => {

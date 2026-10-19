@@ -1,5 +1,6 @@
 export interface PrisonerAdvancePaymentsResponse {
   id: string
+  transactionId: string
   prisonNumber: string
   legacyAdvanceNumber: number
   createdAt: string

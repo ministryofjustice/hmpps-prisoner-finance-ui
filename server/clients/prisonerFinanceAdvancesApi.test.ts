@@ -25,11 +25,11 @@ describe('Prison Finance Advances Api', () => {
   describe('getAdvancesBalance', () => {
     it('should call the API', async () => {
       const expectedResponse: PrisonerAdvanceBalanceResponse = {
-        amount: 100,
-        weeklyAmount: 1,
-        outstandingAmount: 90,
+        advanceAmount: 100,
+        weeklyPaymentAmount: 1,
+        balanceOutstanding: 90,
         balanceDateTime: '',
-        paymentsRemaining: 4,
+        remainingPayments: 4,
         nextPaymentDate: '',
       }
 
@@ -50,11 +50,11 @@ describe('Prison Finance Advances Api', () => {
   describe('getAdvanceBalance', () => {
     it('should call the API', async () => {
       const expectedResponse: PrisonerAdvanceBalanceResponse = {
-        amount: 100,
-        weeklyAmount: 1,
-        outstandingAmount: 90,
+        advanceAmount: 100,
+        weeklyPaymentAmount: 1,
+        balanceOutstanding: 90,
         balanceDateTime: '',
-        paymentsRemaining: 4,
+        remainingPayments: 4,
         nextPaymentDate: '',
       }
 
@@ -75,18 +75,21 @@ describe('Prison Finance Advances Api', () => {
   describe('getAdvances', () => {
     it('should call the API', async () => {
       const advance: PrisonerAdvanceResponse = {
-        id: '1',
-        prisonNumber: 'A123ABC',
-        legacyAdvanceNumber: 1,
-        createdAt: '',
-        createdBy: 'TEST',
-        date: '',
-        advanceAmount: 10,
-        paymentAmount: 1,
-        startPayments: '',
+        id: '',
+        legacyPaymentProfileId: 123,
+        legacyInformationNumber: '12343',
+        prisonNumber: 'A123BX',
+        prisonID: 'LEI',
+        amount: 10,
+        createdOn: '',
+        repaymentStartDate: '',
+        repaymentAmount: 10,
         reference: '',
-        advanceLocation: 'LEI',
-        status: 'Active',
+        comment: '',
+        createdBy: 'TEST',
+        status: 'ACTIVE',
+        updatedAt: '',
+        generalLedgerUUID: '',
       }
 
       const pagedResponse: Page<PrisonerAdvanceResponse> = {
@@ -120,6 +123,7 @@ describe('Prison Finance Advances Api', () => {
     it('should call the API', async () => {
       const advancePayment: PrisonerAdvancePaymentsResponse = {
         id: '1',
+        transactionId: '',
         prisonNumber: 'A123BCD',
         legacyAdvanceNumber: 1,
         createdAt: '',

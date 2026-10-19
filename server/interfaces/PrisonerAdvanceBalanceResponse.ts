@@ -1,8 +1,15 @@
 export interface PrisonerAdvanceBalanceResponse {
   balanceDateTime: string
-  amount: number
-  outstandingAmount: number
-  weeklyAmount: number
-  paymentsRemaining: number
+  advanceAmount: number
+  balanceOutstanding: number
+  weeklyPaymentAmount: number
+  remainingPayments: number
   nextPaymentDate: string
+}
+
+export interface PrisonerAdvancesBalanceResponse {
+  balanceDateTime: string
+  advancesAmount: number
+  balancesOutstanding: number
+  weeklyPaymentAmount: number
 }

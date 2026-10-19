@@ -1,14 +1,17 @@
 export interface PrisonerAdvanceResponse {
   id: string
+  legacyPaymentProfileId: number
+  legacyInformationNumber: string
   prisonNumber: string
-  legacyAdvanceNumber: number
-  createdAt: string
-  createdBy: string
-  date: string
-  advanceAmount: number
-  paymentAmount: number
-  startPayments: string
+  prisonID: string
+  amount: number
+  createdOn: string
+  repaymentStartDate: string
+  repaymentAmount: number
   reference: string
-  advanceLocation: string
+  comment: string
+  createdBy: string
   status: string
+  updatedAt: string
+  generalLedgerUUID: string
 }

@@ -3,7 +3,10 @@ import { asSystem, RestClient } from '@ministryofjustice/hmpps-rest-client'
 import config from '../config'
 import logger from '../../logger'
 import { Page } from '../interfaces/Pageable'
-import { PrisonerAdvanceBalanceResponse } from '../interfaces/PrisonerAdvanceBalanceResponse'
+import {
+  PrisonerAdvanceBalanceResponse,
+  PrisonerAdvancesBalanceResponse,
+} from '../interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 
@@ -12,7 +15,7 @@ export default class PrisonerFinanceAdvancesApiClient extends RestClient {
     super('Prisoner Finance Advances API', config.apis.prisonerFinanceAdvancesApi, logger, authenticationClient)
   }
 
-  async getAdvancesBalance(prisonNumber: string): Promise<PrisonerAdvanceBalanceResponse> {
+  async getAdvancesBalance(prisonNumber: string): Promise<PrisonerAdvancesBalanceResponse> {
     return this.get(
       {
         path: `/advances/${prisonNumber}/balance`,

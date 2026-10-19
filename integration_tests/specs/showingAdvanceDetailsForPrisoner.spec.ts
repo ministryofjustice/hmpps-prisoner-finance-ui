@@ -19,6 +19,7 @@ test.describe('Show advances for prisoner', () => {
   const advancePaymentsPayload: PrisonerAdvancePaymentsResponse[] = [
     {
       id: '1',
+      transactionId: '',
       prisonNumber,
       legacyAdvanceNumber: 10,
       createdAt: '2026-10-10T10:48:28.094Z',
@@ -29,6 +30,7 @@ test.describe('Show advances for prisoner', () => {
     },
     {
       id: '2',
+      transactionId: '',
       prisonNumber,
       legacyAdvanceNumber: 16,
       createdAt: '2026-10-11T10:48:28.094Z',
@@ -39,6 +41,7 @@ test.describe('Show advances for prisoner', () => {
     },
     {
       id: '3',
+      transactionId: '',
       prisonNumber,
       legacyAdvanceNumber: 10,
       createdAt: '2026-10-16T10:48:28.094Z',
@@ -49,6 +52,7 @@ test.describe('Show advances for prisoner', () => {
     },
     {
       id: '4',
+      transactionId: '',
       prisonNumber,
       legacyAdvanceNumber: 10,
       createdAt: '2026-10-17T10:48:28.094Z',
@@ -59,6 +63,7 @@ test.describe('Show advances for prisoner', () => {
     },
     {
       id: '5',
+      transactionId: '',
       prisonNumber,
       legacyAdvanceNumber: 10,
       createdAt: '2026-10-19T10:48:28.094Z',
@@ -110,10 +115,10 @@ test.describe('Show advances for prisoner', () => {
       ].join('\n'),
     )
 
-    expect(prisonerAdvancesPage.ThisAdvanceBalanceCard).toBeVisible()
-    expect(prisonerAdvancesPage.OutstandingBalanceCard).toBeVisible()
-    expect(prisonerAdvancesPage.WeeklyPaymentsBalanceCard).toBeVisible()
-    expect(prisonerAdvancesPage.PaymentsRemainingBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.thisAdvanceBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.outstandingBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.weeklyPaymentsBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.paymentsRemainingBalanceCard).toBeVisible()
   })
 
   test('Should display no payments when the user does not have any payment', async ({ page }) => {
@@ -127,10 +132,10 @@ test.describe('Show advances for prisoner', () => {
     await expect(noAdvancesMessage).toBeVisible()
     await expect(noAdvancesMessage).toHaveText('No payments to show')
 
-    expect(prisonerAdvancesPage.ThisAdvanceBalanceCard).toBeVisible()
-    expect(prisonerAdvancesPage.OutstandingBalanceCard).toBeVisible()
-    expect(prisonerAdvancesPage.WeeklyPaymentsBalanceCard).toBeVisible()
-    expect(prisonerAdvancesPage.PaymentsRemainingBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.thisAdvanceBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.outstandingBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.weeklyPaymentsBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.paymentsRemainingBalanceCard).toBeVisible()
   })
 
   test(`Should render pagination component and allow progression`, async ({ page }) => {

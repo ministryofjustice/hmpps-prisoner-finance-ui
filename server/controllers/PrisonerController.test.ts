@@ -17,7 +17,10 @@ import { PrisonerHoldsBalanceResponse } from '../interfaces/PrisonerHoldsBalance
 import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 import PrisonerFinanceAdvancesService from '../services/prisonerFinanceAdvancesService'
 import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
-import { PrisonerAdvanceBalanceResponse } from '../interfaces/PrisonerAdvanceBalanceResponse'
+import {
+  PrisonerAdvanceBalanceResponse,
+  PrisonerAdvancesBalanceResponse,
+} from '../interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 
 jest.mock('../applicationInfo')
@@ -963,13 +966,11 @@ describe('PrisonerController', () => {
         },
       } as unknown as Request
 
-      const advanceBalances: PrisonerAdvanceBalanceResponse = {
+      const advanceBalances: PrisonerAdvancesBalanceResponse = {
         balanceDateTime: '',
-        amount: 100,
-        outstandingAmount: 10,
-        weeklyAmount: 1,
-        paymentsRemaining: 4,
-        nextPaymentDate: '',
+        advancesAmount: 100,
+        balancesOutstanding: 10,
+        weeklyPaymentAmount: 1,
       }
       const prisonerAdvances: PrisonerAdvanceResponse[] = []
 
@@ -1054,10 +1055,10 @@ describe('PrisonerController', () => {
 
       const mockAdvanceBalance: PrisonerAdvanceBalanceResponse = {
         balanceDateTime: '',
-        amount: 100,
-        outstandingAmount: 10,
-        weeklyAmount: 1,
-        paymentsRemaining: 4,
+        advanceAmount: 100,
+        balanceOutstanding: 10,
+        weeklyPaymentAmount: 1,
+        remainingPayments: 4,
         nextPaymentDate: '',
       }
 

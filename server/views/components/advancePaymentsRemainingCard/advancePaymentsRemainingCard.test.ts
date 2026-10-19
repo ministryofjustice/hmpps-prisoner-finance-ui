@@ -25,7 +25,7 @@ describe('View Components - BalanceCard', () => {
   it('should render the card', () => {
     const $ = renderCard({
       heading: 'Payments remaining',
-      paymentsRemaining: 10,
+      remainingPayments: 10,
       nextPaymentDate: '2026-10-10T10:48:28.094Z',
     })
 

@@ -12,7 +12,7 @@ import PrisonApiService from '../../../services/prisonApiService'
 import PrisonerFinanceAdvancesService from '../../../services/prisonerFinanceAdvancesService'
 import { PrisonerAdvanceResponse } from '../../../interfaces/PrisonerAdvanceResponse'
 import FeatureFlagService from '../../../services/featureFlagService'
-import { PrisonerAdvanceBalanceResponse } from '../../../interfaces/PrisonerAdvanceBalanceResponse'
+import { PrisonerAdvancesBalanceResponse } from '../../../interfaces/PrisonerAdvanceBalanceResponse'
 
 jest.mock('../../../services/prisonerFinanceService')
 jest.mock('../../../services/prisonerSearchService')
@@ -35,7 +35,7 @@ const prisonerFinanceAdvancesService = new PrisonerFinanceAdvancesService(
 
 let app: Express
 
-describe('Prisoners', () => {
+describe('Prisoner Advances', () => {
   beforeEach(() => {
     featureFlagService.isFeatureEnabled.mockReturnValue(Promise.resolve(true))
 
@@ -61,13 +61,11 @@ describe('Prisoners', () => {
       bookingId: '123456',
     })
 
-    const advanceBalances: PrisonerAdvanceBalanceResponse = {
+    const advanceBalances: PrisonerAdvancesBalanceResponse = {
       balanceDateTime: '',
-      amount: 100,
-      outstandingAmount: 10,
-      weeklyAmount: 1,
-      paymentsRemaining: 4,
-      nextPaymentDate: '',
+      advancesAmount: 100,
+      balancesOutstanding: 10,
+      weeklyPaymentAmount: 1,
     }
     const prisonerAdvances: PrisonerAdvanceResponse[] = []
 

@@ -22,6 +22,7 @@ describe('Prisoner Finance Component: Advance Payments list', () => {
 
   const advancePayment: PrisonerAdvancePaymentsResponse = {
     id: '',
+    transactionId: '',
     prisonNumber: 'AB123XZ',
     legacyAdvanceNumber: 11,
     createdAt: '',

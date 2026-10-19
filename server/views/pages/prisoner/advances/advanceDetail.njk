@@ -22,28 +22,28 @@
       {{ balanceCard({
         heading: "This advance",
         subHeading: 'Total',
-        amount: advanceBalance.amount
+        amount: advanceBalance.advanceAmount
       }) }}
     </li>
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ balanceCard({
         heading: "Balance outstanding",
         subHeading: 'Total',
-        amount: advanceBalance.outstandingAmount
+        amount: advanceBalance.balanceOutstanding
       }) }}
     </li>
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ balanceCard({
         heading: "Weekly payments",
         subHeading: 'Total',
-        amount: advanceBalance.weeklyAmount
+        amount: advanceBalance.weeklyPaymentAmount
       }) }}
     </li>
     <li class="govuk-grid-column-one-quarter card-group__item">
       {{ advancePaymentsRemainingCard({
         heading: "Payments remaining",
         subHeading: 'Total',
-        paymentsRemaining: advanceBalance.paymentsRemaining,
+        paymentsRemaining: advanceBalance.remainingPayments,
         nextPaymentDate: advanceBalance.nextPaymentDate
       }) }}
     </li>

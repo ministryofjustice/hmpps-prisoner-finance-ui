@@ -14,17 +14,17 @@
 
     {% set advanceAmount %}
       <a href='/prisoner/{{prisonNumber}}/money/advances/detail/{{advance.id}}'>
-        {{advance.advanceAmount | penceToPound }}
+        {{advance.amount | penceToPound }}
       </a>
     {% endset %}
     {% set rowData = [
-      { text: advance.date | formatDateForView | safe },
+      { text: advance.createdOn | formatDateForView | safe },
       { html: advanceAmount, format: "numeric" },
-      { text: advance.paymentAmount | penceToPound, format: "numeric"  },
-      { text: advance.startPayments | formatDate("dd/MM/yyyy")  },
+      { text: advance.repaymentAmount | penceToPound, format: "numeric"  },
+      { text: advance.repaymentStartDate | formatDate("dd/MM/yyyy")  },
       { text: advance.reference },
       { text: advance.createdBy },
-      { text: advance.advanceLocation | convertPrisonIdToName(prisonNames)   },
+      { text: advance.prisonID | convertPrisonIdToName(prisonNames)   },
       { html: advanceStatus}
       ] %}
     {% set rows = (rows.push(rowData), rows) %}

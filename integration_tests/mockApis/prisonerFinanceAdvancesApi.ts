@@ -1,4 +1,7 @@
-import { PrisonerAdvanceBalanceResponse } from '../../server/interfaces/PrisonerAdvanceBalanceResponse'
+import {
+  PrisonerAdvanceBalanceResponse,
+  PrisonerAdvancesBalanceResponse,
+} from '../../server/interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvanceResponse } from '../../server/interfaces/PrisonerAdvanceResponse'
 import { PrisonerAdvancePaymentsResponse } from '../../server/interfaces/PrisonerAdvancePaymentsResponse'
 
@@ -30,13 +33,11 @@ const stubGetAdvancesBalance = (prisonNumber: string) =>
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       jsonBody: {
-        amount: 10,
-        weeklyAmount: 1,
-        outstandingAmount: 3,
         balanceDateTime: '',
-        paymentsRemaining: 1,
-        nextPaymentDate: '2026-03-10T10:48:28.094Z',
-      } as PrisonerAdvanceBalanceResponse,
+        advancesAmount: 10,
+        balancesOutstanding: 3,
+        weeklyPaymentAmount: 1,
+      } as PrisonerAdvancesBalanceResponse,
     },
   })
 
@@ -50,11 +51,11 @@ const stubGetAdvanceBalance = (prisonNumber: string, advanceId: string) =>
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
       jsonBody: {
-        amount: 10,
-        weeklyAmount: 1,
-        outstandingAmount: 3,
+        advanceAmount: 10,
+        weeklyPaymentAmount: 1,
+        balanceOutstanding: 3,
         balanceDateTime: '',
-        paymentsRemaining: 1,
+        remainingPayments: 1,
         nextPaymentDate: '2026-03-10T10:48:28.094Z',
       } as PrisonerAdvanceBalanceResponse,
     },
