@@ -7,10 +7,10 @@
   {% for payment in advancePayments %}
 
     {% set rowData = [
-      { text: payment.date | formatDateForView | safe },
-      { text: payment.paymentAmount | penceToPound, format: "numeric"  },
+      { text: payment.createdAt | formatDateForView | safe },
+      { text: payment.amount | penceToPound, format: "numeric"  },
       { text: payment.createdBy },
-      { text: payment.advanceLocation | convertPrisonIdToName(prisonNames)}
+      { text: payment.location | convertPrisonIdToName(prisonNames)}
       ] %}
     {% set rows = (rows.push(rowData), rows) %}
   {% endfor %}

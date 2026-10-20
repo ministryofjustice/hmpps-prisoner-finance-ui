@@ -123,14 +123,12 @@ describe('Prison Finance Advances Api', () => {
     it('should call the API', async () => {
       const advancePayment: PrisonerAdvancePaymentsResponse = {
         id: '1',
+        advanceId: '',
         transactionId: '',
-        prisonNumber: 'A123BCD',
-        legacyAdvanceNumber: 1,
         createdAt: '',
         createdBy: 'TEST',
-        date: '',
-        paymentAmount: 10,
-        advanceLocation: 'LEI',
+        amount: 10,
+        location: 'LEI',
       }
 
       const pagedResponse: Page<PrisonerAdvancePaymentsResponse> = {

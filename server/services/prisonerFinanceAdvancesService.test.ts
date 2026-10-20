@@ -145,13 +145,11 @@ describe('PrisonerFinanceAdvancesService', () => {
     const advancePayment: PrisonerAdvancePaymentsResponse = {
       id: '1',
       transactionId: '',
-      prisonNumber: 'AB123XS',
-      legacyAdvanceNumber: 1,
       createdAt: '',
       createdBy: 'TEST',
-      date: '',
-      paymentAmount: 10,
-      advanceLocation: 'LEI',
+      amount: 10,
+      location: 'LEI',
+      advanceId: '',
     }
 
     const pagedResponse: Page<PrisonerAdvancePaymentsResponse> = {

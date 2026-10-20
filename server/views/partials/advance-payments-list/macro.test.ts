@@ -22,14 +22,12 @@ describe('Prisoner Finance Component: Advance Payments list', () => {
 
   const advancePayment: PrisonerAdvancePaymentsResponse = {
     id: '',
+    advanceId: '',
     transactionId: '',
-    prisonNumber: 'AB123XZ',
-    legacyAdvanceNumber: 11,
-    createdAt: '',
     createdBy: 'TEST',
-    date: '2026-03-10T10:48:28.094Z',
-    paymentAmount: 1,
-    advanceLocation: 'LEI',
+    createdAt: '2026-03-10T10:48:28.094Z',
+    amount: 1,
+    location: 'LEI',
   }
 
   beforeAll(() => {
