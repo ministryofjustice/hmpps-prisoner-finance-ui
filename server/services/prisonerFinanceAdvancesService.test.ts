@@ -13,6 +13,53 @@ jest.mock('../clients/prisonerFinanceAdvancesApi')
 describe('PrisonerFinanceAdvancesService', () => {
   const apiClient = new PrisonerFinanceAdvancesApiClient(null) as jest.Mocked<PrisonerFinanceAdvancesApiClient>
   let service: PrisonerFinanceAdvancesService
+  const prisonNumber = 'A123BCD'
+
+  const advance: PrisonerAdvanceResponse = {
+    id: '',
+    legacyPaymentProfileId: 123,
+    legacyInformationNumber: '123444',
+    prisonNumber: 'A123XS',
+    prisonID: 'LEI',
+    amount: 10000,
+    createdOn: '',
+    repaymentStartDate: '',
+    repaymentAmount: 10,
+    reference: '',
+    comment: '',
+    createdBy: '',
+    status: 'ACTIVE',
+    updatedAt: '',
+    generalLedgerUUID: '',
+  }
+
+  const pagedResponse: Page<PrisonerAdvanceResponse> = {
+    content: [advance],
+    totalElements: 1,
+    totalPages: 1,
+    pageNumber: 1,
+    pageSize: 25,
+    isLastPage: true,
+  }
+
+  const advancePayment: PrisonerAdvancePaymentsResponse = {
+    id: '1',
+    transactionId: '',
+    createdAt: '',
+    createdBy: 'TEST',
+    amount: 10,
+    location: 'LEI',
+    advanceId: '',
+  }
+
+  const pagedAdvancesResponse: Page<PrisonerAdvancePaymentsResponse> = {
+    content: [advancePayment],
+    totalElements: 1,
+    totalPages: 1,
+    pageNumber: 1,
+    pageSize: 25,
+    isLastPage: true,
+  }
 
   beforeEach(() => {
     service = new PrisonerFinanceAdvancesService(apiClient)
@@ -24,8 +71,6 @@ describe('PrisonerFinanceAdvancesService', () => {
 
   describe('getAdvancesBalance', () => {
     it('should call the API client', async () => {
-      const prisonNumber = 'A123BCD'
-
       const expectedResponse: PrisonerAdvancesBalanceResponse = {
         advancesAmount: 100,
         weeklyPaymentAmount: 1,
@@ -43,7 +88,6 @@ describe('PrisonerFinanceAdvancesService', () => {
 
   describe('getAdvanceBalance', () => {
     it('should call the API client', async () => {
-      const prisonNumber = 'A123BCD'
       const advanceId = '1'
 
       const expectedResponse: PrisonerAdvanceBalanceResponse = {
@@ -65,35 +109,6 @@ describe('PrisonerFinanceAdvancesService', () => {
 
   describe('getAdvances', () => {
     it('should call the API client', async () => {
-      const prisonNumber = 'A123BCD'
-
-      const advance: PrisonerAdvanceResponse = {
-        id: '',
-        legacyPaymentProfileId: 123,
-        legacyInformationNumber: '123444',
-        prisonNumber: 'A123XS',
-        prisonID: 'LEI',
-        amount: 10000,
-        createdOn: '',
-        repaymentStartDate: '',
-        repaymentAmount: 10,
-        reference: '',
-        comment: '',
-        createdBy: '',
-        status: 'ACTIVE',
-        updatedAt: '',
-        generalLedgerUUID: '',
-      }
-
-      const pagedResponse: Page<PrisonerAdvanceResponse> = {
-        content: [advance],
-        totalElements: 1,
-        totalPages: 1,
-        pageNumber: 1,
-        pageSize: 25,
-        isLastPage: true,
-      }
-
       apiClient.getAdvances.mockResolvedValue(pagedResponse)
 
       await service.getAdvances(prisonNumber, '1', false)
@@ -102,35 +117,6 @@ describe('PrisonerFinanceAdvancesService', () => {
     })
 
     it('should not call the API client when there are validation errors', async () => {
-      const prisonNumber = 'A123BCD'
-
-      const advance: PrisonerAdvanceResponse = {
-        id: '',
-        legacyPaymentProfileId: 123,
-        legacyInformationNumber: '123444',
-        prisonNumber: 'A123XS',
-        prisonID: 'LEI',
-        amount: 10000,
-        createdOn: '',
-        repaymentStartDate: '',
-        repaymentAmount: 10,
-        reference: '',
-        comment: '',
-        createdBy: '',
-        status: 'ACTIVE',
-        updatedAt: '',
-        generalLedgerUUID: '',
-      }
-
-      const pagedResponse: Page<PrisonerAdvanceResponse> = {
-        content: [advance],
-        totalElements: 1,
-        totalPages: 1,
-        pageNumber: 1,
-        pageSize: 25,
-        isLastPage: true,
-      }
-
       apiClient.getAdvances.mockResolvedValue(pagedResponse)
 
       const pageNumber = '1'
@@ -142,29 +128,8 @@ describe('PrisonerFinanceAdvancesService', () => {
   })
 
   describe('getAdvancePayments', () => {
-    const advancePayment: PrisonerAdvancePaymentsResponse = {
-      id: '1',
-      transactionId: '',
-      createdAt: '',
-      createdBy: 'TEST',
-      amount: 10,
-      location: 'LEI',
-      advanceId: '',
-    }
-
-    const pagedResponse: Page<PrisonerAdvancePaymentsResponse> = {
-      content: [advancePayment],
-      totalElements: 1,
-      totalPages: 1,
-      pageNumber: 1,
-      pageSize: 25,
-      isLastPage: true,
-    }
-
     it('should call the API client', async () => {
-      const prisonNumber = 'A123BCD'
-
-      apiClient.getAdvancePayments.mockResolvedValue(pagedResponse)
+      apiClient.getAdvancePayments.mockResolvedValue(pagedAdvancesResponse)
 
       await service.getAdvancePayments(prisonNumber, '123', '1', false)
 
@@ -172,8 +137,6 @@ describe('PrisonerFinanceAdvancesService', () => {
     })
 
     it('should not call the API client when there are validation errors', async () => {
-      const prisonNumber = 'A123BCD'
-
       await service.getAdvancePayments(prisonNumber, '123', '1', true)
 
       expect(apiClient.getAdvancePayments).not.toHaveBeenCalled()

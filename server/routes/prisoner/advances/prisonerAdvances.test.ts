@@ -98,10 +98,6 @@ describe('Prisoner Advances', () => {
     })
   })
 
-  afterEach(() => {
-    jest.resetAllMocks()
-  })
-
   const prisonNumber = 'A9971EC'
 
   const emptyPageAdvancesResponse: Page<PrisonerAdvanceResponse> = {
