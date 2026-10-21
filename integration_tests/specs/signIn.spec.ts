@@ -25,6 +25,20 @@ test.describe('SignIn', () => {
     await expect(page.getByRole('heading')).toHaveText('Sign in')
   })
 
+  test('Unauthorised user gets authorisation error page', async ({ page }) => {
+    await login(page, { name: 'An Unauthorised TestUser', roles: ['SOME_OTHER_ROLE'] })
+    await page.goto('/')
+
+    await expect(page.getByRole('heading')).toHaveText('Authorisation Error')
+  })
+
+  test('Unauthorised user navigating to sign in page directed to auth', async ({ page }) => {
+    await login(page, { name: 'A Unauthorised TestUser', roles: ['SOME_OTHER_ROLE'] })
+    await page.goto('/sign-in')
+
+    await expect(page.getByRole('heading')).toHaveText('Sign in')
+  })
+
   test('User name visible in header', async ({ page }) => {
     await login(page, { name: 'A TestUser' })
 
