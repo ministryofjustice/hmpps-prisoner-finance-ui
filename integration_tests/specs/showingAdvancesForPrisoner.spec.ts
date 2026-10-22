@@ -143,6 +143,61 @@ test.describe('Show advances for prisoner', () => {
     expect(prisonerAdvancesPage.WeeklyPaymentsBalanceCard).toBeVisible()
   })
 
+  test('Should display No Data when a string field is missing in the advances list', async ({ page }) => {
+    const advancesWithNoDataFieldsPayload: PrisonerAdvanceResponse[] = [
+      {
+        id: '1',
+        prisonNumber: 'AB123XZ',
+        legacyPaymentProfileId: 11,
+        createdOn: '2026-03-10T10:48:28.094Z',
+        createdBy: 'TEST',
+        repaymentStartDate: '2026-03-10T10:48:28.094Z',
+        amount: 10,
+        repaymentAmount: 1,
+        reference: '',
+        prisonID: 'LEI',
+        status: 'Active',
+        legacyInformationNumber: '1234',
+        comment: 'comment test',
+        updatedAt: '',
+        generalLedgerUUID: '',
+      },
+      {
+        id: '1',
+        prisonNumber: 'AB123XZ',
+        legacyPaymentProfileId: 11,
+        createdOn: '2026-03-10T10:48:28.094Z',
+        createdBy: '',
+        repaymentStartDate: '2026-03-10T10:48:28.094Z',
+        amount: 10,
+        repaymentAmount: 1,
+        reference: 'Test',
+        prisonID: 'LEI',
+        status: 'Active',
+        legacyInformationNumber: '1234',
+        comment: 'comment test',
+        updatedAt: '',
+        generalLedgerUUID: '',
+      },
+    ]
+    await setupGetAdvancesStubs(advancesWithNoDataFieldsPayload)
+
+    const prisonerAdvancesPage = await PrisonerAdvancesPage.load(page, prisonNumber)
+
+    expect(prisonerAdvancesPage.advancesList).toBeVisible()
+    expect(prisonerAdvancesPage.advancesList).toContainText(
+      [
+        'Date Advance amount Payment amount Start payments Reference Created by Location Status',
+        '10/03/202610:48 0.10 0.01 10/03/2026 No data TEST Leeds (HMP) Active',
+        '10/03/202610:48 0.10 0.01 10/03/2026 Test No data Leeds (HMP) Active',
+      ].join('\n'),
+    )
+
+    expect(prisonerAdvancesPage.currentAdvancesBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.OutstandingBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.WeeklyPaymentsBalanceCard).toBeVisible()
+  })
+
   test('Should display no advances when the user does not have any advances', async ({ page }) => {
     await setupGetAdvancesStubs([])
 

@@ -22,8 +22,8 @@
       { html: advanceAmount, format: "numeric" },
       { text: advance.repaymentAmount | penceToPound, format: "numeric"  },
       { text: advance.repaymentStartDate | formatDate("dd/MM/yyyy")  },
-      { text: advance.reference },
-      { text: advance.createdBy },
+      { text: advance.reference | default('No data', true) },
+      { text: advance.createdBy | default('No data', true) },
       { text: advance.prisonID | convertPrisonIdToName(prisonNames)   },
       { html: advanceStatus}
       ] %}
