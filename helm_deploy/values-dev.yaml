@@ -22,6 +22,7 @@ generic-service:
     INCENTIVES_UI_URL: "https://incentives-ui-dev.hmpps.service.justice.gov.uk/incentive-reviews/prisoner"
     CATEGORIZATION_DASHBOARD_URL: "https://dev.offender-categorisation.service.justice.gov.uk/landing"
     PRISONER_FINANCE_HOLDS_API_URL: "https://prisoner-finance-holds-api-dev.hmpps.service.justice.gov.uk"
+    PRISONER_FINANCE_ADVANCES_API_URL: "https://prisoner-finance-advances-api-dev.hmpps.service.justice.gov.uk"
 
     ENVIRONMENT_NAME: DEV
     AUDIT_ENABLED: "true"

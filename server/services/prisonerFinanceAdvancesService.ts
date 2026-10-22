@@ -1,0 +1,58 @@
+import PrisonerFinanceAdvancesApiClient from '../clients/prisonerFinanceAdvancesApi'
+import { Page } from '../interfaces/Pageable'
+import {
+  PrisonerAdvanceBalanceResponse,
+  PrisonerAdvancesBalanceResponse,
+} from '../interfaces/PrisonerAdvanceBalanceResponse'
+import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
+import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
+
+const emptyPageAdvances: Page<PrisonerAdvanceResponse> = {
+  content: [],
+  totalElements: 0,
+  totalPages: 1,
+  pageNumber: 1,
+  pageSize: 99,
+  isLastPage: true,
+}
+
+const emptyPagePayments: Page<PrisonerAdvancePaymentsResponse> = {
+  content: [],
+  totalElements: 0,
+  totalPages: 1,
+  pageNumber: 1,
+  pageSize: 99,
+  isLastPage: true,
+}
+
+export default class PrisonerFinanceAdvancesService {
+  constructor(private readonly prisonerFinanceAdvancesApiClient: PrisonerFinanceAdvancesApiClient) {}
+
+  getAdvancesBalances(prisonNumber: string): Promise<PrisonerAdvancesBalanceResponse> {
+    return this.prisonerFinanceAdvancesApiClient.getAdvancesBalance(prisonNumber)
+  }
+
+  getAdvanceBalance(advanceId: string): Promise<PrisonerAdvanceBalanceResponse> {
+    return this.prisonerFinanceAdvancesApiClient.getAdvanceBalance(advanceId)
+  }
+
+  getAdvances(
+    prisonNumber: string,
+    pageNumber: string,
+    hasValidationErrors: boolean,
+  ): Promise<Page<PrisonerAdvanceResponse>> {
+    return !hasValidationErrors
+      ? this.prisonerFinanceAdvancesApiClient.getAdvances(prisonNumber, pageNumber)
+      : Promise.resolve(emptyPageAdvances)
+  }
+
+  getAdvancePayments(
+    advanceId: string,
+    pageNumber: string,
+    hasValidationErrors: boolean,
+  ): Promise<Page<PrisonerAdvancePaymentsResponse>> {
+    return !hasValidationErrors
+      ? this.prisonerFinanceAdvancesApiClient.getAdvancePayments(advanceId, pageNumber)
+      : Promise.resolve(emptyPagePayments)
+  }
+}
