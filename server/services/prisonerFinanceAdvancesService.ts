@@ -32,8 +32,8 @@ export default class PrisonerFinanceAdvancesService {
     return this.prisonerFinanceAdvancesApiClient.getAdvancesBalance(prisonNumber)
   }
 
-  getAdvanceBalance(prisonNumber: string, advanceId: string): Promise<PrisonerAdvanceBalanceResponse> {
-    return this.prisonerFinanceAdvancesApiClient.getAdvanceBalance(prisonNumber, advanceId)
+  getAdvanceBalance(advanceId: string): Promise<PrisonerAdvanceBalanceResponse> {
+    return this.prisonerFinanceAdvancesApiClient.getAdvanceBalance(advanceId)
   }
 
   getAdvances(
@@ -47,13 +47,12 @@ export default class PrisonerFinanceAdvancesService {
   }
 
   getAdvancePayments(
-    prisonNumber: string,
     advanceId: string,
     pageNumber: string,
     hasValidationErrors: boolean,
   ): Promise<Page<PrisonerAdvancePaymentsResponse>> {
     return !hasValidationErrors
-      ? this.prisonerFinanceAdvancesApiClient.getAdvancePayments(prisonNumber, advanceId, pageNumber)
+      ? this.prisonerFinanceAdvancesApiClient.getAdvancePayments(advanceId, pageNumber)
       : Promise.resolve(emptyPagePayments)
   }
 }

@@ -40,7 +40,7 @@ describe('Prison Finance Advances Api', () => {
       expect(response).toEqual(expectedResponse)
       expect(getSpy).toHaveBeenCalledWith(
         {
-          path: `/advances/A123BCD/balance`,
+          path: `/advances/account/A123BCD/balance`,
         },
         asSystem(),
       )
@@ -60,12 +60,12 @@ describe('Prison Finance Advances Api', () => {
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
 
-      const response = await client.getAdvanceBalance('A123BCD', '123')
+      const response = await client.getAdvanceBalance('123')
 
       expect(response).toEqual(expectedResponse)
       expect(getSpy).toHaveBeenCalledWith(
         {
-          path: `/advances/A123BCD/balance/123`,
+          path: `/advances/123/balance`,
         },
         asSystem(),
       )
@@ -142,12 +142,12 @@ describe('Prison Finance Advances Api', () => {
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(pagedResponse)
 
-      const response = await client.getAdvancePayments('A123BCD', '1', '1')
+      const response = await client.getAdvancePayments('123', '1')
 
       expect(response).toEqual(pagedResponse)
       expect(getSpy).toHaveBeenCalledWith(
         {
-          path: `/advances/A123BCD/1/payments`,
+          path: `/advances/123/repayments`,
           query: {
             pageNumber: '1',
             pageSize: '25',

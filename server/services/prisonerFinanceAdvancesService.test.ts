@@ -88,8 +88,6 @@ describe('PrisonerFinanceAdvancesService', () => {
 
   describe('getAdvanceBalance', () => {
     it('should call the API client', async () => {
-      const advanceId = '1'
-
       const expectedResponse: PrisonerAdvanceBalanceResponse = {
         advanceAmount: 100,
         weeklyPaymentAmount: 1,
@@ -101,9 +99,9 @@ describe('PrisonerFinanceAdvancesService', () => {
 
       apiClient.getAdvanceBalance.mockResolvedValue(expectedResponse)
 
-      await service.getAdvanceBalance(prisonNumber, advanceId)
+      await service.getAdvanceBalance(prisonNumber)
 
-      expect(apiClient.getAdvanceBalance).toHaveBeenCalledWith(prisonNumber, advanceId)
+      expect(apiClient.getAdvanceBalance).toHaveBeenCalledWith(prisonNumber)
     })
   })
 
@@ -131,13 +129,15 @@ describe('PrisonerFinanceAdvancesService', () => {
     it('should call the API client', async () => {
       apiClient.getAdvancePayments.mockResolvedValue(pagedAdvancesResponse)
 
-      await service.getAdvancePayments(prisonNumber, '123', '1', false)
+      const hasValidationErrors = false
+      await service.getAdvancePayments('123', '1', hasValidationErrors)
 
-      expect(apiClient.getAdvancePayments).toHaveBeenCalledWith(prisonNumber, '123', '1')
+      expect(apiClient.getAdvancePayments).toHaveBeenCalledWith('123', '1')
     })
 
     it('should not call the API client when there are validation errors', async () => {
-      await service.getAdvancePayments(prisonNumber, '123', '1', true)
+      const hasValidationErrors = true
+      await service.getAdvancePayments('123', '1', hasValidationErrors)
 
       expect(apiClient.getAdvancePayments).not.toHaveBeenCalled()
     })

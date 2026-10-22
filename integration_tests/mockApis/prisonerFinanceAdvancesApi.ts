@@ -27,7 +27,7 @@ const stubGetAdvancesBalance = (prisonNumber: string) =>
   stubFor({
     request: {
       method: 'GET',
-      urlPathPattern: `${API_PREFIX}/advances/${prisonNumber}/balance`,
+      urlPathPattern: `${API_PREFIX}/advances/account/${prisonNumber}/balance`,
     },
     response: {
       status: 200,
@@ -41,11 +41,11 @@ const stubGetAdvancesBalance = (prisonNumber: string) =>
     },
   })
 
-const stubGetAdvanceBalance = (prisonNumber: string, advanceId: string) =>
+const stubGetAdvanceBalance = (advanceId: string) =>
   stubFor({
     request: {
       method: 'GET',
-      urlPathPattern: `${API_PREFIX}/advances/${prisonNumber}/balance/${advanceId}`,
+      urlPathPattern: `${API_PREFIX}/advances/${advanceId}/balance`,
     },
     response: {
       status: 200,
@@ -107,7 +107,7 @@ const stubGetAdvancePayments = (
   stubFor({
     request: {
       method: 'GET',
-      urlPathPattern: `${API_PREFIX}/advances/${prisonNumber}/${advanceId}/payments`,
+      urlPathPattern: `${API_PREFIX}/advances/${advanceId}/repayments`,
       queryParameters: {
         pageNumber:
           options && options.pageNumber.toString() ? { equalTo: options.pageNumber.toString() } : { equalTo: '1' },
@@ -128,11 +128,11 @@ const stubGetAdvancePayments = (
     },
   })
 
-const stubGetAdvancePaymentReturnNotFound = (prisonNumber: string, advanceId: string) =>
+const stubGetAdvancePaymentReturnNotFound = (advanceId: string) =>
   stubFor({
     request: {
       method: 'GET',
-      urlPathPattern: `${API_PREFIX}/advances/${prisonNumber}/${advanceId}/payments`,
+      urlPathPattern: `${API_PREFIX}/advances/${advanceId}/repayments`,
     },
     response: {
       status: 404,

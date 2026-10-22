@@ -18,16 +18,16 @@ export default class PrisonerFinanceAdvancesApiClient extends RestClient {
   async getAdvancesBalance(prisonNumber: string): Promise<PrisonerAdvancesBalanceResponse> {
     return this.get(
       {
-        path: `/advances/${prisonNumber}/balance`,
+        path: `/advances/account/${prisonNumber}/balance`,
       },
       asSystem(),
     )
   }
 
-  async getAdvanceBalance(prisonNumber: string, advanceId: string): Promise<PrisonerAdvanceBalanceResponse> {
+  async getAdvanceBalance(advanceId: string): Promise<PrisonerAdvanceBalanceResponse> {
     return this.get(
       {
-        path: `/advances/${prisonNumber}/balance/${advanceId}`,
+        path: `/advances/${advanceId}/balance`,
       },
       asSystem(),
     )
@@ -46,14 +46,10 @@ export default class PrisonerFinanceAdvancesApiClient extends RestClient {
     )
   }
 
-  async getAdvancePayments(
-    prisonNumber: string,
-    advanceId: string,
-    pageNumber: string,
-  ): Promise<Page<PrisonerAdvancePaymentsResponse>> {
+  async getAdvancePayments(advanceId: string, pageNumber: string): Promise<Page<PrisonerAdvancePaymentsResponse>> {
     return this.get(
       {
-        path: `/advances/${prisonNumber}/${advanceId}/payments`,
+        path: `/advances/${advanceId}/repayments`,
         query: {
           pageNumber,
           pageSize: '25',

@@ -79,7 +79,7 @@ test.describe('Show advances for prisoner', () => {
     },
   ) => {
     await baseStubs()
-    await prisonerFinanceAdvancesApi.stubGetAdvanceBalance(prisonNumber, advanceId)
+    await prisonerFinanceAdvancesApi.stubGetAdvanceBalance(advanceId)
     await prisonerFinanceAdvancesApi.stubGetAdvancePayments(prisonNumber, advanceId, paymentsPayload, options)
   }
 
@@ -251,13 +251,13 @@ test.describe('Show advances for prisoner', () => {
 
     await prisonerAdvancesPage.backLink.click()
 
-    await expect(page).toHaveURL(new RegExp(`.*/prisoner/${prisonNumber}/advances$`))
+    await expect(page).toHaveURL(new RegExp(`.*/prisoner/${prisonNumber}/money/advances$`))
   })
 
   test('Should display not found page when advance does not exist', async ({ page }) => {
     await baseStubs()
 
-    await stubGetAdvancePaymentReturnNotFound(prisonNumber, advanceId)
+    await stubGetAdvancePaymentReturnNotFound(advanceId)
 
     await page.goto(`/prisoner/${prisonNumber}/money/advances/detail/${advanceId}`)
 

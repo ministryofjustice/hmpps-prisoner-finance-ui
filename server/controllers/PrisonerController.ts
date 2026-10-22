@@ -106,13 +106,8 @@ class PrisonerController {
     const pageNumber = parsedQueries.data.page.toString()
 
     const [advanceBalance, pagedAdvancePayments] = await Promise.all([
-      this.services.prisonerFinanceAdvancesService.getAdvanceBalance(prisonNumber, advanceId),
-      this.services.prisonerFinanceAdvancesService.getAdvancePayments(
-        prisonNumber,
-        advanceId,
-        pageNumber,
-        !parsedQueries.success,
-      ),
+      this.services.prisonerFinanceAdvancesService.getAdvanceBalance(advanceId),
+      this.services.prisonerFinanceAdvancesService.getAdvancePayments(advanceId, pageNumber, !parsedQueries.success),
     ])
 
     const { content, ...paginationItems } = parsedQueries.success

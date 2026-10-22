@@ -1085,16 +1085,8 @@ describe('PrisonerController', () => {
         subjectId: prisonNumber,
       })
 
-      expect(prisonerFinanceAdvancesService.getAdvanceBalance).toHaveBeenCalledWith(
-        mockReq.params.prisonNumber,
-        advanceId,
-      )
-      expect(prisonerFinanceAdvancesService.getAdvancePayments).toHaveBeenCalledWith(
-        prisonNumber,
-        advanceId,
-        '1',
-        false,
-      )
+      expect(prisonerFinanceAdvancesService.getAdvanceBalance).toHaveBeenCalledWith(advanceId)
+      expect(prisonerFinanceAdvancesService.getAdvancePayments).toHaveBeenCalledWith(advanceId, '1', false)
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/advances/advanceDetail', {
         prisonNumber: mockReq.params.prisonNumber,
