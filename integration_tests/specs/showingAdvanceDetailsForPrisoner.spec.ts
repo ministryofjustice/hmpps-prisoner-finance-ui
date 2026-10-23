@@ -106,9 +106,23 @@ test.describe('Show advances for prisoner', () => {
     )
 
     expect(prisonerAdvancesPage.thisAdvanceBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.thisAdvanceBalanceCard.locator('[data-testid="balanceCardTotal"]')).toHaveText('£0.10')
+
     expect(prisonerAdvancesPage.outstandingBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.outstandingBalanceCard.locator('[data-testid="balanceCardTotal"]')).toHaveText('£0.03')
+
     expect(prisonerAdvancesPage.weeklyPaymentsBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.weeklyPaymentsBalanceCard.locator('[data-testid="balanceCardTotal"]')).toHaveText(
+      '£0.01',
+    )
+
     expect(prisonerAdvancesPage.paymentsRemainingBalanceCard).toBeVisible()
+    expect(prisonerAdvancesPage.paymentsRemainingBalanceCard.locator('[data-testid="remainingPayments"]')).toHaveText(
+      '10',
+    )
+    expect(prisonerAdvancesPage.paymentsRemainingBalanceCard.locator('[data-testid="nextPaymentDate"]')).toHaveText(
+      'Next: 10 Mar 2026',
+    )
   })
 
   test('Should display no payments when the user does not have any payment', async ({ page }) => {
