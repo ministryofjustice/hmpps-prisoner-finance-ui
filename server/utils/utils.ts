@@ -87,6 +87,19 @@ export const formatPrisonerAccountType = (accountType: string): string => {
   }
 }
 
+export const formatAdvanceStatus = (status: string): string => {
+  switch (status.toUpperCase()) {
+    case 'ACTIVE':
+      return 'Active'
+    case 'PAID':
+      return 'Paid'
+    case 'WRITTEN_OFF':
+      return 'Written off'
+    default:
+      return status
+  }
+}
+
 interface RadioButtonOption {
   value: string
   text: string
