@@ -13,7 +13,7 @@ import {
   prisonerProfileBacklink,
   properCaseName,
   convertToTitleCase,
-  formatAdvanceStatus,
+  formatStatus,
 } from './utils'
 import { lastNameCommaFirstName, formatDate } from './formatUtils'
 import config from '../config'
@@ -37,7 +37,7 @@ export const setUpNunJucksFilters = (njkEnv: nunjucks.Environment, assetManifest
   njkEnv.addFilter('formatPrisonerAccountType', formatPrisonerAccountType)
   njkEnv.addFilter('properCaseName', properCaseName)
   njkEnv.addFilter('convertToTitleCase', convertToTitleCase)
-  njkEnv.addFilter('formatAdvanceStatus', formatAdvanceStatus)
+  njkEnv.addFilter('formatStatus', formatStatus)
 }
 
 export default function nunjucksSetup(app: express.Express): void {

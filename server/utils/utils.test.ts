@@ -8,7 +8,7 @@ import {
   datePickerToISODate,
   formatPrisonerAccountType,
   mapItemsForRadioButtons,
-  formatAdvanceStatus,
+  formatStatus,
 } from './utils'
 import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
 
@@ -132,12 +132,12 @@ describe('formatPrisonerAccountType', () => {
 
 describe('formatAdvanceStatus', () => {
   it.each([
-    [`Returns what it recieves`, 'junk', 'junk'],
+    [`Returns what it recieves`, 'junk', 'Junk'],
     ['Paid', 'PAID', 'Paid'],
     ['Written off', 'WRITTEN_OFF', 'Written off'],
     ['Active', 'ACTIVE', 'Active'],
   ])('%s formatAdvanceStatus(%s, %s)', (_: string, input: string, expected: string) => {
-    expect(formatAdvanceStatus(input)).toEqual(expected)
+    expect(formatStatus(input)).toEqual(expected)
   })
 })
 
