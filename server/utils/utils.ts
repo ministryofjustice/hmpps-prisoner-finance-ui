@@ -87,6 +87,10 @@ export const formatPrisonerAccountType = (accountType: string): string => {
   }
 }
 
+export const formatStatus = (status: string): string => {
+  return properCase(status).replace('_', ' ')
+}
+
 interface RadioButtonOption {
   value: string
   text: string
