@@ -61,12 +61,12 @@ export default class PrisonerSpendsPage extends AbstractPage {
   }
 
   static async load(page: Page, prisonNumber: string): Promise<PrisonerSpendsPage> {
-    await page.goto(`/prisoner/${prisonNumber}/money/spends`)
+    await page.goto(`/prisoner/${prisonNumber}/account/spends`)
     return this.verifyOnPage(page, prisonNumber)
   }
 
   static async verifyOnPage(page: Page, prisonNumber: string): Promise<PrisonerSpendsPage> {
-    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}/money/spends`)
+    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}/account/spends`)
 
     const prisonerSpendsPage = new PrisonerSpendsPage(page, 'Spends transactions')
     await expect(prisonerSpendsPage.heading).toBeVisible()

@@ -56,7 +56,7 @@ export default class PrisonerMoneyPage extends AbstractPage {
     subAccountName?: string,
   ): Promise<PrisonerMoneyPage> {
     expect(new URL(page.url()).pathname).toEqual(
-      `/prisoner/${prisonNumber}/money${`${subAccountName || ''}` !== '' ? `/${subAccountName}` : ''}`,
+      `/prisoner/${prisonNumber}/account${`${subAccountName || ''}` !== '' ? `/${subAccountName}` : ''}`,
     )
 
     const prisonerMoneyPage = new PrisonerMoneyPage(page, headerText)

@@ -227,7 +227,7 @@ test.describe('Show advances for prisoner', () => {
       totalPages: 2,
     })
 
-    await page.goto(`/prisoner/${prisonNumber}/money/advances/detail/${advanceId}?page=2`)
+    await page.goto(`/prisoner/${prisonNumber}/advances/detail/${advanceId}?page=2`)
     const prisonerAdvancesPage = await PrisonerAdvanceDetailPage.verifyOnPage(page, prisonNumber, advanceId)
 
     await expect(prisonerAdvancesPage.topPagination).toBeVisible()
@@ -265,7 +265,7 @@ test.describe('Show advances for prisoner', () => {
 
     await prisonerAdvancesPage.backLink.click()
 
-    await expect(page).toHaveURL(new RegExp(`.*/prisoner/${prisonNumber}/money/advances$`))
+    await expect(page).toHaveURL(new RegExp(`.*/prisoner/${prisonNumber}/advances$`))
   })
 
   test('Should display not found page when advance does not exist', async ({ page }) => {
@@ -273,8 +273,8 @@ test.describe('Show advances for prisoner', () => {
 
     await stubGetAdvancePaymentReturnNotFound(advanceId)
 
-    await page.goto(`/prisoner/${prisonNumber}/money/advances/detail/${advanceId}`)
+    await page.goto(`/prisoner/${prisonNumber}/advances/detail/${advanceId}`)
 
-    await PageNotFoundErrorPage.verifyOnPage(page, `/prisoner/${prisonNumber}/money/advances/detail/${advanceId}`)
+    await PageNotFoundErrorPage.verifyOnPage(page, `/prisoner/${prisonNumber}/advances/detail/${advanceId}`)
   })
 })

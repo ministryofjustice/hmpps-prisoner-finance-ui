@@ -24,9 +24,9 @@ export default function routes(services: Services): Router {
     prisonerNotFoundHandler,
   )
 
-  prisonerRouter.use('/:prisonNumber/money', prisonerTransactionsRouter(services))
-  prisonerRouter.use('/:prisonNumber/money', prisonerHoldsRouter(services))
-  prisonerRouter.use('/:prisonNumber/money', prisonerAdvancesRouter(services))
+  prisonerRouter.use('/:prisonNumber/account', prisonerTransactionsRouter(services))
+  prisonerRouter.use('/:prisonNumber', prisonerHoldsRouter(services))
+  prisonerRouter.use('/:prisonNumber', prisonerAdvancesRouter(services))
 
   prisonerRouter.get('/:prisonNumber', prisonerController.getProfile)
 

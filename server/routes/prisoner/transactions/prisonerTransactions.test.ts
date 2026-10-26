@@ -174,10 +174,10 @@ describe('Prisoners', () => {
     expect(response.status).toBe(404)
   }
 
-  describe('/prisoner/:prisonNumber/money', () => {
+  describe('/prisoner/:prisonNumber/account', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
       await verifyTransactionPageResponse(
-        `/prisoner/${prisonNumber}/money`,
+        `/prisoner/${prisonNumber}/account`,
         'Transactions for all sub accounts',
         AuditPage.PRISONER_TRANSACTIONS,
         false,
@@ -186,22 +186,22 @@ describe('Prisoners', () => {
     })
 
     it('should handle API errors (e.g. 404 Not Found)', async () => {
-      await verifyTransactionPageHandlesAPIErrors(`/prisoner/${prisonNumber}/money`)
+      await verifyTransactionPageHandlesAPIErrors(`/prisoner/${prisonNumber}/account`)
     })
 
     it('should handle API errors (e.g. 500)', async () => {
-      await verifyTransactionPageHandles500(`/prisoner/${prisonNumber}/money`, AuditPage.PRISONER_TRANSACTIONS)
+      await verifyTransactionPageHandles500(`/prisoner/${prisonNumber}/account`, AuditPage.PRISONER_TRANSACTIONS)
     })
 
     test('should return not found when user does not have permission', async () => {
-      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/money')
+      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/account')
     })
   })
 
-  describe('/prisoner/:prisonNumber/money/private-cash', () => {
+  describe('/prisoner/:prisonNumber/account/private-cash', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
       await verifyTransactionPageResponse(
-        `/prisoner/${prisonNumber}/money/private-cash`,
+        `/prisoner/${prisonNumber}/account/private-cash`,
         'Private cash transactions',
         AuditPage.PRISONER_CASH_TRANSACTIONS,
         true,
@@ -210,25 +210,25 @@ describe('Prisoners', () => {
     })
 
     it('should handle API errors (e.g. 404 Not Found)', async () => {
-      await verifyTransactionPageHandlesAPIErrors(`/prisoner/${prisonNumber}/money/private-cash`)
+      await verifyTransactionPageHandlesAPIErrors(`/prisoner/${prisonNumber}/account/private-cash`)
     })
 
     it('should handle API errors (e.g. 500)', async () => {
       await verifyTransactionPageHandles500(
-        `/prisoner/${prisonNumber}/money/private-cash`,
+        `/prisoner/${prisonNumber}/account/private-cash`,
         AuditPage.PRISONER_CASH_TRANSACTIONS,
       )
     })
 
     test('should return not found when user does not have permission', async () => {
-      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/money/private-cash')
+      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/account/private-cash')
     })
   })
 
-  describe('/prisoner/:prisonNumber/money/spends', () => {
+  describe('/prisoner/:prisonNumber/account/spends', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
       await verifyTransactionPageResponse(
-        `/prisoner/${prisonNumber}/money/spends`,
+        `/prisoner/${prisonNumber}/account/spends`,
         'Spends transactions',
         AuditPage.PRISONER_SPENDS_TRANSACTIONS,
         true,
@@ -237,25 +237,25 @@ describe('Prisoners', () => {
     })
 
     it('should handle API errors (e.g. 404 Not Found)', async () => {
-      await verifyTransactionPageHandlesAPIErrors(`/prisoner/${prisonNumber}/money/spends`)
+      await verifyTransactionPageHandlesAPIErrors(`/prisoner/${prisonNumber}/account/spends`)
     })
 
     it('should handle API errors (e.g. 500)', async () => {
       await verifyTransactionPageHandles500(
-        `/prisoner/${prisonNumber}/money/spends`,
+        `/prisoner/${prisonNumber}/account/spends`,
         AuditPage.PRISONER_SPENDS_TRANSACTIONS,
       )
     })
 
     test('should return not found when user does not have permission', async () => {
-      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/money/spends')
+      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/account/spends')
     })
   })
 
-  describe('/prisoner/:prisonNumber/money/savings', () => {
+  describe('/prisoner/:prisonNumber/account/savings', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
       await verifyTransactionPageResponse(
-        `/prisoner/${prisonNumber}/money/savings`,
+        `/prisoner/${prisonNumber}/account/savings`,
         'Savings transactions',
         AuditPage.PRISONER_SAVINGS_TRANSACTIONS,
         true,
@@ -264,18 +264,18 @@ describe('Prisoners', () => {
     })
 
     it('should handle API errors (e.g. 404 Not Found)', async () => {
-      await verifyTransactionPageHandlesAPIErrors(`/prisoner/${prisonNumber}/money/savings`)
+      await verifyTransactionPageHandlesAPIErrors(`/prisoner/${prisonNumber}/account/savings`)
     })
 
     it('should handle API errors (e.g. 500)', async () => {
       await verifyTransactionPageHandles500(
-        `/prisoner/${prisonNumber}/money/savings`,
+        `/prisoner/${prisonNumber}/account/savings`,
         AuditPage.PRISONER_SAVINGS_TRANSACTIONS,
       )
     })
 
     test('should return 404 when user does not have permission', async () => {
-      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/money/savings')
+      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/account/savings')
     })
   })
 })

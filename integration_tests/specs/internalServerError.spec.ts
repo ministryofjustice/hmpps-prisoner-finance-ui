@@ -10,7 +10,7 @@ import IndexPage from '../pages/indexPage'
 
 test.describe('Internal server error', () => {
   const prisonNumber = 'A1234BC'
-  const errorPath = `/prisoner/${prisonNumber}/money`
+  const errorPath = `/prisoner/${prisonNumber}/account`
 
   test.beforeEach(async ({ page }) => {
     await resetStubs()
