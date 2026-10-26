@@ -149,17 +149,17 @@ describe('Prisoners', () => {
     expect(response.status).toBe(404)
   }
 
-  describe('/prisoner/:prisonNumber/money/holds', () => {
+  describe('/prisoner/:prisonNumber/holds', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
-      await verifyHoldsPageResponse(`/prisoner/${prisonNumber}/money/holds`, 'Holds', AuditPage.PRISONER_HOLDS)
+      await verifyHoldsPageResponse(`/prisoner/${prisonNumber}/holds`, 'Holds', AuditPage.PRISONER_HOLDS)
     })
 
     it('should handle API errors (e.g. 500)', async () => {
-      await verifyHoldsPageHandles500(`/prisoner/${prisonNumber}/money/holds`, AuditPage.PRISONER_HOLDS)
+      await verifyHoldsPageHandles500(`/prisoner/${prisonNumber}/holds`, AuditPage.PRISONER_HOLDS)
     })
 
     test('should return not found when user does not have permission', async () => {
-      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/money/holds')
+      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/holds')
     })
   })
 })

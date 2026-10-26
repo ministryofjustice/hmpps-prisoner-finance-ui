@@ -26,7 +26,7 @@
           heading: "Spends",
           amount: subAccountBalances.spends.amount,
           link: {
-            href: "/prisoner/"+prisonNumber+"/money/spends",
+            href: "/prisoner/"+prisonNumber+"/account/spends",
             text: "Spends transactions"
           }
         }) }}
@@ -36,7 +36,7 @@
           heading: "Private cash",
           amount: subAccountBalances.privateCash.amount,
           link: {
-            href: "/prisoner/"+prisonNumber+"/money/private-cash",
+            href: "/prisoner/"+prisonNumber+"/account/private-cash",
             text: "Private cash transactions"
           }
         }) }}
@@ -46,7 +46,7 @@
           heading: "Savings",
           amount: subAccountBalances.savings.amount,
           link: {
-            href: "/prisoner/"+prisonNumber+"/money/savings",
+            href: "/prisoner/"+prisonNumber+"/account/savings",
             text: "Savings transactions"
           }
         }) }}
@@ -57,7 +57,7 @@
             heading: "Holds",
             amount: subAccountBalances.holds.amount,
             link: {
-              href: "/prisoner/"+prisonNumber+"/money/holds",
+              href: "/prisoner/"+prisonNumber+"/holds",
               text: "Holds transactions"
             }
           }) }}
@@ -75,7 +75,7 @@
     </div>
 
     <p class="govuk-body">
-      <a href="/prisoner/{{prisonNumber}}/money" data-testid="transactions-page-link" >View all transactions</a>
+      <a href="/prisoner/{{prisonNumber}}/account" data-testid="transactions-page-link" >View all transactions</a>
     </p>
   {% endcall %}
 {% endblock %}

@@ -13,7 +13,7 @@ export default class AccountNotFoundErrorPage extends AbstractPage {
   }
 
   static async verifyOnPage(page: Page, prisonNumber: string): Promise<AccountNotFoundErrorPage> {
-    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}/money`)
+    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}/account`)
 
     const prisonerAccountNotFoundErrorPage = new AccountNotFoundErrorPage(page)
     await expect(prisonerAccountNotFoundErrorPage.heading).toBeVisible()

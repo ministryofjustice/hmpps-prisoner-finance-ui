@@ -17,7 +17,7 @@ export default class SubAccountNotFoundErrorPage extends AbstractPage {
     prisonNumber: string,
     subAccountReference: string,
   ): Promise<SubAccountNotFoundErrorPage> {
-    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}/money/${subAccountReference}`)
+    expect(new URL(page.url()).pathname).toEqual(`/prisoner/${prisonNumber}/account/${subAccountReference}`)
 
     const subAccountNotFoundErrorPage = new SubAccountNotFoundErrorPage(page)
     await expect(subAccountNotFoundErrorPage.heading).toBeVisible()

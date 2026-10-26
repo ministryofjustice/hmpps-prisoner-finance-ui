@@ -299,7 +299,7 @@ test.describe('Show advances for prisoner', () => {
       totalPages: 2,
     })
 
-    await page.goto(`/prisoner/${prisonNumber}/money/advances?page=2`)
+    await page.goto(`/prisoner/${prisonNumber}/advances?page=2`)
     const prisonerAdvancesPage = await PrisonerAdvancesPage.verifyOnPage(page, prisonNumber)
 
     await expect(prisonerAdvancesPage.topPagination).toBeVisible()

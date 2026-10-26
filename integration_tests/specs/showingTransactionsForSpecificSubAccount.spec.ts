@@ -163,12 +163,12 @@ test.describe('Showing all transactions for a specific sub account', () => {
     const prisonNumber = 'FF1234F'
 
     test(`Should explain that the account cannot be found`, async ({ page }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/savings`)
+      await page.goto(`/prisoner/${prisonNumber}/account/savings`)
       await SubAccountNotFoundErrorPage.verifyOnPage(page, prisonNumber, 'savings')
     })
 
     test('Should allow user to go back to use the service', async ({ page }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/savings`)
+      await page.goto(`/prisoner/${prisonNumber}/account/savings`)
       const prisonerNotFoundErrorPage = await SubAccountNotFoundErrorPage.verifyOnPage(page, prisonNumber, 'savings')
       await prisonerNotFoundErrorPage.continueButton.click()
 
@@ -188,12 +188,12 @@ test.describe('Showing all transactions for a specific sub account', () => {
     })
 
     test(`Should explain that the account cannot be found`, async ({ page }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/private-cash`)
+      await page.goto(`/prisoner/${prisonNumber}/account/private-cash`)
       await SubAccountNotFoundErrorPage.verifyOnPage(page, prisonNumber, 'private-cash')
     })
 
     test('Prisoner not found should allow user to go back to use the service', async ({ page }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/private-cash`)
+      await page.goto(`/prisoner/${prisonNumber}/account/private-cash`)
       const prisonerNotFoundErrorPage = await SubAccountNotFoundErrorPage.verifyOnPage(
         page,
         prisonNumber,
@@ -217,12 +217,12 @@ test.describe('Showing all transactions for a specific sub account', () => {
     })
 
     test(`Should explain that the account cannot be found`, async ({ page }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/spends`)
+      await page.goto(`/prisoner/${prisonNumber}/account/spends`)
       await SubAccountNotFoundErrorPage.verifyOnPage(page, prisonNumber, 'spends')
     })
 
     test('Should allow user to go back to use the service', async ({ page }) => {
-      await page.goto(`/prisoner/${prisonNumber}/money/spends`)
+      await page.goto(`/prisoner/${prisonNumber}/account/spends`)
       const prisonerNotFoundErrorPage = await SubAccountNotFoundErrorPage.verifyOnPage(page, prisonNumber, 'spends')
       await prisonerNotFoundErrorPage.continueButton.click()
 
@@ -240,8 +240,8 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
       await prisonRegisterApi.stubGetPrisonNames()
 
-      await page.goto(`/prisoner/${prisonNumber}/money/private-cash`)
-      await InternalServerErrorPage.verifyOnPage(page, `/prisoner/${prisonNumber}/money/private-cash`)
+      await page.goto(`/prisoner/${prisonNumber}/account/private-cash`)
+      await InternalServerErrorPage.verifyOnPage(page, `/prisoner/${prisonNumber}/account/private-cash`)
     })
 
     test('Should allow user to continue to use the service', async ({ page }) => {
@@ -253,11 +253,11 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await prisonerFinanceApi.stubGetPrisonerTransactionsInternalServerError(prisonNumber)
       await prisonRegisterApi.stubGetPrisonNames()
 
-      await page.goto(`/prisoner/${prisonNumber}/money/private-cash`)
+      await page.goto(`/prisoner/${prisonNumber}/account/private-cash`)
 
       const internalServerErrorPage = await InternalServerErrorPage.verifyOnPage(
         page,
-        `/prisoner/${prisonNumber}/money/private-cash`,
+        `/prisoner/${prisonNumber}/account/private-cash`,
       )
       await internalServerErrorPage.continueButton.click()
 
@@ -271,7 +271,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
 
       await prisonerSearchApi.stubGetPrisonerOutsideCaseload(prisonNumber)
 
-      await page.goto(`/prisoner/${prisonNumber}/money/private-cash`)
+      await page.goto(`/prisoner/${prisonNumber}/account/private-cash`)
 
       await SubAccountNotFoundErrorPage.verifyOnPage(page, prisonNumber, 'private-cash')
     })
@@ -372,7 +372,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber)
     await prisonRegisterApi.stubGetPrisonNames()
 
-    await page.goto(`/prisoner/${prisonNumber}/money?page=999`)
+    await page.goto(`/prisoner/${prisonNumber}/account?page=999`)
     await PageNotFoundErrorPage.verifyOnPage(page, prisonNumber)
   })
 
@@ -393,7 +393,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
   const casesValidFilters = [
     {
       caseName: 'just startDate',
-      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=10%2F10%2F2010&endDate=#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?startDate=10%2F10%2F2010&endDate=#filterForm`,
       action: async (page: PrisonerPrivateCashPage() => {
         await page.startDateFilter.fill('10/10/2010')
         await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
@@ -404,7 +404,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     },
     {
       caseName: 'both startDate and endDate',
-      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=10%2F10%2F2010&endDate=10%2F10%2F2020#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?startDate=10%2F10%2F2010&endDate=10%2F10%2F2020#filterForm`,
       action: async (page: PrisonerPrivateCashPage() => {
         await page.startDateFilter.fill('10/10/2010')
         await page.endDateFilter.fill('10/10/2020')
@@ -417,7 +417,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     },
     {
       caseName: 'just endDate',
-      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=&endDate=10%2F10%2F2020#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?startDate=&endDate=10%2F10%2F2020#filterForm`,
       action: async (page: PrisonerPrivateCashPage() => {
         await page.endDateFilter.fill('10/10/2020')
         await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
@@ -429,7 +429,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     {
       caseName: 'just debit',
       debit: 'true',
-      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=&endDate=&debit=true#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?startDate=&endDate=&debit=true#filterForm`,
       action: async (page: PrisonerPrivateCashPage() => {
         await page.debitFilter.click()
         await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
@@ -441,7 +441,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     {
       caseName: 'just credit',
       credit: 'true',
-      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=&endDate=&credit=true#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?startDate=&endDate=&credit=true#filterForm`,
       action: async (page: PrisonerPrivateCashPage() => {
         await page.creditFilter.click()
         await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
@@ -452,7 +452,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     },
     {
       caseName: 'both debit and credit',
-      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=&endDate=&credit=true&debit=true#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?startDate=&endDate=&credit=true&debit=true#filterForm`,
       action: async (page: PrisonerPrivateCashPage() => {
         await page.creditFilter.click()
         await page.debitFilter.click()
@@ -505,8 +505,8 @@ test.describe('Showing all transactions for a specific sub account', () => {
     {
       caseName: 'invalid startDate',
       startDateErrorMessage: 'Start date must be a real date, like 18/01/2026',
-      startUrl: `/prisoner/${prisonNumber}/money#filterForm`,
-      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=XXXX&endDate=#filterForm`,
+      startUrl: `/prisoner/${prisonNumber}/account#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?startDate=XXXX&endDate=#filterForm`,
       action: async (page: PrisonerPrivateCashPage() => {
         await page.startDateFilter.fill('XXXX')
         await page.applyFilterButton.click()
@@ -516,8 +516,8 @@ test.describe('Showing all transactions for a specific sub account', () => {
       caseName: 'invalid startDate and endDate',
       startDateErrorMessage: 'Start date must be a real date, like 18/01/2026',
       endDateErrorMessage: 'End date must be a real date, like 18/01/2026',
-      startUrl: `/prisoner/${prisonNumber}/money#filterForm`,
-      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=XXXX&endDate=XXXX#filterForm`,
+      startUrl: `/prisoner/${prisonNumber}/account#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?startDate=XXXX&endDate=XXXX#filterForm`,
       action: async (page: PrisonerPrivateCashPage() => {
         await page.startDateFilter.fill('XXXX')
         await page.endDateFilter.fill('XXXX')
@@ -527,8 +527,8 @@ test.describe('Showing all transactions for a specific sub account', () => {
     {
       caseName: 'invalid endDate',
       endDateErrorMessage: 'End date must be a real date, like 18/01/2026',
-      startUrl: `/prisoner/${prisonNumber}/money#filterForm`,
-      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=&endDate=99%2F99%2F9999#filterForm`,
+      startUrl: `/prisoner/${prisonNumber}/account#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?startDate=&endDate=99%2F99%2F9999#filterForm`,
       action: async (page: PrisonerPrivateCashPage() => {
         await page.endDateFilter.fill('99/99/9999')
         await page.applyFilterButton.click()
@@ -537,8 +537,8 @@ test.describe('Showing all transactions for a specific sub account', () => {
     {
       caseName: 'endate earlier than startDate',
       endDateErrorMessage: 'End date cannot be earlier than start date',
-      startUrl: `/prisoner/${prisonNumber}/money#filterForm`,
-      expectedUrl: `/prisoner/${prisonNumber}/money?startDate=10%2F10%2F2020&endDate=10%2F10%2F2010#filterForm`,
+      startUrl: `/prisoner/${prisonNumber}/account#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?startDate=10%2F10%2F2020&endDate=10%2F10%2F2010#filterForm`,
       action: async (page: PrisonerPrivateCashPage() => {
         await page.startDateFilter.fill('10/10/2020')
         await page.endDateFilter.fill('10/10/2010')
@@ -548,23 +548,23 @@ test.describe('Showing all transactions for a specific sub account', () => {
     {
       caseName: 'invalid debit',
       debitErrorMessage: 'Debit must be true or false\n',
-      startUrl: `/prisoner/${prisonNumber}/money?debit=xxxx#filterForm`,
-      expectedUrl: `/prisoner/${prisonNumber}/money?debit=xxxx#filterForm`,
+      startUrl: `/prisoner/${prisonNumber}/account?debit=xxxx#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?debit=xxxx#filterForm`,
       action: async (_page: PrisonerPrivateCashPage() => {},
     },
     {
       caseName: 'invalid credit',
       creditErrorMessage: 'Credit must be true or false\n',
-      startUrl: `/prisoner/${prisonNumber}/money?credit=xxxx#filterForm`,
-      expectedUrl: `/prisoner/${prisonNumber}/money?credit=xxxx#filterForm`,
+      startUrl: `/prisoner/${prisonNumber}/account?credit=xxxx#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?credit=xxxx#filterForm`,
       action: async (_page: PrisonerPrivateCashPage() => {},
     },
     {
       caseName: 'invalid debit and credit',
       debitErrorMessage: 'Debit must be true or false\n',
       creditErrorMessage: 'Credit must be true or false\n',
-      startUrl: `/prisoner/${prisonNumber}/money?credit=xxxx&debit=xxxx#filterForm`,
-      expectedUrl: `/prisoner/${prisonNumber}/money?credit=xxxx&debit=xxxx#filterForm`,
+      startUrl: `/prisoner/${prisonNumber}/account?credit=xxxx&debit=xxxx#filterForm`,
+      expectedUrl: `/prisoner/${prisonNumber}/account?credit=xxxx&debit=xxxx#filterForm`,
       action: async (_page: PrisonerPrivateCashPage() => {},
     },
   ]
@@ -645,7 +645,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     await applyFilterButton.click()
 
     await expect(page).toHaveURL(
-      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
+      `/prisoner/${prisonNumber}/account?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}#filterForm`,
     )
 
     await expect(startDateFilter).toBeVisible()
@@ -660,7 +660,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
 
     await startDatefilterTag.click()
     await expect(page).toHaveURL(
-      `/prisoner/${prisonNumber}/money?endDate=${encodeURIComponent(endDateVal)}&page=1#filterForm`,
+      `/prisoner/${prisonNumber}/account?endDate=${encodeURIComponent(endDateVal)}&page=1#filterForm`,
     )
     expect(await endDateFilter.inputValue()).toBe(endDateVal)
     expect(await startDateFilter.textContent()).toHaveLength(0)
@@ -697,14 +697,14 @@ test.describe('Showing all transactions for a specific sub account', () => {
     await applyFilterButton.click()
 
     await expect(page).toHaveURL(
-      `/prisoner/${prisonNumber}/money?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}&credit=true&debit=true#filterForm`,
+      `/prisoner/${prisonNumber}/account?startDate=${encodeURIComponent(startDateVal)}&endDate=${encodeURIComponent(endDateVal)}&credit=true&debit=true#filterForm`,
     )
 
     const clearFilters = page.getByText('Clear Filters')
 
     await clearFilters.click()
 
-    await expect(page).toHaveURL(`/prisoner/${prisonNumber}/money?#filterForm`)
+    await expect(page).toHaveURL(`/prisoner/${prisonNumber}/account?#filterForm`)
 
     expect(await prisonerPrivateCashPage.startDateFilter.textContent()).toHaveLength(0)
     expect(await prisonerPrivateCashPage.endDateFilter.textContent()).toHaveLength(0)
@@ -727,7 +727,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     const buildQueriesForPage = (pageNumber: number) =>
       `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
 
-    await page.goto(`/prisoner/${prisonNumber}/money${buildQueriesForPage(10)}`)
+    await page.goto(`/prisoner/${prisonNumber}/account${buildQueriesForPage(10)}`)
 
     const { topPagination, bottomPagination } = await PrisonerPrivateCashPage.verifyOnPage(page, prisonNumber)
     await expect(topPagination).toBeVisible()
@@ -787,7 +787,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     const buildQueriesForPage = (pageNumber: number) =>
       `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
 
-    await page.goto(`/prisoner/${prisonNumber}/money${buildQueriesForPage(10)}`)
+    await page.goto(`/prisoner/${prisonNumber}/account${buildQueriesForPage(10)}`)
 
     const { topPagination, bottomPagination } = await PrisonerPrivateCashPage.verifyOnPage(page, prisonNumber)
 
@@ -848,7 +848,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
     const buildQueriesForPage = (pageNumber: number) =>
       `?startDate=${encodeURIComponent('09/04/2026')}&endDate=${encodeURIComponent('12/04/2026')}&page=${pageNumber}&credit=true&debit=true`
 
-    await page.goto(`/prisoner/${prisonNumber}/money${buildQueriesForPage(10)}`)
+    await page.goto(`/prisoner/${prisonNumber}/account${buildQueriesForPage(10)}`)
 
     const { topPagination, bottomPagination } = await PrisonerPrivateCashPage.verifyOnPage(page, prisonNumber)
 
