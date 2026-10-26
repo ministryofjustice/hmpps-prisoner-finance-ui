@@ -13,6 +13,11 @@ export default function routes(services: Services): Router {
     return prisonerController.getTransactions(req, res, next)
   })
 
+  prisonerTransactionsRouter.get('/print-preview', (req: Request, res: Response, next: NextFunction) => {
+    res.locals.auditPage = AuditPage.PRISONER_TRANSACTIONS
+    return prisonerController.printTransactions(req, res, next)
+  })
+
   prisonerTransactionsRouter.get('/private-cash', (req: Request, res: Response, next: NextFunction) => {
     res.locals.subAccount = 'CASH'
     res.locals.headerTitle = 'Private cash transactions'

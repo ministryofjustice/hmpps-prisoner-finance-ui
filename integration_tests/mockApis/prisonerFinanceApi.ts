@@ -35,6 +35,7 @@ export const stubGetPrisonerTransactionsByPrisonNumber = (
     endDate?: string
     credit?: string
     debit?: string
+    description?: string
     pageNumber?: string
     pageSize?: string
     subAccountReference?: string
@@ -53,6 +54,7 @@ export const stubGetPrisonerTransactionsByPrisonNumber = (
         endDate: options && options.endDate ? { equalTo: options.endDate } : { absent: true },
         credit: options && options.credit ? { equalTo: options.credit } : { absent: true },
         debit: options && options.debit ? { equalTo: options.debit } : { absent: true },
+        description: options && options.description ? { equalTo: options.description } : { absent: true },
       },
     },
     response: {

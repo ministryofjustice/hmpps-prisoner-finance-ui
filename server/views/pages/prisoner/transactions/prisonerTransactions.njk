@@ -7,6 +7,8 @@
 {%- from "govuk/components/input/macro.njk" import govukInput -%}
 {%- from "moj/components/filter/macro.njk" import mojFilter -%}
 {%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
 
 {%- set pageTitle = headerTitle -%}
 {%- set backUrl = "/prisoner/" + prisonNumber -%}
@@ -146,6 +148,11 @@
       <div class="moj-filter-layout__content">
         <div class="moj-action-bar">
           <div class="moj-action-bar__filter moj-action-bar__filter--no-actions"></div>
+          {{ govukButton({
+            text: "Download or print transactions",
+            href:  "/prisoner/" + prisonNumber + '/account/print-preview' + printTransactionQueryString,
+            classes: "govuk-button--secondary"
+          }) }}
         </div>
 
       {% if hasValidationErrors %}

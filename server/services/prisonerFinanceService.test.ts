@@ -44,6 +44,7 @@ describe('AuditHistoryService', () => {
         prisonNumber,
         subAccountReference,
         page,
+        pageSize: '25',
         startDate,
         endDate,
         debit,
@@ -55,6 +56,7 @@ describe('AuditHistoryService', () => {
         prisonNumber,
         subAccountReference,
         page,
+        pageSize: '25',
         startDate,
         endDate,
         debit,
@@ -143,6 +145,7 @@ describe('AuditHistoryService', () => {
       const result = await service.getTransactionPage({
         prisonNumber,
         page,
+        pageSize: '25',
         startDate,
         endDate,
         description,
@@ -153,6 +156,7 @@ describe('AuditHistoryService', () => {
       expect(apiClient.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
         prisonNumber,
         page,
+        pageSize: '25',
         startDate,
         endDate,
         description,
@@ -174,6 +178,7 @@ describe('AuditHistoryService', () => {
       const result = await service.getTransactionPage({
         prisonNumber,
         page,
+        pageSize: '25',
         startDate,
         endDate,
         hasValidationErrors: true,

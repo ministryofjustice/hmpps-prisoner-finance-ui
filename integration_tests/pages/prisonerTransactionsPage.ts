@@ -28,6 +28,10 @@ export default class PrisonerTransactionsPage extends AbstractPage {
 
   readonly debitFilter: Locator
 
+  readonly searchDescriptionFilter: Locator
+
+  readonly printTransactionsButton: Locator
+
   private constructor(page: Page, headerText: string) {
     super(page)
     this.heading = page.getByRole('heading', { name: headerText, exact: true })
@@ -52,6 +56,9 @@ export default class PrisonerTransactionsPage extends AbstractPage {
     this.creditFilter = page.getByLabel('Credit', { exact: true })
     this.debitFilter = page.getByLabel('Debit', { exact: true })
     this.applyFilterButton = page.getByRole('button', { name: 'Apply filters', exact: true })
+    this.searchDescriptionFilter = page.getByLabel('Search by description', { exact: true })
+
+    this.printTransactionsButton = page.getByRole('button', { name: 'Download or print transactions' })
   }
 
   static async load(page: Page, prisonNumber: string): Promise<PrisonerTransactionsPage> {

@@ -41,7 +41,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
 
-      const response = await client.getPrisonerTransactionsByPrisonNumber({ prisonNumber, page: '1' })
+      const response = await client.getPrisonerTransactionsByPrisonNumber({ prisonNumber, page: '1', pageSize: '25' })
 
       expect(response).toEqual(expectedResponse)
       expect(getSpy).toHaveBeenCalledWith(
@@ -96,6 +96,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
           startDate,
           endDate,
           page: '1',
+          pageSize: '25',
           debit,
           credit,
           description,
@@ -165,6 +166,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         prisonNumber,
         subAccountReference,
         page: '1',
+        pageSize: '25',
       })
 
       expect(response).toEqual(expectedResponse)

@@ -43,6 +43,7 @@ export default class PrisonerFinanceApiClient extends RestClient {
     prisonNumber,
     subAccountReference,
     page = '1',
+    pageSize = '25',
     startDate,
     endDate,
     debit,
@@ -52,6 +53,7 @@ export default class PrisonerFinanceApiClient extends RestClient {
     prisonNumber: string
     subAccountReference?: string
     page: string
+    pageSize: string
     startDate?: string
     endDate?: string
     debit?: string
@@ -65,7 +67,7 @@ export default class PrisonerFinanceApiClient extends RestClient {
           ...(startDate && { startDate: datePickerToISODate(startDate) }),
           ...(endDate && { endDate: datePickerToISODate(endDate) }),
           pageNumber: page,
-          pageSize: '25',
+          pageSize,
           ...(debit && { debit }),
           ...(credit && { credit }),
           ...(description && { description }),

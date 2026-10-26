@@ -348,6 +348,12 @@ test.describe('Showing all transactions for a specific sub account', () => {
 
       // User searches for test, as the server is mocked, we won't check content returned.
       await prisonerPrivateCashPage.searchDescriptionFilter.fill('test')
+
+      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
+        subAccountReference: 'CASH',
+        description: 'test',
+      })
+
       await prisonerPrivateCashPage.applyFilterButton.click()
 
       // Early expect to verify the url has been updated correctly before waiting
