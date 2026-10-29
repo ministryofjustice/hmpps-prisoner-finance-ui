@@ -1,6 +1,7 @@
 import createError from 'http-errors'
 import { NextFunction, Request, Response } from 'express'
 import { format, parse } from 'date-fns'
+import qs from 'qs'
 import { Services } from '../services'
 import { AuditPage, SearchRequest, SubjectType } from '../services/auditService'
 import { buildMojSelectedFilter } from '../utils/mojFilterHelper'
@@ -367,6 +368,7 @@ class PrisonerController {
       statementBalance: accountBalance,
       backLink,
       hideBanner: true,
+      downloadCsvParams: qs.stringify(req.query),
     })
   }
 
