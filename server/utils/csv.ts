@@ -1,10 +1,3 @@
-export interface ArrayToCsvOptions<T extends Record<string, unknown> = Record<string, unknown>> {
-  /** Explicit column keys to export. Defaults to `Object.keys` of the first row. */
-  columns?: Array<Extract<keyof T, string>>
-  /** Field separator. Defaults to `,`. */
-  delimiter?: string
-}
-
 /**
  * Escapes a single CSV value.
  *
@@ -34,14 +27,14 @@ function escapeCsvValue(value: unknown, delimiter = ','): string {
  *
  * @template T - The row object type.
  * @param data - Array of row objects.
- * @param options - Serialization configuration options.
+ * @param columns - columns to export to csv.
  * @returns The formatted CSV string.
  */
-export function arrayToCsv<T extends Record<string, unknown>>(
+export default function arrayToCsv<T extends Record<string, unknown>>(
   data: readonly T[],
-  options: ArrayToCsvOptions<T> = {},
+  columns?: Array<Extract<keyof T, string>>,
 ): string {
-  const { columns, delimiter = ',' } = options
+  const delimiter = ','
 
   const eol = '\r\n'
 

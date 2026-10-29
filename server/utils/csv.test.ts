@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { arrayToCsv } from './csv'
+import arrayToCsv from './csv'
 
 describe('arrayToCsv', () => {
   test('converts basic primitive types correctly', () => {
@@ -62,17 +62,8 @@ describe('arrayToCsv', () => {
   test('respects explicit column order and filters unselected keys', () => {
     const input = [{ id: 1, secret: 'hide_me', name: 'Alice' }]
 
-    const result = arrayToCsv(input, { columns: ['name', 'id'] })
+    const result = arrayToCsv(input, ['name', 'id'])
     const expected = ['name,id', 'Alice,1'].join('\r\n')
-
-    assert.equal(result, expected)
-  })
-
-  test('supports custom delimiters', () => {
-    const input = [{ name: 'Alice', age: 30 }]
-
-    const result = arrayToCsv(input, { delimiter: ';' })
-    const expected = 'name;age\r\nAlice;30'
 
     assert.equal(result, expected)
   })
