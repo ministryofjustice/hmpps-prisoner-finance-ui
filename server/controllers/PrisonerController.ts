@@ -1,6 +1,7 @@
 import createError from 'http-errors'
 import { NextFunction, Request, Response } from 'express'
 import { format, parse } from 'date-fns'
+import qs from 'qs'
 import { Services } from '../services'
 import { AuditPage, SearchRequest, SubjectType } from '../services/auditService'
 import { buildMojSelectedFilter } from '../utils/mojFilterHelper'
@@ -17,6 +18,8 @@ import advancesFilterSchema from '../validators/advancesFilterValidator'
 import advancePaymentsFilterSchema from '../validators/advancePaymentsFilterValidator'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 import { formatDate } from '../utils/formatUtils'
+import arrayToCSV from '../utils/csv'
+import { penceToPound } from '../utils/utils'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -364,7 +367,50 @@ class PrisonerController {
       statementBalance: accountBalance,
       backLink,
       hideBanner: true,
+      downloadCsvParams: qs.stringify(req.query),
     })
+  }
+
+  public downloadTransactionsCSV = async (req: Request, res: Response, next: NextFunction) => {
+    const prisonNumber = req.params.prisonNumber.toString()
+    const { subAccount, startDate, endDate, credit, debit, description } = req.query as Record<string, string>
+
+    await this.services.auditService.logPageView(res.locals.auditPage, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: prisonNumber,
+    })
+
+    const transactions = await this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber({
+      prisonNumber,
+      subAccountReference: subAccount,
+      page: '1',
+      pageSize: '999999',
+      startDate,
+      endDate,
+      debit,
+      credit,
+      description,
+    })
+
+    const csvData = transactions.content.map(t => ({
+      Date: t.date,
+      TransactionId: t.legacyTransactionId,
+      Amount: penceToPound(t.debit ? -t.debit : t.credit),
+      Account: t.accountType,
+      Location: t.location,
+      SubAccountBalance: penceToPound(t.subAccountBalance),
+      AccountBalance: penceToPound(t.accountBalance),
+    }))
+
+    const transactionsCsv = arrayToCSV(csvData)
+
+    const statementDate = formatDate(new Date(Date.now()), 'dd-MM-yyyy')
+
+    res.attachment(`transactions_${prisonNumber}_${statementDate}.csv`)
+    res.type('text/csv')
+    res.send(transactionsCsv)
   }
 
   public getProfile = async (req: Request, res: Response, next: NextFunction) => {

@@ -718,7 +718,7 @@ describe('PrisonerController', () => {
       locals: {
         user: { username: 'test-user' },
         subAccount: 'CASH',
-        auditPage: AuditPage.PRISONER_TRANSACTIONS,
+        auditPage: AuditPage.PRISONER_TRANSACTIONS_PRINT_PREVIEW,
         prisonerDetails: {
           firstName: 'John',
           lastName: 'Smith',
@@ -780,6 +780,7 @@ describe('PrisonerController', () => {
       })
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerPrintTransactions', {
+        downloadCsvParams: expect.anything(),
         backLink,
         displayTotalBalance: true,
         endDate: '10 March 2026',
@@ -964,6 +965,7 @@ describe('PrisonerController', () => {
       })
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerPrintTransactions', {
+        downloadCsvParams: expect.anything(),
         backLink,
         displayTotalBalance: true,
         endDate: '10 March 2026',
@@ -1027,6 +1029,13 @@ describe('PrisonerController', () => {
 
       await prisonerController.printTransactions(mockReq, mockRes, mockNext)
 
+      expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.PRISONER_TRANSACTIONS_PRINT_PREVIEW, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      })
+
       expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
         prisonNumber,
         page: '1',
@@ -1036,6 +1045,7 @@ describe('PrisonerController', () => {
       })
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerPrintTransactions', {
+        downloadCsvParams: expect.anything(),
         backLink,
         displayTotalBalance: true,
         endDate: '26 December 2026',
@@ -1049,6 +1059,83 @@ describe('PrisonerController', () => {
         statementDate: expect.anything(),
         statementBalance: expect.anything(),
       })
+    })
+  })
+
+  describe('downloadTransactionsCSV', () => {
+    const prisonNumber = 'ABC123XX'
+
+    const mockRes: Response = {
+      locals: {
+        user: { username: 'test-user' },
+        subAccount: 'CASH',
+        auditPage: AuditPage.PRISONER_TRANSACTIONS_CSV_DOWNLOAD,
+        prisonerDetails: {
+          firstName: 'John',
+          lastName: 'Smith',
+        },
+      },
+      render: jest.fn(),
+      send: jest.fn(),
+      attachment: jest.fn(),
+      type: jest.fn(),
+      redirect: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    } as unknown as Response
+
+    test('Should get transactions and create a buffer', async () => {
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '2026-03-10T10:48:28.094Z',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      const mockReq: Request = {
+        id: 'req-id-123',
+        query: {},
+        params: { prisonNumber },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: `/account/${prisonNumber}/print-preview`,
+      } as unknown as Request
+
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
+
+      await prisonerController.downloadTransactionsCSV(mockReq, mockRes, mockNext)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.PRISONER_TRANSACTIONS_CSV_DOWNLOAD, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      })
+
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
+        prisonNumber,
+        page: '1',
+        pageSize: '999999',
+      })
+
+      expect(mockRes.attachment).toHaveBeenCalled()
+      expect(mockRes.type).toHaveBeenCalledWith('text/csv')
+      expect(mockRes.send).toHaveBeenCalled()
     })
   })
 

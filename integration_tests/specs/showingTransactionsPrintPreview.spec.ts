@@ -117,6 +117,18 @@ test.describe('', () => {
 
       await page.waitForFunction('window.print')
     })
+
+    test('Should click the download csv button and download a file', async ({ page }) => {
+      const printPreviewPage = await TransactionPrintPreviewPage.load(page, prisonNumber)
+
+      const downloadPromise = page.waitForEvent('download')
+
+      await printPreviewPage.csvButton.click()
+
+      const downloadComplete = await downloadPromise
+
+      expect(downloadComplete.suggestedFilename()).toContain('.csv')
+    })
   })
 
   test.describe('Access print preview page from all accounts transaction page', () => {

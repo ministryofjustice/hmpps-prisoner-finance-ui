@@ -35,7 +35,8 @@
         }) }}
   {{ govukButton({
           text: "Download as CSV",
-          classes: "govuk-button--secondary no-print"
+          classes: "govuk-button--secondary no-print",
+          href: 'transactions-csv?' + downloadCsvParams
         }) }}
 
   {{ govukSummaryList({

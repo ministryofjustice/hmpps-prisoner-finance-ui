@@ -18,6 +18,11 @@ export default function routes(services: Services): Router {
     return prisonerController.printTransactions(req, res, next)
   })
 
+  prisonerTransactionsRouter.get('/transactions-csv', (req: Request, res: Response, next: NextFunction) => {
+    res.locals.auditPage = AuditPage.PRISONER_TRANSACTIONS_CSV_DOWNLOAD
+    return prisonerController.downloadTransactionsCSV(req, res, next)
+  })
+
   prisonerTransactionsRouter.get('/private-cash', (req: Request, res: Response, next: NextFunction) => {
     res.locals.subAccount = 'CASH'
     res.locals.headerTitle = 'Private cash transactions'
