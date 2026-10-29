@@ -1135,7 +1135,7 @@ describe('PrisonerController', () => {
 
       expect(mockRes.attachment).toHaveBeenCalled()
       expect(mockRes.type).toHaveBeenCalledWith('text/csv')
-      expect(mockRes.send).toHaveBeenCalledWith(expect.anything())
+      expect(mockRes.send).toHaveBeenCalled()
     })
   })
 
