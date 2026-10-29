@@ -14,7 +14,7 @@ export default function routes(services: Services): Router {
   })
 
   prisonerTransactionsRouter.get('/print-preview', (req: Request, res: Response, next: NextFunction) => {
-    res.locals.auditPage = AuditPage.PRISONER_TRANSACTIONS
+    res.locals.auditPage = AuditPage.PRISONER_TRANSACTIONS_PRINT_PREVIEW
     return prisonerController.printTransactions(req, res, next)
   })
 

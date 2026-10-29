@@ -301,8 +301,14 @@ class PrisonerController {
   public printTransactions = async (req: Request, res: Response, next: NextFunction) => {
     const { firstName, lastName } = res.locals.prisonerDetails
     const prisonNumber = req.params.prisonNumber.toString()
-
     const { subAccount, startDate, endDate, credit, debit, description, backLink } = req.query as Record<string, string>
+
+    await this.services.auditService.logPageView(res.locals.auditPage, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: prisonNumber,
+    })
 
     const transactions = await this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber({
       prisonNumber,
