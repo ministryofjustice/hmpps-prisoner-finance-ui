@@ -1,0 +1,79 @@
+import assert from 'node:assert/strict'
+import { arrayToCsv } from './csv'
+
+describe('arrayToCsv', () => {
+  test('converts basic primitive types correctly', () => {
+    const input = [
+      { id: 1, name: 'Alice', active: true },
+      { id: 2, name: 'Bob', active: false },
+    ]
+
+    const expected = ['id,name,active', '1,Alice,true', '2,Bob,false'].join('\r\n')
+
+    assert.equal(arrayToCsv(input), expected)
+  })
+
+  test('escapes fields containing commas', () => {
+    const input = [
+      { id: 1, address: 'San Francisco, CA' },
+      { id: 2, address: 'London, UK' },
+    ]
+
+    const expected = ['id,address', '1,"San Francisco, CA"', '2,"London, UK"'].join('\r\n')
+
+    assert.equal(arrayToCsv(input), expected)
+  })
+
+  test('escapes fields containing double quotes by doubling them', () => {
+    const input = [{ id: 1, quote: 'He said "Hello World"' }]
+
+    const expected = ['id,quote', '1,"He said ""Hello World"""'].join('\r\n')
+
+    assert.equal(arrayToCsv(input), expected)
+  })
+
+  test('escapes fields containing newlines', () => {
+    const input = [{ id: 1, bio: 'First line\nSecond line\r\nThird line' }]
+
+    const expected = ['id,bio', '1,"First line\nSecond line\r\nThird line"'].join('\r\n')
+
+    assert.equal(arrayToCsv(input), expected)
+  })
+
+  test('escapes column headers containing reserved characters', () => {
+    const input = [{ 'User, Name': 'Alice', 'Say "Hi"': 'Yes' }]
+
+    const expected = ['"User, Name","Say ""Hi"""', 'Alice,Yes'].join('\r\n')
+
+    assert.equal(arrayToCsv(input), expected)
+  })
+
+  test('handles null, undefined, and missing keys as empty strings', () => {
+    const input: Array<Record<string, unknown>> = [
+      { a: null, b: undefined, c: 'present' },
+      { a: 1 }, // b and c are omitted
+    ]
+
+    const expected = ['a,b,c', ',,present', '1,,'].join('\r\n')
+
+    assert.equal(arrayToCsv(input), expected)
+  })
+
+  test('respects explicit column order and filters unselected keys', () => {
+    const input = [{ id: 1, secret: 'hide_me', name: 'Alice' }]
+
+    const result = arrayToCsv(input, { columns: ['name', 'id'] })
+    const expected = ['name,id', 'Alice,1'].join('\r\n')
+
+    assert.equal(result, expected)
+  })
+
+  test('supports custom delimiters', () => {
+    const input = [{ name: 'Alice', age: 30 }]
+
+    const result = arrayToCsv(input, { delimiter: ';' })
+    const expected = 'name;age\r\nAlice;30'
+
+    assert.equal(result, expected)
+  })
+})
