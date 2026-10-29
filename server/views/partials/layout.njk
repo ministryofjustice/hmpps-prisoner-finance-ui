@@ -41,7 +41,7 @@
     </div>
   {%- endif -%}
 
-  {%- if prisonerDetails -%}
+  {%- if prisonerDetails and (not hideBanner) -%}
     {{ miniProfile(prisonerDetails, originalUrl, prisonerProfileUrl, incentivesUIUrl,categorizationDashboardUrl) }}
   {%- endif -%}
 

@@ -24,6 +24,7 @@ export default class PrisonerFinanceService {
     prisonNumber,
     subAccountReference,
     page = '1',
+    pageSize = '25',
     startDate,
     endDate,
     debit,
@@ -33,6 +34,7 @@ export default class PrisonerFinanceService {
     prisonNumber: string
     subAccountReference?: string
     page: string
+    pageSize: string
     startDate?: string
     endDate?: string
     debit?: string
@@ -45,6 +47,7 @@ export default class PrisonerFinanceService {
       startDate,
       endDate,
       page,
+      pageSize,
       debit,
       credit,
       description,
@@ -84,6 +87,7 @@ export default class PrisonerFinanceService {
     prisonNumber,
     subAccountReference,
     page = '1',
+    pageSize = '25',
     startDate,
     endDate,
     credit,
@@ -94,6 +98,7 @@ export default class PrisonerFinanceService {
     prisonNumber: string
     subAccountReference?: string
     page: string
+    pageSize: string
     startDate?: string
     endDate?: string
     credit?: string
@@ -106,6 +111,7 @@ export default class PrisonerFinanceService {
           prisonNumber,
           subAccountReference,
           page,
+          pageSize,
           startDate,
           endDate,
           credit,

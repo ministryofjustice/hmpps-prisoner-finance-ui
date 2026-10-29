@@ -253,6 +253,7 @@ describe('PrisonerController', () => {
         startDate,
         endDate,
         page: '1',
+        pageSize: '25',
         debit,
         credit,
         subAccountReference: mockRes.locals.subAccount,
@@ -277,6 +278,7 @@ describe('PrisonerController', () => {
         },
         displayTotalBalance: false,
         holdsEnabled: true,
+        printTransactionQueryString: expect.anything(),
       })
     })
 
@@ -351,6 +353,7 @@ describe('PrisonerController', () => {
         startDate,
         endDate,
         page: '1',
+        pageSize: '25',
         debit,
         credit,
         subAccountReference: mockRes.locals.subAccount,
@@ -375,6 +378,7 @@ describe('PrisonerController', () => {
         },
         displayTotalBalance: false,
         holdsEnabled: true,
+        printTransactionQueryString: expect.anything(),
       })
     })
 
@@ -447,6 +451,7 @@ describe('PrisonerController', () => {
         startDate,
         endDate,
         page: '1',
+        pageSize: '25',
         debit,
         credit,
         subAccountReference: mockRes.locals.subAccount,
@@ -471,6 +476,7 @@ describe('PrisonerController', () => {
         },
         displayTotalBalance: false,
         holdsEnabled: false,
+        printTransactionQueryString: expect.anything(),
       })
     })
 
@@ -546,6 +552,7 @@ describe('PrisonerController', () => {
         prisonNumber: mockReq.params.prisonNumber,
         description,
         page: '1',
+        pageSize: '25',
         startDate: undefined,
         endDate: undefined,
         credit: undefined,
@@ -570,6 +577,7 @@ describe('PrisonerController', () => {
         },
         displayTotalBalance: false,
         holdsEnabled: true,
+        printTransactionQueryString: expect.anything(),
       })
     })
 
@@ -641,6 +649,7 @@ describe('PrisonerController', () => {
         startDate,
         endDate,
         page: '1',
+        pageSize: '25',
         debit,
         credit,
         subAccountReference: mockRes.locals.subAccount,
@@ -665,6 +674,7 @@ describe('PrisonerController', () => {
         },
         displayTotalBalance: true,
         holdsEnabled: true,
+        printTransactionQueryString: expect.anything(),
       })
     })
 
@@ -697,6 +707,348 @@ describe('PrisonerController', () => {
 
       expect(mockRes.render).not.toHaveBeenCalled()
       expect(mockNext).toHaveBeenCalled()
+    })
+  })
+
+  describe('printTransactions', () => {
+    const prisonNumber = 'ABC123XX'
+    const backLink = 'google.com'
+
+    const mockRes: Response = {
+      locals: {
+        user: { username: 'test-user' },
+        subAccount: 'CASH',
+        auditPage: AuditPage.PRISONER_TRANSACTIONS,
+        prisonerDetails: {
+          firstName: 'John',
+          lastName: 'Smith',
+        },
+      },
+      render: jest.fn(),
+      redirect: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    } as unknown as Response
+
+    const mockedBalanceResponse = { accountId: '', balanceDateTime: '2026-03-10T10:48:28.094Z', amount: 4400 }
+    const mockedBalanceResponseDateFormatted = '10 March 2026'
+
+    beforeEach(() => {
+      prisonerFinanceService.getAccountBalance.mockResolvedValue(mockedBalanceResponse)
+    })
+
+    test('Should render print transaction page', async () => {
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '2026-03-10T10:48:28.094Z',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      const mockReq: Request = {
+        id: 'req-id-123',
+        query: { backLink },
+        params: { prisonNumber },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: `/account/${prisonNumber}/print-preview`,
+      } as unknown as Request
+
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
+
+      await prisonerController.printTransactions(mockReq, mockRes, mockNext)
+
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
+        prisonNumber,
+        page: '1',
+        pageSize: '999999',
+      })
+
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerPrintTransactions', {
+        backLink,
+        displayTotalBalance: true,
+        endDate: '10 March 2026',
+        firstName: 'John',
+        headerTitle: 'Prisoner Transaction history',
+        hideBanner: true,
+        lastName: 'Smith',
+        prisonNumber: 'ABC123XX',
+        startDate: '10 March 2026',
+        transactions: mockTransactionsPage.content,
+        statementDate: expect.anything(),
+        statementBalance: expect.anything(),
+      })
+    })
+
+    test('Should return the statement balance and date of all accounts if subAccount is null', async () => {
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '2026-03-10T10:48:28.094Z',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      const mockReq: Request = {
+        id: 'req-id-123',
+        query: { backLink },
+        params: { prisonNumber },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: `/account/${prisonNumber}/print-preview`,
+      } as unknown as Request
+
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
+
+      await prisonerController.printTransactions(mockReq, mockRes, mockNext)
+
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
+        prisonNumber,
+        page: '1',
+        pageSize: '999999',
+      })
+
+      expect(prisonerFinanceService.getSubAccountBalance).toHaveBeenCalledTimes(0)
+
+      expect(mockRes.render).toHaveBeenCalledWith(
+        'pages/prisoner/transactions/prisonerPrintTransactions',
+        expect.objectContaining({
+          statementBalance: mockedBalanceResponse.amount,
+          statementDate: mockedBalanceResponseDateFormatted,
+        }),
+      )
+    })
+
+    test('Should return the statement balance and date of the account if the sub account is provided', async () => {
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '2026-03-10T10:48:28.094Z',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      const mockReq: Request = {
+        id: 'req-id-123',
+        query: { backLink, subAccount: 'CASH' },
+        params: { prisonNumber },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: `/account/${prisonNumber}/print-preview`,
+      } as unknown as Request
+
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
+
+      const mockedSubAccountBalance = { subAccountId: '', balanceDateTime: '2020-03-10T10:45:28.194Z', amount: 20 }
+      const mockedSubAccountBalanceDateFormatted = '10 March 2020'
+
+      prisonerFinanceService.getSubAccountBalance.mockResolvedValue(mockedSubAccountBalance)
+
+      await prisonerController.printTransactions(mockReq, mockRes, mockNext)
+
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
+        prisonNumber,
+        page: '1',
+        subAccountReference: 'CASH',
+        pageSize: '999999',
+      })
+
+      expect(prisonerFinanceService.getAccountBalance).toHaveBeenCalledTimes(0)
+
+      expect(mockRes.render).toHaveBeenCalledWith(
+        'pages/prisoner/transactions/prisonerPrintTransactions',
+        expect.objectContaining({
+          statementBalance: mockedSubAccountBalance.amount,
+          statementDate: mockedSubAccountBalanceDateFormatted,
+        }),
+      )
+    })
+
+    test('Should pass startDate and endDate as the date of the first and last transaction when they are not specified as query params', async () => {
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '2026-03-10T10:48:28.094Z',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+        {
+          date: '2026-02-10T10:48:28.094Z',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      const mockReq: Request = {
+        id: 'req-id-123',
+        query: { backLink },
+        params: { prisonNumber },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: `/account/${prisonNumber}/print-preview`,
+      } as unknown as Request
+
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
+
+      await prisonerController.printTransactions(mockReq, mockRes, mockNext)
+
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
+        prisonNumber,
+        page: '1',
+        pageSize: '999999',
+      })
+
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerPrintTransactions', {
+        backLink,
+        displayTotalBalance: true,
+        endDate: '10 March 2026',
+        firstName: 'John',
+        headerTitle: 'Prisoner Transaction history',
+        hideBanner: true,
+        lastName: 'Smith',
+        prisonNumber: 'ABC123XX',
+        startDate: '10 February 2026',
+        transactions: mockTransactionsPage.content,
+        statementDate: expect.anything(),
+        statementBalance: expect.anything(),
+      })
+    })
+
+    test('Should pass startDate and endDate as the filter parames when they are specified as query params', async () => {
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '2026-03-10T10:48:28.094Z',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+        {
+          date: '2026-02-10T10:48:28.094Z',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      const mockReq: Request = {
+        id: 'req-id-123',
+        query: { backLink, startDate: '26/10/2023', endDate: '26/12/2026' },
+        params: { prisonNumber },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: `/account/${prisonNumber}/print-preview`,
+      } as unknown as Request
+
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
+
+      await prisonerController.printTransactions(mockReq, mockRes, mockNext)
+
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
+        prisonNumber,
+        page: '1',
+        pageSize: '999999',
+        startDate: mockReq.query.startDate,
+        endDate: mockReq.query.endDate,
+      })
+
+      expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerPrintTransactions', {
+        backLink,
+        displayTotalBalance: true,
+        endDate: '26 December 2026',
+        firstName: 'John',
+        headerTitle: 'Prisoner Transaction history',
+        hideBanner: true,
+        lastName: 'Smith',
+        prisonNumber: 'ABC123XX',
+        startDate: '26 October 2023',
+        transactions: mockTransactionsPage.content,
+        statementDate: expect.anything(),
+        statementBalance: expect.anything(),
+      })
     })
   })
 
@@ -764,6 +1116,7 @@ describe('PrisonerController', () => {
       expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
         prisonNumber: mockReq.params.prisonNumber,
         page: '1',
+        pageSize: '25',
       })
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/profile/prisonerProfile', {
         prisonNumber: mockReq.params.prisonNumber,
@@ -831,6 +1184,7 @@ describe('PrisonerController', () => {
       expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
         prisonNumber: mockReq.params.prisonNumber,
         page: '1',
+        pageSize: '25',
       })
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/profile/prisonerProfile', {
         prisonNumber: mockReq.params.prisonNumber,

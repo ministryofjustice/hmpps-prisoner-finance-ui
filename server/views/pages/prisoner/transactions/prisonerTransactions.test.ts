@@ -113,6 +113,7 @@ describe('prisoner transactions page', () => {
     holdBalance: 0,
     prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
     holdsEnabled: true,
+    printTransactionQueryString: '?description=test',
   }
 
   const paramsWithoutLastRunningBalance = {
@@ -125,6 +126,7 @@ describe('prisoner transactions page', () => {
     holdBalance: 0,
     prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
     displayTotalBalance: false,
+    printTransactionQueryString: '?description=test',
   }
 
   const paramsWithoutHoldsBalanceEnabled = {
@@ -138,6 +140,7 @@ describe('prisoner transactions page', () => {
     holdBalance: 0,
     prisonNames: [{ prisonId: 'LEI', prisonName: 'Leeds (HMP)' }],
     holdsEnabled: false,
+    printTransactionQueryString: '?description=test',
   }
 
   beforeEach(() => {
@@ -203,6 +206,10 @@ describe('prisoner transactions page', () => {
 
     const descriptionFilterComponent = $('[id="descriptionFilter"]')
     expect(descriptionFilterComponent.length).toBe(1)
+
+    const printButton = $('a.govuk-button:contains("Download or print transactions")')
+    expect(printButton.length).toBe(1)
+    expect(printButton.attr('href')).toBe('/prisoner/A12345/account/print-preview?description=test')
   })
 
   it('Should render no transactions', () => {

@@ -1,0 +1,106 @@
+{%- extends "partials/layout-full-width.njk" -%}
+
+{%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
+{%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
+{%- from "partials/transactions-list/macro.njk" import transactionsList -%}
+{%- from "govuk/components/checkboxes/macro.njk" import govukCheckboxes -%}
+{%- from "govuk/components/input/macro.njk" import govukInput -%}
+{%- from "moj/components/filter/macro.njk" import mojFilter -%}
+{%- from "moj/components/date-picker/macro.njk" import mojDatePicker -%}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+
+{%- set pageTitle = headerTitle -%}
+{%- set backUrl = backLink -%}
+
+{% block contentHeader %}
+{{ dataWarningBanner(dataWarningBannerEnabled) }}
+{% endblock %}
+
+{% block innerContent %}
+<script nonce="{{cspNonce}}">
+  window.onload = function () {
+    const printButton = document.getElementById('print-screen-button');
+    printButton.addEventListener('click', () => { window.print() })
+    printButton.classList.remove('govuk-!-display-none');
+  }
+</script>
+<div class="prisoner-transactions-page">
+  {{ govukButton({
+          text: "Print screen or save as PDF",
+          id: 'print-screen-button',
+          disabled: false,
+          classes: 'govuk-!-display-none govuk-!-margin-right-5 no-print'
+        }) }}
+  {{ govukButton({
+          text: "Download as CSV",
+          classes: "govuk-button--secondary no-print"
+        }) }}
+
+  {{ govukSummaryList({
+        classes: "govuk-summary-list--no-border",
+        rows: [
+          {
+            key: {
+              text: "Name"
+            },
+            value: {
+              text: (firstName | properCaseName + ' ' + lastName | properCaseName)
+            }
+          },
+          {
+            key: {
+              text: "Prison number"
+            },
+            value: {
+              text: prisonNumber
+            }
+          },
+          {
+            key: {
+              text: "Transaction start date"
+            },
+            value: {
+              text: startDate
+            }
+          },
+          {
+            key: {
+              text: "Transaction end date"
+            },
+            value: {
+              text: endDate
+            }
+          },
+          {
+            key: {
+              html: "Balance for " + (((subAccount | formatPrisonerAccountType | lower ) + ' account') if subAccount else 'all accounts') + " <br/> (Correct as of statement date)"
+            },
+            value: {
+              text: "£" + statementBalance | penceToPound
+            }
+          },
+          {
+            key: {
+              text: "Statement date"
+            },
+            value: {
+              text: statementDate
+            }
+          }
+        ]
+      }) }}
+
+  <h3>
+    Transaction history for {{ ((subAccount | formatPrisonerAccountType | lower ) + ' account') if subAccount else 'all accounts' }} for this prisoner
+  </h3>
+  {{ transactionsList({
+          transactions: transactions,
+          paginationItems: paginationItems,
+          prisonNames: prisonNames,
+          displayTotalBalance: displayTotalBalance,
+          showLocation: true
+      }) }}
+</div>
+{% endblock %}

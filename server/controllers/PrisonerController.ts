@@ -1,5 +1,6 @@
 import createError from 'http-errors'
 import { NextFunction, Request, Response } from 'express'
+import { format, parse } from 'date-fns'
 import { Services } from '../services'
 import { AuditPage, SearchRequest, SubjectType } from '../services/auditService'
 import { buildMojSelectedFilter } from '../utils/mojFilterHelper'
@@ -15,6 +16,7 @@ import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
 import advancesFilterSchema from '../validators/advancesFilterValidator'
 import advancePaymentsFilterSchema from '../validators/advancePaymentsFilterValidator'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
+import { formatDate } from '../utils/formatUtils'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -23,6 +25,8 @@ const transactionFilterConfig = {
   debit: { label: 'Debit', category: 'Credit or debit' },
   description: { label: 'Description', category: 'Description' },
 }
+
+const defaultPageSize = '25'
 
 class PrisonerController {
   constructor(private readonly services: Services) {}
@@ -218,6 +222,7 @@ class PrisonerController {
         prisonNumber,
         subAccountReference: subAccount,
         page,
+        pageSize: defaultPageSize,
         startDate,
         endDate,
         credit,
@@ -246,6 +251,21 @@ class PrisonerController {
           })
         : { content: [] as PrisonerTransactionResponse[] }
 
+      // setting up params for print transactions page
+      const { page: _, ...printTransactionsQuery } = {
+        ...req.query,
+        subAccount,
+        backLink: req.originalUrl,
+      } as Record<string, string>
+
+      // filtering nulls out
+      Object.keys(printTransactionsQuery).forEach(k => {
+        if (printTransactionsQuery[k] === null) delete printTransactionsQuery[k]
+      })
+
+      const printTransactionsParams = new URLSearchParams(printTransactionsQuery).toString()
+      const printTransactionQueryString = printTransactionsParams ? `?${printTransactionsParams}` : ''
+
       res.render('pages/prisoner/transactions/prisonerTransactions', {
         prisonNumber,
         headerTitle: headerTitle ?? 'Transactions for all sub accounts',
@@ -267,6 +287,7 @@ class PrisonerController {
         ...zodErrors,
         displayTotalBalance: !subAccount,
         holdsEnabled: res.locals.showHolds,
+        printTransactionQueryString,
       })
     } catch (error) {
       if (error.responseStatus === 400 && error.data?.userMessage?.includes('Page requested is out of range')) {
@@ -275,6 +296,75 @@ class PrisonerController {
         next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error', { cause: error }))
       }
     }
+  }
+
+  public printTransactions = async (req: Request, res: Response, next: NextFunction) => {
+    const { firstName, lastName } = res.locals.prisonerDetails
+    const prisonNumber = req.params.prisonNumber.toString()
+    const { subAccount, startDate, endDate, credit, debit, description, backLink } = req.query as Record<string, string>
+
+    await this.services.auditService.logPageView(res.locals.auditPage, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: prisonNumber,
+    })
+
+    const transactions = await this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber({
+      prisonNumber,
+      subAccountReference: subAccount,
+      page: '1',
+      pageSize: '999999',
+      startDate,
+      endDate,
+      debit,
+      credit,
+      description,
+    })
+
+    const startDateFromContent =
+      transactions.content.length > 0 ? formatDate(transactions.content[transactions.content.length - 1].date) : ''
+    const startDateDisplay = startDate
+      ? format(parse(startDate, 'dd/MM/yyyy', new Date()), 'd MMMM yyyy')
+      : startDateFromContent
+
+    const endDateFromContent = transactions.content.length > 0 ? formatDate(transactions.content[0].date) : ''
+    const endDateDisplay = endDate
+      ? format(parse(endDate, 'dd/MM/yyyy', new Date()), 'd MMMM yyyy')
+      : endDateFromContent
+
+    let accountBalance: number
+    let statementDateString: string
+    if (!subAccount) {
+      const accountBalanceResponse = await this.services.prisonerFinanceService.getAccountBalance(prisonNumber)
+      accountBalance = accountBalanceResponse.amount
+      statementDateString = accountBalanceResponse.balanceDateTime
+    } else {
+      const subAccountBalanceResponse = await this.services.prisonerFinanceService.getSubAccountBalance(
+        prisonNumber,
+        subAccount,
+      )
+      accountBalance = subAccountBalanceResponse.amount
+      statementDateString = subAccountBalanceResponse.balanceDateTime
+    }
+
+    const statementDate = formatDate(statementDateString)
+
+    res.render('pages/prisoner/transactions/prisonerPrintTransactions', {
+      transactions: transactions.content,
+      displayTotalBalance: !subAccount,
+      subAccount,
+      headerTitle: 'Prisoner Transaction history',
+      prisonNumber,
+      firstName,
+      lastName,
+      startDate: startDateDisplay,
+      endDate: endDateDisplay,
+      statementDate,
+      statementBalance: accountBalance,
+      backLink,
+      hideBanner: true,
+    })
   }
 
   public getProfile = async (req: Request, res: Response, next: NextFunction) => {
@@ -289,7 +379,11 @@ class PrisonerController {
       })
 
       const [transactions, subAccountBalances, holdBalance] = await Promise.all([
-        this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber({ prisonNumber, page: '1' }),
+        this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber({
+          prisonNumber,
+          page: '1',
+          pageSize: defaultPageSize,
+        }),
         this.services.prisonerFinanceService.getSubAccountBalances(prisonNumber),
         this.services.prisonerFinanceHoldsService.getHoldsBalance(prisonNumber),
       ])
