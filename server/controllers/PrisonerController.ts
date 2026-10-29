@@ -19,7 +19,6 @@ import advancePaymentsFilterSchema from '../validators/advancePaymentsFilterVali
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 import { formatDate } from '../utils/formatUtils'
 import arrayToCsv from '../utils/csv'
-import { dataAccess } from '../data'
 import { penceToPound } from '../utils/utils'
 
 const transactionFilterConfig = {
