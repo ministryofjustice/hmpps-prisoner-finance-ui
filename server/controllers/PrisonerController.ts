@@ -17,6 +17,9 @@ import advancesFilterSchema from '../validators/advancesFilterValidator'
 import advancePaymentsFilterSchema from '../validators/advancePaymentsFilterValidator'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 import { formatDate } from '../utils/formatUtils'
+import arrayToCsv from '../utils/csv'
+import { dataAccess } from '../data'
+import { penceToPound } from '../utils/utils'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -365,6 +368,48 @@ class PrisonerController {
       backLink,
       hideBanner: true,
     })
+  }
+
+  public downloadTransactionsCSV = async (req: Request, res: Response, next: NextFunction) => {
+    const prisonNumber = req.params.prisonNumber.toString()
+    const { subAccount, startDate, endDate, credit, debit, description } = req.query as Record<string, string>
+
+    await this.services.auditService.logPageView(res.locals.auditPage, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: prisonNumber,
+    })
+
+    const transactions = await this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber({
+      prisonNumber,
+      subAccountReference: subAccount,
+      page: '1',
+      pageSize: '999999',
+      startDate,
+      endDate,
+      debit,
+      credit,
+      description,
+    })
+
+    const csvData = transactions.content.map(t => ({
+      Date: t.date,
+      TransactionId: t.legacyTransactionId,
+      Amount: penceToPound(t.debit ? -t.debit : t.credit),
+      Account: t.accountType,
+      Location: t.location,
+      SubAccountBalance: penceToPound(t.subAccountBalance),
+      AccountBalance: penceToPound(t.accountBalance),
+    }))
+
+    const transactionsCsv = arrayToCsv(csvData)
+
+    const statementDate = formatDate(new Date(Date.now()), 'dd-MM-yyyy')
+
+    res.attachment(`transactions_${prisonNumber}_${statementDate}.csv`)
+    res.type('text/csv')
+    res.send(transactionsCsv)
   }
 
   public getProfile = async (req: Request, res: Response, next: NextFunction) => {

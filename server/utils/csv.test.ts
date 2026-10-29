@@ -60,10 +60,13 @@ describe('arrayToCsv', () => {
   })
 
   test('respects explicit column order and filters unselected keys', () => {
-    const input = [{ id: 1, secret: 'hide_me', name: 'Alice' }]
+    const input = [
+      { id: 1, name: 'Alice' },
+      { name: 'Bill', id: 2 },
+    ]
 
-    const result = arrayToCsv(input, ['name', 'id'])
-    const expected = ['name,id', 'Alice,1'].join('\r\n')
+    const result = arrayToCsv(input)
+    const expected = ['id,name', '1,Alice', '2,Bill'].join('\r\n')
 
     assert.equal(result, expected)
   })

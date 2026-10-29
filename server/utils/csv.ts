@@ -30,10 +30,7 @@ function escapeCsvValue(value: unknown, delimiter = ','): string {
  * @param columns - columns to export to csv.
  * @returns The formatted CSV string.
  */
-export default function arrayToCsv<T extends Record<string, unknown>>(
-  data: readonly T[],
-  columns?: Array<Extract<keyof T, string>>,
-): string {
+export default function arrayToCsv(data: readonly unknown[]): string {
   const delimiter = ','
 
   const eol = '\r\n'
@@ -42,15 +39,9 @@ export default function arrayToCsv<T extends Record<string, unknown>>(
     return ''
   }
 
-  // Derive column names
-  const cols: readonly string[] = columns && columns.length > 0 ? columns : Object.keys(data[0] ?? {})
-
-  if (cols.length === 0) {
-    return ''
-  }
-
   const rows: string[] = []
 
+  const cols = Object.keys(data[0])
   // Add header row
   rows.push(cols.map(col => escapeCsvValue(col, delimiter)).join(delimiter))
 

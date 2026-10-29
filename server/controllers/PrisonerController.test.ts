@@ -1052,6 +1052,76 @@ describe('PrisonerController', () => {
     })
   })
 
+  describe('downloadTransactionsCSV', () => {
+    const prisonNumber = 'ABC123XX'
+
+    const mockRes: Response = {
+      locals: {
+        user: { username: 'test-user' },
+        subAccount: 'CASH',
+        auditPage: AuditPage.PRISONER_TRANSACTIONS,
+        prisonerDetails: {
+          firstName: 'John',
+          lastName: 'Smith',
+        },
+      },
+      render: jest.fn(),
+      send: jest.fn(),
+      attachment: jest.fn(),
+      type: jest.fn(),
+      redirect: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+    } as unknown as Response
+
+    test('Should get transactions and create a buffer', async () => {
+      const mockTransactions: PrisonerTransactionResponse[] = [
+        {
+          date: '2026-03-10T10:48:28.094Z',
+          legacyTransactionId: 123,
+          description: 'Canteen transaction',
+          credit: 10,
+          debit: 10,
+          location: 'LEI',
+          accountType: 'CASH',
+          subAccountBalance: 100,
+          accountBalance: 20,
+        },
+      ]
+
+      const mockTransactionsPage: Page<PrisonerTransactionResponse> = {
+        content: mockTransactions,
+        totalElements: mockTransactions.length,
+        totalPages: 1,
+        pageNumber: 1,
+        pageSize: 99,
+        isLastPage: true,
+      }
+
+      const mockReq: Request = {
+        id: 'req-id-123',
+        query: {},
+        params: { prisonNumber },
+        protocol: 'http',
+        get: jest.fn().mockReturnValue('localhost:3000'),
+        originalUrl: `/account/${prisonNumber}/print-preview`,
+      } as unknown as Request
+
+      prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
+
+      await prisonerController.downloadTransactionsCSV(mockReq, mockRes, mockNext)
+
+      expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
+        prisonNumber,
+        page: '1',
+        pageSize: '999999',
+      })
+
+      expect(mockRes.attachment).toHaveBeenCalled()
+      expect(mockRes.type).toHaveBeenCalledWith('text/csv')
+      expect(mockRes.send).toHaveBeenCalledWith(expect.anything())
+    })
+  })
+
   describe('getProfile', () => {
     const mockRes: Response = {
       locals: {
