@@ -5,7 +5,7 @@
  * @param delimiter - The field delimiter (default: ',').
  * @returns The escaped string.
  */
-function escapeCsvValue(value: unknown, delimiter = ','): string {
+function escapeValue(value: unknown, delimiter = ','): string {
   if (value === null || value === undefined) {
     return ''
   }
@@ -27,10 +27,10 @@ function escapeCsvValue(value: unknown, delimiter = ','): string {
  *
  * @template T - The row object type.
  * @param data - Array of row objects.
- * @param columns - columns to export to csv.
+ * @param columns - columns to export to CSV.
  * @returns The formatted CSV string.
  */
-export default function arrayToCsv(data: readonly unknown[]): string {
+export default function arrayToCSV(data: readonly unknown[]): string {
   const delimiter = ','
 
   const eol = '\r\n'
@@ -43,11 +43,11 @@ export default function arrayToCsv(data: readonly unknown[]): string {
 
   const cols = Object.keys(data[0])
   // Add header row
-  rows.push(cols.map(col => escapeCsvValue(col, delimiter)).join(delimiter))
+  rows.push(cols.map(col => escapeValue(col, delimiter)).join(delimiter))
 
   // Add data rows
   for (const item of data) {
-    const row = cols.map(col => escapeCsvValue(item?.[col], delimiter)).join(delimiter)
+    const row = cols.map(col => escapeValue(item?.[col], delimiter)).join(delimiter)
     rows.push(row)
   }
 

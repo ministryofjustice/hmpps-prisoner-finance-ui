@@ -18,7 +18,7 @@ import advancesFilterSchema from '../validators/advancesFilterValidator'
 import advancePaymentsFilterSchema from '../validators/advancePaymentsFilterValidator'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 import { formatDate } from '../utils/formatUtils'
-import arrayToCsv from '../utils/csv'
+import arrayToCSV from '../utils/csv'
 import { penceToPound } from '../utils/utils'
 
 const transactionFilterConfig = {
@@ -404,7 +404,7 @@ class PrisonerController {
       AccountBalance: penceToPound(t.accountBalance),
     }))
 
-    const transactionsCsv = arrayToCsv(csvData)
+    const transactionsCsv = arrayToCSV(csvData)
 
     const statementDate = formatDate(new Date(Date.now()), 'dd-MM-yyyy')
 

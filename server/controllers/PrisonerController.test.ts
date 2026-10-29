@@ -718,7 +718,7 @@ describe('PrisonerController', () => {
       locals: {
         user: { username: 'test-user' },
         subAccount: 'CASH',
-        auditPage: AuditPage.PRISONER_TRANSACTIONS,
+        auditPage: AuditPage.PRISONER_TRANSACTIONS_PRINT_PREVIEW,
         prisonerDetails: {
           firstName: 'John',
           lastName: 'Smith',
@@ -1029,6 +1029,13 @@ describe('PrisonerController', () => {
 
       await prisonerController.printTransactions(mockReq, mockRes, mockNext)
 
+      expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.PRISONER_TRANSACTIONS_PRINT_PREVIEW, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      })
+
       expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
         prisonNumber,
         page: '1',
@@ -1062,7 +1069,7 @@ describe('PrisonerController', () => {
       locals: {
         user: { username: 'test-user' },
         subAccount: 'CASH',
-        auditPage: AuditPage.PRISONER_TRANSACTIONS,
+        auditPage: AuditPage.PRISONER_TRANSACTIONS_CSV_DOWNLOAD,
         prisonerDetails: {
           firstName: 'John',
           lastName: 'Smith',
@@ -1112,6 +1119,13 @@ describe('PrisonerController', () => {
       prisonerFinanceService.getPrisonerTransactionsByPrisonNumber.mockResolvedValue(mockTransactionsPage)
 
       await prisonerController.downloadTransactionsCSV(mockReq, mockRes, mockNext)
+
+      expect(auditService.logPageView).toHaveBeenCalledWith(AuditPage.PRISONER_TRANSACTIONS_CSV_DOWNLOAD, {
+        who: mockRes.locals.user.username,
+        correlationId: mockReq.id,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      })
 
       expect(prisonerFinanceService.getPrisonerTransactionsByPrisonNumber).toHaveBeenCalledWith({
         prisonNumber,
