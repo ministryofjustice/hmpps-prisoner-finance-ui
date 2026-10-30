@@ -19,7 +19,7 @@ import advancePaymentsFilterSchema from '../validators/advancePaymentsFilterVali
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 import { formatDate } from '../utils/formatUtils'
 import arrayToCSV from '../utils/csv'
-import { penceToPound } from '../utils/utils'
+import { formatDateToISO, penceToPound } from '../utils/utils'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -366,7 +366,7 @@ class PrisonerController {
       statementDate,
       statementBalance: accountBalance,
       backLink,
-      hideBanner: true,
+      hideHeader: true,
       downloadCsvParams: qs.stringify(req.query),
     })
   }
@@ -395,9 +395,9 @@ class PrisonerController {
     })
 
     const csvData = transactions.content.map(t => ({
-      Date: t.date,
+      Date: formatDateToISO(t.date),
       TransactionId: t.legacyTransactionId,
-      Amount: penceToPound(t.debit ? -t.debit : t.credit),
+      Amount: `£${penceToPound(t.debit ? -t.debit : t.credit)}`,
       Account: t.accountType,
       Location: t.location,
       SubAccountBalance: penceToPound(t.subAccountBalance),
