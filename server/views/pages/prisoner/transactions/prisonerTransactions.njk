@@ -151,7 +151,11 @@
           {{ govukButton({
             text: "Download or print transactions",
             href:  "/prisoner/" + prisonNumber + '/account/print-preview' + printTransactionQueryString,
-            classes: "govuk-button--secondary"
+            classes: "govuk-button--secondary",
+            attributes: {
+              "target": "_blank",
+              "rel": "noreferrer noopener"
+            }
           }) }}
         </div>
 

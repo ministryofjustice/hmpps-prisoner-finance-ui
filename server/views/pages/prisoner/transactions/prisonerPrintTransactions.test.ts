@@ -51,8 +51,7 @@ describe('Prisoner print transactions page', () => {
     lastName: 'Doe',
     startDate: '01/01/1970',
     endDate: '02/02/1972',
-    backLink: 'google.com',
-    hideBanner: true,
+    hideHeader: true,
     statementBalance: 4491,
     statementDate: '03/03/1973',
   }
@@ -78,9 +77,6 @@ describe('Prisoner print transactions page', () => {
 
     const title = $('title')
     expect(title.text()).toContain(params.headerTitle)
-
-    const backLink = $('.govuk-back-link')
-    expect(backLink.attr('href')).toBe(params.backLink)
 
     const summaryBoxes = $('.govuk-summary-list__value')
     const renderedName = $(summaryBoxes[0]).text()

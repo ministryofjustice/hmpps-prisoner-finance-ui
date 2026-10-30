@@ -18,11 +18,14 @@
 {% block pageTitle %}{% if pageTitle %}{{ pageTitle }} - {% endif %}{{ applicationName }} - DPS{% endblock %}
 
 {% block header %}
-  {{ feComponents.header | safe }}
+  {% if not hideHeader %}
+    {{ feComponents.header | safe }}
+  {% endif %}
   {% block meta %}{% endblock %}
 {% endblock %}
 
 {% block beforeContent %}
+  {% if not hideHeader %}
   {% include "partials/phase-banner.njk" %}
 
   {%- if backUrl -%}
@@ -41,11 +44,12 @@
     </div>
   {%- endif -%}
 
-  {%- if prisonerDetails and (not hideBanner) -%}
-    {{ miniProfile(prisonerDetails, originalUrl, prisonerProfileUrl, incentivesUIUrl,categorizationDashboardUrl) }}
-  {%- endif -%}
-
+    {%- if prisonerDetails -%}
+      {{ miniProfile(prisonerDetails, originalUrl, prisonerProfileUrl, incentivesUIUrl,categorizationDashboardUrl) }}
+    {%- endif -%}
   {% block pageHeader %}{% endblock %}
+
+  {% endif %}
 {% endblock %}
 
 {% block footer %}
