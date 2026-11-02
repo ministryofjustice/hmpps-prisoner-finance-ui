@@ -144,44 +144,14 @@ test.describe('', () => {
 
       const transactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
 
-      await transactionsPage.printTransactionsButton.click()
+      const [printPreviewPage] = await Promise.all([
+        page.waitForEvent('popup'),
+        transactionsPage.printTransactionsButton.click(),
+      ])
 
-      await page.waitForURL(`**/prisoner/${prisonNumber}/account/print-preview**`)
-    })
+      await printPreviewPage.waitForLoadState()
 
-    test('Should return to the previews page in the correct state when back button is clicked', async ({ page }) => {
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [], {})
-      await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
-      await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
-
-      const transactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
-
-      const descriptionFilter = 'test'
-      await transactionsPage.searchDescriptionFilter.fill(descriptionFilter)
-
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [], {
-        description: descriptionFilter,
-      })
-
-      await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
-        pageSize: '999999',
-        description: descriptionFilter,
-      })
-      await transactionsPage.applyFilterButton.click()
-
-      await page.waitForURL(`**/prisoner/${prisonNumber}/account?**description=test**`, { timeout: 2000 })
-
-      const filteredTransactionsUrl = page.url().split('#')[0] // removing page location from url [# fragment identifier]
-
-      await transactionsPage.printTransactionsButton.click()
-
-      await page.waitForURL(`**/prisoner/${prisonNumber}/account/print-preview?**`, { timeout: 2000 })
-
-      const printPreviewPage = await TransactionPrintPreviewPage.verifyOnPage(page, prisonNumber)
-
-      printPreviewPage.backLink.click()
-
-      await page.waitForURL(filteredTransactionsUrl, { timeout: 2000 })
+      await printPreviewPage.waitForURL(`**/prisoner/${prisonNumber}/account/print-preview**`, { timeout: 2000 })
     })
   })
 
@@ -225,57 +195,17 @@ test.describe('', () => {
 
         const transactionsPage = await testCase.pageModel.load(page, prisonNumber)
 
-        await transactionsPage.printTransactionsButton.click()
+        const [printPreviewPage] = await Promise.all([
+          page.waitForEvent('popup'),
+          transactionsPage.printTransactionsButton.click(),
+        ])
 
-        await page.waitForURL(
+        await printPreviewPage.waitForLoadState()
+
+        await printPreviewPage.waitForURL(
           `**/prisoner/${prisonNumber}/account/print-preview**subAccount=${testCase.subAccountReference}**`,
-        )
-      })
-
-      test(`Should return to the previews ${testCase.subAccountReference} page in the correct state when back button is clicked`, async ({
-        page,
-      }) => {
-        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [], {
-          subAccountReference: testCase.subAccountReference,
-        })
-        await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, testCase.subAccountReference)
-        await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, testCase.subAccountReference)
-
-        const transactionsPage = await testCase.pageModel.load(page, prisonNumber)
-
-        const descriptionFilter = 'test'
-        await transactionsPage.searchDescriptionFilter.fill(descriptionFilter)
-
-        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [], {
-          description: descriptionFilter,
-          subAccountReference: testCase.subAccountReference,
-        })
-
-        await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
-          pageSize: '999999',
-          description: descriptionFilter,
-          subAccountReference: testCase.subAccountReference,
-        })
-        await transactionsPage.applyFilterButton.click()
-
-        await page.waitForURL(`**/prisoner/${prisonNumber}/account/${testCase.urlSubAccount}?**description=test**`, {
-          timeout: 2000,
-        })
-
-        const filteredTransactionsUrl = page.url().split('#')[0] // removing page location from url [# fragment identifier]
-
-        await transactionsPage.printTransactionsButton.click()
-
-        await page.waitForURL(
-          `**/prisoner/${prisonNumber}/account/print-preview?**subAccount=${testCase.subAccountReference}**`,
           { timeout: 2000 },
         )
-
-        const printPreviewPage = await TransactionPrintPreviewPage.verifyOnPage(page, prisonNumber)
-
-        printPreviewPage.backLink.click()
-
-        await page.waitForURL(filteredTransactionsUrl, { timeout: 2000 })
       })
     })
   })
