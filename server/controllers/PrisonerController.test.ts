@@ -781,7 +781,6 @@ describe('PrisonerController', () => {
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerPrintTransactions', {
         downloadCsvParams: expect.anything(),
-        backLink,
         displayTotalBalance: true,
         endDate: '10 March 2026',
         firstName: 'John',
@@ -966,7 +965,6 @@ describe('PrisonerController', () => {
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerPrintTransactions', {
         downloadCsvParams: expect.anything(),
-        backLink,
         displayTotalBalance: true,
         endDate: '10 March 2026',
         firstName: 'John',
@@ -1046,7 +1044,6 @@ describe('PrisonerController', () => {
 
       expect(mockRes.render).toHaveBeenCalledWith('pages/prisoner/transactions/prisonerPrintTransactions', {
         downloadCsvParams: expect.anything(),
-        backLink,
         displayTotalBalance: true,
         endDate: '26 December 2026',
         firstName: 'John',

@@ -258,7 +258,6 @@ class PrisonerController {
       const { page: _, ...printTransactionsQuery } = {
         ...req.query,
         subAccount,
-        backLink: req.originalUrl,
       } as Record<string, string>
 
       // filtering nulls out
@@ -304,7 +303,7 @@ class PrisonerController {
   public printTransactions = async (req: Request, res: Response, next: NextFunction) => {
     const { firstName, lastName } = res.locals.prisonerDetails
     const prisonNumber = req.params.prisonNumber.toString()
-    const { subAccount, startDate, endDate, credit, debit, description, backLink } = req.query as Record<string, string>
+    const { subAccount, startDate, endDate, credit, debit, description } = req.query as Record<string, string>
 
     await this.services.auditService.logPageView(res.locals.auditPage, {
       who: res.locals.user.username,
@@ -365,7 +364,6 @@ class PrisonerController {
       endDate: endDateDisplay,
       statementDate,
       statementBalance: accountBalance,
-      backLink,
       hideHeader: true,
       downloadCsvParams: qs.stringify(req.query),
     })
@@ -397,7 +395,7 @@ class PrisonerController {
     const csvData = transactions.content.map(t => ({
       Date: formatDateToISO(t.date),
       TransactionId: t.legacyTransactionId,
-      Amount: `£${penceToPound(t.debit ? -t.debit : t.credit)}`,
+      Amount: penceToPound(t.debit ? -t.debit : t.credit),
       Account: t.accountType,
       Location: t.location,
       SubAccountBalance: penceToPound(t.subAccountBalance),
