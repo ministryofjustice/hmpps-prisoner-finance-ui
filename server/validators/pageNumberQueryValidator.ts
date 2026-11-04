@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const holdsFilterSchema = z.object({
+const pageNumberQuerySchema = z.object({
   page: z.coerce.number().default(1),
 })
 
@@ -21,4 +21,4 @@ export function formatHoldsValidationErrors(error: z.ZodError) {
   return { errors, errorMap }
 }
 
-export default holdsFilterSchema
+export default pageNumberQuerySchema

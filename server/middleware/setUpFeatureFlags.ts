@@ -11,6 +11,7 @@ export default function setUpFeatureFlags(featureFlagService: FeatureFlagService
         ACTION_PANEL_ENABLED: await featureFlagService.isFeatureEnabled('action-panel-enabled'),
         HOLDS_ENABLED: await featureFlagService.isFeatureEnabled('holds-enabled'),
         ADVANCES_ENABLED: await featureFlagService.isFeatureEnabled('advances-enabled'),
+        SUBSCRIPTIONS_ENABLED: await featureFlagService.isFeatureEnabled('subscriptions-enabled'),
       }
 
       req.featureFlags = featureFlags
@@ -24,6 +25,7 @@ export default function setUpFeatureFlags(featureFlagService: FeatureFlagService
         ACTION_PANEL_ENABLED: false,
         HOLDS_ENABLED: false,
         ADVANCES_ENABLED: false,
+        SUBSCRIPTIONS_ENABLED: false,
       }
       res.locals.dataWarningBannerEnabled = false
       next()

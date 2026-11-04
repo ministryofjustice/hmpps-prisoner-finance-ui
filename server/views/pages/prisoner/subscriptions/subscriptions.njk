@@ -1,0 +1,36 @@
+{%- extends "partials/layout-full-width.njk" -%}
+
+{% from "govuk/components/tabs/macro.njk" import govukTabs %}
+{%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
+{%- from "partials/subscriptions-list/macro.njk" import subscriptionsList -%}
+
+{%- set pageTitle = headerTitle -%}
+{%- set backUrl = "/prisoner/" + prisonNumber -%}
+
+
+{% block contentHeader %}
+  {{ dataWarningBanner(dataWarningBannerEnabled) }}
+{% endblock %}
+
+{% block innerContent %}
+
+{% set subscriptionsTable %}
+    {{ subscriptionsList({
+        subscriptions: subscriptions,
+        paginationItems: paginationItems
+    }) }}
+{% endset %}
+
+{{ govukTabs({
+  items: [
+    {
+      label: "All weekly subscriptions",
+      id: "all-weekly-subscriptions",
+      panel: {
+        html: subscriptionsTable
+      }
+    }
+  ]
+}) }}
+
+{% endblock %}

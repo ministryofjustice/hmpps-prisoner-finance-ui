@@ -11,6 +11,7 @@ import PrisonApiService from './prisonApiService'
 import FeatureFlagService from './featureFlagService'
 import PrisonerFinanceHoldsService from './prisonerFinanceHoldsService'
 import PrisonerFinanceAdvancesService from './prisonerFinanceAdvancesService'
+import PrisonerFinanceSubscriptionsService from './prisonerFinanceSubscriptionsService'
 
 export const services = () => {
   const {
@@ -23,6 +24,7 @@ export const services = () => {
     prisonApiClient,
     prisonerFinanceHoldsApiClient,
     prisonerFinanceAdvancesApiClient,
+    prisonerFinanceSubscriptionsApiClient,
   } = dataAccess()
 
   const prisonPermissionsService = PrisonPermissionsService.create({
@@ -42,6 +44,7 @@ export const services = () => {
     featureFlagService: new FeatureFlagService(),
     prisonerFinanceHoldsService: new PrisonerFinanceHoldsService(prisonerFinanceHoldsApiClient),
     prisonerFinanceAdvancesService: new PrisonerFinanceAdvancesService(prisonerFinanceAdvancesApiClient),
+    prisonerFinanceSubscriptionsService: new PrisonerFinanceSubscriptionsService(prisonerFinanceSubscriptionsApiClient),
   }
 }
 

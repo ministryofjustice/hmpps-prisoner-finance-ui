@@ -22,6 +22,7 @@ import {
   PrisonerAdvancesBalanceResponse,
 } from '../interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
+import PrisonerFinanceSubscriptionsService from '../services/prisonerFinanceSubscriptionsService'
 
 jest.mock('../applicationInfo')
 jest.mock('../services/auditService')
@@ -32,6 +33,7 @@ jest.mock('../services/prisonApiService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 jest.mock('../services/prisonerFinanceHoldsService')
 jest.mock('../services/prisonerFinanceAdvancesService')
+jest.mock('../services/prisonerFinanceSubscriptionsService')
 
 describe('PrisonerController', () => {
   const applicationInfo = {} as unknown as jest.Mocked<ApplicationInfo>
@@ -46,6 +48,9 @@ describe('PrisonerController', () => {
   const prisonerFinanceAdvancesService = new PrisonerFinanceAdvancesService(
     null,
   ) as jest.Mocked<PrisonerFinanceAdvancesService>
+  const prisonerFinanceSubscriptionsService = new PrisonerFinanceSubscriptionsService(
+    null,
+  ) as jest.Mocked<PrisonerFinanceSubscriptionsService>
 
   const prisonerController: PrisonerController = new PrisonerController({
     applicationInfo,
@@ -58,6 +63,7 @@ describe('PrisonerController', () => {
     featureFlagService,
     prisonerFinanceHoldsService,
     prisonerFinanceAdvancesService,
+    prisonerFinanceSubscriptionsService,
   })
 
   const mockNext: e.NextFunction = jest.fn()

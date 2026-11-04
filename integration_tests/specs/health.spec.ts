@@ -9,6 +9,7 @@ import { resetStubs } from '../testUtils'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
 import * as prisonerFinanceAdvancesApi from '../mockApis/prisonerFinanceAdvancesApi'
+import * as prisonerFinanceSubscriptionsApi from '../mockApis/prisonerFinanceSubscriptionsApi'
 
 test.describe('Health', () => {
   test.afterEach(async () => {
@@ -26,6 +27,7 @@ test.describe('Health', () => {
         prisonerFinanceAdvancesApi.stubPing(),
         prisonApi.stubPing(),
         prisonerFinanceHoldsApi.stubPing(),
+        prisonerFinanceSubscriptionsApi.stubPing(),
       ])
     })
 
@@ -55,6 +57,7 @@ test.describe('Health', () => {
         prisonerFinanceApi.stubPing(),
         prisonerFinanceHoldsApi.stubPing(),
         prisonerFinanceAdvancesApi.stubPing(),
+        prisonerFinanceSubscriptionsApi.stubPing(),
         tokenVerification.stubPing(500),
       ])
     })
@@ -67,6 +70,7 @@ test.describe('Health', () => {
       expect(payload.components.prisonerFinanceApi.status).toBe('UP')
       expect(payload.components.prisonerFinanceHoldsApi.status).toBe('UP')
       expect(payload.components.prisonerFinanceAdvancesApi.status).toBe('UP')
+      expect(payload.components.prisonerFinanceSubscriptionsApi.status).toBe('UP')
       expect(payload.components.tokenVerification.status).toBe('DOWN')
       expect(payload.components.tokenVerification.details.status).toBe(500)
       expect(payload.components.tokenVerification.details.attempts).toBe(3)
