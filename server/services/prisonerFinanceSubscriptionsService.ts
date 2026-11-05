@@ -11,7 +11,7 @@ const emptyPage: Page<PrisonerSubscriptionResponse> = {
   isLastPage: true,
 }
 
-export default class PrisonerFinanceHoldsService {
+export default class PrisonerFinanceSubscriptionsService {
   constructor(private readonly prisonerFinanceSubscriptionsApiClient: PrisonerFinanceSubscriptionsApiClient) {}
 
   getSubscriptions(
@@ -22,5 +22,9 @@ export default class PrisonerFinanceHoldsService {
     return !hasValidationErrors
       ? this.prisonerFinanceSubscriptionsApiClient.getSubscriptions(prisonNumber, pageNumber)
       : Promise.resolve(emptyPage)
+  }
+
+  getSubscriptionsSummary(prisonNumber: string) {
+    return this.prisonerFinanceSubscriptionsApiClient.getSubscriptionsSummary(prisonNumber)
   }
 }

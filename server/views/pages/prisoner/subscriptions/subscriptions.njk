@@ -3,6 +3,7 @@
 {% from "govuk/components/tabs/macro.njk" import govukTabs %}
 {%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
 {%- from "partials/subscriptions-list/macro.njk" import subscriptionsList -%}
+{%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
 
 {%- set pageTitle = headerTitle -%}
 {%- set backUrl = "/prisoner/" + prisonNumber -%}
@@ -13,6 +14,16 @@
 {% endblock %}
 
 {% block innerContent %}
+<ul class="govuk-grid-row card-group">
+    <li class="govuk-grid-column-one-quarter card-group__item">
+     {{ balanceCard({
+    heading: "Current subscriptions",
+    subHeading: 'Total',
+    amount: subscriptionTotal
+  }) }}
+    </li>
+</ul>
+
 
 {% set subscriptionsTable %}
     {{ subscriptionsList({

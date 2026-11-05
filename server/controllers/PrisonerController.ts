@@ -464,11 +464,14 @@ class PrisonerController {
 
     const pageNumber = parsedQueries.data.page.toString()
 
-    const pagedSubscriptions = await this.services.prisonerFinanceSubscriptionsService.getSubscriptions(
-      prisonNumber,
-      pageNumber,
-      !parsedQueries.success,
-    )
+    const [pagedSubscriptions, subscriptionSummary] = await Promise.all([
+      this.services.prisonerFinanceSubscriptionsService.getSubscriptions(
+        prisonNumber,
+        pageNumber,
+        !parsedQueries.success,
+      ),
+      this.services.prisonerFinanceSubscriptionsService.getSubscriptionsSummary(prisonNumber),
+    ])
 
     const { content, ...paginationItems } = parsedQueries.success
       ? buildPaginationItems<PrisonerSubscriptionResponse, typeof pageNumberQuerySchema>({
@@ -480,9 +483,8 @@ class PrisonerController {
     res.render('pages/prisoner/subscriptions/subscriptions', {
       subscriptions: content,
       prisonNumber,
-      headerTitle: 'Subscriptions',
-      applicationName: 'Subscriptions',
       paginationItems,
+      subscriptionTotal: subscriptionSummary.weeklyPaymentAmount,
     })
   }
 }

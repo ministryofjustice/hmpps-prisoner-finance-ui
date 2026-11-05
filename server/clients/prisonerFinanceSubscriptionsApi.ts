@@ -4,6 +4,7 @@ import config from '../config'
 import logger from '../../logger'
 import { Page } from '../interfaces/Pageable'
 import { PrisonerSubscriptionResponse } from '../interfaces/PrisonerSubscriptionResponse'
+import { PrisonerSubscriptionSummaryResponse } from '../interfaces/PrisonerSubscriptionSummaryResponse'
 
 export default class PrisonerFinanceSubscriptionsApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -23,6 +24,15 @@ export default class PrisonerFinanceSubscriptionsApiClient extends RestClient {
           pageNumber,
           pageSize: '25',
         },
+      },
+      asSystem(),
+    )
+  }
+
+  getSubscriptionsSummary(prisonNumber: string): Promise<PrisonerSubscriptionSummaryResponse> {
+    return this.get(
+      {
+        path: `/subscriptions/account/${prisonNumber}/summary`,
       },
       asSystem(),
     )

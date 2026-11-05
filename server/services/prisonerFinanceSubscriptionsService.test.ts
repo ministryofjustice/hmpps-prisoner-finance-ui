@@ -1,6 +1,7 @@
 import PrisonerFinanceSubscriptionsApiClient from '../clients/prisonerFinanceSubscriptionsApi'
 import { Page } from '../interfaces/Pageable'
 import { PrisonerSubscriptionResponse } from '../interfaces/PrisonerSubscriptionResponse'
+import { PrisonerSubscriptionSummaryResponse } from '../interfaces/PrisonerSubscriptionSummaryResponse'
 import PrisonerFinanceSubscriptionsService from './prisonerFinanceSubscriptionsService'
 
 jest.mock('../clients/prisonerFinanceSubscriptionsApi')
@@ -10,6 +11,7 @@ describe('PrisonerFinanceSubscriptionsService', () => {
     null,
   ) as jest.Mocked<PrisonerFinanceSubscriptionsApiClient>
   let service: PrisonerFinanceSubscriptionsService
+  const prisonNumber = 'A123BCD'
 
   beforeEach(() => {
     service = new PrisonerFinanceSubscriptionsService(apiClient)
@@ -18,11 +20,8 @@ describe('PrisonerFinanceSubscriptionsService', () => {
   afterEach(() => {
     jest.resetAllMocks()
   })
-
   describe('getSubscriptions', () => {
     it('should call the API client', async () => {
-      const prisonNumber = 'A123BCD'
-
       const subscription: PrisonerSubscriptionResponse = {
         id: '',
         legacyPaymentProfileId: 12345,
@@ -56,8 +55,6 @@ describe('PrisonerFinanceSubscriptionsService', () => {
     })
 
     it('should not call the API client when there are validation errors', async () => {
-      const prisonNumber = 'A123BCD'
-
       const subscription: PrisonerSubscriptionResponse = {
         id: '',
         legacyPaymentProfileId: 12345,
@@ -88,6 +85,21 @@ describe('PrisonerFinanceSubscriptionsService', () => {
       await service.getSubscriptions(prisonNumber, '1', true)
 
       expect(apiClient.getSubscriptions).not.toHaveBeenCalled()
+    })
+  })
+
+  describe('getSubscriptionSummary', () => {
+    const response: PrisonerSubscriptionSummaryResponse = {
+      weeklyPaymentAmount: 100,
+      subscriptionCount: 1,
+    }
+
+    it('should call the subscription summary endpoint', async () => {
+      apiClient.getSubscriptionsSummary.mockResolvedValue(response)
+
+      await service.getSubscriptionsSummary(prisonNumber)
+
+      expect(apiClient.getSubscriptionsSummary).toHaveBeenCalledWith(prisonNumber)
     })
   })
 })

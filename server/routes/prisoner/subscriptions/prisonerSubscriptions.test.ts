@@ -12,6 +12,7 @@ import PrisonApiService from '../../../services/prisonApiService'
 import PrisonerFinanceSubscriptionsService from '../../../services/prisonerFinanceSubscriptionsService'
 import FeatureFlagService from '../../../services/featureFlagService'
 import { PrisonerSubscriptionResponse } from '../../../interfaces/PrisonerSubscriptionResponse'
+import { PrisonerSubscriptionSummaryResponse } from '../../../interfaces/PrisonerSubscriptionSummaryResponse'
 
 jest.mock('../../../services/prisonerFinanceService')
 jest.mock('../../../services/prisonerSearchService')
@@ -91,6 +92,10 @@ describe('Prisoners', () => {
     pageSize: 99,
     isLastPage: true,
   }
+  const summaryResponse: PrisonerSubscriptionSummaryResponse = {
+    weeklyPaymentAmount: 100,
+    subscriptionCount: 2,
+  }
 
   afterEach(() => {
     jest.resetAllMocks()
@@ -98,6 +103,7 @@ describe('Prisoners', () => {
 
   const verifySubscriptionsPageResponse = async (url: string, headerTitle: string, auditPage: AuditPage) => {
     prisonerFinanceSubscriptionsService.getSubscriptions.mockResolvedValue(emptyPageSubscriptionsResponse)
+    prisonerFinanceSubscriptionsService.getSubscriptionsSummary.mockResolvedValue(summaryResponse)
 
     const response = await request(app).get(url).expect(200).expect('Content-Type', /html/)
 
