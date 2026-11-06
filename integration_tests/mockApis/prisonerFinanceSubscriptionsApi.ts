@@ -19,28 +19,32 @@ const stubPing = () =>
     },
   })
 
-const stubGetSubscriptions = async (prisonNumber: string, subscriptionsPayload: PrisonerSubscriptionResponse[]) => {
-  const pageResponse: Page<PrisonerSubscriptionResponse> = {
-    content: subscriptionsPayload,
-    totalElements: subscriptionsPayload.length,
-    totalPages: 1,
-    pageNumber: 1,
-    pageSize: 25,
-    isLastPage: true,
-  }
+const stubGetSubscriptions = async (
+  prisonNumber: string,
+  subscriptionsPayload: PrisonerSubscriptionResponse[],
+  options: { pageNumber: number; pageSize: string; totalPages: number; totalElements: number },
+) => {
   return stubFor({
     request: {
       method: 'GET',
       urlPathPattern: `${API_PREFIX}/subscriptions/account/${prisonNumber}`,
       queryParameters: {
-        pageNumber: { equalTo: '1' },
-        pageSize: { equalTo: '25' },
+        pageNumber:
+          options && options.pageNumber.toString() ? { equalTo: options.pageNumber.toString() } : { equalTo: '1' },
+        pageSize: options && options.pageSize ? { equalTo: options.pageSize } : { equalTo: '25' },
       },
     },
     response: {
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-      jsonBody: pageResponse,
+      jsonBody: {
+        content: subscriptionsPayload,
+        totalElements: options.totalElements,
+        totalPages: options.totalPages,
+        pageNumber: options.pageNumber,
+        pageSize: subscriptionsPayload.length,
+        isLastPage: options.pageNumber === options.totalPages,
+      } as Page<PrisonerSubscriptionResponse>,
     },
   })
 }
