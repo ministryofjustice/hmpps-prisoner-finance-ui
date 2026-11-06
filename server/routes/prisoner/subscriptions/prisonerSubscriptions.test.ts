@@ -119,43 +119,46 @@ describe('Prisoners', () => {
     expect(response.text).toContain(headerTitle)
   }
 
-  // const verifyHoldsPageHandles500 = async (url: string, auditPage: AuditPage) => {
-  //   const error = Object.assign(new Error('GL error'), { data: { status: 500, userMessage: 'GL Error' } })
-  //   prisonerFinanceHoldsService.getHolds.mockRejectedValue(error)
-  //   const res = await request(app).get(url).expect(500)
-  //   expect(res.text).toContain('Sorry, there is a problem with the service')
+  const verifyHoldsPageHandles500 = async (url: string, auditPage: AuditPage) => {
+    const error = Object.assign(new Error('GL error'), { data: { status: 500, userMessage: 'Server Error' } })
+    prisonerFinanceSubscriptionsService.getSubscriptions.mockRejectedValue(error)
+    prisonerFinanceSubscriptionsService.getSubscriptionsSummary.mockRejectedValue(error)
 
-  //   expect(auditService.logPageView).toHaveBeenCalledWith(
-  //     auditPage,
-  //     expect.objectContaining({
-  //       correlationId: expect.any(String),
-  //       who: user.username,
-  //       subjectType: SubjectType.PRISONER,
-  //       subjectId: prisonNumber,
-  //     }),
-  //   )
-  //   expect(res.text).not.toContain(prisonNumber)
-  // }
+    const res = await request(app).get(url).expect(500)
+    expect(res.text).toContain('Sorry, there is a problem with the service')
 
-  // const verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse = async (url: string) => {
-  //   mockPermissions(undefined, { [PrisonerMoneyPermission.read]: false })
+    expect(auditService.logPageView).toHaveBeenCalledWith(
+      auditPage,
+      expect.objectContaining({
+        correlationId: expect.any(String),
+        who: user.username,
+        subjectType: SubjectType.PRISONER,
+        subjectId: prisonNumber,
+      }),
+    )
+    expect(res.text).not.toContain(prisonNumber)
+  }
 
-  //   app = appWithAllRoutes({
-  //     services: {
-  //       auditService,
-  //       prisonerFinanceService,
-  //       prisonPermissionsService,
-  //       prisonerSearchService,
-  //       prisonApiService,
-  //       featureFlagService,
-  //     },
-  //     userSupplier: () => user,
-  //   })
+  const verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse = async (url: string) => {
+    mockPermissions(undefined, { [PrisonerMoneyPermission.read]: false })
 
-  //   const response = await request(app).get(url)
+    app = appWithAllRoutes({
+      services: {
+        auditService,
+        prisonerFinanceService,
+        prisonPermissionsService,
+        prisonerSearchService,
+        prisonApiService,
+        featureFlagService,
+        prisonerFinanceSubscriptionsService,
+      },
+      userSupplier: () => user,
+    })
 
-  //   expect(response.status).toBe(404)
-  // }
+    const response = await request(app).get(url)
+
+    expect(response.status).toBe(404)
+  }
 
   describe('/prisoner/:prisonNumber/holds', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
@@ -166,12 +169,12 @@ describe('Prisoners', () => {
       )
     })
 
-    // it('should handle API errors (e.g. 500)', async () => {
-    //   await verifyHoldsPageHandles500(`/prisoner/${prisonNumber}/holds`, AuditPage.PRISONER_HOLDS)
-    // })
+    it('should handle API errors (e.g. 500)', async () => {
+      await verifyHoldsPageHandles500(`/prisoner/${prisonNumber}/subscriptions`, AuditPage.PRISONER_SUBSCRIPTIONS)
+    })
 
-    // test('should return not found when user does not have permission', async () => {
-    //   await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse('/prisoner/A1234BC/holds')
-    // })
+    test('should return not found when user does not have permission', async () => {
+      await verifyPageHandlesNotFoundOnPrisonerMoneyPermissionFalse(`/prisoner/${prisonNumber}/subscriptions`)
+    })
   })
 })
