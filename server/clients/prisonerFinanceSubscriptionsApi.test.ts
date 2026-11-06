@@ -3,6 +3,7 @@ import { asSystem } from '@ministryofjustice/hmpps-rest-client'
 import { Page } from '../interfaces/Pageable'
 import PrisonerFinanceSubscriptionsApiClient from './prisonerFinanceSubscriptionsApi'
 import { PrisonerSubscriptionResponse } from '../interfaces/PrisonerSubscriptionResponse'
+import { PrisonerSubscriptionSummaryResponse } from '../interfaces/PrisonerSubscriptionSummaryResponse'
 
 describe('Prison Finance Subscriptions Api', () => {
   let client: PrisonerFinanceSubscriptionsApiClient
@@ -60,6 +61,27 @@ describe('Prison Finance Subscriptions Api', () => {
             pageNumber: '1',
             pageSize: '25',
           },
+        },
+        asSystem(),
+      )
+    })
+  })
+
+  describe('getSubscriptionsSummary', () => {
+    it('should call the API', async () => {
+      const prisonerSubscriptionSummaryResponse: PrisonerSubscriptionSummaryResponse = {
+        weeklyPaymentAmount: 150,
+        subscriptionCount: 3,
+      }
+
+      const getSpy = jest.spyOn(client, 'get').mockResolvedValue(prisonerSubscriptionSummaryResponse)
+
+      const response = await client.getSubscriptionsSummary(prisonNumber)
+
+      expect(response).toEqual(prisonerSubscriptionSummaryResponse)
+      expect(getSpy).toHaveBeenCalledWith(
+        {
+          path: `/subscriptions/account/${prisonNumber}/summary`,
         },
         asSystem(),
       )
