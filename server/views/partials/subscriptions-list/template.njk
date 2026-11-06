@@ -8,7 +8,7 @@
       { text: subscription.subscriptionType   },
       { text: subscription.startDate | formatDate("dd/MM/yy")},
       { text: subscription.endDate | formatDate("dd/MM/yy") | default('No data')},
-      { text: subscription.reference},
+      { text: subscription.reference or 'No data'},
       { text: subscription.amount |penceToPound, format: "numeric"},
       { text: subscription.createdBy}
     ] %}

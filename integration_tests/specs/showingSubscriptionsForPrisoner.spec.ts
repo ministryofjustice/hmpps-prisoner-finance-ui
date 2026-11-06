@@ -36,7 +36,7 @@ test.describe('Show subscriptions for prisoner', () => {
       startDate: '2026-11-02',
       endDate: null,
       subscriptionType: 'NEWS',
-      reference: 'The onion',
+      reference: '',
       createdBy: 'USER',
       createdAt: '2026-03-19T10:43:28.194Z',
       prisonId: 'LEI',
@@ -97,7 +97,7 @@ test.describe('Show subscriptions for prisoner', () => {
       [
         'Payment type Start date End date Reference Amount per week User',
         'TELE 03/11/26 No data SKY TV 1.00 USER ',
-        'NEWS 02/11/26 No data The onion 0.50 USER ',
+        'NEWS 02/11/26 No data No data 0.50 USER ',
         'MAGS 01/11/26 01/12/26 beano 0.75 USER ',
       ].join('\n'),
     )
