@@ -49,9 +49,12 @@ describe('PrisonerFinanceSubscriptionsService', () => {
 
       apiClient.getSubscriptions.mockResolvedValue(pagedResponse)
 
-      await service.getSubscriptions(prisonNumber, '1', false)
+      const hasValidationErrors = false
+      const pageNumber = '1'
 
-      expect(apiClient.getSubscriptions).toHaveBeenCalledWith(prisonNumber, '1')
+      await service.getSubscriptions(prisonNumber, pageNumber, hasValidationErrors)
+
+      expect(apiClient.getSubscriptions).toHaveBeenCalledWith(prisonNumber, pageNumber)
     })
 
     it('should not call the API client when there are validation errors', async () => {
@@ -82,7 +85,10 @@ describe('PrisonerFinanceSubscriptionsService', () => {
 
       apiClient.getSubscriptions.mockResolvedValue(pagedResponse)
 
-      await service.getSubscriptions(prisonNumber, '1', true)
+      const hasValidationErrors = true
+      const pageNumber = '1'
+
+      await service.getSubscriptions(prisonNumber, pageNumber, hasValidationErrors)
 
       expect(apiClient.getSubscriptions).not.toHaveBeenCalled()
     })
