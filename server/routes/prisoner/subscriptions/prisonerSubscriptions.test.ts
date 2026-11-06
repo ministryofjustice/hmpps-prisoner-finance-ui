@@ -160,7 +160,7 @@ describe('Prisoners', () => {
     expect(response.status).toBe(404)
   }
 
-  describe('/prisoner/:prisonNumber/holds', () => {
+  describe('/prisoner/:prisonNumber/subscriptions', () => {
     it('should return a 200, render the correct page and call the audit service', async () => {
       await verifySubscriptionsPageResponse(
         `/prisoner/${prisonNumber}/subscriptions`,
