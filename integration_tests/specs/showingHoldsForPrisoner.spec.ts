@@ -225,10 +225,10 @@ test.describe('Show holds for prisoner', () => {
     expect(prisonerHoldsPage.holdsList).toContainText(
       [
         'Account Hold type Hold number Hold until Description Amount Location',
-        'Private cash HOA 1 10/03/27 TEST 1.23 Leeds (HMP)',
-        'Spends HOA 2 10/05/27 TEST 1.21 Leeds (HMP)',
-        'Spends HOA 4 10/02/27 TEST 1.21 Leeds (HMP)',
-        'Savings HOA 4 10/02/27 TEST 1.21 Leeds (HMP)',
+        'Private cash HOA 1 10/03/2027 TEST 1.23 Leeds (HMP)',
+        'Spends HOA 2 10/05/2027 TEST 1.21 Leeds (HMP)',
+        'Spends HOA 4 10/02/2027 TEST 1.21 Leeds (HMP)',
+        'Savings HOA 4 10/02/2027 TEST 1.21 Leeds (HMP)',
         'Savings HOA 4 No data TEST 1.21 XXX',
       ].join('\n'),
     )

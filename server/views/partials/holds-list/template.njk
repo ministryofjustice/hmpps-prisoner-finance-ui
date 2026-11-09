@@ -8,7 +8,7 @@
       { text: hold.subAccountRef | formatPrisonerAccountType  },
       { text: hold.holdType },
       { text: hold.legacyHoldNumber },
-      { text: hold.holdUntilDate | formatDate("dd/MM/yy") | default('No data')},
+      { text: hold.holdUntilDate | formatDate("dd/MM/yyyy") | default('No data')},
       { text: hold.description },
       { text: hold.amount | penceToPound, format: "numeric" },
       { text: hold.holdLocation | convertPrisonIdToName(prisonNames) }
