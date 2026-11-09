@@ -24,7 +24,7 @@
     ] %}
     {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
 
-  <p class='advance-status'>Status: {{ govukTag({
+  <p class='advance-status'><b>Status:</b> {{ govukTag({
         text: advanceStatus | formatStatus
     }) }}</p>
 
@@ -33,7 +33,7 @@
   </div>
 {% else %}
 
-      <p class='advance-status'>Status: {{ govukTag({
+      <p class='advance-status'><b>Status:</b> {{ govukTag({
         text: advanceStatus | formatStatus
     }) }}</p>
 
