@@ -10,5 +10,6 @@
   {% set paginationItems = params.paginationItems | default({})  %}
   {% set prisonNames = params.prisonNames | default([])  %}
   {% set prisonNumber = params.prisonNumber  %}
+  {% set status = params.status  %}
   {% include "./template.njk" %}
 {% endmacro %}

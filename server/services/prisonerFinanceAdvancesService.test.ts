@@ -95,6 +95,7 @@ describe('PrisonerFinanceAdvancesService', () => {
         balanceDateTime: '',
         remainingPayments: 4,
         nextPaymentDate: '',
+        status: 'ACTIVE',
       }
 
       apiClient.getAdvanceBalance.mockResolvedValue(expectedResponse)

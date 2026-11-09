@@ -5,6 +5,7 @@ export interface PrisonerAdvanceBalanceResponse {
   weeklyPaymentAmount: number
   remainingPayments: number
   nextPaymentDate: string
+  status: string
 }
 
 export interface PrisonerAdvancesBalanceResponse {

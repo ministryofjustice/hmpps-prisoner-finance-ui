@@ -22,12 +22,16 @@ export default class PrisonerAdvanceDetailPage extends AbstractPage {
 
   readonly paymentsRemainingBalanceCard: Locator
 
+  readonly advanceStatus: Locator
+
   private constructor(page: Page, headerText: string) {
     super(page)
     this.heading = page.getByRole('heading', { name: headerText, exact: true })
     this.backLink = page.getByRole('link', { name: 'Back', exact: true })
 
     this.profileHeader = page.locator('.mini-profile, .hmpps-profile-banner').first()
+
+    this.advanceStatus = page.locator('.advance-status')
 
     this.advancePaymentsList = page.locator('.advance-payments-list__advance-payments')
     this.topPagination = page.getByRole('navigation', { name: 'Pagination' }).nth(0)

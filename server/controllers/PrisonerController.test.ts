@@ -1506,6 +1506,7 @@ describe('PrisonerController', () => {
         weeklyPaymentAmount: 1,
         remainingPayments: 4,
         nextPaymentDate: '',
+        status: 'ACTIVE',
       }
 
       const prisonerAdvancePayments: PrisonerAdvancePaymentsResponse[] = []

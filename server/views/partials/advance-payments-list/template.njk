@@ -23,10 +23,20 @@
       { text: "Location" }
     ] %}
     {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
+
+  <p class='advance-status'>Status: {{ govukTag({
+        text: status | formatStatus
+    }) }}</p>
+
     {{ govukTable({ classes: "advance-payments-list__advance-payments", caption: "", captionClasses: "govuk-table__caption--m", head: head, rows: rows }) }}
     {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
   </div>
 {% else %}
+
+      <p class='advance-status'>Status: {{ govukTag({
+        text: status | formatStatus
+    }) }}</p>
+
   <p class="advance-payments-list__empty-message" data-testid="no-advance-payments-message">
     No payments to show
   </p>

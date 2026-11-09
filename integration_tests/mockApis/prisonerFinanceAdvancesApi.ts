@@ -57,6 +57,7 @@ const stubGetAdvanceBalance = (advanceId: string) =>
         balanceDateTime: '',
         remainingPayments: 10,
         nextPaymentDate: '2026-03-10T10:48:28.094Z',
+        status: 'ACTIVE',
       } as PrisonerAdvanceBalanceResponse,
     },
   })

@@ -8,9 +8,10 @@ describe('Prisoner Finance Component: Advance Payments list', () => {
   let njkEnv: nunjucks.Environment
 
   const renderMacro = (
-    params: { advancePayments: Array<PrisonerAdvancePaymentsResponse>; prisons: Array<string> } = {
+    params: { advancePayments: Array<PrisonerAdvancePaymentsResponse>; prisons: Array<string>; status: string } = {
       advancePayments: [],
       prisons: [],
+      status: 'ACTIVE',
     },
   ) => {
     const template = `
@@ -47,6 +48,9 @@ describe('Prisoner Finance Component: Advance Payments list', () => {
     const html = renderMacro()
     const $ = cheerio.load(html)
 
+    const status = $('.advance-status').text().replace(/\s+/g, ' ').trim()
+
+    expect(status).toContain('Status: Active')
     expect($('.advance-payments-list__empty-message').text()).toContain('No payments to show')
     expect($('.advance-payments').length).toBe(0)
   })
@@ -55,9 +59,13 @@ describe('Prisoner Finance Component: Advance Payments list', () => {
     const html = renderMacro({
       advancePayments: [advancePayment],
       prisons: ['LEI'],
+      status: 'REPAID',
     })
     const $ = cheerio.load(html)
 
+    const status = $('.advance-status').text().replace(/\s+/g, ' ').trim()
+
+    expect(status).toContain('Status: Repaid')
     expect($('.advance-payments-list__empty-message').length).toBe(0)
     expect($('.advance-payments-list__advance-payments').length).toBe(1)
   })

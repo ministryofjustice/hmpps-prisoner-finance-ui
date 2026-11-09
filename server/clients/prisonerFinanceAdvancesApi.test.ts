@@ -31,6 +31,7 @@ describe('Prison Finance Advances Api', () => {
         balanceDateTime: '',
         remainingPayments: 4,
         nextPaymentDate: '',
+        status: 'ACTIVE',
       }
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
@@ -56,6 +57,7 @@ describe('Prison Finance Advances Api', () => {
         balanceDateTime: '',
         remainingPayments: 4,
         nextPaymentDate: '',
+        status: 'ACTIVE',
       }
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
