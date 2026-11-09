@@ -1,6 +1,6 @@
 import {
   PrisonerAdvanceBalanceResponse,
-  PrisonerAdvancesBalanceResponse,
+  PrisonerTotalAdvanceBalanceResponse,
 } from '../../server/interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvanceResponse } from '../../server/interfaces/PrisonerAdvanceResponse'
 import { PrisonerAdvancePaymentsResponse } from '../../server/interfaces/PrisonerAdvancePaymentsResponse'
@@ -37,7 +37,7 @@ const stubGetAdvancesBalance = (prisonNumber: string) =>
         advancesAmount: 10,
         balancesOutstanding: 3,
         weeklyPaymentAmount: 1,
-      } as PrisonerAdvancesBalanceResponse,
+      } as PrisonerTotalAdvanceBalanceResponse,
     },
   })
 

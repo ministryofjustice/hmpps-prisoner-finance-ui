@@ -2,7 +2,7 @@ import PrisonerFinanceAdvancesApiClient from '../clients/prisonerFinanceAdvances
 import { Page } from '../interfaces/Pageable'
 import {
   PrisonerAdvanceBalanceResponse,
-  PrisonerAdvancesBalanceResponse,
+  PrisonerTotalAdvanceBalanceResponse,
 } from '../interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
@@ -71,7 +71,7 @@ describe('PrisonerFinanceAdvancesService', () => {
 
   describe('getAdvancesBalance', () => {
     it('should call the API client', async () => {
-      const expectedResponse: PrisonerAdvancesBalanceResponse = {
+      const expectedResponse: PrisonerTotalAdvanceBalanceResponse = {
         advancesAmount: 100,
         weeklyPaymentAmount: 1,
         balancesOutstanding: 90,

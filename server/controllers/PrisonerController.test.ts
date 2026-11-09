@@ -19,7 +19,7 @@ import PrisonerFinanceAdvancesService from '../services/prisonerFinanceAdvancesS
 import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
 import {
   PrisonerAdvanceBalanceResponse,
-  PrisonerAdvancesBalanceResponse,
+  PrisonerTotalAdvanceBalanceResponse,
 } from '../interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 import PrisonerFinanceSubscriptionsService from '../services/prisonerFinanceSubscriptionsService'
@@ -1412,7 +1412,7 @@ describe('PrisonerController', () => {
         },
       } as unknown as Request
 
-      const advanceBalances: PrisonerAdvancesBalanceResponse = {
+      const advanceBalances: PrisonerTotalAdvanceBalanceResponse = {
         balanceDateTime: '',
         advancesAmount: 100,
         balancesOutstanding: 10,

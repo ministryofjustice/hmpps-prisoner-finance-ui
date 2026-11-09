@@ -8,7 +8,7 @@ export interface PrisonerAdvanceBalanceResponse {
   status: string
 }
 
-export interface PrisonerAdvancesBalanceResponse {
+export interface PrisonerTotalAdvanceBalanceResponse {
   balanceDateTime: string
   advancesAmount: number
   balancesOutstanding: number
