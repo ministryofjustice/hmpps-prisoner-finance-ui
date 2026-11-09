@@ -8,10 +8,14 @@ describe('Prisoner Finance Component: Advance Payments list', () => {
   let njkEnv: nunjucks.Environment
 
   const renderMacro = (
-    params: { advancePayments: Array<PrisonerAdvancePaymentsResponse>; prisons: Array<string>; status: string } = {
+    params: {
+      advancePayments: Array<PrisonerAdvancePaymentsResponse>
+      prisons: Array<string>
+      advanceStatus: string
+    } = {
       advancePayments: [],
       prisons: [],
-      status: 'ACTIVE',
+      advanceStatus: 'ACTIVE',
     },
   ) => {
     const template = `
@@ -59,7 +63,7 @@ describe('Prisoner Finance Component: Advance Payments list', () => {
     const html = renderMacro({
       advancePayments: [advancePayment],
       prisons: ['LEI'],
-      status: 'REPAID',
+      advanceStatus: 'REPAID',
     })
     const $ = cheerio.load(html)
 
