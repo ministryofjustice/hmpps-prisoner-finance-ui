@@ -96,9 +96,9 @@ test.describe('Show subscriptions for prisoner', () => {
     expect(prisonerSubscriptionsPage.subscriptionsList).toContainText(
       [
         'Payment type Start date End date Reference Amount per week User',
-        'TELE 03/11/26 No data SKY TV 1.00 USER ',
-        'NEWS 02/11/26 No data No data 0.50 USER ',
-        'MAGS 01/11/26 01/12/26 beano 0.75 USER ',
+        'TELE 03/11/2026 No data SKY TV 1.00 USER ',
+        'NEWS 02/11/2026 No data No data 0.50 USER ',
+        'MAGS 01/11/2026 01/12/2026 beano 0.75 USER ',
       ].join('\n'),
     )
 
