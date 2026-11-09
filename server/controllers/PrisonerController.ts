@@ -10,7 +10,7 @@ import { PrisonerTransactionResponse } from '../interfaces/PrisonerTransactionRe
 import buildPaginationItems from '../utils/mojPaginationHelper'
 import { PrisonerSearchContent, PrisonerSearchResult } from '../interfaces/PrisonerSearchResponse'
 import prisonerSearchFilterSchema, { formatSearchFilterValidationErrors } from '../validators/searchFilterSchema'
-import holdsFilterSchema from '../validators/holdsFilterValidator'
+import pageNumberQuerySchema from '../validators/pageNumberQueryValidator'
 import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 import { PrisonerHoldsBalanceResponse } from '../interfaces/PrisonerHoldsBalanceResponse'
 import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
@@ -20,6 +20,7 @@ import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePa
 import { formatDate } from '../utils/formatUtils'
 import arrayToCSV from '../utils/csv'
 import { formatDateToISO, penceToPound } from '../utils/utils'
+import { PrisonerSubscriptionResponse } from '../interfaces/PrisonerSubscriptionResponse'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -169,7 +170,7 @@ class PrisonerController {
   public getHolds = async (req: Request, res: Response, next: NextFunction) => {
     const prisonNumber = req.params.prisonNumber.toString()
 
-    const parsedQueries = holdsFilterSchema.safeParse(req.query)
+    const parsedQueries = pageNumberQuerySchema.safeParse(req.query)
 
     await this.services.auditService.logPageView(res.locals.auditPage, {
       who: res.locals.user.username,
@@ -187,7 +188,7 @@ class PrisonerController {
     )
 
     const { content, ...paginationItems } = parsedQueries.success
-      ? buildPaginationItems<PrisonerHoldResponse, typeof holdsFilterSchema>({
+      ? buildPaginationItems<PrisonerHoldResponse, typeof pageNumberQuerySchema>({
           ...pagedHolds,
           filters: parsedQueries.data,
         })
@@ -447,6 +448,44 @@ class PrisonerController {
     } catch (error) {
       next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error', { cause: error }))
     }
+  }
+
+  public getSubscriptions = async (req: Request, res: Response, next: NextFunction) => {
+    const prisonNumber = req.params.prisonNumber.toString()
+
+    await this.services.auditService.logPageView(AuditPage.PRISONER_SUBSCRIPTIONS, {
+      who: res.locals.user.username,
+      correlationId: req.id,
+      subjectType: SubjectType.PRISONER,
+      subjectId: prisonNumber,
+    })
+
+    const parsedQueries = pageNumberQuerySchema.safeParse(req.query)
+
+    const pageNumber = parsedQueries.data.page.toString()
+
+    const [pagedSubscriptions, subscriptionSummary] = await Promise.all([
+      this.services.prisonerFinanceSubscriptionsService.getSubscriptions(
+        prisonNumber,
+        pageNumber,
+        !parsedQueries.success,
+      ),
+      this.services.prisonerFinanceSubscriptionsService.getSubscriptionsSummary(prisonNumber),
+    ])
+
+    const { content, ...paginationItems } = parsedQueries.success
+      ? buildPaginationItems<PrisonerSubscriptionResponse, typeof pageNumberQuerySchema>({
+          ...pagedSubscriptions,
+          filters: parsedQueries.data,
+        })
+      : { content: [] as PrisonerSubscriptionResponse[] }
+
+    res.render('pages/prisoner/subscriptions/subscriptions', {
+      subscriptions: content,
+      prisonNumber,
+      paginationItems,
+      subscriptionTotal: subscriptionSummary.weeklyPaymentAmount,
+    })
   }
 }
 

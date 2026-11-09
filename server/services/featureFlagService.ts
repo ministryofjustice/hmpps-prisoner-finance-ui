@@ -42,6 +42,7 @@ type FeatureFlags = {
   ACTION_PANEL_ENABLED: boolean
   HOLDS_ENABLED: boolean
   ADVANCES_ENABLED: boolean
+  SUBSCRIPTIONS_ENABLED: boolean
 }
 
 declare module 'express-serve-static-core' {

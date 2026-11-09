@@ -8,6 +8,7 @@ import creditAPrisonerRouter from '../creditAPrisoner/creditAPrisoner'
 import prisonerTransactionsRouter from './transactions/prisonerTransactions'
 import prisonerHoldsRouter from './holds/prisonerHolds'
 import prisonerAdvancesRouter from './advances/prisonerAdvances'
+import prisonerSubscriptionsRouter from './subscriptions/prisonerSubscriptions'
 
 export default function routes(services: Services): Router {
   const prisonerRouter = Router()
@@ -27,6 +28,7 @@ export default function routes(services: Services): Router {
   prisonerRouter.use('/:prisonNumber/account', prisonerTransactionsRouter(services))
   prisonerRouter.use('/:prisonNumber', prisonerHoldsRouter(services))
   prisonerRouter.use('/:prisonNumber', prisonerAdvancesRouter(services))
+  prisonerRouter.use('/:prisonNumber', prisonerSubscriptionsRouter(services))
 
   prisonerRouter.get('/:prisonNumber', prisonerController.getProfile)
 
