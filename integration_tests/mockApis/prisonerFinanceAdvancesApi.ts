@@ -1,6 +1,6 @@
 import {
   PrisonerAdvanceBalanceResponse,
-  PrisonerAdvancesBalanceResponse,
+  PrisonerTotalAdvanceBalanceResponse,
 } from '../../server/interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvanceResponse } from '../../server/interfaces/PrisonerAdvanceResponse'
 import { PrisonerAdvancePaymentsResponse } from '../../server/interfaces/PrisonerAdvancePaymentsResponse'
@@ -37,7 +37,7 @@ const stubGetAdvancesBalance = (prisonNumber: string) =>
         advancesAmount: 10,
         balancesOutstanding: 3,
         weeklyPaymentAmount: 1,
-      } as PrisonerAdvancesBalanceResponse,
+      } as PrisonerTotalAdvanceBalanceResponse,
     },
   })
 
@@ -57,6 +57,7 @@ const stubGetAdvanceBalance = (advanceId: string) =>
         balanceDateTime: '',
         remainingPayments: 10,
         nextPaymentDate: '2026-03-10T10:48:28.094Z',
+        status: 'ACTIVE',
       } as PrisonerAdvanceBalanceResponse,
     },
   })

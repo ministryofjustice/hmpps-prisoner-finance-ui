@@ -2,7 +2,10 @@ import type { AuthenticationClient } from '@ministryofjustice/hmpps-auth-clients
 import { asSystem } from '@ministryofjustice/hmpps-rest-client'
 import { Page } from '../interfaces/Pageable'
 import PrisonerFinanceAdvancesApiClient from './prisonerFinanceAdvancesApi'
-import { PrisonerAdvanceBalanceResponse } from '../interfaces/PrisonerAdvanceBalanceResponse'
+import {
+  PrisonerAdvanceBalanceResponse,
+  PrisonerTotalAdvanceBalanceResponse,
+} from '../interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 
@@ -24,13 +27,11 @@ describe('Prison Finance Advances Api', () => {
 
   describe('getAdvancesBalance', () => {
     it('should call the API', async () => {
-      const expectedResponse: PrisonerAdvanceBalanceResponse = {
-        advanceAmount: 100,
-        weeklyPaymentAmount: 1,
-        balanceOutstanding: 90,
+      const expectedResponse: PrisonerTotalAdvanceBalanceResponse = {
         balanceDateTime: '',
-        remainingPayments: 4,
-        nextPaymentDate: '',
+        advancesAmount: 4,
+        balancesOutstanding: 100,
+        weeklyPaymentAmount: 20,
       }
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)
@@ -56,6 +57,7 @@ describe('Prison Finance Advances Api', () => {
         balanceDateTime: '',
         remainingPayments: 4,
         nextPaymentDate: '',
+        status: 'ACTIVE',
       }
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)

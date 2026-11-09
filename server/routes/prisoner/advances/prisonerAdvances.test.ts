@@ -12,7 +12,7 @@ import PrisonApiService from '../../../services/prisonApiService'
 import PrisonerFinanceAdvancesService from '../../../services/prisonerFinanceAdvancesService'
 import { PrisonerAdvanceResponse } from '../../../interfaces/PrisonerAdvanceResponse'
 import FeatureFlagService from '../../../services/featureFlagService'
-import { PrisonerAdvancesBalanceResponse } from '../../../interfaces/PrisonerAdvanceBalanceResponse'
+import { PrisonerTotalAdvanceBalanceResponse } from '../../../interfaces/PrisonerAdvanceBalanceResponse'
 
 jest.mock('../../../services/prisonerFinanceService')
 jest.mock('../../../services/prisonerSearchService')
@@ -61,7 +61,7 @@ describe('Prisoner Advances', () => {
       bookingId: '123456',
     })
 
-    const advanceBalances: PrisonerAdvancesBalanceResponse = {
+    const advanceBalances: PrisonerTotalAdvanceBalanceResponse = {
       balanceDateTime: '',
       advancesAmount: 100,
       balancesOutstanding: 10,

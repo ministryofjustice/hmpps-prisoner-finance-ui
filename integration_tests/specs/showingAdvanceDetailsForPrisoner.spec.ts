@@ -105,6 +105,9 @@ test.describe('Show advances for prisoner', () => {
       ].join('\n'),
     )
 
+    expect(prisonerAdvancesPage.advanceStatus).toBeVisible()
+    expect(prisonerAdvancesPage.advanceStatus).toHaveText('Status: Active')
+
     expect(prisonerAdvancesPage.thisAdvanceBalanceCard).toBeVisible()
     expect(prisonerAdvancesPage.thisAdvanceBalanceCard.locator('[data-testid="balanceCardTotal"]')).toHaveText('£0.10')
 

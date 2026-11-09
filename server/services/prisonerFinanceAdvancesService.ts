@@ -2,7 +2,7 @@ import PrisonerFinanceAdvancesApiClient from '../clients/prisonerFinanceAdvances
 import { Page } from '../interfaces/Pageable'
 import {
   PrisonerAdvanceBalanceResponse,
-  PrisonerAdvancesBalanceResponse,
+  PrisonerTotalAdvanceBalanceResponse,
 } from '../interfaces/PrisonerAdvanceBalanceResponse'
 import { PrisonerAdvancePaymentsResponse } from '../interfaces/PrisonerAdvancePaymentsResponse'
 import { PrisonerAdvanceResponse } from '../interfaces/PrisonerAdvanceResponse'
@@ -28,7 +28,7 @@ const emptyPagePayments: Page<PrisonerAdvancePaymentsResponse> = {
 export default class PrisonerFinanceAdvancesService {
   constructor(private readonly prisonerFinanceAdvancesApiClient: PrisonerFinanceAdvancesApiClient) {}
 
-  getAdvancesBalances(prisonNumber: string): Promise<PrisonerAdvancesBalanceResponse> {
+  getAdvancesBalances(prisonNumber: string): Promise<PrisonerTotalAdvanceBalanceResponse> {
     return this.prisonerFinanceAdvancesApiClient.getAdvancesBalance(prisonNumber)
   }
 
