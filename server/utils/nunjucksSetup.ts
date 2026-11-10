@@ -13,7 +13,10 @@ import {
   prisonerProfileBacklink,
   properCaseName,
   convertToTitleCase,
-  formatStatus,
+  formatStatusForAdvanceDetails,
+  formatStatusForAdvancesList,
+  getTagColourForAdvancesList,
+  getTagColourForAdvanceDetails,
 } from './utils'
 import { lastNameCommaFirstName, formatDate } from './formatUtils'
 import config from '../config'
@@ -37,7 +40,10 @@ export const setUpNunJucksFilters = (njkEnv: nunjucks.Environment, assetManifest
   njkEnv.addFilter('formatPrisonerAccountType', formatPrisonerAccountType)
   njkEnv.addFilter('properCaseName', properCaseName)
   njkEnv.addFilter('convertToTitleCase', convertToTitleCase)
-  njkEnv.addFilter('formatStatus', formatStatus)
+  njkEnv.addFilter('formatStatusForAdvanceDetails', formatStatusForAdvanceDetails)
+  njkEnv.addFilter('formatStatusForAdvancesList', formatStatusForAdvancesList)
+  njkEnv.addFilter('getTagColourForAdvancesList', getTagColourForAdvancesList)
+  njkEnv.addFilter('getTagColourForAdvanceDetails', getTagColourForAdvanceDetails)
 }
 
 export default function nunjucksSetup(app: express.Express): void {

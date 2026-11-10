@@ -91,8 +91,40 @@ export const formatPrisonerAccountType = (accountType: string): string => {
   }
 }
 
-export const formatStatus = (status: string): string => {
-  return properCase(status).replace('_', ' ')
+export const formatStatusForAdvanceDetails = (status: string): string => {
+  switch (status) {
+    case 'REPAID':
+      return 'Paid'
+    case 'WRITTEN_OFF':
+      return 'Written off'
+    case 'ACTIVE':
+      return 'Active'
+    default:
+      return status
+  }
+}
+
+export const formatStatusForAdvancesList = (status: string): string => {
+  if (status === 'ACTIVE') return 'Active'
+  return 'Inactive'
+}
+
+export const getTagColourForAdvancesList = (status: string): string => {
+  if (status === 'ACTIVE') return 'govuk-tag--blue'
+  return 'govuk-tag--grey'
+}
+
+export const getTagColourForAdvanceDetails = (status: string): string => {
+  switch (status) {
+    case 'REPAID':
+      return 'govuk-tag--green'
+    case 'WRITTEN_OFF':
+      return 'govuk-tag--yellow'
+    case 'ACTIVE':
+      return 'govuk-tag--blue'
+    default:
+      return 'govuk-tag--blue'
+  }
 }
 
 interface RadioButtonOption {

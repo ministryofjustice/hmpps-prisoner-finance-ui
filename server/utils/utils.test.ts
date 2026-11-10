@@ -8,7 +8,10 @@ import {
   datePickerToISODate,
   formatPrisonerAccountType,
   mapItemsForRadioButtons,
-  formatStatus,
+  formatStatusForAdvanceDetails,
+  formatStatusForAdvancesList,
+  getTagColourForAdvancesList,
+  getTagColourForAdvanceDetails,
 } from './utils'
 import { PrisonRegisterName } from '../interfaces/prisonRegisterName'
 
@@ -130,14 +133,43 @@ describe('formatPrisonerAccountType', () => {
   })
 })
 
-describe('formatAdvanceStatus', () => {
+describe('formatStatusForAdvanceDetails', () => {
   it.each([
-    [`Returns what it recieves`, 'junk', 'Junk'],
-    ['Paid', 'PAID', 'Paid'],
+    ['Repaid', 'REPAID', 'Paid'],
     ['Written off', 'WRITTEN_OFF', 'Written off'],
     ['Active', 'ACTIVE', 'Active'],
-  ])('%s formatAdvanceStatus(%s, %s)', (_: string, input: string, expected: string) => {
-    expect(formatStatus(input)).toEqual(expected)
+  ])('%s formatStatusForAdvanceDetails(%s, %s)', (_: string, input: string, expected: string) => {
+    expect(formatStatusForAdvanceDetails(input)).toEqual(expected)
+  })
+})
+
+describe('formatStatusForAdvancesList', () => {
+  it.each([
+    ['Repaid', 'REPAID', 'Inactive'],
+    ['Written off', 'WRITTEN_OFF', 'Inactive'],
+    ['Active', 'ACTIVE', 'Active'],
+  ])('%s formatStatusForAdvancesList(%s, %s)', (_: string, input: string, expected: string) => {
+    expect(formatStatusForAdvancesList(input)).toEqual(expected)
+  })
+})
+
+describe('getTagColourForAdvancesList', () => {
+  it.each([
+    ['Repaid', 'REPAID', 'govuk-tag--grey'],
+    ['Written off', 'WRITTEN_OFF', 'govuk-tag--grey'],
+    ['Active', 'ACTIVE', 'govuk-tag--blue'],
+  ])('%s getTagColourForAdvancesList(%s, %s)', (_: string, input: string, expected: string) => {
+    expect(getTagColourForAdvancesList(input)).toEqual(expected)
+  })
+})
+
+describe('getTagColourForAdvanceDetails', () => {
+  it.each([
+    ['Repaid', 'REPAID', 'govuk-tag--green'],
+    ['Written off', 'WRITTEN_OFF', 'govuk-tag--yellow'],
+    ['Active', 'ACTIVE', 'govuk-tag--blue'],
+  ])('%s getTagColourForAdvanceDetails(%s, %s)', (_: string, input: string, expected: string) => {
+    expect(getTagColourForAdvanceDetails(input)).toEqual(expected)
   })
 })
 
