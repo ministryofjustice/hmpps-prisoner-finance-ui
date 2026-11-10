@@ -131,8 +131,8 @@ test.describe('Show advances for prisoner', () => {
       [
         'Date Advance amount Payment amount Start payments Reference Created by Location Status',
         '10/03/202610:48 0.10 0.01 10/03/2026 An advance TEST Leeds (HMP) Active',
-        '10/04/202611:48 1.20 0.10 11/04/2026 Test advance Billy Moorland (HMP & YOI) Written off',
-        '10/05/202611:48 0.20 0.03 12/05/2026 Another advance TEST Leeds (HMP) Paid',
+        '10/04/202611:48 1.20 0.10 11/04/2026 Test advance Billy Moorland (HMP & YOI) Inactive',
+        '10/05/202611:48 0.20 0.03 12/05/2026 Another advance TEST Leeds (HMP) Inactive',
         '10/06/202611:48 0.15 0.01 23/06/2026 first day in prison TEST Leeds (HMP) Active',
         '10/07/202611:48 0.50 0.02 25/07/2026 Christmas TEST Leeds (HMP) Active',
       ].join('\n'),
