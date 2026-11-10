@@ -8,6 +8,8 @@
 {%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
 {%- from "partials/transactions-list/macro.njk" import transactionsList -%}
 {%- from "components/summaryContainer/summaryContainer.njk" import summaryContainer -%}
+{%- from "components/card/profileAdvancesLinkCard.njk" import profileAdvancesLinkCard -%}
+
 {%- from "components/actionBlock/actionBlock.njk" import actionBlock -%}
 
 {%- set pageTitle = "Finances" -%}
@@ -78,6 +80,18 @@
       <a href="/prisoner/{{prisonNumber}}/account" data-testid="transactions-page-link" >View all transactions</a>
     </p>
   {% endcall %}
+
+
+<div class='govuk-grid-column-full'>
+  <div class='govuk-grid-row'>
+    {{profileAdvancesLinkCard({
+          advancesAmount: advancesAmount | penceToPound,
+          balancesOutstanding: balancesOutstanding | penceToPound,
+          weeklyPaymentAmount: weeklyPaymentAmount | penceToPound,
+          href: "/prisoner/"+prisonNumber+"/advances"
+    })}}
+   </div>
+  </div>
 {% endblock %}
 
 {% block secondaryContent %}

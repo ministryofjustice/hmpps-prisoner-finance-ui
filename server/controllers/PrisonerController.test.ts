@@ -1201,6 +1201,12 @@ describe('PrisonerController', () => {
       prisonerFinanceService.getSubAccountBalances.mockResolvedValue(mockBalancesResponse)
 
       prisonerFinanceHoldsService.getHoldsBalance.mockResolvedValue(mockHoldResponse)
+      prisonerFinanceAdvancesService.getAdvancesBalances.mockResolvedValue({
+        balanceDateTime: '',
+        advancesAmount: 10,
+        balancesOutstanding: 10,
+        weeklyPaymentAmount: 11,
+      })
 
       await prisonerController.getProfile(mockReq, mockRes, mockNext)
 
@@ -1220,6 +1226,9 @@ describe('PrisonerController', () => {
           holds: mockHoldResponse,
         },
         actionPanelEnabled: false,
+        advancesAmount: 10,
+        balancesOutstanding: 10,
+        weeklyPaymentAmount: 11,
       })
     })
 
@@ -1268,6 +1277,12 @@ describe('PrisonerController', () => {
       prisonerFinanceService.getSubAccountBalances.mockResolvedValue(mockBalancesResponse)
 
       prisonerFinanceHoldsService.getHoldsBalance.mockResolvedValue(mockHoldResponse)
+      prisonerFinanceAdvancesService.getAdvancesBalances.mockResolvedValue({
+        balanceDateTime: '',
+        advancesAmount: 10,
+        balancesOutstanding: 10,
+        weeklyPaymentAmount: 11,
+      })
 
       await prisonerController.getProfile(mockReq, mockRes, mockNext)
 
@@ -1288,6 +1303,9 @@ describe('PrisonerController', () => {
           holds: mockHoldResponse,
         },
         actionPanelEnabled: false,
+        advancesAmount: 10,
+        balancesOutstanding: 10,
+        weeklyPaymentAmount: 11,
       })
     })
 

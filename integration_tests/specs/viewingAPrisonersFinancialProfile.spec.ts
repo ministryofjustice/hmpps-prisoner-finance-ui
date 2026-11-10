@@ -10,6 +10,7 @@ import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonApi from '../mockApis/prisonApi'
 import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
+import * as prisonerFinanceAdvancesApi from '../mockApis/prisonerFinanceAdvancesApi'
 
 import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import PrisonerMoneyPage from '../pages/prisonerMoneyPage'
@@ -105,6 +106,7 @@ test.describe('Viewing a prisoners financial profile', () => {
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', balancePayload[2])
     await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
     await prisonRegisterApi.stubGetPrisonNames()
+    await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
   }
 
   const setupPrisonerMoniesStubs = async () => {
@@ -151,6 +153,17 @@ test.describe('Viewing a prisoners financial profile', () => {
       expect(prisonerProfilePage.profileHeader).toContainText(prisonNumber)
     })
 
+    test('Should display an advances link card', async ({ page }) => {
+      await setupPrisonerProfileStubs()
+
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
+
+      expect(prisonerProfilePage.advancesCard).toBeVisible()
+      expect(prisonerProfilePage.advancesCard).toContainText(
+        ['Advances', 'Current advances £0.10', 'Balance outstanding £0.03', 'Weekly payments £0.01'].join('\n').trim(),
+      )
+    })
+
     test('Should display the holds balance', async ({ page }) => {
       await setupPrisonerProfileStubs()
 
@@ -173,6 +186,16 @@ test.describe('Viewing a prisoners financial profile', () => {
 
       await prisonerProfilePage.getBalanceCardFor('Savings').getByRole('link', { name: 'Savings transactions' }).click()
       await PrisonerMoneyPage.verifyOnPage(page, prisonNumber, 'Savings transactions', 'savings')
+    })
+
+    test('Should be able to view all advances', async ({ page }) => {
+      await setupPrisonerProfileStubs()
+
+      const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
+
+      await prisonerProfilePage.advancesCard.getByRole('link', { name: 'Advances' }).click()
+
+      page.waitForURL(`**/prisoner/${prisonNumber}/advances`)
     })
 
     test('Should display the spends sub account balance', async ({ page }) => {
@@ -279,6 +302,7 @@ test.describe('Viewing a prisoners financial profile', () => {
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', balancePayload[2])
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
       await prisonRegisterApi.stubGetPrisonNames()
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
 
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
       expect(prisonerProfilePage.recentTransactionsList).not.toBeVisible()
@@ -336,6 +360,7 @@ test.describe('Viewing a prisoners financial profile', () => {
       } as SubAccountBalanceResponse)
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
       await prisonRegisterApi.stubGetPrisonNames()
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
 
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
@@ -360,6 +385,7 @@ test.describe('Viewing a prisoners financial profile', () => {
       } as SubAccountBalanceResponse)
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
       await prisonRegisterApi.stubGetPrisonNames()
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
 
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
@@ -384,6 +410,7 @@ test.describe('Viewing a prisoners financial profile', () => {
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalanceNotFound(prisonNumber, 'SAVINGS')
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
       await prisonRegisterApi.stubGetPrisonNames()
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
 
       const prisonerProfilePage = await PrisonerFinancialProfilePage.load(page, prisonNumber)
 
@@ -458,6 +485,7 @@ test.describe('Viewing a prisoners financial profile', () => {
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])
       await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', balancePayload[2])
       await prisonRegisterApi.stubGetPrisonNames()
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
 
       await page.goto(`/prisoner/${prisonNumber}`)
 
