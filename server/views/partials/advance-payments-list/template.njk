@@ -25,7 +25,8 @@
     {% if paginationItems %} {{ mojPagination(paginationItems) }} {% endif %}
 
   <p class='advance-status'><b>Status:</b> {{ govukTag({
-        text: advanceStatus | formatStatus
+        text: advanceStatus | formatStatusForAdvanceDetails,
+        classes: advanceStatus | getTagColourForAdvanceDetails
     }) }}</p>
 
     {{ govukTable({ classes: "advance-payments-list__advance-payments", caption: "", captionClasses: "govuk-table__caption--m", head: head, rows: rows }) }}
@@ -34,7 +35,8 @@
 {% else %}
 
       <p class='advance-status'><b>Status:</b> {{ govukTag({
-        text: advanceStatus | formatStatus
+        text: advanceStatus | formatStatusForAdvanceDetails,
+        classes: advanceStatus | getTagColourForAdvanceDetails
     }) }}</p>
 
   <p class="advance-payments-list__empty-message" data-testid="no-advance-payments-message">

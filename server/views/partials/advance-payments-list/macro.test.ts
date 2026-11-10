@@ -52,9 +52,6 @@ describe('Prisoner Finance Component: Advance Payments list', () => {
     const html = renderMacro()
     const $ = cheerio.load(html)
 
-    const status = $('.advance-status').text().replace(/\s+/g, ' ').trim()
-
-    expect(status).toContain('Status: Active')
     expect($('.advance-payments-list__empty-message').text()).toContain('No payments to show')
     expect($('.advance-payments').length).toBe(0)
   })
@@ -67,10 +64,26 @@ describe('Prisoner Finance Component: Advance Payments list', () => {
     })
     const $ = cheerio.load(html)
 
-    const status = $('.advance-status').text().replace(/\s+/g, ' ').trim()
-
-    expect(status).toContain('Status: Repaid')
     expect($('.advance-payments-list__empty-message').length).toBe(0)
     expect($('.advance-payments-list__advance-payments').length).toBe(1)
   })
+
+  it.each([
+    ['Repaid', 'REPAID', 'Paid', '.govuk-tag--green'],
+    ['Written off', 'WRITTEN_OFF', 'Written off', '.govuk-tag--yellow'],
+    ['Active', 'ACTIVE', 'Active', '.govuk-tag--blue'],
+  ])(
+    '%s Should render status correctly (%s, %s, %s)',
+    (_: string, status: string, expectedText: string, expectedTag: string) => {
+      const html = renderMacro({
+        advancePayments: [advancePayment],
+        prisons: ['LEI'],
+        advanceStatus: status,
+      })
+      const $ = cheerio.load(html)
+
+      expect($(expectedTag).length).toBe(1)
+      expect($(expectedTag).text()).toContain(expectedText)
+    },
+  )
 })
