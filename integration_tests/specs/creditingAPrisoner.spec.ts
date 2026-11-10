@@ -10,6 +10,8 @@ import PrisonerFinancialProfilePage from '../pages/prisonerFinancialProfilePage'
 import InternalServerErrorPage from '../pages/internalServerErrorPage'
 import prisonApi from '../mockApis/prisonApi'
 import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
+import * as prisonerFinanceAdvancesApi from '../mockApis/prisonerFinanceAdvancesApi'
+
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 
 test.describe('Crediting a prisoner', () => {
@@ -32,6 +34,7 @@ test.describe('Crediting a prisoner', () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
       await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, [])
 
       await prisonerFinanceApi.stubGetPrisonerAccountByReference(prisonNumber, [
