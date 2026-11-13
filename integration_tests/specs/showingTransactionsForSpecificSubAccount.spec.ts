@@ -4,6 +4,7 @@ import { login, resetStubs } from '../testUtils'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
+import * as prisonerFinanceAdvancesApi from '../mockApis/prisonerFinanceAdvancesApi'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import InternalServerErrorPage from '../pages/internalServerErrorPage'
@@ -94,6 +95,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
       await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
       await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload, {
         subAccountReference: 'CASH',
@@ -130,6 +132,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
 
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
 
       await expect(prisonerPrivateCashPage.backLink).toBeVisible()
@@ -318,6 +321,7 @@ test.describe('Showing all transactions for a specific sub account', () => {
       await prisonRegisterApi.stubGetPrisonNames()
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
       await prisonerFinanceHoldsApi.stubGetHoldsBalanceForSubAccount(prisonNumber, 'CASH')
 
       await PrisonerPrivateCashPage.load(page, prisonNumber)

@@ -3,6 +3,7 @@ import { login, resetStubs } from '../testUtils'
 import prisonerSearchApi from '../mockApis/prisonerSearchApi'
 import * as prisonerFinanceApi from '../mockApis/prisonerFinanceApi'
 import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
+import * as prisonerFinanceAdvancesApi from '../mockApis/prisonerFinanceAdvancesApi'
 import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import IndexPage from '../pages/indexPage'
@@ -27,6 +28,7 @@ const stubPrisonerProfile = async () => {
   await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', zeroSubAccountBalance)
   await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', zeroSubAccountBalance)
   await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+  await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
   await prisonRegisterApi.stubGetPrisonNames()
 }
 

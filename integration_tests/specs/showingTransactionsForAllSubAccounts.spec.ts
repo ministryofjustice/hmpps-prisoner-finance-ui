@@ -12,6 +12,7 @@ import prisonApi from '../mockApis/prisonApi'
 import componentsApi from '../mockApis/componentsApi'
 import FindPrisonerPage from '../pages/findPrisonerPage'
 import AccountNotFoundErrorPage from '../pages/accountNotFoundErrorPage'
+import * as prisonerFinanceAdvancesApi from '../mockApis/prisonerFinanceAdvancesApi'
 
 test.describe('Showing transactions for all sub accounts', () => {
   const transactionPayload: PrisonerTransactionResponse[] = [
@@ -79,6 +80,7 @@ test.describe('Showing transactions for all sub accounts', () => {
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
 
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
 
       const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
 
@@ -92,6 +94,7 @@ test.describe('Showing transactions for all sub accounts', () => {
       await prisonerSearchApi.stubGetPrisoner(prisonNumber)
       await prisonApi.stubGetPrisonerImage()
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
       await prisonerFinanceApi.stubGetPrisonerTransactionsByPrisonNumber(prisonNumber, transactionPayload)
       await prisonRegisterApi.stubGetPrisonNames()
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber, {
@@ -115,6 +118,7 @@ test.describe('Showing transactions for all sub accounts', () => {
       await prisonRegisterApi.stubGetPrisonNames()
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
 
       const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
 
@@ -134,6 +138,7 @@ test.describe('Showing transactions for all sub accounts', () => {
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
 
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
 
       await PrisonerTransactionsPage.load(page, prisonNumber)
 
@@ -203,6 +208,7 @@ test.describe('Showing transactions for all sub accounts', () => {
       await prisonerFinanceApi.stubGetPrisonerAccountBalance(prisonNumber)
 
       await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+      await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
 
       const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
 
@@ -229,6 +235,7 @@ test.describe('Showing transactions for all sub accounts', () => {
     await prisonRegisterApi.stubGetPrisonNames()
 
     await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+    await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
 
     const prisonerTransactionsPage = await PrisonerTransactionsPage.load(page, prisonNumber)
     await expect(prisonerTransactionsPage.transactionList).not.toBeVisible()

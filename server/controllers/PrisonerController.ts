@@ -423,7 +423,7 @@ class PrisonerController {
         subjectId: prisonNumber,
       })
 
-      const [transactions, subAccountBalances, holdBalance] = await Promise.all([
+      const [transactions, subAccountBalances, holdBalance, advancesBalances] = await Promise.all([
         this.services.prisonerFinanceService.getPrisonerTransactionsByPrisonNumber({
           prisonNumber,
           page: '1',
@@ -431,6 +431,7 @@ class PrisonerController {
         }),
         this.services.prisonerFinanceService.getSubAccountBalances(prisonNumber),
         this.services.prisonerFinanceHoldsService.getHoldsBalance(prisonNumber),
+        this.services.prisonerFinanceAdvancesService.getAdvancesBalances(prisonNumber),
       ])
 
       res.render('pages/prisoner/profile/prisonerProfile', {
@@ -444,6 +445,9 @@ class PrisonerController {
           holds: holdBalance,
         },
         holdsEnabled: req.featureFlags.HOLDS_ENABLED,
+        advancesAmount: advancesBalances.advancesAmount,
+        balancesOutstanding: advancesBalances.balancesOutstanding,
+        weeklyPaymentAmount: advancesBalances.weeklyPaymentAmount,
       })
     } catch (error) {
       next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error', { cause: error }))

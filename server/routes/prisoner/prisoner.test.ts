@@ -12,6 +12,7 @@ import { Page } from '../../interfaces/Pageable'
 import PrisonApiService from '../../services/prisonApiService'
 import PrisonerFinanceHoldsService from '../../services/prisonerFinanceHoldsService'
 import FeatureFlagService from '../../services/featureFlagService'
+import PrisonerFinanceAdvancesService from '../../services/prisonerFinanceAdvancesService'
 
 jest.mock('../../services/prisonerFinanceService')
 jest.mock('../../services/prisonerSearchService')
@@ -19,6 +20,7 @@ jest.mock('../../services/prisonRegisterService')
 jest.mock('../../services/prisonApiService')
 jest.mock('@ministryofjustice/hmpps-prison-permissions-lib')
 jest.mock('../../services/prisonerFinanceHoldsService')
+jest.mock('../../services/prisonerFinanceAdvancesService')
 
 const featureFlagService = new FeatureFlagService() as jest.Mocked<FeatureFlagService>
 
@@ -29,6 +31,9 @@ const prisonPermissionsService = {} as unknown as PermissionsService
 const prisonRegisterService = new PrisonRegisterService(null) as jest.Mocked<PrisonRegisterService>
 const prisonApiService = new PrisonApiService(null) as jest.Mocked<PrisonApiService>
 const prisonerFinanceHoldsService = new PrisonerFinanceHoldsService(null) as jest.Mocked<PrisonerFinanceHoldsService>
+const prisonerFinanceAdvancesService = new PrisonerFinanceAdvancesService(
+  null,
+) as jest.Mocked<PrisonerFinanceAdvancesService>
 
 let app: Express
 
@@ -70,6 +75,7 @@ describe('Prisoners', () => {
         prisonApiService,
         featureFlagService,
         prisonerFinanceHoldsService,
+        prisonerFinanceAdvancesService,
       },
       userSupplier: () => user,
     })
@@ -186,6 +192,12 @@ describe('Prisoners', () => {
       prisonerFinanceHoldsService.getHoldsBalance.mockResolvedValue({
         amount: 10,
         balanceDateTime: '',
+      })
+      prisonerFinanceAdvancesService.getAdvancesBalances.mockResolvedValue({
+        balanceDateTime: '',
+        advancesAmount: 10,
+        balancesOutstanding: 10,
+        weeklyPaymentAmount: 11,
       })
 
       await request(app).get(`/prisoner/${prisonNumber}`).expect(200).expect('Content-Type', /html/)

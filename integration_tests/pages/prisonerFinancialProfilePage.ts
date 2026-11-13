@@ -16,6 +16,8 @@ export default class PrisonerFinancialProfilePage extends AbstractPage {
 
   readonly actionMenuBlock: Locator
 
+  readonly advancesCard: Locator
+
   private constructor(page: Page) {
     super(page)
     this.heading = page.getByRole('heading', { name: 'Finances', exact: true })
@@ -29,6 +31,8 @@ export default class PrisonerFinancialProfilePage extends AbstractPage {
     this.viewAllTransactionsLink = page.getByRole('link', { name: 'View all transactions', exact: true })
 
     this.actionMenuBlock = page.locator('.hmpps-actions-block')
+
+    this.advancesCard = page.locator('.advances-link-card')
   }
 
   static async load(page: Page, prisonNumber: string): Promise<PrisonerFinancialProfilePage> {

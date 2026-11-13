@@ -1,0 +1,45 @@
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+
+
+{% macro profileAdvancesLinkCard(params) %}
+<div class='govuk-grid-column-one-third hmpps-profile-link-card advances-link-card'>
+    <h2><a href={{params.href}}>Advances</a></h2>
+    {{ govukSummaryList({
+        classes: "govuk-summary-list--no-border",
+        rows: [
+          {
+            key: {
+              text: "Current advances",
+              classes: "govuk-!-width-one-half current-advances-key"
+            },
+            value: {
+              text: '£' + params.advancesAmount,
+              classes: "govuk-!-width-one-half current-advances-value"
+            }
+          },
+          {
+            key: {
+              text: "Balance outstanding",
+              classes: "govuk-!-width-one-half balance-outstanding-key"
+            },
+            value: {
+              text: '£' + params.balancesOutstanding,
+              classes: "govuk-!-width-one-half balance-outstanding-value"
+            }
+          },
+          {
+            key: {
+              text: "Weekly payments",
+              classes: "govuk-!-width-one-half weekly-payments-key"
+
+            },
+            value: {
+              text: '£' + params.weeklyPaymentAmount,
+              classes: "govuk-!-width-one-half  weekly-payments-value"
+            }
+          }
+        ]
+    }) }}
+</div>
+
+{% endmacro%}

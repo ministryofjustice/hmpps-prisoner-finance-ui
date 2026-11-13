@@ -1,0 +1,5 @@
+.hmpps-profile-link-card {
+  border: 1px solid govuk-colour("black", $variant: "tint-80");
+  box-shadow: 0 5px govuk-colour("black", $variant: "tint-80");
+  @include govuk-responsive-margin(4, 'bottom');
+}

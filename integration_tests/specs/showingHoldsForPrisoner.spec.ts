@@ -10,6 +10,7 @@ import prisonRegisterApi from '../mockApis/prisonRegisterApi'
 import prisonApi from '../mockApis/prisonApi'
 import * as prisonerFinanceHoldsApi from '../mockApis/prisonerFinanceHoldsApi'
 import { PrisonerHoldResponse } from '../../server/interfaces/PrisonerHoldResponse'
+import * as prisonerFinanceAdvancesApi from '../mockApis/prisonerFinanceAdvancesApi'
 import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBalanceResponse'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
 import { resetStubs } from '../mockApis/wiremock'
@@ -180,6 +181,7 @@ test.describe('Show holds for prisoner', () => {
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'CASH', balancePayload[1])
     await prisonerFinanceApi.stubGetPrisonerSubAccountBalance(prisonNumber, 'SAVINGS', balancePayload[2])
     await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber)
+    await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
   }
 
   const setupGetHoldsStubs = async (
