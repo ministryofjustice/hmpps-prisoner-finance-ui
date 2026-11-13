@@ -2,26 +2,4 @@
   border: 1px solid govuk-colour("black", $variant: "tint-80");
   box-shadow: 0 5px govuk-colour("black", $variant: "tint-80");
   @include govuk-responsive-margin(4, 'bottom');
-
-  &__body {
-    @include govuk-responsive-padding(3, 'left');
-    @include govuk-responsive-padding(3, 'right');
-    height: calc(100% - 50px);
-    min-height: 7rem;
-  }
-
-  &__description {
-    @include govuk-font($size: 19, $weight: 'bold');
-    margin-top: 16px;
-  }
-
-  &__action {
-    @include govuk-font($size: 19, $weight: 'normal');
-    margin-top: 8px;
-  }
-
-  &__total {
-    @include govuk-font($size: 36, $weight: 'normal');
-    margin: 0;
-  }
 }
