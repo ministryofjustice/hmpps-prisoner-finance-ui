@@ -1,8 +1,4 @@
-{% if not actionPanelEnabled %}
-  {%- extends "partials/layout-full-width.njk" -%}
-    {% else %}
-  {%- extends "partials/layout-three-quarters.njk" -%}
-{% endif %}
+{%- extends "partials/layout-full-width.njk" -%}
 
 {%- from "components/balanceCard/balanceCard.njk" import balanceCard -%}
 {%- from "partials/data-warning-banner/macro.njk" import dataWarningBanner -%}
@@ -68,19 +64,43 @@
     </ul>
   </div>
 
-  {% call summaryContainer({
-    heading: "All account transactions",
-    classes: "transactions-list-summary"
-  }) %}
-    <div class="hmpps-summary-container__table_container">
-      {{ transactionsList({ transactions: transactions, showLocation: false }) }}
+  <div class='govuk-grid-row'>
+
+    {% if actionPanelEnabled %}
+    <div class='govuk-grid-column-three-quarters'>
+    {% else %}
+    <div class='govuk-grid-column-full'>
+    {% endif %}
+
+      {% call summaryContainer({
+        heading: "All account transactions",
+        classes: "transactions-list-summary"
+      }) %}
+        <div class="hmpps-summary-container__table_container">
+          {{ transactionsList({ transactions: transactions, showLocation: false }) }}
+        </div>
+
+        <p class="govuk-body">
+          <a href="/prisoner/{{prisonNumber}}/account" data-testid="transactions-page-link" >View all transactions</a>
+        </p>
+      {% endcall %}
     </div>
 
-    <p class="govuk-body">
-      <a href="/prisoner/{{prisonNumber}}/account" data-testid="transactions-page-link" >View all transactions</a>
-    </p>
-  {% endcall %}
-
+    {% if actionPanelEnabled %}
+    <div class='govuk-grid-column-one-quarter'>
+      {{ actionBlock({
+        actions: [
+          {text: "Credit account", url: "/prisoner/"+prisonNumber+"/money/credit-a-prisoner/credit-to"},
+          {text: "Debit account", url: "#" },
+          {text: "Sub account transfer", url: "#" },
+          {text: "Adjudications", url: "#" },
+          {text: "Export statement", url: "#" },
+          {text: "Close account", url: "#" }
+        ]
+      }) }}
+    </div>
+    {% endif %}
+  </div>
 
 <div class='govuk-grid-column-full'>
   <div class='govuk-grid-row'>
@@ -92,17 +112,4 @@
     })}}
    </div>
   </div>
-{% endblock %}
-
-{% block secondaryContent %}
-  {{ actionBlock({
-    actions: [
-      {text: "Credit account", url: "/prisoner/"+prisonNumber+"/money/credit-a-prisoner/credit-to"},
-      {text: "Debit account", url: "#" },
-      {text: "Sub account transfer", url: "#" },
-      {text: "Adjudications", url: "#" },
-      {text: "Export statement", url: "#" },
-      {text: "Close account", url: "#" }
-    ]
-  }) }}
 {% endblock %}
