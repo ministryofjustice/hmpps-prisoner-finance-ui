@@ -65,25 +65,34 @@
   </div>
 
   <div class='govuk-grid-row'>
+      <div class="{{ 'govuk-grid-column-three-quarters' if actionPanelEnabled else 'govuk-grid-column-full' }}">
+        <div class='govuk-grid-row'>
+          <div class="govuk-grid-column-full">
+            {% call summaryContainer({
+              heading: "All account transactions",
+              classes: "transactions-list-summary"
+            }) %}
+              <div class="hmpps-summary-container__table_container">
+                {{ transactionsList({ transactions: transactions, showLocation: false }) }}
+              </div>
 
-    {% if actionPanelEnabled %}
-    <div class='govuk-grid-column-three-quarters'>
-    {% else %}
-    <div class='govuk-grid-column-full'>
-    {% endif %}
-
-      {% call summaryContainer({
-        heading: "All account transactions",
-        classes: "transactions-list-summary"
-      }) %}
-        <div class="hmpps-summary-container__table_container">
-          {{ transactionsList({ transactions: transactions, showLocation: false }) }}
+              <p class="govuk-body">
+                <a href="/prisoner/{{prisonNumber}}/account" data-testid="transactions-page-link" >View all transactions</a>
+              </p>
+            {% endcall %}
+          </div>
         </div>
 
-        <p class="govuk-body">
-          <a href="/prisoner/{{prisonNumber}}/account" data-testid="transactions-page-link" >View all transactions</a>
-        </p>
-      {% endcall %}
+        <div class='govuk-grid-row'>
+          <div class='govuk-grid-column-one-half'>
+            {{profileAdvancesLinkCard({
+                  advancesAmount: advancesAmount | penceToPound,
+                  balancesOutstanding: balancesOutstanding | penceToPound,
+                  weeklyPaymentAmount: weeklyPaymentAmount | penceToPound,
+                  href: "/prisoner/"+prisonNumber+"/advances"
+            })}}
+          </div>
+        </div>
     </div>
 
     {% if actionPanelEnabled %}
@@ -100,16 +109,5 @@
       }) }}
     </div>
     {% endif %}
-  </div>
-
-<div class='govuk-grid-column-full'>
-  <div class='govuk-grid-row'>
-    {{profileAdvancesLinkCard({
-          advancesAmount: advancesAmount | penceToPound,
-          balancesOutstanding: balancesOutstanding | penceToPound,
-          weeklyPaymentAmount: weeklyPaymentAmount | penceToPound,
-          href: "/prisoner/"+prisonNumber+"/advances"
-    })}}
-   </div>
   </div>
 {% endblock %}
