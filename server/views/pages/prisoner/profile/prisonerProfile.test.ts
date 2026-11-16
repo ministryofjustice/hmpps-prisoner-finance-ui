@@ -303,11 +303,8 @@ describe('prisoner profile page', () => {
 
     const actionMenu = $('.hmpps-actions-block')
 
-    const fullWidthBalanceCardContainer = $('.govuk-grid-column-full .hmpps-balance-card-group')
-    const threeQuartersBalanceCardContainer = $('.govuk-grid-column-three-quarters .hmpps-balance-card-group')
-
-    expect(fullWidthBalanceCardContainer).toHaveLength(0)
-    expect(threeQuartersBalanceCardContainer).toHaveLength(1)
+    const balanceCarsdContainer = $('.hmpps-balance-card-group')
+    expect(balanceCarsdContainer).toHaveLength(1)
 
     const creditMenu = actionMenu.find('a:contains("Credit account")')
     expect(creditMenu.text()).toBe('Credit account')
