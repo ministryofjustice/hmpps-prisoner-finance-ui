@@ -303,8 +303,8 @@ describe('prisoner profile page', () => {
 
     const actionMenu = $('.hmpps-actions-block')
 
-    const balanceCarsdContainer = $('.hmpps-balance-card-group')
-    expect(balanceCarsdContainer).toHaveLength(1)
+    const balanceCardsContainer = $('.hmpps-balance-card-group')
+    expect(balanceCardsContainer).toHaveLength(1)
 
     const creditMenu = actionMenu.find('a:contains("Credit account")')
     expect(creditMenu.text()).toBe('Credit account')
