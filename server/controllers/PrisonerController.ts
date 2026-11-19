@@ -445,6 +445,7 @@ class PrisonerController {
           holds: holdBalance,
         },
         holdsEnabled: req.featureFlags.HOLDS_ENABLED,
+        advancesEnabled: req.featureFlags.ADVANCES_ENABLED,
         advancesAmount: advancesBalances.advancesAmount,
         balancesOutstanding: advancesBalances.balancesOutstanding,
         weeklyPaymentAmount: advancesBalances.weeklyPaymentAmount,
