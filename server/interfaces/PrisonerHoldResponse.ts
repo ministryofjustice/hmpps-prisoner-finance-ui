@@ -1,3 +1,5 @@
+import { HoldTypeString } from './HoldTypeString'
+
 export interface PrisonerHoldResponse {
   id: string
   prisonNumber: string
@@ -9,7 +11,7 @@ export interface PrisonerHoldResponse {
   holdUntilDate: string | null
   isReleased: boolean
   description: string | null
-  holdType: string
+  holdType: HoldTypeString
   amount: number
   holdLocation: string
 }

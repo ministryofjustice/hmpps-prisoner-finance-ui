@@ -192,6 +192,8 @@ describe('Prisoners', () => {
       prisonerFinanceHoldsService.getHoldsBalance.mockResolvedValue({
         amount: 10,
         balanceDateTime: '',
+        hoa: 0,
+        whf: 0,
       })
       prisonerFinanceAdvancesService.getAdvancesBalances.mockResolvedValue({
         balanceDateTime: '',

@@ -25,6 +25,8 @@ describe('PrisonerFinanceHoldsService', () => {
       const expectedResponse: PrisonerHoldsBalanceResponse = {
         amount: 100,
         balanceDateTime: '',
+        hoa: 0,
+        whf: 0,
       }
 
       apiClient.getHoldsBalance.mockResolvedValue(expectedResponse)
@@ -40,6 +42,8 @@ describe('PrisonerFinanceHoldsService', () => {
       const expectedResponse: PrisonerHoldsBalanceResponse = {
         amount: 100,
         balanceDateTime: '',
+        hoa: 0,
+        whf: 0,
       }
 
       apiClient.getHoldsBalance.mockResolvedValue(expectedResponse)

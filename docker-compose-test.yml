@@ -1,9 +1,8 @@
 services:
-
   wiremock:
-    image: wiremock/wiremock
+    image: wiremock/wiremock:latest
     networks:
-    - hmpps_int
+      - hmpps_int
     container_name: wiremock
     restart: always
     ports:
@@ -12,10 +11,10 @@ services:
       - ./mappings:/home/wiremock/mappings
 
   redis:
-    image: redis:8.10
+    image: redis:8.10.3
     restart: always
     ports:
-      - '6379:6379'
+      - "6379:6379"
     command: redis-server --save 20 1 --loglevel warning
     volumes:
       - cache:/data

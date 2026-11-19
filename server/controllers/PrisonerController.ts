@@ -181,11 +181,10 @@ class PrisonerController {
 
     const pageNumber = parsedQueries.data.page.toString()
 
-    const pagedHolds = await this.services.prisonerFinanceHoldsService.getHolds(
-      prisonNumber,
-      pageNumber,
-      !parsedQueries.success,
-    )
+    const [pagedHolds, holdsBalance] = await Promise.all([
+      this.services.prisonerFinanceHoldsService.getHolds(prisonNumber, pageNumber, !parsedQueries.success),
+      this.services.prisonerFinanceHoldsService.getHoldsBalance(prisonNumber),
+    ])
 
     const { content, ...paginationItems } = parsedQueries.success
       ? buildPaginationItems<PrisonerHoldResponse, typeof pageNumberQuerySchema>({
@@ -198,6 +197,7 @@ class PrisonerController {
       prisonNumber,
       paginationItems,
       holds: pagedHolds.content,
+      holdsBalance,
     })
   }
 
@@ -235,7 +235,7 @@ class PrisonerController {
         hasValidationErrors: !parsedQueries.success,
       })
 
-      let holdBalance: PrisonerHoldsBalanceResponse = { amount: 0, balanceDateTime: '' }
+      let holdBalance: PrisonerHoldsBalanceResponse = { amount: 0, balanceDateTime: '', hoa: 0, whf: 0 }
 
       if (res.locals.showHolds) {
         if (subAccount != null) {

@@ -13,6 +13,7 @@ import { PrisonerHoldResponse } from '../../server/interfaces/PrisonerHoldRespon
 import * as prisonerFinanceAdvancesApi from '../mockApis/prisonerFinanceAdvancesApi'
 import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBalanceResponse'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
+import { HoldTypeString } from '../../server/interfaces/HoldTypeString'
 import { resetStubs } from '../mockApis/wiremock'
 import { login } from '../testUtils'
 
@@ -184,9 +185,16 @@ test.describe('Show holds for prisoner', () => {
     await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
   }
 
+  const mockBalancePayload = {
+    amount: 10,
+    hoa: 120,
+    whf: 50,
+    balanceDateTime: '',
+  }
+
   const setupGetHoldsStubs = async (
     payload: PrisonerHoldResponse[] = [],
-    options: { pageNumber: number; pageSize: string; totalPages: number } = {
+    options: { pageNumber: number; pageSize: string; totalPages: number; holdType?: HoldTypeString } = {
       pageNumber: 1,
       pageSize: '25',
       totalPages: 2,
@@ -196,6 +204,7 @@ test.describe('Show holds for prisoner', () => {
     await prisonApi.stubGetPrisonerImage()
     await prisonRegisterApi.stubGetPrisonNames()
     await prisonerFinanceHoldsApi.stubGetHolds(prisonNumber, payload, options)
+    await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber, mockBalancePayload)
   }
 
   test.beforeEach(async ({ page }) => {
@@ -221,10 +230,12 @@ test.describe('Show holds for prisoner', () => {
   test('Should display holds when page is loaded', async ({ page }) => {
     await setupGetHoldsStubs(holdsPayload)
 
-    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+    await PrisonerHoldsPage.load(page, prisonNumber)
 
-    expect(prisonerHoldsPage.holdsList).toBeVisible()
-    expect(prisonerHoldsPage.holdsList).toContainText(
+    const holdsList = page.locator('#all-holds-tab').locator('.holds-list__holds')
+
+    expect(holdsList).toBeVisible()
+    expect(holdsList).toContainText(
       [
         'Account Hold type Hold number Hold until Description Amount Location',
         'Private cash HOA 1 10/03/2027 TEST 1.23 Leeds (HMP)',
@@ -236,6 +247,36 @@ test.describe('Show holds for prisoner', () => {
     )
   })
 
+  test('should display balance cards', async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload)
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+    expect(prisonerHoldsPage.holdsTotalCard).toBeVisible()
+    expect(prisonerHoldsPage.holdsTotalCard).toContainText('Holds total £0.10')
+    expect(prisonerHoldsPage.holdsWHFCard).toBeVisible()
+    expect(prisonerHoldsPage.holdsWHFCard).toContainText('Withheld funds (WHF) £0.50')
+    expect(prisonerHoldsPage.holdsHOACard).toBeVisible()
+    expect(prisonerHoldsPage.holdsHOACard).toContainText('On hold (HOA) £1.20')
+  })
+
+  // TODO: Check tab is being selected as well as URL change
+  test('should be able to navigate to HOA tab', async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload)
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+    await setupGetHoldsStubs(holdsPayload, { pageNumber: 1, pageSize: '25', totalPages: 2, holdType: 'HOA' })
+    await prisonerHoldsPage.hoaTab.click()
+    const url = new URL(page.url()).pathname
+    expect(url.includes('holdType=HOA'))
+  })
+
+  test('should be able to navigate to WHF tab', async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload)
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+    await setupGetHoldsStubs(holdsPayload, { pageNumber: 1, pageSize: '25', totalPages: 2, holdType: 'WHF' })
+    await prisonerHoldsPage.whfTab.click()
+    const url = new URL(page.url()).pathname
+    expect(url.includes('holdType=WHF'))
+  })
+
   test('Should display no holds when the user does not have any holds', async ({ page }) => {
     await setupGetHoldsStubs([])
 
@@ -243,7 +284,7 @@ test.describe('Show holds for prisoner', () => {
 
     expect(prisonerHoldsPage.holdsList).not.toBeVisible()
 
-    const noHoldsMessage = page.locator('[data-testid="no-holds-message"]')
+    const noHoldsMessage = page.locator('#all-holds-tab').locator('[data-testid="no-holds-message"]')
     await expect(noHoldsMessage).toBeVisible()
     await expect(noHoldsMessage).toHaveText('No holds to show')
   })
