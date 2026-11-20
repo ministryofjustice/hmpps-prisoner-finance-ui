@@ -84,6 +84,7 @@
         </div>
 
         <div class='govuk-grid-row'>
+          {% if advancesEnabled %}
           <div class='govuk-grid-column-one-half'>
             {{profileAdvancesLinkCard({
                   advancesAmount: advancesAmount | penceToPound,
@@ -92,6 +93,7 @@
                   href: "/prisoner/"+prisonNumber+"/advances"
             })}}
           </div>
+            {% endif %}
         </div>
     </div>
 

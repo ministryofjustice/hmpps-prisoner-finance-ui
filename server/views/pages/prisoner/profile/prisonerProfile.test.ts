@@ -155,6 +155,7 @@ describe('prisoner profile page', () => {
     ...paramsWithoutActionPanel,
     actionPanelEnabled: true,
     holdsEnabled: true,
+    advancesEnabled: true,
   }
 
   const paramsWithoutLastRunningBalance = {
@@ -293,6 +294,12 @@ describe('prisoner profile page', () => {
     expect(threeQuartersBalanceCardContainer).toHaveLength(0)
   })
 
+  it('should not render advances card if feature flag is false', () => {
+    const advanceCard = $('.advances-link-card')
+
+    expect(advanceCard).toHaveLength(0)
+  })
+
   it('when the feature flag is true, should render the actions menu', () => {
     const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
       ...paramsWithFeatureFlags,
@@ -329,5 +336,17 @@ describe('prisoner profile page', () => {
     const closeMenu = actionMenu.find('a:contains("Close account")')
     expect(closeMenu.text()).toBe('Close account')
     expect(closeMenu.attr('href')).toBe('#')
+  })
+
+  it('when the feature flag is true, should render the advance card', () => {
+    const html = njkEnv.render('pages/prisoner/profile/prisonerProfile.njk', {
+      ...paramsWithFeatureFlags,
+      transactions: [],
+    })
+
+    $ = cheerio.load(html)
+
+    const advanceCard = $('.advances-link-card')
+    expect(advanceCard).toHaveLength(1)
   })
 })
