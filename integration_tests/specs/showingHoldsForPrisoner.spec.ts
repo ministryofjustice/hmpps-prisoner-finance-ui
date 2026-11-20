@@ -230,9 +230,10 @@ test.describe('Show holds for prisoner', () => {
   test('Should display holds when page is loaded', async ({ page }) => {
     await setupGetHoldsStubs(holdsPayload)
 
-    await PrisonerHoldsPage.load(page, prisonNumber)
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
 
-    const holdsList = page.locator('#all-holds-tab').locator('.holds-list__holds')
+    const { holdsList, allHoldsTab } = prisonerHoldsPage
+    await expect(allHoldsTab).toHaveAttribute('aria-current', 'page')
 
     expect(holdsList).toBeVisible()
     expect(holdsList).toContainText(
@@ -258,23 +259,36 @@ test.describe('Show holds for prisoner', () => {
     expect(prisonerHoldsPage.holdsHOACard).toContainText('On hold (HOA) £1.20')
   })
 
-  // TODO: Check tab is being selected as well as URL change
   test('should be able to navigate to HOA tab', async ({ page }) => {
     await setupGetHoldsStubs(holdsPayload)
     const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
     await setupGetHoldsStubs(holdsPayload, { pageNumber: 1, pageSize: '25', totalPages: 2, holdType: 'HOA' })
-    await prisonerHoldsPage.hoaTab.click()
-    const url = new URL(page.url()).pathname
-    expect(url.includes('holdType=HOA'))
+    const { hoaTab } = prisonerHoldsPage
+    await hoaTab.click()
+    await expect(page).toHaveURL(/holdType=HOA/)
+    await expect(hoaTab).toHaveAttribute('aria-current', 'page')
   })
 
   test('should be able to navigate to WHF tab', async ({ page }) => {
     await setupGetHoldsStubs(holdsPayload)
     const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
     await setupGetHoldsStubs(holdsPayload, { pageNumber: 1, pageSize: '25', totalPages: 2, holdType: 'WHF' })
-    await prisonerHoldsPage.whfTab.click()
-    const url = new URL(page.url()).pathname
-    expect(url.includes('holdType=WHF'))
+    const { whfTab } = prisonerHoldsPage
+    await whfTab.click()
+    await expect(page).toHaveURL(/holdType=WHF/)
+    await expect(whfTab).toHaveAttribute('aria-current', 'page')
+  })
+
+  test('should be able to navigate back to all holds tab', async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload)
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+    await setupGetHoldsStubs(holdsPayload, { pageNumber: 1, pageSize: '25', totalPages: 2, holdType: 'WHF' })
+    const { whfTab, allHoldsTab } = prisonerHoldsPage
+    await whfTab.click()
+
+    await setupGetHoldsStubs(holdsPayload, { pageNumber: 1, pageSize: '25', totalPages: 2 })
+    await allHoldsTab.click()
+    await expect(allHoldsTab).toHaveAttribute('aria-current', 'page')
   })
 
   test('Should display no holds when the user does not have any holds', async ({ page }) => {
@@ -284,7 +298,7 @@ test.describe('Show holds for prisoner', () => {
 
     expect(prisonerHoldsPage.holdsList).not.toBeVisible()
 
-    const noHoldsMessage = page.locator('#all-holds-tab').locator('[data-testid="no-holds-message"]')
+    const noHoldsMessage = page.locator('[data-testid="no-holds-message"]')
     await expect(noHoldsMessage).toBeVisible()
     await expect(noHoldsMessage).toHaveText('No holds to show')
   })

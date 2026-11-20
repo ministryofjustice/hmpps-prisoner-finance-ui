@@ -55,74 +55,53 @@ describe('PrisonerFinanceHoldsService', () => {
   })
 
   describe('getHolds', () => {
-    it('should call the API client', async () => {
-      const prisonNumber = 'A123BCD'
+    const prisonNumber = 'A123BCD'
+    const hold: PrisonerHoldResponse = {
+      id: '',
+      prisonNumber: 'A1234CD',
+      legacyHoldNumber: 1,
+      subAccountRef: 'CASH',
+      createdAt: '',
+      createdBy: 'TEST',
+      holdFromDate: '',
+      holdUntilDate: '',
+      isReleased: false,
+      description: 'TEST',
+      holdType: 'HOA',
+      amount: 1000,
+      holdLocation: 'LEI',
+    }
 
-      const hold: PrisonerHoldResponse = {
-        id: '',
-        prisonNumber: 'A1234CD',
-        legacyHoldNumber: 1,
-        subAccountRef: 'CASH',
-        createdAt: '',
-        createdBy: 'TEST',
-        holdFromDate: '',
-        holdUntilDate: '',
-        isReleased: false,
-        description: 'TEST',
-        holdType: 'HOA',
-        amount: 1000,
-        holdLocation: 'LEI',
-      }
+    const pagedResponse: Page<PrisonerHoldResponse> = {
+      content: [hold],
+      totalElements: 1,
+      totalPages: 1,
+      pageNumber: 1,
+      pageSize: 25,
+      isLastPage: true,
+    }
 
-      const pagedResponse: Page<PrisonerHoldResponse> = {
-        content: [hold],
-        totalElements: 1,
-        totalPages: 1,
-        pageNumber: 1,
-        pageSize: 25,
-        isLastPage: true,
-      }
-
+    beforeEach(() => {
       apiClient.getHolds.mockResolvedValue(pagedResponse)
-
+    })
+    it('should call the API client', async () => {
       await service.getHolds(prisonNumber, '1', false)
-
-      expect(apiClient.getHolds).toHaveBeenCalledWith(prisonNumber, '1')
+      expect(apiClient.getHolds).toHaveBeenCalledWith(prisonNumber, '1', undefined)
     })
 
     it('should not call the API client when there are validation errors', async () => {
-      const prisonNumber = 'A123BCD'
-
-      const hold: PrisonerHoldResponse = {
-        id: '',
-        prisonNumber: 'A1234CD',
-        legacyHoldNumber: 1,
-        subAccountRef: 'CASH',
-        createdAt: '',
-        createdBy: 'TEST',
-        holdFromDate: '',
-        holdUntilDate: '',
-        isReleased: false,
-        description: 'TEST',
-        holdType: 'HOA',
-        amount: 1000,
-        holdLocation: 'LEI',
-      }
-
-      const pagedResponse: Page<PrisonerHoldResponse> = {
-        content: [hold],
-        totalElements: 1,
-        totalPages: 1,
-        pageNumber: 1,
-        pageSize: 25,
-        isLastPage: true,
-      }
-
-      apiClient.getHolds.mockResolvedValue(pagedResponse)
-
       await service.getHolds(prisonNumber, '1', true)
 
       expect(apiClient.getHolds).not.toHaveBeenCalled()
+    })
+
+    it('should call the holds service if hold type is HOA', async () => {
+      await service.getHolds(prisonNumber, '1', false, 'HOA')
+      expect(apiClient.getHolds).toHaveBeenCalledWith(prisonNumber, '1', 'HOA')
+    })
+    it('should call the holds service if hold type is WHF', async () => {
+      await service.getHolds(prisonNumber, '1', false, 'WHF')
+      expect(apiClient.getHolds).toHaveBeenCalledWith(prisonNumber, '1', 'WHF')
     })
   })
 })

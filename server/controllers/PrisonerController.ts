@@ -21,6 +21,7 @@ import { formatDate } from '../utils/formatUtils'
 import arrayToCSV from '../utils/csv'
 import { formatDateToISO, penceToPound } from '../utils/utils'
 import { PrisonerSubscriptionResponse } from '../interfaces/PrisonerSubscriptionResponse'
+import holdsPageQueryValidator from '../validators/holdsPageQueryValidator'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -170,7 +171,7 @@ class PrisonerController {
   public getHolds = async (req: Request, res: Response, next: NextFunction) => {
     const prisonNumber = req.params.prisonNumber.toString()
 
-    const parsedQueries = pageNumberQuerySchema.safeParse(req.query)
+    const parsedQueries = holdsPageQueryValidator.safeParse(req.query)
 
     await this.services.auditService.logPageView(res.locals.auditPage, {
       who: res.locals.user.username,
@@ -180,9 +181,10 @@ class PrisonerController {
     })
 
     const pageNumber = parsedQueries.data.page.toString()
+    const { holdType } = parsedQueries.data
 
     const [pagedHolds, holdsBalance] = await Promise.all([
-      this.services.prisonerFinanceHoldsService.getHolds(prisonNumber, pageNumber, !parsedQueries.success),
+      this.services.prisonerFinanceHoldsService.getHolds(prisonNumber, pageNumber, !parsedQueries.success, holdType),
       this.services.prisonerFinanceHoldsService.getHoldsBalance(prisonNumber),
     ])
 
@@ -198,6 +200,7 @@ class PrisonerController {
       paginationItems,
       holds: pagedHolds.content,
       holdsBalance,
+      currentHoldType: parsedQueries.data.holdType,
     })
   }
 

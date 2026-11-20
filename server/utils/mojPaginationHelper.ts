@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { omitBy, isUndefined } from 'lodash'
 import { transactionsFilterSchema } from '../validators/transactionsFilterValidator'
 
 type PaginationItem =
@@ -44,7 +45,8 @@ const stringifyFilters = (filters: z.infer<typeof transactionsFilterSchema>) =>
 
 const MAX_VISIBLE_WITHOUT_DOTS = 7
 
-export default function buildPaginationItems<T, TF>({
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export default function buildPaginationItems<T, TF extends Record<string, any>>({
   pageNumber,
   totalPages,
   totalElements,
@@ -53,10 +55,13 @@ export default function buildPaginationItems<T, TF>({
   pageSize,
   filters,
 }: BuildPaginationItemsParams<T, TF>): PaginationResult<T> {
-  const items = buildPageItems(pageNumber, totalPages, filters)
-  const previous = buildPreviousLink(pageNumber, filters)
-  const next = buildNextLink(pageNumber, totalPages, filters)
+  const cleanFilters = omitBy(filters, isUndefined)
+
+  const items = buildPageItems(pageNumber, totalPages, cleanFilters)
+  const previous = buildPreviousLink(pageNumber, cleanFilters)
+  const next = buildNextLink(pageNumber, totalPages, cleanFilters)
   const results = buildResultsSummary(pageNumber, pageSize, totalElements)
+
   return {
     items,
     previous,

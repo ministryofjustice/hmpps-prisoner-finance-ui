@@ -1,5 +1,4 @@
 import { expect, type Locator, type Page } from '@playwright/test'
-import { HoldTypeString } from '../../server/interfaces/HoldTypeString'
 import AbstractPage from './abstractPage'
 
 export default class PrisonerHoldsPage extends AbstractPage {
@@ -50,9 +49,9 @@ export default class PrisonerHoldsPage extends AbstractPage {
     this.topPagination = page.getByRole('navigation', { name: 'Pagination' }).nth(0)
     this.bottomPagination = page.getByRole('navigation', { name: 'Pagination' }).nth(1)
 
-    this.allHoldsTab = page.locator('#all-holds-tab')
-    this.hoaTab = page.locator('#hoa-holds-tab')
-    this.whfTab = page.locator('#whf-holds-tab')
+    this.allHoldsTab = page.getByRole('link', { name: 'All Holds' })
+    this.hoaTab = page.getByRole('link', { name: 'On hold (HOA)' })
+    this.whfTab = page.getByRole('link', { name: 'Withheld funds (WHF)' })
   }
 
   static async load(page: Page, prisonNumber: string): Promise<PrisonerHoldsPage> {

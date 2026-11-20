@@ -1383,7 +1383,12 @@ describe('PrisonerController', () => {
     })
 
     it('Should call get holds', async () => {
-      expect(prisonerFinanceHoldsService.getHolds).toHaveBeenCalledWith(mockReq.params.prisonNumber, '1', false)
+      expect(prisonerFinanceHoldsService.getHolds).toHaveBeenCalledWith(
+        mockReq.params.prisonNumber,
+        '1',
+        false,
+        undefined,
+      )
     })
 
     it('Should pass all arguments to render', async () => {
@@ -1426,6 +1431,59 @@ describe('PrisonerController', () => {
         correlationId: mockReq.id,
         subjectType: SubjectType.PRISONER,
         subjectId: prisonNumber,
+      })
+    })
+
+    describe('hold type queries', () => {
+      it('should call the getHolds service with WHF if in the query params', async () => {
+        const whfReq = {
+          id: 'req-id-123',
+          params: { prisonNumber },
+          protocol: 'http',
+          get: jest.fn().mockReturnValue('localhost:3000'),
+          originalUrl: '/audit',
+          query: {
+            page: '1',
+            holdType: 'WHF',
+          },
+        } as unknown as Request
+
+        await prisonerController.getHolds(whfReq, mockRes, mockNext)
+        expect(prisonerFinanceHoldsService.getHolds).toHaveBeenCalledWith(prisonNumber, '1', false, 'WHF')
+      })
+
+      it('should call the getHolds service with HOA if in the query params', async () => {
+        const hoaReq = {
+          id: 'req-id-123',
+          params: { prisonNumber },
+          protocol: 'http',
+          get: jest.fn().mockReturnValue('localhost:3000'),
+          originalUrl: '/audit',
+          query: {
+            page: '1',
+            holdType: 'HOA',
+          },
+        } as unknown as Request
+
+        await prisonerController.getHolds(hoaReq, mockRes, mockNext)
+
+        expect(prisonerFinanceHoldsService.getHolds).toHaveBeenCalledWith(prisonNumber, '1', false, 'HOA')
+      })
+      it('should call the getHolds service with undefined if no hold type in the query params', async () => {
+        const allHoldsReq = {
+          id: 'req-id-123',
+          params: { prisonNumber },
+          protocol: 'http',
+          get: jest.fn().mockReturnValue('localhost:3000'),
+          originalUrl: '/audit',
+          query: {
+            page: '1',
+          },
+        } as unknown as Request
+
+        await prisonerController.getHolds(allHoldsReq, mockRes, mockNext)
+
+        expect(prisonerFinanceHoldsService.getHolds).toHaveBeenCalledWith(prisonNumber, '1', false, undefined)
       })
     })
   })
