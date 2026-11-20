@@ -1,5 +1,6 @@
 import { PrisonerHoldsBalanceResponse } from '../../server/interfaces/PrisonerHoldsBalanceResponse'
 import { PrisonerHoldResponse } from '../../server/interfaces/PrisonerHoldResponse'
+import { HoldTypeString } from '../../server/interfaces/HoldTypeString'
 
 import { stubFor } from './wiremock'
 import { Page } from '../../server/interfaces/Pageable'
@@ -19,7 +20,15 @@ const stubPing = () =>
     },
   })
 
-const stubGetHoldsBalance = (prisonNumber: string) =>
+const stubGetHoldsBalance = (
+  prisonNumber: string,
+  payload: PrisonerHoldsBalanceResponse = {
+    amount: 10,
+    hoa: 50,
+    whf: 120,
+    balanceDateTime: '',
+  },
+) =>
   stubFor({
     request: {
       method: 'GET',
@@ -28,10 +37,7 @@ const stubGetHoldsBalance = (prisonNumber: string) =>
     response: {
       status: 200,
       headers: { 'Content-Type': 'application/json;charset=UTF-8' },
-      jsonBody: {
-        amount: 10,
-        balanceDateTime: '',
-      } as PrisonerHoldsBalanceResponse,
+      jsonBody: payload,
     },
   })
 
@@ -54,7 +60,7 @@ const stubGetHoldsBalanceForSubAccount = (prisonNumber: string, subAccountRef: s
 const stubGetHolds = (
   prisonNumber: string,
   payload: PrisonerHoldResponse[],
-  options: { pageNumber: number; pageSize: string; totalPages: number } = {
+  options: { pageNumber: number; pageSize: string; totalPages: number; holdType?: HoldTypeString } = {
     pageNumber: 1,
     pageSize: '25',
     totalPages: 2,
@@ -68,6 +74,7 @@ const stubGetHolds = (
         pageNumber:
           options && options.pageNumber.toString() ? { equalTo: options.pageNumber.toString() } : { equalTo: '1' },
         pageSize: options && options.pageSize ? { equalTo: options.pageSize } : { equalTo: '25' },
+        ...(options.holdType && { holdType: { equalTo: options.holdType } }),
       },
     },
     response: {

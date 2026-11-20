@@ -1,5 +1,4 @@
 services:
-
   hmpps-auth:
     image: ghcr.io/ministryofjustice/hmpps-auth:latest
     networks:
@@ -14,10 +13,10 @@ services:
       - APPLICATION_AUTHENTICATION_UI_ALLOWLIST=0.0.0.0/0
 
   redis:
-    image: redis:8.10
+    image: redis:8.10.3
     restart: always
     ports:
-      - '6379:6379'
+      - "6379:6379"
     command: redis-server --save 20 1 --loglevel warning
     volumes:
       - cache:/data

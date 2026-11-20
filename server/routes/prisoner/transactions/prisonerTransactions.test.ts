@@ -107,11 +107,15 @@ describe('Prisoners', () => {
       prisonerFinanceHoldsService.getHoldsBalanceForSubAccount.mockResolvedValue({
         amount: 10,
         balanceDateTime: '',
+        hoa: 0,
+        whf: 0,
       })
     } else if (!isSubAccountPage) {
       prisonerFinanceHoldsService.getHoldsBalance.mockResolvedValue({
         amount: 10,
         balanceDateTime: '',
+        hoa: 0,
+        whf: 0,
       })
     }
 

@@ -26,6 +26,8 @@ describe('Prison Finance Holds Api', () => {
       const expectedResponse: PrisonerHoldsBalanceResponse = {
         amount: 100,
         balanceDateTime: '',
+        hoa: 0,
+        whf: 0,
       }
 
       const getSpy = jest.spyOn(client, 'get').mockResolvedValue(expectedResponse)

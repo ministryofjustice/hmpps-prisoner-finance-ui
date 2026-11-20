@@ -1,6 +1,6 @@
 {%- macro balanceCard(params) -%}
   <div class="card {% if params.clickable %} card--clickable{% endif %} hmpps-balance-card">
-    <h2 class="govuk-heading-m card__heading hmpps-balance-card__header">{{ params.heading }}</h2>
+    <h2 class="govuk-heading-{{ params.headingSize | default('m') }} card__heading hmpps-balance-card__header">{{ params.heading }}</h2>
 
     <div class="hmpps-balance-card__body">
       <p class="govuk-body card__description hmpps-balance-card__description">{{ params.subHeading | default('Account total') }} </p>

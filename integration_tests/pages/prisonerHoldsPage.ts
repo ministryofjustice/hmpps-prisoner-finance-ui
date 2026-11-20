@@ -6,6 +6,18 @@ export default class PrisonerHoldsPage extends AbstractPage {
 
   readonly backLink: Locator
 
+  readonly holdsTotalCard: Locator
+
+  readonly holdsWHFCard: Locator
+
+  readonly holdsHOACard: Locator
+
+  readonly allHoldsTab: Locator
+
+  readonly hoaTab: Locator
+
+  readonly whfTab: Locator
+
   readonly holdsList: Locator
 
   readonly profileHeader: Locator
@@ -21,9 +33,25 @@ export default class PrisonerHoldsPage extends AbstractPage {
 
     this.profileHeader = page.locator('.mini-profile, .hmpps-profile-banner').first()
 
+    this.holdsTotalCard = page
+      .locator('.hmpps-balance-card')
+      .filter({ has: page.getByRole('heading', { name: 'Holds total', exact: true }) })
+
+    this.holdsWHFCard = page
+      .locator('.hmpps-balance-card')
+      .filter({ has: page.getByRole('heading', { name: 'Withheld funds (WHF)', exact: true }) })
+
+    this.holdsHOACard = page
+      .locator('.hmpps-balance-card')
+      .filter({ has: page.getByRole('heading', { name: 'On hold (HOA)', exact: true }) })
+
     this.holdsList = page.locator('.holds-list__holds')
     this.topPagination = page.getByRole('navigation', { name: 'Pagination' }).nth(0)
     this.bottomPagination = page.getByRole('navigation', { name: 'Pagination' }).nth(1)
+
+    this.allHoldsTab = page.getByRole('link', { name: 'All Holds' })
+    this.hoaTab = page.getByRole('link', { name: 'On hold (HOA)' })
+    this.whfTab = page.getByRole('link', { name: 'Withheld funds (WHF)' })
   }
 
   static async load(page: Page, prisonNumber: string): Promise<PrisonerHoldsPage> {
