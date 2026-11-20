@@ -18,7 +18,7 @@ import { resetStubs } from '../mockApis/wiremock'
 import { login } from '../testUtils'
 
 test.describe('Show holds for prisoner', () => {
-  const prisonNumber = 'A1234BC'
+  const prisonNumber = 'A9971EC'
 
   const transactionPayload: Array<PrisonerTransactionResponse> = [
     {
@@ -98,7 +98,7 @@ test.describe('Show holds for prisoner', () => {
   const holdsPayload: PrisonerHoldResponse[] = [
     {
       id: '',
-      prisonNumber: 'A9971EC',
+      prisonNumber,
       legacyHoldNumber: 1,
       subAccountRef: 'CASH',
       createdAt: '2026-03-10T10:43:28.194Z',
@@ -113,7 +113,7 @@ test.describe('Show holds for prisoner', () => {
     },
     {
       id: '',
-      prisonNumber: 'A9971EC',
+      prisonNumber,
       legacyHoldNumber: 2,
       subAccountRef: 'SPENDS',
       createdAt: '2026-03-12T10:43:28.194Z',
@@ -128,7 +128,7 @@ test.describe('Show holds for prisoner', () => {
     },
     {
       id: '',
-      prisonNumber: 'A9971EC',
+      prisonNumber,
       legacyHoldNumber: 4,
       subAccountRef: 'SPENDS',
       createdAt: '2026-03-19T10:43:28.194Z',
@@ -143,7 +143,7 @@ test.describe('Show holds for prisoner', () => {
     },
     {
       id: '',
-      prisonNumber: 'A9971EC',
+      prisonNumber,
       legacyHoldNumber: 4,
       subAccountRef: 'SAVINGS',
       createdAt: '2026-03-19T10:43:28.194Z',
@@ -158,7 +158,7 @@ test.describe('Show holds for prisoner', () => {
     },
     {
       id: '',
-      prisonNumber: 'A9971EC',
+      prisonNumber,
       legacyHoldNumber: 4,
       subAccountRef: 'SAVINGS',
       createdAt: '2026-03-19T10:43:28.194Z',
@@ -252,11 +252,11 @@ test.describe('Show holds for prisoner', () => {
     await setupGetHoldsStubs(holdsPayload)
     const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
     expect(prisonerHoldsPage.holdsTotalCard).toBeVisible()
-    expect(prisonerHoldsPage.holdsTotalCard).toContainText('Holds total £0.10')
+    expect(prisonerHoldsPage.holdsTotalCard).toContainText('Holds total Total £0.10')
     expect(prisonerHoldsPage.holdsWHFCard).toBeVisible()
-    expect(prisonerHoldsPage.holdsWHFCard).toContainText('Withheld funds (WHF) £0.50')
+    expect(prisonerHoldsPage.holdsWHFCard).toContainText('Withheld funds (WHF) Total £0.50')
     expect(prisonerHoldsPage.holdsHOACard).toBeVisible()
-    expect(prisonerHoldsPage.holdsHOACard).toContainText('On hold (HOA) £1.20')
+    expect(prisonerHoldsPage.holdsHOACard).toContainText('On hold (HOA) Total £1.20')
   })
 
   test('should be able to navigate to HOA tab', async ({ page }) => {
