@@ -13,11 +13,12 @@ import { PrisonerHoldResponse } from '../../server/interfaces/PrisonerHoldRespon
 import * as prisonerFinanceAdvancesApi from '../mockApis/prisonerFinanceAdvancesApi'
 import { SubAccountBalanceResponse } from '../../server/interfaces/SubAccountBalanceResponse'
 import { PrisonerTransactionResponse } from '../../server/interfaces/PrisonerTransactionResponse'
+import { HoldTypeString } from '../../server/interfaces/HoldTypeString'
 import { resetStubs } from '../mockApis/wiremock'
 import { login } from '../testUtils'
 
 test.describe('Show holds for prisoner', () => {
-  const prisonNumber = 'A1234BC'
+  const prisonNumber = 'A9971EC'
 
   const transactionPayload: Array<PrisonerTransactionResponse> = [
     {
@@ -97,7 +98,7 @@ test.describe('Show holds for prisoner', () => {
   const holdsPayload: PrisonerHoldResponse[] = [
     {
       id: '',
-      prisonNumber: 'A9971EC',
+      prisonNumber,
       legacyHoldNumber: 1,
       subAccountRef: 'CASH',
       createdAt: '2026-03-10T10:43:28.194Z',
@@ -112,7 +113,7 @@ test.describe('Show holds for prisoner', () => {
     },
     {
       id: '',
-      prisonNumber: 'A9971EC',
+      prisonNumber,
       legacyHoldNumber: 2,
       subAccountRef: 'SPENDS',
       createdAt: '2026-03-12T10:43:28.194Z',
@@ -127,7 +128,7 @@ test.describe('Show holds for prisoner', () => {
     },
     {
       id: '',
-      prisonNumber: 'A9971EC',
+      prisonNumber,
       legacyHoldNumber: 4,
       subAccountRef: 'SPENDS',
       createdAt: '2026-03-19T10:43:28.194Z',
@@ -142,7 +143,7 @@ test.describe('Show holds for prisoner', () => {
     },
     {
       id: '',
-      prisonNumber: 'A9971EC',
+      prisonNumber,
       legacyHoldNumber: 4,
       subAccountRef: 'SAVINGS',
       createdAt: '2026-03-19T10:43:28.194Z',
@@ -157,7 +158,7 @@ test.describe('Show holds for prisoner', () => {
     },
     {
       id: '',
-      prisonNumber: 'A9971EC',
+      prisonNumber,
       legacyHoldNumber: 4,
       subAccountRef: 'SAVINGS',
       createdAt: '2026-03-19T10:43:28.194Z',
@@ -184,9 +185,16 @@ test.describe('Show holds for prisoner', () => {
     await prisonerFinanceAdvancesApi.stubGetAdvancesBalance(prisonNumber)
   }
 
+  const mockBalancePayload = {
+    amount: 10,
+    hoa: 120,
+    whf: 50,
+    balanceDateTime: '',
+  }
+
   const setupGetHoldsStubs = async (
     payload: PrisonerHoldResponse[] = [],
-    options: { pageNumber: number; pageSize: string; totalPages: number } = {
+    options: { pageNumber: number; pageSize: string; totalPages: number; holdType?: HoldTypeString } = {
       pageNumber: 1,
       pageSize: '25',
       totalPages: 2,
@@ -196,6 +204,7 @@ test.describe('Show holds for prisoner', () => {
     await prisonApi.stubGetPrisonerImage()
     await prisonRegisterApi.stubGetPrisonNames()
     await prisonerFinanceHoldsApi.stubGetHolds(prisonNumber, payload, options)
+    await prisonerFinanceHoldsApi.stubGetHoldsBalance(prisonNumber, mockBalancePayload)
   }
 
   test.beforeEach(async ({ page }) => {
@@ -223,8 +232,11 @@ test.describe('Show holds for prisoner', () => {
 
     const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
 
-    expect(prisonerHoldsPage.holdsList).toBeVisible()
-    expect(prisonerHoldsPage.holdsList).toContainText(
+    const { holdsList, allHoldsTab } = prisonerHoldsPage
+    await expect(allHoldsTab).toHaveAttribute('aria-current', 'page')
+
+    expect(holdsList).toBeVisible()
+    expect(holdsList).toContainText(
       [
         'Account Hold type Hold number Hold until Description Amount Location',
         'Private cash HOA 1 10/03/2027 TEST 1.23 Leeds (HMP)',
@@ -234,6 +246,49 @@ test.describe('Show holds for prisoner', () => {
         'Savings HOA 4 No data TEST 1.21 XXX',
       ].join('\n'),
     )
+  })
+
+  test('should display balance cards', async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload)
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+    expect(prisonerHoldsPage.holdsTotalCard).toBeVisible()
+    expect(prisonerHoldsPage.holdsTotalCard).toContainText('Holds total Total £0.10')
+    expect(prisonerHoldsPage.holdsWHFCard).toBeVisible()
+    expect(prisonerHoldsPage.holdsWHFCard).toContainText('Withheld funds (WHF) Total £0.50')
+    expect(prisonerHoldsPage.holdsHOACard).toBeVisible()
+    expect(prisonerHoldsPage.holdsHOACard).toContainText('On hold (HOA) Total £1.20')
+  })
+
+  test('should be able to navigate to HOA tab', async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload)
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+    await setupGetHoldsStubs(holdsPayload, { pageNumber: 1, pageSize: '25', totalPages: 2, holdType: 'HOA' })
+    const { hoaTab } = prisonerHoldsPage
+    await hoaTab.click()
+    await expect(page).toHaveURL(/holdType=HOA/)
+    await expect(hoaTab).toHaveAttribute('aria-current', 'page')
+  })
+
+  test('should be able to navigate to WHF tab', async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload)
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+    await setupGetHoldsStubs(holdsPayload, { pageNumber: 1, pageSize: '25', totalPages: 2, holdType: 'WHF' })
+    const { whfTab } = prisonerHoldsPage
+    await whfTab.click()
+    await expect(page).toHaveURL(/holdType=WHF/)
+    await expect(whfTab).toHaveAttribute('aria-current', 'page')
+  })
+
+  test('should be able to navigate back to all holds tab', async ({ page }) => {
+    await setupGetHoldsStubs(holdsPayload)
+    const prisonerHoldsPage = await PrisonerHoldsPage.load(page, prisonNumber)
+    await setupGetHoldsStubs(holdsPayload, { pageNumber: 1, pageSize: '25', totalPages: 2, holdType: 'WHF' })
+    const { whfTab, allHoldsTab } = prisonerHoldsPage
+    await whfTab.click()
+
+    await setupGetHoldsStubs(holdsPayload, { pageNumber: 1, pageSize: '25', totalPages: 2 })
+    await allHoldsTab.click()
+    await expect(allHoldsTab).toHaveAttribute('aria-current', 'page')
   })
 
   test('Should display no holds when the user does not have any holds', async ({ page }) => {

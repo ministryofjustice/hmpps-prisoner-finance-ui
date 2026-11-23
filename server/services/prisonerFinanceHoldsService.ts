@@ -1,4 +1,5 @@
 import PrisonerFinanceHoldsApiClient from '../clients/prisonerFinanceHoldsApi'
+import { HoldTypeString } from '../interfaces/HoldTypeString'
 import { Page } from '../interfaces/Pageable'
 import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 import { PrisonerHoldsBalanceResponse } from '../interfaces/PrisonerHoldsBalanceResponse'
@@ -27,9 +28,10 @@ export default class PrisonerFinanceHoldsService {
     prisonNumber: string,
     pageNumber: string,
     hasValidationErrors: boolean,
+    holdType?: HoldTypeString,
   ): Promise<Page<PrisonerHoldResponse>> {
     return !hasValidationErrors
-      ? this.prisonerFinanceHoldsApiClient.getHolds(prisonNumber, pageNumber)
+      ? this.prisonerFinanceHoldsApiClient.getHolds(prisonNumber, pageNumber, holdType)
       : Promise.resolve(emptyPage)
   }
 }

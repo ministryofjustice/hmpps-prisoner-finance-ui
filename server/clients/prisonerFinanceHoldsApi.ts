@@ -5,6 +5,7 @@ import config from '../config'
 import logger from '../../logger'
 import { PrisonerHoldResponse } from '../interfaces/PrisonerHoldResponse'
 import { Page } from '../interfaces/Pageable'
+import { HoldTypeString } from '../interfaces/HoldTypeString'
 
 export default class PrisonerFinanceHoldsApiClient extends RestClient {
   constructor(authenticationClient: AuthenticationClient) {
@@ -29,13 +30,18 @@ export default class PrisonerFinanceHoldsApiClient extends RestClient {
     )
   }
 
-  async getHolds(prisonNumber: string, pageNumber: string): Promise<Page<PrisonerHoldResponse>> {
+  async getHolds(
+    prisonNumber: string,
+    pageNumber: string,
+    holdType?: HoldTypeString,
+  ): Promise<Page<PrisonerHoldResponse>> {
     return this.get(
       {
         path: `/holds/${prisonNumber}`,
         query: {
           pageNumber,
           pageSize: '25',
+          ...(holdType ? { holdType } : {}),
         },
       },
       asSystem(),

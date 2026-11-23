@@ -21,6 +21,7 @@ import { formatDate } from '../utils/formatUtils'
 import arrayToCSV from '../utils/csv'
 import { formatDateToISO, penceToPound } from '../utils/utils'
 import { PrisonerSubscriptionResponse } from '../interfaces/PrisonerSubscriptionResponse'
+import holdsPageQueryValidator from '../validators/holdsPageQueryValidator'
 
 const transactionFilterConfig = {
   startDate: { label: 'Start date', category: 'Date' },
@@ -170,7 +171,7 @@ class PrisonerController {
   public getHolds = async (req: Request, res: Response, next: NextFunction) => {
     const prisonNumber = req.params.prisonNumber.toString()
 
-    const parsedQueries = pageNumberQuerySchema.safeParse(req.query)
+    const parsedQueries = holdsPageQueryValidator.safeParse(req.query)
 
     await this.services.auditService.logPageView(res.locals.auditPage, {
       who: res.locals.user.username,
@@ -180,12 +181,12 @@ class PrisonerController {
     })
 
     const pageNumber = parsedQueries.data.page.toString()
+    const { holdType } = parsedQueries.data
 
-    const pagedHolds = await this.services.prisonerFinanceHoldsService.getHolds(
-      prisonNumber,
-      pageNumber,
-      !parsedQueries.success,
-    )
+    const [pagedHolds, holdsBalance] = await Promise.all([
+      this.services.prisonerFinanceHoldsService.getHolds(prisonNumber, pageNumber, !parsedQueries.success, holdType),
+      this.services.prisonerFinanceHoldsService.getHoldsBalance(prisonNumber),
+    ])
 
     const { content, ...paginationItems } = parsedQueries.success
       ? buildPaginationItems<PrisonerHoldResponse, typeof pageNumberQuerySchema>({
@@ -198,6 +199,8 @@ class PrisonerController {
       prisonNumber,
       paginationItems,
       holds: pagedHolds.content,
+      holdsBalance,
+      currentHoldType: parsedQueries.data.holdType,
     })
   }
 
@@ -235,7 +238,7 @@ class PrisonerController {
         hasValidationErrors: !parsedQueries.success,
       })
 
-      let holdBalance: PrisonerHoldsBalanceResponse = { amount: 0, balanceDateTime: '' }
+      let holdBalance: PrisonerHoldsBalanceResponse = { amount: 0, balanceDateTime: '', hoa: 0, whf: 0 }
 
       if (res.locals.showHolds) {
         if (subAccount != null) {
