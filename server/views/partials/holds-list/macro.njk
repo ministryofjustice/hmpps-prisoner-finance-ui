@@ -8,6 +8,8 @@
   {% set holds = params.holds | default([]) %}
   {% set paginationItems = params.paginationItems | default({})  %}
   {% set prisonNames = params.prisonNames | default([])  %}
+  {% set currentHoldType = params.currentHoldType | default(undefined)  %}
+
 
   {% include "./template.njk" %}
 {% endmacro %}

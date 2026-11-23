@@ -3,14 +3,16 @@ import { expect } from '@playwright/test'
 import nunjucks from 'nunjucks'
 import { setUpNunJucksFilters } from '../../../utils/nunjucksSetup'
 import { PrisonerHoldResponse } from '../../../interfaces/PrisonerHoldResponse'
+import { HoldTypeString } from '../../../interfaces/HoldTypeString'
 
 describe('Prisoner Finance Component: Holds list', () => {
   let njkEnv: nunjucks.Environment
 
   const renderMacro = (
-    params: { holds: Array<PrisonerHoldResponse>; prisons: Array<string> } = {
+    params: { holds: Array<PrisonerHoldResponse>; prisons: Array<string>; currentHoldType?: HoldTypeString } = {
       holds: [],
       prisons: [],
+      currentHoldType: undefined,
     },
   ) => {
     const template = `
@@ -66,5 +68,54 @@ describe('Prisoner Finance Component: Holds list', () => {
 
     expect($('.holds-list__empty-message').length).toBe(0)
     expect($('.holds-list').length).toBe(1)
+  })
+
+  test.each<HoldTypeString>(['WHF', 'HOA'])(
+    'Should not show the hold type column if currentHoldType is set to %s',
+    holdType => {
+      const html = renderMacro({
+        holds: [hold],
+        prisons: ['LEI'],
+        currentHoldType: holdType,
+      })
+      const $ = cheerio.load(html)
+
+      expect($('.holds-list__empty-message').length).toBe(0)
+      expect($('.holds-list').length).toBe(1)
+
+      const headers = $('.holds-list__holds thead th')
+        .map((_, el) => $(el).text().trim())
+        .get()
+      expect(headers).toEqual(['Account', 'Hold number', 'Hold until', 'Description', 'Amount', 'Location'])
+
+      const cells = $('.holds-list__holds tbody tr:first-child td')
+        .map((_, el) => $(el).text().trim())
+        .get()
+      expect(cells).toHaveLength(6)
+      expect(cells).not.toContain(hold.holdType)
+    },
+  )
+
+  test('Should show the hold type column if currentHoldType is undefined', () => {
+    const html = renderMacro({
+      holds: [hold],
+      prisons: ['LEI'],
+      currentHoldType: undefined,
+    })
+    const $ = cheerio.load(html)
+
+    expect($('.holds-list__empty-message').length).toBe(0)
+    expect($('.holds-list').length).toBe(1)
+
+    const headers = $('.holds-list__holds thead th')
+      .map((_, el) => $(el).text().trim())
+      .get()
+    expect(headers).toEqual(['Account', 'Hold type', 'Hold number', 'Hold until', 'Description', 'Amount', 'Location'])
+
+    const cells = $('.holds-list__holds tbody tr:first-child td')
+      .map((_, el) => $(el).text().trim())
+      .get()
+    expect(cells).toHaveLength(7)
+    expect(cells[1]).toBe(hold.holdType)
   })
 })
