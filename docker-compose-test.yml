@@ -11,7 +11,7 @@ services:
       - ./mappings:/home/wiremock/mappings
 
   redis:
-    image: redis:8.10.3
+    image: redis:8.12.0
     restart: always
     ports:
       - "6379:6379"
