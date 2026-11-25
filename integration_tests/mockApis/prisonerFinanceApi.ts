@@ -369,7 +369,14 @@ export const stubPostTransaction = async (
       urlPattern: `${API_PREFIX}/transactions`,
       bodyPatterns: [
         {
-          equalToJson: JSON.stringify(requestPayload),
+          equalToJson: {
+            creditSubAccountId: requestPayload.creditSubAccountId,
+            debitSubAccountId: requestPayload.debitSubAccountId,
+            amount: requestPayload.amount,
+            description: requestPayload.description,
+            // eslint-disable-next-line no-template-curly-in-string
+            idempotencyKey: '${json-unit.regex}^.+$',
+          },
           ignoreArrayOrder: true,
           ignoreExtraElements: false,
         },
@@ -396,7 +403,14 @@ export const stubPostTransactionReturnError = (requestPayload: TransactionReques
       urlPattern: `${API_PREFIX}/transactions`,
       bodyPatterns: [
         {
-          equalToJson: JSON.stringify(requestPayload),
+          equalToJson: {
+            creditSubAccountId: requestPayload.creditSubAccountId,
+            debitSubAccountId: requestPayload.debitSubAccountId,
+            amount: requestPayload.amount,
+            description: requestPayload.description,
+            // eslint-disable-next-line no-template-curly-in-string
+            idempotencyKey: '${json-unit.regex}^.+$',
+          },
           ignoreArrayOrder: true,
           ignoreExtraElements: false,
         },

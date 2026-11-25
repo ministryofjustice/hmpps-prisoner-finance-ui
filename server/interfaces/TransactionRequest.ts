@@ -3,4 +3,5 @@ export default interface TransactionRequest {
   debitSubAccountId: string
   amount: number
   description: string
+  idempotencyKey: string
 }

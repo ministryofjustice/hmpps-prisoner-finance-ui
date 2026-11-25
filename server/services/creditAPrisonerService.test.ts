@@ -36,11 +36,11 @@ describe('creditAPrisonerService', () => {
       existingCreditForm.amount = '100'
       existingCreditForm.description = 'TEST3'
       existingCreditForm.prisonerAccountReference = '12345'
+      existingCreditForm.idempotencyKey = crypto.randomUUID()
       const session = { creditForm: existingCreditForm } as SessionData
       CreditAPrisonerService.createCreditFormIfRequired(session, '78910')
-      expect(session.creditForm).toEqual({
-        prisonerAccountReference: '78910',
-      })
+      expect(session.creditForm.prisonerAccountReference).toEqual('78910')
+      expect(session.creditForm.idempotencyKey).not.toEqual(existingCreditForm.idempotencyKey)
     })
   })
   describe('.updateCreditForm', () => {
@@ -80,6 +80,7 @@ describe('creditAPrisonerService', () => {
       creditAPrisonerForm.creditSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
       creditAPrisonerForm.debitSubAccountId = '3fa85f64-5717-4562-b3fc-2c963f66afXX'
       creditAPrisonerForm.description = 'test'
+      creditAPrisonerForm.idempotencyKey = crypto.randomUUID()
 
       const transactionReq = CreditAPrisonerService.createTransactionRequest(creditAPrisonerForm)
 
@@ -87,6 +88,7 @@ describe('creditAPrisonerService', () => {
       expect(transactionReq.creditSubAccountId).toBe(creditAPrisonerForm.creditSubAccountId)
       expect(transactionReq.debitSubAccountId).toBe(creditAPrisonerForm.debitSubAccountId)
       expect(transactionReq.description).toBe(creditAPrisonerForm.description)
+      expect(transactionReq.idempotencyKey).toBe(creditAPrisonerForm.idempotencyKey)
     })
 
     describe('CreditAPrisonerForm validation', () => {

@@ -8,4 +8,6 @@ export default interface CreditAPrisonerForm {
   amount?: string
 
   description?: string
+
+  idempotencyKey?: string
 }
