@@ -259,6 +259,7 @@ describe('PrisonerFinanceSyncApiClient', () => {
         debitSubAccountId: 'cdg',
         amount: 10,
         description: 'test',
+        idempotencyKey: crypto.randomUUID(),
       }
 
       const getSpy = jest.spyOn(client, 'post').mockResolvedValue(expectedResponse)

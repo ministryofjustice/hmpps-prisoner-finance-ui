@@ -62,6 +62,7 @@ test.describe('Crediting a prisoner', () => {
         debitSubAccountId: 'TESTSUBUUID1',
         amount: 100 * parseFloat(transactionAmount),
         description: transactionDescription,
+        idempotencyKey: '', // ignored by stub, just checks if any idempotency is passed
       })
     })
 
@@ -542,6 +543,7 @@ test.describe('Crediting a prisoner', () => {
         debitSubAccountId: 'TESTSUBUUID1',
         amount: 100 * parseFloat(transactionAmount),
         description: transactionDescription,
+        idempotencyKey: '', // ignored by stub, it checks if any idempotency is passed
       })
 
       const creditToPage = await CreditToPage.load(page, prisonNumber)
@@ -563,6 +565,7 @@ test.describe('Crediting a prisoner', () => {
         debitSubAccountId: 'TESTSUBUUID1',
         amount: 100 * parseFloat(transactionAmount),
         description: transactionDescription,
+        idempotencyKey: '', // ignored by stub, it checks if any idempotency is passed
       })
 
       const creditToPage = await CreditToPage.load(page, prisonNumber)
@@ -595,6 +598,7 @@ test.describe('Crediting a prisoner', () => {
         debitSubAccountId: 'TESTSUBUUID1',
         amount: 100 * parseFloat(transactionAmount),
         description: transactionDescription,
+        idempotencyKey: '', // ignored by stub, it checks if any idempotency is passed
       })
 
       const creditToPage = await CreditToPage.load(page, prisonNumber)
@@ -622,6 +626,7 @@ test.describe('Crediting a prisoner', () => {
         debitSubAccountId: 'TESTSUBUUID1',
         amount: 100 * parseFloat(transactionAmount),
         description: transactionDescription,
+        idempotencyKey: '', // stub will ignore this and check if any idempotency is passed
       })
 
       const creditToPage = await CreditToPage.load(page, prisonNumber)

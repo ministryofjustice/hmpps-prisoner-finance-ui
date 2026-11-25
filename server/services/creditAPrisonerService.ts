@@ -8,7 +8,10 @@ import TransactionRequest from '../interfaces/TransactionRequest'
 export default class CreditAPrisonerService {
   static createCreditFormIfRequired(session: SessionData, prisonerReference: string) {
     if (!session.creditForm || session.creditForm?.prisonerAccountReference !== prisonerReference) {
-      session.creditForm = { prisonerAccountReference: prisonerReference }
+      session.creditForm = {
+        prisonerAccountReference: prisonerReference,
+        idempotencyKey: crypto.randomUUID().toString(),
+      }
     }
   }
 
@@ -17,7 +20,8 @@ export default class CreditAPrisonerService {
       !creditAPrisonerForm.creditSubAccountId ||
       !creditAPrisonerForm.debitSubAccountId ||
       !creditAPrisonerForm.amount ||
-      !creditAPrisonerForm.description
+      !creditAPrisonerForm.description ||
+      !creditAPrisonerForm.idempotencyKey
     )
       throw new Error(`
                         CreditAPrisonerForm is missing data:
@@ -25,6 +29,7 @@ export default class CreditAPrisonerService {
                         debitSubAccountId: ${creditAPrisonerForm.debitSubAccountId},
                         amount: ${creditAPrisonerForm.amount},
                         description: ${creditAPrisonerForm.description},
+                        idempotencyKey: ${creditAPrisonerForm.idempotencyKey}
                       `)
 
     return {
@@ -32,6 +37,7 @@ export default class CreditAPrisonerService {
       debitSubAccountId: creditAPrisonerForm.debitSubAccountId,
       amount: toMinor(creditAPrisonerForm.amount),
       description: creditAPrisonerForm.description,
+      idempotencyKey: creditAPrisonerForm.idempotencyKey,
     }
   }
 
