@@ -7,6 +7,7 @@ import { mapItemsForRadioButtons } from '../utils/utils'
 import GrantBonusToPrisonersService from '../services/GrantBonusToPrisonersService'
 import creditAmountValidator from '../validators/creditAmountValidator'
 import descriptionFieldValidator from '../validators/descriptionFieldValidator'
+import Breadcrumbs from '../middleware/setUpBreadcrumbs'
 
 export default class GrantBonusToPrisonersController {
   constructor(private readonly services: Services) {}
@@ -32,6 +33,8 @@ export default class GrantBonusToPrisonersController {
     try {
       const caseloads = await this.getUserCaseloadsOrThrow(req)
 
+      res.locals.breadcrumbs.popLastItem()
+
       res.render('pages/grantBonusToPrisoners/grantBonusToPrisoners/grantBonusToPrisoners.njk', {
         caseloadSelected: req.session.grantBonusForm.caseloadId,
         caseloads: mapItemsForRadioButtons({
@@ -40,6 +43,8 @@ export default class GrantBonusToPrisonersController {
           textKey: 'description',
           dataTestId: 'caseload-radio',
         }),
+        breadcrumbs: res.locals.breadcrumbs,
+        showBreadcrumbs: true,
       })
     } catch (e) {
       next(e)
@@ -82,7 +87,12 @@ export default class GrantBonusToPrisonersController {
       subjectId: req.session?.grantBonusForm?.caseloadId,
     })
 
-    res.render('pages/grantBonusToPrisoners/amount/amount.njk')
+    res.locals.breadcrumbs.popLastItem()
+
+    res.render('pages/grantBonusToPrisoners/amount/amount.njk', {
+      breadcrumbs: res.locals.breadcrumbs,
+      showBreadcrumbs: true,
+    })
   }
 
   public postGrantBonusToPrisonersSelectAmount = async (req: Request, res: Response, next: NextFunction) => {

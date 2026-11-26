@@ -12,6 +12,9 @@ export default function routes(services: Services): Router {
     if (req.featureFlags.GRANT_BONUS_TO_PRISONERS_ENABLED === false) {
       return next(createError(404, 'Not found'))
     }
+
+    res.locals.breadcrumbs.addItems({ text: 'Grant bonus to prisoners', href: '/grant-bonus-to-prisoners' })
+
     return next()
   })
 

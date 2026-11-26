@@ -18,6 +18,7 @@ import setUpRequestParsing from './middleware/setUpRequestParsing'
 import setUpWebSecurity from './middleware/setUpWebSecurity'
 import setUpWebSession from './middleware/setUpWebSession'
 import setUpFeatureFlags from './middleware/setUpFeatureFlags'
+import setUpBreadcrumbs from './middleware/setUpBreadcrumbs'
 import logger from '../logger'
 import config from './config'
 
@@ -42,6 +43,7 @@ export default function createApp(services: Services): express.Application {
   app.use(setUpCsrf())
   app.use(setUpCurrentUser())
   app.use(setUpFeatureFlags(services.featureFlagService))
+  app.use(setUpBreadcrumbs())
 
   app.use(
     getFrontendComponents({
