@@ -12,19 +12,21 @@ export default function routes(services: Services): Router {
     if (req.featureFlags.ADVANCES_ENABLED === false) {
       return next(createError(404, 'Not found'))
     }
+    res.locals.breadcrumbs.addItems({ text: 'Prisoner Finances', href: res.locals.prisonerDetails.prisonerNumber })
+    res.locals.breadcrumbs.addItems({ text: 'Advances', href: 'advances' })
     return next()
-  })
-
-  prisonerAdvancesRouter.get('/advances/:advanceId', (req: Request, res: Response, next: NextFunction) => {
-    res.locals.headerTitle = 'Advance detail'
-    res.locals.auditPage = AuditPage.PRISONER_ADVANCE_DETAIL
-    return prisonerController.getAdvanceDetail(req, res, next)
   })
 
   prisonerAdvancesRouter.get('/advances', (req: Request, res: Response, next: NextFunction) => {
     res.locals.headerTitle = 'Advances'
     res.locals.auditPage = AuditPage.PRISONER_ADVANCES
     return prisonerController.getAdvances(req, res, next)
+  })
+
+  prisonerAdvancesRouter.get('/advances/:advanceId', (req: Request, res: Response, next: NextFunction) => {
+    res.locals.headerTitle = 'Advance detail'
+    res.locals.auditPage = AuditPage.PRISONER_ADVANCE_DETAIL
+    return prisonerController.getAdvanceDetail(req, res, next)
   })
 
   return prisonerAdvancesRouter

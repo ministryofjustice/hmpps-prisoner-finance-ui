@@ -1,4 +1,5 @@
 import { Router } from 'express'
+import { capitalize } from 'lodash'
 import { Services } from '../../services'
 import PrisonerController from '../../controllers/PrisonerController'
 import { getPrisonerData, populatePrisonerDetails } from '../../middleware/populatePrisonerDetails'
@@ -25,13 +26,18 @@ export default function routes(services: Services): Router {
     prisonerNotFoundHandler,
   )
 
+  prisonerRouter.use((req, res, next) => {
+    const { firstName, lastName } = res.locals.prisonerDetails
+    const formattedName = `${capitalize(firstName)} ${capitalize(lastName)}`
+    res.locals.breadcrumbs.addItems({ text: formattedName, href: 'prisoner' })
+    next()
+  })
+
   prisonerRouter.use('/:prisonNumber/account', prisonerTransactionsRouter(services))
   prisonerRouter.use('/:prisonNumber', prisonerHoldsRouter(services))
   prisonerRouter.use('/:prisonNumber', prisonerAdvancesRouter(services))
   prisonerRouter.use('/:prisonNumber', prisonerSubscriptionsRouter(services))
-
   prisonerRouter.get('/:prisonNumber', prisonerController.getProfile)
-
   prisonerRouter.use('/:prisonNumber/money/credit-a-prisoner', creditAPrisonerRouter(services))
 
   return prisonerRouter

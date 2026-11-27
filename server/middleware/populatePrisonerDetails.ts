@@ -27,6 +27,11 @@ export const getPrisonerData = (req: Request, res: Response, next: NextFunction)
   if (req.middleware?.prisonerData) {
     res.locals.prisonerDetails = toPrisonerDetails(req.middleware.prisonerData)
   }
-
   return next()
+}
+
+declare module 'express-serve-static-core' {
+  interface Locals {
+    prisonerDetails: PrisonerDetails
+  }
 }

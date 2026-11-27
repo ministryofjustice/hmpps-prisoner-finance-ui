@@ -198,6 +198,7 @@ describe('PrisonerController', () => {
           auditPage: AuditPage.PRISONER_HOLDS,
           showHolds: true,
           headerTitle: 'Private cash transactions',
+          breadcrumbs: [{ text: 'test', href: 'test-href' }],
         },
         render: jest.fn(),
         redirect: jest.fn(),
@@ -289,6 +290,8 @@ describe('PrisonerController', () => {
         displayTotalBalance: false,
         holdsEnabled: true,
         printTransactionQueryString: expect.anything(),
+        breadcrumbs: expect.arrayContaining([expect.objectContaining({ text: 'test', href: 'test-href' })]),
+        showBreadcrumbs: true,
       })
     })
 
@@ -300,6 +303,7 @@ describe('PrisonerController', () => {
           auditPage: AuditPage.PRISONER_HOLDS,
           showHolds: true,
           headerTitle: 'Spends transactions',
+          breadcrumbs: [{ text: 'test', href: 'test-href' }],
         },
         render: jest.fn(),
         redirect: jest.fn(),
@@ -391,6 +395,8 @@ describe('PrisonerController', () => {
         displayTotalBalance: false,
         holdsEnabled: true,
         printTransactionQueryString: expect.anything(),
+        breadcrumbs: expect.arrayContaining([expect.objectContaining({ text: 'test', href: 'test-href' })]),
+        showBreadcrumbs: true,
       })
     })
 
@@ -402,6 +408,7 @@ describe('PrisonerController', () => {
           auditPage: AuditPage.PRISONER_HOLDS,
           showHolds: false,
           headerTitle: 'Savings transactions',
+          breadcrumbs: [{ text: 'test', href: 'test-href' }],
         },
         render: jest.fn(),
         redirect: jest.fn(),
@@ -489,6 +496,8 @@ describe('PrisonerController', () => {
         displayTotalBalance: false,
         holdsEnabled: false,
         printTransactionQueryString: expect.anything(),
+        breadcrumbs: expect.arrayContaining([expect.objectContaining({ text: 'test', href: 'test-href' })]),
+        showBreadcrumbs: true,
       })
     })
 
@@ -504,6 +513,7 @@ describe('PrisonerController', () => {
           auditPage: AuditPage.PRISONER_HOLDS,
           showHolds: true,
           headerTitle: testValues.headerTitle,
+          breadcrumbs: [{ text: 'test', href: 'test-href' }],
         },
         render: jest.fn(),
         redirect: jest.fn(),
@@ -592,6 +602,8 @@ describe('PrisonerController', () => {
         displayTotalBalance: false,
         holdsEnabled: true,
         printTransactionQueryString: expect.anything(),
+        breadcrumbs: expect.arrayContaining([expect.objectContaining({ text: 'test', href: 'test-href' })]),
+        showBreadcrumbs: true,
       })
     })
 
@@ -602,6 +614,7 @@ describe('PrisonerController', () => {
           subAccount: null,
           auditPage: AuditPage.PRISONER_HOLDS,
           showHolds: true,
+          breadcrumbs: [{ text: 'test', href: 'test-href' }],
         },
         render: jest.fn(),
         redirect: jest.fn(),
@@ -689,6 +702,8 @@ describe('PrisonerController', () => {
         displayTotalBalance: true,
         holdsEnabled: true,
         printTransactionQueryString: expect.anything(),
+        breadcrumbs: expect.arrayContaining([expect.objectContaining({ text: 'test', href: 'test-href' })]),
+        showBreadcrumbs: true,
       })
     })
 
@@ -1156,6 +1171,7 @@ describe('PrisonerController', () => {
         user: { username: 'test-user' },
         subAccount: 'CASH',
         auditPage: AuditPage.PRISONER_FINANCIAL_PROFILE,
+        breadcrumbs: [{ text: 'test', href: 'test-href' }],
       },
       render: jest.fn(),
       redirect: jest.fn(),
@@ -1235,6 +1251,8 @@ describe('PrisonerController', () => {
         advancesAmount: 10,
         balancesOutstanding: 10,
         weeklyPaymentAmount: 11,
+        breadcrumbs: expect.arrayContaining([expect.objectContaining({ text: 'test', href: 'test-href' })]),
+        showBreadcrumbs: true,
       })
     })
 
@@ -1312,6 +1330,8 @@ describe('PrisonerController', () => {
         advancesAmount: 10,
         balancesOutstanding: 10,
         weeklyPaymentAmount: 11,
+        breadcrumbs: expect.arrayContaining([expect.objectContaining({ text: 'test', href: 'test-href' })]),
+        showBreadcrumbs: true,
       })
     })
 
@@ -1493,6 +1513,7 @@ describe('PrisonerController', () => {
       locals: {
         user: { username: 'test-user' },
         auditPage: AuditPage.PRISONER_ADVANCES,
+        breadcrumbs: [{ text: 'test', href: 'test-href' }],
       },
       render: jest.fn(),
       redirect: jest.fn(),
@@ -1548,6 +1569,8 @@ describe('PrisonerController', () => {
         prisonNumber: mockReq.params.prisonNumber,
         advances: prisonerAdvances,
         advanceBalances,
+        breadcrumbs: expect.arrayContaining([expect.objectContaining({ text: 'test', href: 'test-href' })]),
+        showBreadcrumbs: true,
         paginationItems: {
           isLastPage: true,
           items: [

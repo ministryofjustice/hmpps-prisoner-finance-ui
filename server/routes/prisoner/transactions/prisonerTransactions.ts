@@ -7,9 +7,15 @@ export default function routes(services: Services): Router {
   const prisonerTransactionsRouter = Router({ mergeParams: true })
   const prisonerController = new PrisonerController(services)
 
+  prisonerTransactionsRouter.use(async (req, res, next) => {
+    res.locals.breadcrumbs.addItems({ text: 'Prisoner Finances', href: res.locals.prisonerDetails.prisonerNumber })
+    return next()
+  })
+
   prisonerTransactionsRouter.get('/', (req: Request, res: Response, next: NextFunction) => {
     res.locals.auditPage = AuditPage.PRISONER_TRANSACTIONS
     res.locals.showHolds = req.featureFlags.HOLDS_ENABLED
+    res.locals.breadcrumbs.addItems({ text: 'Transactions for all sub accounts', href: 'account' })
     return prisonerController.getTransactions(req, res, next)
   })
 
@@ -28,6 +34,7 @@ export default function routes(services: Services): Router {
     res.locals.headerTitle = 'Private cash transactions'
     res.locals.auditPage = AuditPage.PRISONER_CASH_TRANSACTIONS
     res.locals.showHolds = req.featureFlags.HOLDS_ENABLED
+    res.locals.breadcrumbs.addItems({ text: res.locals.headerTitle, href: 'private-cash' })
     return prisonerController.getTransactions(req, res, next)
   })
 
@@ -35,7 +42,8 @@ export default function routes(services: Services): Router {
     res.locals.subAccount = 'SPENDS'
     res.locals.headerTitle = 'Spends transactions'
     res.locals.auditPage = AuditPage.PRISONER_SPENDS_TRANSACTIONS
-    res.locals.showHolds = req.featureFlags.HOLDS_ENABLED
+    res.locals.showHolds = req.featureFlags.HOLDS_ENABLED    
+    res.locals.breadcrumbs.addItems({ text: res.locals.headerTitle, href: 'spends' })
     return prisonerController.getTransactions(req, res, next)
   })
 
@@ -44,6 +52,7 @@ export default function routes(services: Services): Router {
     res.locals.headerTitle = 'Savings transactions'
     res.locals.auditPage = AuditPage.PRISONER_SAVINGS_TRANSACTIONS
     res.locals.showHolds = false
+    res.locals.breadcrumbs.addItems({ text: res.locals.headerTitle, href: 'savings' })
     return prisonerController.getTransactions(req, res, next)
   })
 

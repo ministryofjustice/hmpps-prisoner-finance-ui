@@ -7,7 +7,6 @@ import { mapItemsForRadioButtons } from '../utils/utils'
 import GrantBonusToPrisonersService from '../services/GrantBonusToPrisonersService'
 import creditAmountValidator from '../validators/creditAmountValidator'
 import descriptionFieldValidator from '../validators/descriptionFieldValidator'
-import Breadcrumbs from '../middleware/setUpBreadcrumbs'
 
 export default class GrantBonusToPrisonersController {
   constructor(private readonly services: Services) {}

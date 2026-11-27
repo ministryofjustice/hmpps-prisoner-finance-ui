@@ -165,6 +165,8 @@ class PrisonerController {
       paginationItems,
       advances: pagedAdvances.content,
       advanceBalances,
+      breadcrumbs: res.locals.breadcrumbs,
+      showBreadcrumbs: true,
     })
   }
 
@@ -294,6 +296,8 @@ class PrisonerController {
         displayTotalBalance: !subAccount,
         holdsEnabled: res.locals.showHolds,
         printTransactionQueryString,
+        breadcrumbs: res.locals.breadcrumbs,
+        showBreadcrumbs: true,
       })
     } catch (error) {
       if (error.responseStatus === 400 && error.data?.userMessage?.includes('Page requested is out of range')) {
@@ -452,6 +456,8 @@ class PrisonerController {
         advancesAmount: advancesBalances.advancesAmount,
         balancesOutstanding: advancesBalances.balancesOutstanding,
         weeklyPaymentAmount: advancesBalances.weeklyPaymentAmount,
+        breadcrumbs: res.locals.breadcrumbs,
+        showBreadcrumbs: true,
       })
     } catch (error) {
       next(createError(error?.data?.status || 500, error?.data?.userMessage || 'Internal Error', { cause: error }))
