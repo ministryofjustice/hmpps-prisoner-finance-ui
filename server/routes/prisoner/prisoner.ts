@@ -1,6 +1,5 @@
 import { Router } from 'express'
 import { Services } from '../../services'
-import PrisonerController from '../../controllers/PrisonerController'
 import { getPrisonerData, populatePrisonerDetails } from '../../middleware/populatePrisonerDetails'
 import getPrisonNames from '../../middleware/getPrisonNames'
 import prisonerNotFoundHandler from '../../middleware/prisonerNotFoundHandler'
@@ -9,12 +8,14 @@ import prisonerTransactionsRouter from './transactions/prisonerTransactions'
 import prisonerHoldsRouter from './holds/prisonerHolds'
 import prisonerAdvancesRouter from './advances/prisonerAdvances'
 import prisonerSubscriptionsRouter from './subscriptions/prisonerSubscriptions'
+import FindPrisonerController from '../../controllers/prisoner/findPrisoner/findPrisonerController'
+import prisonerProfileController from './profile/prisonerProfile'
 
 export default function routes(services: Services): Router {
   const prisonerRouter = Router()
-  const prisonerController = new PrisonerController(services)
+  const findPrisonerController = new FindPrisonerController(services)
 
-  prisonerRouter.get('/', prisonerController.getFindPrisoner)
+  prisonerRouter.get('/', findPrisonerController.getFindPrisoner)
 
   // default middlewares
   prisonerRouter.use(
@@ -29,10 +30,8 @@ export default function routes(services: Services): Router {
   prisonerRouter.use('/:prisonNumber', prisonerHoldsRouter(services))
   prisonerRouter.use('/:prisonNumber', prisonerAdvancesRouter(services))
   prisonerRouter.use('/:prisonNumber', prisonerSubscriptionsRouter(services))
-
-  prisonerRouter.get('/:prisonNumber', prisonerController.getProfile)
-
   prisonerRouter.use('/:prisonNumber/money/credit-a-prisoner', creditAPrisonerRouter(services))
+  prisonerRouter.get('/:prisonNumber', prisonerProfileController(services))
 
   return prisonerRouter
 }

@@ -1,26 +1,26 @@
 import { Router, NextFunction, Request, Response } from 'express'
-import PrisonerController from '../../../controllers/PrisonerController'
+import TransactionController from '../../../controllers/prisoner/transactions/transactionsController'
 import { AuditPage } from '../../../services/auditService'
 import { Services } from '../../../services'
 
 export default function routes(services: Services): Router {
   const prisonerTransactionsRouter = Router({ mergeParams: true })
-  const prisonerController = new PrisonerController(services)
+  const transactionController = new TransactionController(services)
 
   prisonerTransactionsRouter.get('/', (req: Request, res: Response, next: NextFunction) => {
     res.locals.auditPage = AuditPage.PRISONER_TRANSACTIONS
     res.locals.showHolds = req.featureFlags.HOLDS_ENABLED
-    return prisonerController.getTransactions(req, res, next)
+    return transactionController.getTransactions(req, res, next)
   })
 
   prisonerTransactionsRouter.get('/print-preview', (req: Request, res: Response, next: NextFunction) => {
     res.locals.auditPage = AuditPage.PRISONER_TRANSACTIONS_PRINT_PREVIEW
-    return prisonerController.printTransactions(req, res, next)
+    return transactionController.printTransactions(req, res, next)
   })
 
   prisonerTransactionsRouter.get('/transactions-csv', (req: Request, res: Response, next: NextFunction) => {
     res.locals.auditPage = AuditPage.PRISONER_TRANSACTIONS_CSV_DOWNLOAD
-    return prisonerController.downloadTransactionsCSV(req, res, next)
+    return transactionController.downloadTransactionsCSV(req, res, next)
   })
 
   prisonerTransactionsRouter.get('/private-cash', (req: Request, res: Response, next: NextFunction) => {
@@ -28,7 +28,7 @@ export default function routes(services: Services): Router {
     res.locals.headerTitle = 'Private cash transactions'
     res.locals.auditPage = AuditPage.PRISONER_CASH_TRANSACTIONS
     res.locals.showHolds = req.featureFlags.HOLDS_ENABLED
-    return prisonerController.getTransactions(req, res, next)
+    return transactionController.getTransactions(req, res, next)
   })
 
   prisonerTransactionsRouter.get('/spends', (req: Request, res: Response, next: NextFunction) => {
@@ -36,7 +36,7 @@ export default function routes(services: Services): Router {
     res.locals.headerTitle = 'Spends transactions'
     res.locals.auditPage = AuditPage.PRISONER_SPENDS_TRANSACTIONS
     res.locals.showHolds = req.featureFlags.HOLDS_ENABLED
-    return prisonerController.getTransactions(req, res, next)
+    return transactionController.getTransactions(req, res, next)
   })
 
   prisonerTransactionsRouter.get('/savings', (req: Request, res: Response, next: NextFunction) => {
@@ -44,7 +44,7 @@ export default function routes(services: Services): Router {
     res.locals.headerTitle = 'Savings transactions'
     res.locals.auditPage = AuditPage.PRISONER_SAVINGS_TRANSACTIONS
     res.locals.showHolds = false
-    return prisonerController.getTransactions(req, res, next)
+    return transactionController.getTransactions(req, res, next)
   })
 
   return prisonerTransactionsRouter

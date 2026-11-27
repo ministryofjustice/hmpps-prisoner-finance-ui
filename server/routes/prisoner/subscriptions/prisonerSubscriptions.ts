@@ -1,12 +1,12 @@
 import { Router, NextFunction, Request, Response } from 'express'
 import createError from 'http-errors'
-import PrisonerController from '../../../controllers/PrisonerController'
+import SubscriptionController from '../../../controllers/prisoner/subscriptions/subscriptionsController'
 import { AuditPage } from '../../../services/auditService'
 import { Services } from '../../../services'
 
 export default function routes(services: Services): Router {
   const prisonerSubscriptionsRouter = Router({ mergeParams: true })
-  const prisonerController = new PrisonerController(services)
+  const subscriptionController = new SubscriptionController(services)
 
   prisonerSubscriptionsRouter.use('/subscriptions', (req, res, next) => {
     if (req.featureFlags.SUBSCRIPTIONS_ENABLED === false) {
@@ -18,7 +18,7 @@ export default function routes(services: Services): Router {
   prisonerSubscriptionsRouter.get('/subscriptions', (req: Request, res: Response, next: NextFunction) => {
     res.locals.headerTitle = 'Subscriptions'
     res.locals.auditPage = AuditPage.PRISONER_SUBSCRIPTIONS
-    return prisonerController.getSubscriptions(req, res, next)
+    return subscriptionController.getSubscriptions(req, res, next)
   })
 
   return prisonerSubscriptionsRouter
